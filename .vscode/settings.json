@@ -1,0 +1,28 @@
+{
+	"coverage-gutters.coverageBaseDir": "build/reports/jacoco/test",
+	"coverage-gutters.coverageFileNames": [
+		"jacocoTestReport.xml"
+	],
+    "editor.insertSpaces": false,
+    "java.configuration.updateBuildConfiguration": "automatic",
+    "java.format.settings.url": "https://raw.githubusercontent.com/NationalSecurityAgency/ghidra/master/eclipse/GhidraEclipseFormatter.xml",
+    "java.import.gradle.enabled": true,
+    "java.import.gradle.wrapper.enabled": true,
+    "java.test.config": {
+        "name": "GhidraTest",
+        "vmargs": [
+            "-Djava.system.class.loader=ghidra.GhidraClassLoader",
+            "-Declipse.project.dir=${workspaceFolder}",
+            "-Dpython.console.encoding=UTF-8",
+            "-Dfile.encoding=UTF8",
+            "-Dlog4j.skipJansi=true",
+            "-Duser.country=US",
+            "-Duser.language=en",
+            "-Dsun.stdout.encoding=UTF-8",
+            "-Dsun.err.encoding=UTF-8",
+            "-Dvisualvm.display.name=Ghidra",
+            "-Dghidra.test.property.timeout.disable=true"
+        ]
+    },
+    "java.test.defaultConfig": "GhidraTest"
+}

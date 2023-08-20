@@ -1,0 +1,121 @@
+name: "ci"
+
+on:
+  push:
+    branches:
+      - "*"
+    tags:
+      - "v*"
+  pull_request:
+
+jobs:
+  spotless:
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: "Checkout"
+        uses: actions/checkout@v3
+      -
+        name: "Setup JDK"
+        uses: actions/setup-java@v3
+        with:
+          java-version: "17"
+          distribution: "temurin"
+      -
+        name: "Setup Ghidra"
+        uses: er28-0652/setup-ghidra@master
+        with:
+          version: "10.3.2"
+      -
+        name: "Run spotless"
+        run: gradle spotlessCheck
+
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      checks: "write"
+    strategy:
+      fail-fast: false
+      matrix:
+        ghidra:
+          - "10.3.2"
+    steps:
+      -
+        name: "Checkout"
+        uses: actions/checkout@v3
+      -
+        name: "Setup JDK"
+        uses: actions/setup-java@v3
+        with:
+          java-version: "17"
+          distribution: "temurin"
+      -
+        name: "Setup Ghidra"
+        uses: er28-0652/setup-ghidra@master
+        with:
+          version: ${{ matrix.ghidra }}
+      -
+        name: "Build extension"
+        run: gradle buildExtension
+      -
+        name: "Run tests"
+        uses: coactions/setup-xvfb@v1
+        with:
+          run: gradle test jacocoTestReport
+      -
+        name: "Upload artifacts"
+        uses: actions/upload-artifact@v3
+        with:
+          path: "dist/*"
+          if-no-files-found: "error"
+      -
+        name: "Collect test reports"
+        uses: dorny/test-reporter@v1
+        with:
+          name: "JUnit tests"
+          path: "build/test-results/test/*.xml"
+          reporter: java-junit
+      -
+        name: "Upload reports"
+        uses: actions/upload-artifact@v3
+        with:
+          name: "reports"
+          path: "build/reports/*"
+          if-no-files-found: "error"
+
+  release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs:
+      - "build"
+    runs-on: ubuntu-latest
+    permissions:
+      contents: "write"
+    steps:
+      -
+        name: "Checkout"
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      -
+        name: "Setup JDK"
+        uses: actions/setup-java@v3
+        with:
+          java-version: "17"
+          distribution: "temurin"
+          java-package: "jre"
+      -
+        name: "Download artifacts"
+        uses: actions/download-artifact@v3
+        with:
+          name: "artifact"
+          path: "dist/"
+      -
+        name: "Generate release notes"
+        run: ./developer_scripts/generate-release-notes.sh | tee release-notes.md
+      -
+        name: "GitHub release"
+        uses: ncipollo/release-action@v1.12.0
+        with:
+          artifacts: "dist/*"
+          draft: true
+          bodyFile: "release-notes.md"

@@ -4,7 +4,7 @@ This Ghidra extension enables exporting (parts of) a program as object files. Th
 
 Use-cases include (but not limited to):
 
- * Advanced binary patching, by leveraging the linker to mend both original and modified parts together instead of doing this work by hand ;
+ * [Advanced binary patching](https://boricj.net/reverse-engineering/2023/08/28/part-10.html), by leveraging the linker to mend both original and modified parts together instead of doing this work by hand ;
  * Software ports, by isolating system-independent code from a program and replacing the rest ;
  * Converting object files from one file format to another ;
  * Library creation, by extracting parts of a program and reusing them in another context ;

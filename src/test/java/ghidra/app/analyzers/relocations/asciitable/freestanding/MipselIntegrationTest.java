@@ -11,7 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package ghidra.app.analyzers.relocations;
+package ghidra.app.analyzers.relocations.asciitable.freestanding;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertTrue;
@@ -35,7 +35,7 @@ import ghidra.program.model.relocobj.Relocation;
 import ghidra.program.model.relocobj.RelocationTable;
 import ghidra.util.task.TaskMonitor;
 
-public class MipselAsciiTableFreestandingIntegrationTest extends DelinkerIntegrationTest {
+public class MipselIntegrationTest extends DelinkerIntegrationTest {
 	private static final List<String> MEMORY_BLOCK_NAMES = List.of(
 		".sbss",
 		".sdata",

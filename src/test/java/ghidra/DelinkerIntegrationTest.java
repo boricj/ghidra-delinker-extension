@@ -33,7 +33,14 @@ import org.junit.Before;
 import db.DBConstants;
 import db.DBHandle;
 import generic.jar.ResourceFile;
+import ghidra.app.analyzers.RelocationTableSynthesizerAnalyzer;
+import ghidra.app.util.DomainObjectService;
+import ghidra.app.util.Option;
+import ghidra.app.util.exporter.ElfRelocatableObjectExporter;
+import ghidra.app.util.exporter.Exporter;
+import ghidra.app.util.importer.MessageLog;
 import ghidra.framework.GModule;
+import ghidra.framework.model.DomainObject;
 import ghidra.framework.store.db.PrivateDatabase;
 import ghidra.program.database.ProgramDB;
 import ghidra.program.model.address.Address;
@@ -140,18 +147,34 @@ public abstract class DelinkerIntegrationTest extends AbstractProgramBasedTest {
 		return set;
 	}
 
-	protected void compareElfSectionWithRawFile(File exportedFile, String inputFormat,
-			String actualFilenamePattern, String sectionName) throws Exception {
-		byte[] actualBytes;
-		byte[] expectedBytes;
+	protected File exportElfObjectFile(AddressSetView set, List<Option> options) throws Exception {
+		Program program = getProgram();
+		MessageLog log = new MessageLog();
+		RelocationTableSynthesizerAnalyzer analyzer = new RelocationTableSynthesizerAnalyzer();
 
-		String expectedRawFilename = String.format(actualFilenamePattern, sectionName);
-		File expectedRawFile = new File(expectedRawFilename);
-		try (FileInputStream fis = new FileInputStream(expectedRawFile)) {
-			expectedBytes = fis.readAllBytes();
+		assertTrue(analyzer.added(program, set, TaskMonitor.DUMMY, log));
+
+		Exporter exporter = new ElfRelocatableObjectExporter();
+		if (options == null) {
+			options = exporter.getOptions(new DomainObjectService() {
+				@Override
+				public DomainObject getDomainObject() {
+					return program;
+				}
+			});
 		}
+		exporter.setOptions(options);
 
-		File actualRawFile = createTempFileForTest(".raw");
+		File exportedFile = createTempFileForTest(".o");
+		assertTrue(exporter.export(exportedFile, program, set, TaskMonitor.DUMMY));
+
+		return exportedFile;
+	}
+
+	private byte[] extractElfSectionBytes(String inputFormat, File file, String sectionName)
+			throws Exception {
+		File outputFile =
+			createTempFileForTest(String.format("%s.%s.bin", file.getName(), sectionName));
 
 		List<String> objcopyCmdline = List.of(
 			"objcopy",
@@ -159,17 +182,47 @@ public abstract class DelinkerIntegrationTest extends AbstractProgramBasedTest {
 			"-O", "binary",
 			"-j", sectionName,
 			"--set-section-flags", String.format("%s=alloc,load,content", sectionName),
-			exportedFile.getAbsolutePath(),
-			actualRawFile.getAbsolutePath());
+			file.getAbsolutePath(),
+			outputFile.getAbsolutePath());
 
 		Process process = new ProcessBuilder(objcopyCmdline).start();
 		assertTrue("objdump invocation completes", process.waitFor(10, TimeUnit.SECONDS));
 		assertEquals("objdump invocation succeeded", 0, process.exitValue());
 
-		try (FileInputStream fis = new FileInputStream(actualRawFile)) {
-			actualBytes = fis.readAllBytes();
+		try (FileInputStream fis = new FileInputStream(outputFile)) {
+			return fis.readAllBytes();
+		}
+	}
+
+	protected void compareElfSectionBytes(String inputFormat, File referenceFile,
+			String referenceSectionName, File exportedFile, String exportedSectionName)
+			throws Exception {
+		compareElfSectionBytes(inputFormat, referenceFile, referenceSectionName, exportedFile,
+			exportedSectionName, Collections.emptyMap());
+	}
+
+	protected void compareElfSectionBytes(String inputFormat, File referenceFile,
+			String referenceSectionName, File exportedFile, String exportedSectionName,
+			Map<Integer, byte[]> patches) throws Exception {
+		byte[] expectedBytes =
+			extractElfSectionBytes(inputFormat, referenceFile, referenceSectionName);
+		byte[] actualBytes = extractElfSectionBytes(inputFormat, exportedFile, exportedSectionName);
+
+		for (Map.Entry<Integer, byte[]> entry : patches.entrySet()) {
+			byte[] patch = entry.getValue();
+			System.arraycopy(patch, 0, expectedBytes, entry.getKey(), patch.length);
 		}
 
 		assertArrayEquals(expectedBytes, actualBytes);
+	}
+
+	protected void compareElfSectionSizes(String inputFormat, File referenceFile,
+			String referenceSectionName, File exportedFile, String exportedSectionName)
+			throws Exception {
+		byte[] expectedBytes =
+			extractElfSectionBytes(inputFormat, referenceFile, referenceSectionName);
+		byte[] actualBytes = extractElfSectionBytes(inputFormat, exportedFile, exportedSectionName);
+
+		assertEquals(expectedBytes.length, actualBytes.length);
 	}
 }

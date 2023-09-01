@@ -80,10 +80,11 @@ public final class ElfRelocatableSectionSymbolTable extends ElfRelocatableSectio
 		int index = 0;
 
 		for (ElfRelocatableSymbol symbol : symbols) {
-			index = index + 1;
 			if (symbol.getBinding() != ElfSymbol.STB_LOCAL) {
 				break;
 			}
+
+			index = index + 1;
 		}
 
 		return index;

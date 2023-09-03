@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.NavigableMap;
 import java.util.NoSuchElementException;
 import java.util.Spliterator;
 import java.util.Spliterators;
@@ -104,8 +105,13 @@ public class RelocationTable {
 
 	public Iterator<Relocation> getRelocations(AddressSetView iteratorAddressSet) {
 		Address iteratorCursor;
+		Address minAddress = iteratorAddressSet.getMinAddress();
+		Address maxAddress = iteratorAddressSet.getMaxAddress();
+
 		synchronized (relocations) {
-			iteratorCursor = relocations.ceilingKey(iteratorAddressSet.getMinAddress());
+			NavigableMap<Address, Relocation> subMap =
+				relocations.subMap(minAddress, true, maxAddress, true);
+			iteratorCursor = subMap.ceilingKey(iteratorAddressSet.getMinAddress());
 		}
 
 		return new Iterator<Relocation>() {

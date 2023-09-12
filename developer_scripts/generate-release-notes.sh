@@ -12,7 +12,7 @@ then
 fi
 
 CURRENT_TAG=$(git describe --tags HEAD)
-PREVIOUS_TAG=$(git describe --tags HEAD^ 2>/dev/null || true)
+PREVIOUS_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || true)
 
 if [ -z "${PREVIOUS_TAG}" ]
 then
@@ -20,5 +20,5 @@ then
 	java -jar "developer_scripts/${GIT_CHANGELOG_COMMAND_LINE_JAR}" --github-enabled --template developer_scripts/release-notes.mustache -std
 else
 	echo >&2 "Generating release notes for ${CURRENT_TAG} from ${PREVIOUS_TAG}..."
-	java -jar "developer_scripts/${GIT_CHANGELOG_COMMAND_LINE_JAR}" --github-enabled --template developer_scripts/release-notes.mustache -std --from-revision "$(git describe --tags HEAD^)"
+	java -jar "developer_scripts/${GIT_CHANGELOG_COMMAND_LINE_JAR}" --github-enabled --template developer_scripts/release-notes.mustache -std --from-revision "${PREVIOUS_TAG}"
 fi

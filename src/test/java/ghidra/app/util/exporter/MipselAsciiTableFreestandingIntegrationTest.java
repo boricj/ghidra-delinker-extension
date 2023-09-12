@@ -20,7 +20,7 @@ import java.util.List;
 
 import org.junit.Test;
 
-import ghidra.UnlinkerIntegrationTest;
+import ghidra.DelinkerIntegrationTest;
 import ghidra.app.analyzers.RelocationTableSynthesizerAnalyzer;
 import ghidra.app.util.DomainObjectService;
 import ghidra.app.util.Option;
@@ -30,7 +30,7 @@ import ghidra.program.model.address.AddressSetView;
 import ghidra.program.model.listing.Program;
 import ghidra.util.task.TaskMonitor;
 
-public class MipselAsciiTableFreestandingIntegrationTest extends UnlinkerIntegrationTest {
+public class MipselAsciiTableFreestandingIntegrationTest extends DelinkerIntegrationTest {
 	private static final String ACTUAL_RAW_FILENAMES_FORMAT =
 		"src/test/resources/ascii-table/reference/freestanding/mipsel/ascii-table%s.bin";
 

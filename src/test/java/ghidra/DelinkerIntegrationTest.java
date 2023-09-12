@@ -47,7 +47,7 @@ import ghidra.util.NamingUtilities;
 import ghidra.util.task.TaskMonitor;
 import utility.application.ApplicationLayout;
 
-public abstract class UnlinkerIntegrationTest extends AbstractProgramBasedTest {
+public abstract class DelinkerIntegrationTest extends AbstractProgramBasedTest {
 	private static DBHandle dbHandle = null;
 	private static Program program = null;
 
@@ -60,7 +60,7 @@ public abstract class UnlinkerIntegrationTest extends AbstractProgramBasedTest {
 		@Override
 		protected Map<String, GModule> findGhidraModules() throws IOException {
 			Map<String, GModule> modules = new HashMap<>(super.findGhidraModules());
-			modules.put("Unlinker",
+			modules.put("Delinker",
 				new GModule(applicationRootDirs, new ResourceFile(System.getProperty("user.dir"))));
 			return Collections.unmodifiableMap(modules);
 		}

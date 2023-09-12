@@ -5,7 +5,7 @@
             "console": "internalConsole",
             "mainClass": "ghidra.GhidraLauncher",
             "name": "Ghidra Debug",
-            "projectName": "ghidra-unlinker-extension",
+            "projectName": "ghidra-delinker-extension",
             "request": "launch",
             "shortenCommandLine": "argfile",
             "type": "java",

@@ -21,7 +21,7 @@ import java.util.List;
 
 import org.junit.Test;
 
-import ghidra.UnlinkerIntegrationTest;
+import ghidra.DelinkerIntegrationTest;
 import ghidra.app.analyzers.RelocationTableSynthesizerAnalyzer;
 import ghidra.app.util.importer.MessageLog;
 import ghidra.program.model.address.AddressSetView;
@@ -35,7 +35,7 @@ import ghidra.program.model.relocobj.Relocation;
 import ghidra.program.model.relocobj.RelocationTable;
 import ghidra.util.task.TaskMonitor;
 
-public class MipselAsciiTableFreestandingIntegrationTest extends UnlinkerIntegrationTest {
+public class MipselAsciiTableFreestandingIntegrationTest extends DelinkerIntegrationTest {
 	private static final List<String> MEMORY_BLOCK_NAMES = List.of(
 		".sbss",
 		".sdata",

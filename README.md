@@ -21,7 +21,7 @@ The Ghidra extension archive will be created inside the `dist/` directory.
 
 ## Installation
 
- * Download the extension from the [releases page](https://github.com/boricj/ghidra-unlinker-extension/releases) or build it locally ;
+ * Download the extension from the [releases page](https://github.com/boricj/ghidra-delinker-extension/releases) or build it locally ;
  * Install the extension in your Ghidra instance with `File > Install Extensions…` ;
  * Enable the `RelocationTableSynthesizedPlugin` plugin with `File > Configure` inside a CodeBrowser window.
 
@@ -50,4 +50,4 @@ When a linker is invoked to generate an executable from a bunch of object files,
  * Apply the relocations based on the final addresses of the symbols onto the section bytes.
 
 Normally the relocation table is discarded after this process, as well as the symbol table if debugging symbols aren't kept, leaving only the un-relocatable section bytes.
-However, through careful analysis this data can be recreated, which allows us to then effectively _unlink_ the program back into object files.
+However, through careful analysis this data can be recreated, which allows us to then effectively _delink_ the program back into object files.

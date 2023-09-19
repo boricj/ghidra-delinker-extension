@@ -14,14 +14,15 @@
 package ghidra.program.model.relocobj;
 
 import ghidra.app.util.importer.MessageLog;
+import ghidra.program.model.address.AddressSetView;
 import ghidra.program.model.listing.Function;
 import ghidra.program.model.listing.Program;
 import ghidra.program.model.mem.MemoryAccessException;
 import ghidra.util.classfinder.ExtensionPoint;
 
 public interface CodeRelocationSynthesizer extends ExtensionPoint {
-	public void processFunction(Program program, Function function, RelocationTable relocationTable,
-			MessageLog log) throws MemoryAccessException;
+	public void processFunction(Program program, AddressSetView set, Function function,
+			RelocationTable relocationTable, MessageLog log) throws MemoryAccessException;
 
 	public boolean canAnalyze(Program program);
 }

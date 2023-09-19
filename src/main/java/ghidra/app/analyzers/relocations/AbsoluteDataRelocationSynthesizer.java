@@ -16,20 +16,20 @@ package ghidra.app.analyzers.relocations;
 import ghidra.app.analyzers.relocations.utils.SymbolWithOffset;
 import ghidra.app.util.importer.MessageLog;
 import ghidra.program.model.address.Address;
+import ghidra.program.model.address.AddressSetView;
 import ghidra.program.model.listing.Data;
 import ghidra.program.model.listing.Program;
 import ghidra.program.model.mem.MemoryAccessException;
 import ghidra.program.model.relocobj.DataRelocationSynthesizer;
 import ghidra.program.model.relocobj.RelocationTable;
 
-public class AbsoluteDataRelocationSynthesizer
-		implements DataRelocationSynthesizer {
+public class AbsoluteDataRelocationSynthesizer implements DataRelocationSynthesizer {
 	public AbsoluteDataRelocationSynthesizer() {
 	}
 
 	@Override
-	public void processPointer(Program program, Data pointer, RelocationTable relocationTable,
-			MessageLog log) throws MemoryAccessException {
+	public void processPointer(Program program, AddressSetView addressSet, Data pointer,
+			RelocationTable relocationTable, MessageLog log) throws MemoryAccessException {
 		if (!pointer.isInitializedMemory()) {
 			return;
 		}

@@ -21,6 +21,7 @@ import ghidra.app.analyzers.relocations.utils.ExecutionContext;
 import ghidra.app.analyzers.relocations.utils.ExecutionContext.ExecutionInterpreter;
 import ghidra.app.analyzers.relocations.utils.SymbolWithOffset;
 import ghidra.app.util.importer.MessageLog;
+import ghidra.program.model.address.AddressSetView;
 import ghidra.program.model.lang.OperandType;
 import ghidra.program.model.lang.Processor;
 import ghidra.program.model.lang.Register;
@@ -145,9 +146,8 @@ public class MIPSCodeRelocationSynthesizer implements CodeRelocationSynthesizer 
 		}
 
 		private Long buildAddress(SymbolWithOffset symbol, Reference reference,
-				Instruction mipsHi16,
-				Instruction mipsLo16,
-				Instruction mips26) throws MemoryAccessException {
+				Instruction mipsHi16, Instruction mipsLo16, Instruction mips26)
+				throws MemoryAccessException {
 			String originator = reference.getFromAddress().toString();
 			String msg = null;
 
@@ -170,10 +170,10 @@ public class MIPSCodeRelocationSynthesizer implements CodeRelocationSynthesizer 
 				return null;
 			}
 			else if (address != (symbol.address + symbol.offset)) {
-//				msg = String.format(
-//					"Address 0x%x recovered from instructions doesn't match address 0x%x+%d recovered from reference %s",
-//					address, symbol.address, symbol.offset, reference);
-//				log.appendMsg(originator, msg);
+				//				msg = String.format(
+				//					"Address 0x%x recovered from instructions doesn't match address 0x%x+%d recovered from reference %s",
+				//					address, symbol.address, symbol.offset, reference);
+				//				log.appendMsg(originator, msg);
 				return null;
 			}
 			else if (mipsLo16 != null && (symbol.offset > 0x7fff)) {
@@ -259,9 +259,8 @@ public class MIPSCodeRelocationSynthesizer implements CodeRelocationSynthesizer 
 	}
 
 	@Override
-	public void processFunction(Program program, Function function, RelocationTable relocationTable,
-			MessageLog log)
-			throws MemoryAccessException {
+	public void processFunction(Program program, AddressSetView set, Function function,
+			RelocationTable relocationTable, MessageLog log) throws MemoryAccessException {
 		ExecutionContext context = new ExecutionContext(function.getProgram(), log);
 		MIPSExecutionInterpreter interpreter =
 			new MIPSExecutionInterpreter(function.getProgram(), log);

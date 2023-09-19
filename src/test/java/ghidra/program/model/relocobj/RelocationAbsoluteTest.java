@@ -110,4 +110,59 @@ public class RelocationAbsoluteTest {
 			DataConverter.getInstance(true), true);
 		assertArrayEquals(expected, buffer);
 	}
+
+	@Test
+	public void test32_BigEndian_NegativeAddend_WithEncode() {
+		Program program = mock(Program.class);
+		when(program.getAddressFactory()).thenReturn(addressFactory);
+
+		RelocationTable relocationTable = new RelocationTable(program);
+		Relocation relocation =
+			new RelocationAbsolute(relocationTable, ram.getAddress(4), 4, null, -4);
+		byte[] buffer = new byte[] { 0x70, 0x71, 0x72, 0x73, 0x74, 0x75, 0x76, 0x77, 0x78, 0x79,
+			0x7a, 0x7b, 0x7c, 0x7d, 0x7e, 0x7f };
+		byte[] expected = new byte[] { 0x70, 0x71, 0x72, 0x73, (byte) 0xff, (byte) 0xff,
+			(byte) 0xff, (byte) 0xfc, 0x78, 0x79, 0x7a, 0x7b, 0x7c, 0x7d, 0x7e, 0x7f };
+		relocation.unapply(buffer,
+			addressFactory.getAddressSet(ram.getAddress(0), ram.getAddress(15)),
+			DataConverter.getInstance(true), true);
+		assertArrayEquals(expected, buffer);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void test_AddendTooBig() {
+		new RelocationAbsolute(null, ram.getAddress(4), 2, null, 0x10000);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void test_AddendTooSmall() {
+		new RelocationAbsolute(null, ram.getAddress(4), 2, null, -0xffff);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void test_ShiftedAddendTooBig() {
+		new RelocationAbsolute(null, ram.getAddress(4), 2, 0xffff, 4, null, 0x100000);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void test_ShiftedAddendTooSmall() {
+		new RelocationAbsolute(null, ram.getAddress(4), 2, 0xffff, 4, null, -0xfffff);
+	}
+
+	public void test_AddendNotTooBig() {
+		new RelocationAbsolute(null, ram.getAddress(4), 2, null, 0xffff);
+	}
+
+	public void test_AddendNotTooSmall() {
+		new RelocationAbsolute(null, ram.getAddress(4), 2, null, -0xfffe);
+	}
+
+	public void test_ShiftedAddendNotTooBig() {
+		new RelocationAbsolute(null, ram.getAddress(4), 2, 0xffff, 4, null, 0xfffff);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void test_ShiftedAddendNotTooSmall() {
+		new RelocationAbsolute(null, ram.getAddress(4), 2, 0xffff, 4, null, -0xffffe);
+	}
 }

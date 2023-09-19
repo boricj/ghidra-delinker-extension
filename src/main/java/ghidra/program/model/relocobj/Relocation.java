@@ -52,13 +52,11 @@ public interface Relocation {
 			throw new IllegalArgumentException("bitmask wider than relocation width");
 		}
 		if (addend != null) {
-			if (addend < 0) {
-				throw new IllegalArgumentException("addend must not be negative");
+			if (addend >= 0 && ((addend >> shift) >> highestOneBit) != 0) {
+				throw new IllegalArgumentException("addend must fit inside bitmask");
 			}
-
-			long shiftedAddend = addend >> shift;
-			if ((shiftedAddend & (bitmask >> (lowestOneBit + 1))) != shiftedAddend) {
-				throw new IllegalArgumentException("addend must fit inside bitmask unsigned");
+			else if (addend < 0 && ((addend >> shift) >> highestOneBit) != -1L) {
+				throw new IllegalArgumentException("addend must fit inside bitmask");
 			}
 		}
 	}

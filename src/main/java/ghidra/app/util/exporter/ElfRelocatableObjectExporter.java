@@ -28,8 +28,6 @@ import java.util.stream.Collectors;
 
 import javax.swing.JComboBox;
 
-import org.jgrapht.nio.ExportException;
-
 import ghidra.app.util.DomainObjectService;
 import ghidra.app.util.Option;
 import ghidra.app.util.bin.format.elf.ElfConstants;
@@ -549,8 +547,8 @@ public class ElfRelocatableObjectExporter extends Exporter {
 			taskMonitor.setMessage("Writing out ELF relocatable object file...");
 			writeOutFile(raf);
 		}
-		catch (Exception e) {
-			throw new ExportException(e);
+		catch (MemoryAccessException e) {
+			throw new ExporterException(e);
 		}
 
 		return true;

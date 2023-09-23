@@ -72,6 +72,7 @@ public class ElfRelocatableObjectExporter extends Exporter {
 	private boolean includeDynamicSymbols;
 	private boolean generateRelocationTables;
 	private boolean generateSectionNamesStringTable;
+	private boolean stripLeadingUnderscore;
 	private int relocationTableFormat;
 
 	private ElfRelocatableObject elf;
@@ -272,6 +273,7 @@ public class ElfRelocatableObjectExporter extends Exporter {
 			new Option("ELF header", "Generate section names string table", true),
 			new Option("Symbols", "Generate string & symbol tables", true),
 			new Option("Symbols", "Include dynamic symbols", false),
+			new Option("Symbols", "Strip leading underscore", false),
 			new Option("Relocations", "Generate relocation tables", true),
 			new DropDownOption<Integer>("Relocations", "Relocation table format",
 				ELF_RELOCATION_TABLE_TYPES, Integer.class,
@@ -289,8 +291,9 @@ public class ElfRelocatableObjectExporter extends Exporter {
 		generateSectionNamesStringTable = (Boolean) options.get(3).getValue();
 		generateStringAndSymbolTables = (Boolean) options.get(4).getValue();
 		includeDynamicSymbols = (Boolean) options.get(5).getValue();
-		generateRelocationTables = (Boolean) options.get(6).getValue();
-		relocationTableFormat = (Integer) options.get(7).getValue();
+		stripLeadingUnderscore = (Boolean) options.get(6).getValue();
+		generateRelocationTables = (Boolean) options.get(7).getValue();
+		relocationTableFormat = (Integer) options.get(8).getValue();
 	}
 
 	private class DropDownOption<T> extends Option {
@@ -382,7 +385,7 @@ public class ElfRelocatableObjectExporter extends Exporter {
 
 			for (Symbol symbol : program.getSymbolTable().getAllSymbols(includeDynamicSymbols)) {
 				if (symbol.isPrimary() && addressSet.contains(symbol.getAddress())) {
-					String symbolName = symbol.getName(true);
+					String symbolName = getSymbolName(symbol.getName(true));
 					byte type = ElfSymbol.STT_NOTYPE;
 					byte visibility =
 						symbol.isGlobal() ? ElfSymbol.STB_GLOBAL : ElfSymbol.STB_LOCAL;
@@ -438,7 +441,8 @@ public class ElfRelocatableObjectExporter extends Exporter {
 					long offset =
 						Relocation.getAddressOffsetWithinSet(addressSet, relocation.getAddress());
 					long type = relocationTypeMapper.apply(table, relocation, log);
-					long symindex = symtab.indexOf(symbolsByName.get(relocation.getSymbolName()));
+					long symindex = symtab
+							.indexOf(symbolsByName.get(getSymbolName(relocation.getSymbolName())));
 
 					table.add(offset, type, symindex);
 				}
@@ -461,7 +465,8 @@ public class ElfRelocatableObjectExporter extends Exporter {
 					long offset =
 						Relocation.getAddressOffsetWithinSet(addressSet, relocation.getAddress());
 					long type = relocationTypeMapper.apply(table, relocation, log);
-					long symindex = symtab.indexOf(symbolsByName.get(relocation.getSymbolName()));
+					long symindex = symtab
+							.indexOf(symbolsByName.get(getSymbolName(relocation.getSymbolName())));
 					long addend = relocation.getAddend();
 
 					table.add(offset, type, symindex, addend);
@@ -582,7 +587,7 @@ public class ElfRelocatableObjectExporter extends Exporter {
 	private void computeExternalSymbols(RelocationTable relocationTable) {
 		for (Relocation relocation : (Iterable<Relocation>) () -> relocationTable
 				.getRelocations(fileSet)) {
-			String symbolName = relocation.getSymbolName();
+			String symbolName = getSymbolName(relocation.getSymbolName());
 
 			if (symbolName != null && !symbolsByName.containsKey(symbolName) &&
 				programSet.contains(relocation.getAddress())) {
@@ -600,5 +605,13 @@ public class ElfRelocatableObjectExporter extends Exporter {
 	private void writeOutFile(RandomAccessFile raf) throws IOException {
 		elf.finalize();
 		elf.write(raf, elf.getDataConverter());
+	}
+
+	private String getSymbolName(String name) {
+		if (stripLeadingUnderscore && name.startsWith("_")) {
+			return name.substring(1);
+		}
+
+		return name;
 	}
 }

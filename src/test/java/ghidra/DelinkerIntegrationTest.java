@@ -30,6 +30,7 @@ import java.util.concurrent.TimeUnit;
 import org.junit.After;
 import org.junit.Before;
 
+import db.DBConstants;
 import db.DBHandle;
 import generic.jar.ResourceFile;
 import ghidra.framework.GModule;
@@ -44,6 +45,7 @@ import ghidra.program.model.mem.MemoryBlock;
 import ghidra.test.AbstractProgramBasedTest;
 import ghidra.test.TestProgramManager;
 import ghidra.util.NamingUtilities;
+import ghidra.util.exception.VersionException;
 import ghidra.util.task.TaskMonitor;
 import utility.application.ApplicationLayout;
 
@@ -94,8 +96,24 @@ public abstract class DelinkerIntegrationTest extends AbstractProgramBasedTest {
 		File gzf = new File(getProgramName());
 
 		PrivateDatabase pdb = new PrivateDatabase(dbDir, gzf, TaskMonitor.DUMMY);
-		dbHandle = pdb.open(TaskMonitor.DUMMY);
-		program = new ProgramDB(dbHandle, 1, TaskMonitor.DUMMY, this);
+
+		try {
+			dbHandle = pdb.open(TaskMonitor.DUMMY);
+			program = new ProgramDB(dbHandle, DBConstants.UPDATE, TaskMonitor.DUMMY, this);
+		}
+		catch (VersionException e) {
+			if (!e.isUpgradable()) {
+				throw e;
+			}
+
+			dbHandle = pdb.openForUpdate(TaskMonitor.DUMMY);
+			program = new ProgramDB(dbHandle, DBConstants.UPGRADE, TaskMonitor.DUMMY, this);
+			dbHandle.save(null, null, TaskMonitor.DUMMY);
+			program.release(this);
+
+			dbHandle = pdb.open(TaskMonitor.DUMMY);
+			program = new ProgramDB(dbHandle, DBConstants.UPDATE, TaskMonitor.DUMMY, this);
+		}
 
 		return program;
 	}

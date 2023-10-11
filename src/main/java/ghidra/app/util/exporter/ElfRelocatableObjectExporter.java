@@ -30,6 +30,7 @@ import javax.swing.JComboBox;
 
 import ghidra.app.util.DomainObjectService;
 import ghidra.app.util.Option;
+import ghidra.app.util.OptionUtils;
 import ghidra.app.util.bin.format.elf.ElfConstants;
 import ghidra.app.util.bin.format.elf.ElfSectionHeaderConstants;
 import ghidra.app.util.bin.format.elf.ElfSymbol;
@@ -86,6 +87,20 @@ public class ElfRelocatableObjectExporter extends Exporter {
 
 	private Map<String, ElfRelocatableSymbol> symbolsByName;
 	private List<Section> sections = new ArrayList<>();
+
+	private static final String OPTION_GROUP_ELF_HEADER = "ELF header";
+	private static final String OPTION_GROUP_SYMBOLS = "Symbols";
+	private static final String OPTION_GROUP_RELOCATIONS = "Relocations";
+
+	private static final String OPTION_ELF_MACHINE = "ELF machine";
+	private static final String OPTION_ELF_CLASS = "ELF class";
+	private static final String OPTION_ELF_DATA = "ELF data";
+	private static final String OPTION_GEN_SHSTRTAB = "Generate section names string table";
+	private static final String OPTION_GEN_STRTAB = "Generate string & symbol tables";
+	private static final String OPTION_DYN_SYMBOLS = "Include dynamic symbols";
+	private static final String OPTION_STRIP_LEADING_UNDERSCORE = "Strip leading underscore";
+	private static final String OPTION_GEN_REL = "Generate relocation tables";
+	private static final String OPTION_REL_FMT = "Relocation table format";
 
 	private static final Map<Byte, String> ELF_CLASSES = new TreeMap<>(Map.ofEntries(
 		Map.entry(ElfConstants.ELF_CLASS_NONE, "(none)"),
@@ -264,18 +279,18 @@ public class ElfRelocatableObjectExporter extends Exporter {
 		}
 
 		Option[] options = new Option[] {
-			new DropDownOption<Short>("ELF header", "ELF machine", ELF_MACHINES, Short.class,
-				autodetectElfMachine(program)),
-			new DropDownOption<Byte>("ELF header", "ELF class", ELF_CLASSES, Byte.class,
-				autodetectElfClass(program)),
-			new DropDownOption<Byte>("ELF header", "ELF data", ELF_DATAS, Byte.class,
-				autodetectElfData(program)),
-			new Option("ELF header", "Generate section names string table", true),
-			new Option("Symbols", "Generate string & symbol tables", true),
-			new Option("Symbols", "Include dynamic symbols", false),
-			new Option("Symbols", "Strip leading underscore", false),
-			new Option("Relocations", "Generate relocation tables", true),
-			new DropDownOption<Integer>("Relocations", "Relocation table format",
+			new DropDownOption<Short>(OPTION_GROUP_ELF_HEADER, OPTION_ELF_MACHINE, ELF_MACHINES,
+				Short.class, autodetectElfMachine(program)),
+			new DropDownOption<Byte>(OPTION_GROUP_ELF_HEADER, OPTION_ELF_CLASS, ELF_CLASSES,
+				Byte.class, autodetectElfClass(program)),
+			new DropDownOption<Byte>(OPTION_GROUP_ELF_HEADER, OPTION_ELF_DATA, ELF_DATAS,
+				Byte.class, autodetectElfData(program)),
+			new Option(OPTION_GROUP_ELF_HEADER, OPTION_GEN_SHSTRTAB, true),
+			new Option(OPTION_GROUP_SYMBOLS, OPTION_GEN_STRTAB, true),
+			new Option(OPTION_GROUP_SYMBOLS, OPTION_DYN_SYMBOLS, false),
+			new Option(OPTION_GROUP_SYMBOLS, OPTION_STRIP_LEADING_UNDERSCORE, false),
+			new Option(OPTION_GROUP_RELOCATIONS, OPTION_GEN_REL, true),
+			new DropDownOption<Integer>(OPTION_GROUP_RELOCATIONS, OPTION_REL_FMT,
 				ELF_RELOCATION_TABLE_TYPES, Integer.class,
 				autodetectElfRelocationTableFormat(program))
 		};
@@ -285,15 +300,19 @@ public class ElfRelocatableObjectExporter extends Exporter {
 
 	@Override
 	public void setOptions(List<Option> options) {
-		e_ident_machine = (Short) options.get(0).getValue();
-		e_ident_class = (Byte) options.get(1).getValue();
-		e_ident_data = (Byte) options.get(2).getValue();
-		generateSectionNamesStringTable = (Boolean) options.get(3).getValue();
-		generateStringAndSymbolTables = (Boolean) options.get(4).getValue();
-		includeDynamicSymbols = (Boolean) options.get(5).getValue();
-		stripLeadingUnderscore = (Boolean) options.get(6).getValue();
-		generateRelocationTables = (Boolean) options.get(7).getValue();
-		relocationTableFormat = (Integer) options.get(8).getValue();
+		e_ident_machine = OptionUtils.getOption(OPTION_ELF_MACHINE, options, ElfConstants.EM_NONE);
+		e_ident_class =
+			OptionUtils.getOption(OPTION_ELF_CLASS, options, ElfConstants.ELF_CLASS_NONE);
+		e_ident_data = OptionUtils.getOption(OPTION_ELF_DATA, options, ElfConstants.ELF_DATA_NONE);
+		generateSectionNamesStringTable =
+			OptionUtils.getOption(OPTION_GEN_SHSTRTAB, options, false);
+		generateStringAndSymbolTables = OptionUtils.getOption(OPTION_GEN_STRTAB, options, false);
+		includeDynamicSymbols = OptionUtils.getOption(OPTION_DYN_SYMBOLS, options, false);
+		stripLeadingUnderscore =
+			OptionUtils.getOption(OPTION_STRIP_LEADING_UNDERSCORE, options, false);
+		generateRelocationTables = OptionUtils.getOption(OPTION_GEN_REL, options, false);
+		relocationTableFormat =
+			OptionUtils.getOption(OPTION_REL_FMT, options, ElfSectionHeaderConstants.SHT_NULL);
 	}
 
 	private class DropDownOption<T> extends Option {

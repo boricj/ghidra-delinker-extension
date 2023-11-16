@@ -98,12 +98,6 @@ spotless {
  */
 """, "package ")
 		target 'src/*/java/**/*.java'
-		targetExclude files([
-			"src/main/java/ghidra/app/plugin/core/relocobj/RelocationProvider.java",
-			"src/main/java/ghidra/app/plugin/core/relocobj/RelocationTableModel.java",
-			"src/main/java/ghidra/app/plugin/core/relocobj/RelocationTableSynthesizedPlugin.java",
-			"src/main/java/ghidra/app/plugin/core/relocobj/RelocationToAddressTableRowMapper.java"
-		])
 	})
 }
 

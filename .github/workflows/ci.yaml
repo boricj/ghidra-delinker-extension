@@ -25,7 +25,7 @@ jobs:
         name: "Setup Ghidra"
         uses: er28-0652/setup-ghidra@master
         with:
-          version: "10.3.2"
+          version: "10.4"
       -
         name: "Run spotless"
         run: gradle spotlessCheck
@@ -38,7 +38,8 @@ jobs:
       fail-fast: false
       matrix:
         ghidra:
-          - "10.3.2"
+          - "10.3.3"
+          - "10.4"
     steps:
       -
         name: "Checkout"
@@ -73,7 +74,7 @@ jobs:
         name: "Collect test reports"
         uses: dorny/test-reporter@v1
         with:
-          name: "JUnit tests"
+          name: "JUnit tests (${{ matrix.ghidra }})"
           path: "build/test-results/test/*.xml"
           reporter: java-junit
         if: ${{ !cancelled() }}
@@ -81,7 +82,7 @@ jobs:
         name: "Upload reports"
         uses: actions/upload-artifact@v3
         with:
-          name: "reports"
+          name: "reports (${{ matrix.ghidra }})"
           path: "build/reports/*"
           if-no-files-found: "error"
         if: ${{ !cancelled() }}

@@ -21,16 +21,22 @@ import java.util.NoSuchElementException;
 import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.TreeMap;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import ghidra.program.model.address.Address;
 import ghidra.program.model.address.AddressFactory;
 import ghidra.program.model.address.AddressRange;
 import ghidra.program.model.address.AddressSetView;
+import ghidra.program.model.listing.CodeUnit;
+import ghidra.program.model.listing.Listing;
 import ghidra.program.model.listing.Program;
 import ghidra.program.model.mem.MemoryAccessException;
 import ghidra.program.model.mem.MemoryBlock;
+import ghidra.program.model.symbol.Reference;
+import ghidra.program.model.symbol.ReferenceManager;
 import ghidra.util.DataConverter;
 
 public class RelocationTable {
@@ -69,6 +75,11 @@ public class RelocationTable {
 
 	public byte[] getOriginalBytes(AddressSetView addressSet, DataConverter dc,
 			boolean encodeAddend) throws MemoryAccessException {
+		return getOriginalBytes(addressSet, dc, encodeAddend, relocation -> true);
+	}
+
+	public byte[] getOriginalBytes(AddressSetView addressSet, DataConverter dc,
+			boolean encodeAddend, Predicate<Relocation> predicate) throws MemoryAccessException {
 		AddressFactory addressFactory = currentProgram.getAddressFactory();
 		MemoryBlock memoryBlock = currentProgram.getMemory().getBlock(addressSet.getMinAddress());
 		if (memoryBlock == null ||
@@ -87,8 +98,11 @@ public class RelocationTable {
 				offset += length;
 			}
 
-			for (Relocation relocation : (Iterable<Relocation>) () -> getRelocations(addressSet)) {
-				relocation.unapply(bytes, addressSet, dc, encodeAddend);
+			for (Relocation relocation : (Iterable<Relocation>) () -> getRelocations(addressSet,
+				predicate)) {
+				if (predicate.test(relocation)) {
+					relocation.unapply(bytes, addressSet, dc, encodeAddend);
+				}
 			}
 		}
 
@@ -143,6 +157,14 @@ public class RelocationTable {
 				return value;
 			}
 		};
+	}
+
+	public Iterator<Relocation> getRelocations(AddressSetView addressSet,
+			Predicate<Relocation> predicate) {
+		final Iterator<Relocation> iteratorAddressSet = getRelocations(addressSet);
+		final Stream<Relocation> stream = StreamSupport.stream(
+			Spliterators.spliteratorUnknownSize(iteratorAddressSet, Spliterator.ORDERED), false);
+		return stream.filter(predicate).iterator();
 	}
 
 	protected Relocation add(Relocation newRelocation) {
@@ -239,5 +261,36 @@ public class RelocationTable {
 		RelocationRelativeSymbol rel = new RelocationRelativeSymbol(this, address, width, bitmask,
 			shift, symbolName, addend, relativeSymbolName);
 		return (RelocationRelativeSymbol) add(rel);
+	}
+
+	public Predicate<Relocation> predicateInterestingRelocations(final AddressSetView addressSet) {
+		return new Predicate<Relocation>() {
+			@Override
+			public boolean test(Relocation r) {
+				if (r instanceof RelocationRelativePC) {
+					RelocationRelativePC relocation = (RelocationRelativePC) r;
+
+					ReferenceManager referenceManager = currentProgram.getReferenceManager();
+					Listing listing = currentProgram.getListing();
+					CodeUnit codeUnit = listing.getCodeUnitContaining(relocation.getAddress());
+
+					Address fromAddress = codeUnit.getAddress();
+					AddressRange fromRange = addressSet.getRangeContaining(fromAddress);
+
+					for (Reference reference : referenceManager.getReferencesFrom(fromAddress)) {
+						if (!reference.isPrimary()) {
+							continue;
+						}
+
+						Address toAddress = reference.getToAddress();
+						if (fromRange.contains(toAddress)) {
+							return false;
+						}
+					}
+				}
+
+				return true;
+			}
+		};
 	}
 }

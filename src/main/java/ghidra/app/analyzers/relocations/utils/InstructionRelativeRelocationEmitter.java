@@ -14,7 +14,6 @@
 package ghidra.app.analyzers.relocations.utils;
 
 import ghidra.program.model.address.Address;
-import ghidra.program.model.address.AddressRange;
 import ghidra.program.model.address.AddressSetView;
 import ghidra.program.model.listing.Function;
 import ghidra.program.model.listing.Instruction;
@@ -26,13 +25,11 @@ import ghidra.program.model.symbol.ReferenceManager;
 
 public abstract class InstructionRelativeRelocationEmitter implements InstructionRelocationEmitter {
 	private final Program program;
-	private final AddressSetView set;
 	private final RelocationTable relocationTable;
 
 	public InstructionRelativeRelocationEmitter(Program program, AddressSetView set,
 			RelocationTable relocationTable) {
 		this.program = program;
-		this.set = set;
 		this.relocationTable = relocationTable;
 	}
 
@@ -41,7 +38,6 @@ public abstract class InstructionRelativeRelocationEmitter implements Instructio
 			throws MemoryAccessException {
 		ReferenceManager referenceManager = program.getReferenceManager();
 		Address fromAddress = instruction.getAddress();
-		AddressRange fromRange = set.getRangeContaining(fromAddress);
 
 		boolean foundRelocation = false;
 		for (Reference reference : referenceManager.getReferencesFrom(fromAddress)) {
@@ -50,7 +46,6 @@ public abstract class InstructionRelativeRelocationEmitter implements Instructio
 			}
 
 			Address toAddress = reference.getToAddress();
-			AddressRange toRange = set.getRangeContaining(toAddress);
 
 			for (int opIdx = 0; opIdx < instruction.getNumOperands(); opIdx++) {
 				SymbolWithOffset symbol = SymbolWithOffset.get(program, reference);
@@ -68,11 +63,8 @@ public abstract class InstructionRelativeRelocationEmitter implements Instructio
 				if (target == toAddress.getOffset()) {
 					foundRelocation = true;
 
-					if (!fromRange.equals(toRange)) {
-						relocationTable.addRelativePC(fromAddress.add(opValue.offset),
-							opValue.length,
-							symbol.name, symbol.offset - getAddendOffset(instruction));
-					}
+					relocationTable.addRelativePC(fromAddress.add(opValue.offset), opValue.length,
+						symbol.name, symbol.offset - getAddendOffset(instruction));
 				}
 			}
 		}

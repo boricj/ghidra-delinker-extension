@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.TreeMap;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import javax.swing.JComboBox;
@@ -366,11 +367,14 @@ public class ElfRelocatableObjectExporter extends Exporter {
 
 		private ElfRelocatableSection section;
 		private ElfRelocatableSection relSection;
+		private Predicate<Relocation> predicateRelocation;
 
-		public Section(MemoryBlock memoryBlock, AddressSetView addressSet) {
+		public Section(MemoryBlock memoryBlock, AddressSetView addressSet,
+				Predicate<Relocation> predicateRelocation) {
 			this.memoryBlock = memoryBlock;
 			this.name = memoryBlock.getName();
 			this.addressSet = addressSet;
+			this.predicateRelocation = predicateRelocation;
 		}
 
 		public String getName() {
@@ -390,7 +394,7 @@ public class ElfRelocatableObjectExporter extends Exporter {
 			if (memoryBlock.isInitialized()) {
 				byte[] bytes =
 					relocationTable.getOriginalBytes(addressSet, elf.getDataConverter(),
-						encodeAddend);
+						encodeAddend, predicateRelocation);
 				section = new ElfRelocatableSectionProgBits(elf, name, bytes, flags);
 			}
 			else {
@@ -439,7 +443,8 @@ public class ElfRelocatableObjectExporter extends Exporter {
 			}
 
 			List<Relocation> relocations = new ArrayList<>();
-			relocationTable.getRelocations(addressSet).forEachRemaining(relocations::add);
+			relocationTable.getRelocations(addressSet, predicateRelocation)
+					.forEachRemaining(relocations::add);
 
 			if (relocations.isEmpty()) {
 				return;
@@ -514,7 +519,6 @@ public class ElfRelocatableObjectExporter extends Exporter {
 		if (program == null) {
 			return false;
 		}
-		RelocationTable relocationTable = RelocationTable.get(program);
 		Memory memory = program.getMemory();
 		if (fileSet == null) {
 			fileSet = memory;
@@ -523,6 +527,10 @@ public class ElfRelocatableObjectExporter extends Exporter {
 		// FIXME: Expose program address set.
 		this.programSet = memory;
 		this.fileSet = fileSet;
+
+		RelocationTable relocationTable = RelocationTable.get(program);
+		Predicate<Relocation> predicateRelocation =
+			relocationTable.predicateInterestingRelocations(fileSet);
 
 		try (RandomAccessFile raf = new RandomAccessFile(file, "rw")) {
 			elf = new ElfRelocatableObject.Builder(file.getName())
@@ -537,7 +545,7 @@ public class ElfRelocatableObjectExporter extends Exporter {
 			}
 
 			for (MemoryBlock memoryBlock : program.getMemory().getBlocks()) {
-				addSectionForMemoryBlock(memoryBlock);
+				addSectionForMemoryBlock(memoryBlock, predicateRelocation);
 			}
 
 			for (Section section : sections) {
@@ -552,7 +560,7 @@ public class ElfRelocatableObjectExporter extends Exporter {
 					section.addSymbols();
 				}
 
-				computeExternalSymbols(relocationTable);
+				computeExternalSymbols(relocationTable, predicateRelocation);
 
 				if (generateRelocationTables) {
 					for (Section section : sections) {
@@ -594,18 +602,20 @@ public class ElfRelocatableObjectExporter extends Exporter {
 		symbolsByName = new HashMap<>();
 	}
 
-	private void addSectionForMemoryBlock(MemoryBlock memoryBlock) {
+	private void addSectionForMemoryBlock(MemoryBlock memoryBlock,
+			Predicate<Relocation> predicateRelocation) {
 		AddressSet memoryBlockSet =
 			new AddressSet(memoryBlock.getStart(), memoryBlock.getEnd()).intersect(fileSet);
 
 		if (!memoryBlockSet.isEmpty()) {
-			sections.add(new Section(memoryBlock, memoryBlockSet));
+			sections.add(new Section(memoryBlock, memoryBlockSet, predicateRelocation));
 		}
 	}
 
-	private void computeExternalSymbols(RelocationTable relocationTable) {
+	private void computeExternalSymbols(RelocationTable relocationTable,
+			Predicate<Relocation> predicateRelocation) {
 		for (Relocation relocation : (Iterable<Relocation>) () -> relocationTable
-				.getRelocations(fileSet)) {
+				.getRelocations(fileSet, predicateRelocation)) {
 			String symbolName = getSymbolName(relocation.getSymbolName());
 
 			if (symbolName != null && !symbolsByName.containsKey(symbolName) &&

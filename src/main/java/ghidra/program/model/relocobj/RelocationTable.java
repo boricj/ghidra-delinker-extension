@@ -207,6 +207,12 @@ public class RelocationTable {
 		return rel;
 	}
 
+	public RelocationMIPS26 addMIPS26(Address address, String symbolName, long addend) {
+		RelocationMIPS26 rel =
+			new RelocationMIPS26(this, address, symbolName, addend);
+		return (RelocationMIPS26) add(rel);
+	}
+
 	public RelocationRelativePC addRelativePC(Address address, int width, String symbolName,
 			long addend) {
 		RelocationRelativePC rel =

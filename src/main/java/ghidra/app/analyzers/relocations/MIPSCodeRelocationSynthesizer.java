@@ -248,8 +248,7 @@ public class MIPSCodeRelocationSynthesizer implements CodeRelocationSynthesizer 
 					symbol.offset, "_gp");
 			}
 			else if (mips26 != null) {
-				relocationTable.addRelativePC(mips26.getAddress(), 4, 0x3ffffff, 2, symbol.name,
-					symbol.offset);
+				relocationTable.addMIPS26(mips26.getAddress(), symbol.name, symbol.offset);
 			}
 			else {
 				throw new RuntimeException(

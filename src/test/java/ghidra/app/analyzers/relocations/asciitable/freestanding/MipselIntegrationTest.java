@@ -29,7 +29,7 @@ import ghidra.program.model.listing.Program;
 import ghidra.program.model.relocobj.ExpectRelocationAbsolute;
 import ghidra.program.model.relocobj.ExpectRelocationHighPair;
 import ghidra.program.model.relocobj.ExpectRelocationLowPair;
-import ghidra.program.model.relocobj.ExpectRelocationRelativePC;
+import ghidra.program.model.relocobj.ExpectRelocationMIPS26;
 import ghidra.program.model.relocobj.ExpectRelocationRelativeSymbol;
 import ghidra.program.model.relocobj.Relocation;
 import ghidra.program.model.relocobj.RelocationTable;
@@ -61,7 +61,7 @@ public class MipselIntegrationTest extends DelinkerIntegrationTest {
 		// 0040025c  00002a06 R_MIPS_LO16            00000004   _auxv
 		new ExpectRelocationLowPair(0x0040025c, 4, 0xffff, "_auxv", 0),
 		// 00400270  00003704 R_MIPS_26              000003e4   main
-		new ExpectRelocationRelativePC(0x00400270, 4, 0x3ffffff, 2, "main", 0),
+		new ExpectRelocationMIPS26(0x00400270, "main", 0),
 		// 0040028c  00000305 R_MIPS_HI16            00000000   .text
 		new ExpectRelocationHighPair(0x0040028c, 4, 0xffff, "sys_write"),
 		// 00400290  00000306 R_MIPS_LO16            00000000   .text

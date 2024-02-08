@@ -49,7 +49,7 @@ public final class ElfRelocatableObject implements ByteArrayConverter, Writeable
 		byte e_ident_abiversion = 0;
 		short e_type = ElfConstants.ET_NONE;
 		short e_machine = ElfConstants.EM_NONE;
-		int e_version = 0;
+		int e_version = ElfConstants.EV_CURRENT;
 		long e_entry = 0;
 		int e_flags = 0;
 

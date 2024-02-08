@@ -37,6 +37,7 @@ import ghidra.app.util.bin.format.elf.ElfSectionHeaderConstants;
 import ghidra.app.util.bin.format.elf.ElfSymbol;
 import ghidra.app.util.exporter.elf.ElfRelocatableObject;
 import ghidra.app.util.exporter.elf.ElfRelocatableSection;
+import ghidra.app.util.exporter.elf.ElfRelocatableSectionComment;
 import ghidra.app.util.exporter.elf.ElfRelocatableSectionNoBits;
 import ghidra.app.util.exporter.elf.ElfRelocatableSectionProgBits;
 import ghidra.app.util.exporter.elf.ElfRelocatableSectionRelTable;
@@ -62,6 +63,8 @@ import ghidra.program.model.symbol.Symbol;
 import ghidra.util.classfinder.ClassSearcher;
 import ghidra.util.task.TaskMonitor;
 
+import ghidra_delinker_extension.BuildConfig;
+
 /**
  * An implementation of exporter that creates an ELF relocatable object from the
  * program.
@@ -70,17 +73,20 @@ public class ElfRelocatableObjectExporter extends Exporter {
 	private short e_ident_machine;
 	private byte e_ident_class;
 	private byte e_ident_data;
+	private boolean generateSectionNamesStringTable;
+	private boolean generateSectionComment;
 	private boolean generateStringAndSymbolTables;
 	private boolean includeDynamicSymbols;
-	private boolean generateRelocationTables;
-	private boolean generateSectionNamesStringTable;
 	private boolean stripLeadingUnderscore;
+	private boolean generateRelocationTables;
 	private int relocationTableFormat;
 
 	private ElfRelocatableObject elf;
 	private ElfRelocatableSectionStringTable strtab;
 	private ElfRelocatableSectionSymbolTable symtab;
 	private ElfRelocatableSectionStringTable shstrtab;
+	@SuppressWarnings("unused")
+	private ElfRelocatableSectionComment comment;
 
 	private Program program;
 	private AddressSetView programSet;
@@ -98,6 +104,7 @@ public class ElfRelocatableObjectExporter extends Exporter {
 	private static final String OPTION_ELF_DATA = "ELF data";
 	private static final String OPTION_GEN_SHSTRTAB = "Generate section names string table";
 	private static final String OPTION_GEN_STRTAB = "Generate string & symbol tables";
+	private static final String OPTION_GEN_COMMENT = "Generate .comment section";
 	private static final String OPTION_DYN_SYMBOLS = "Include dynamic symbols";
 	private static final String OPTION_STRIP_LEADING_UNDERSCORE = "Strip leading underscore";
 	private static final String OPTION_GEN_REL = "Generate relocation tables";
@@ -287,6 +294,7 @@ public class ElfRelocatableObjectExporter extends Exporter {
 			new DropDownOption<Byte>(OPTION_GROUP_ELF_HEADER, OPTION_ELF_DATA, ELF_DATAS,
 				Byte.class, autodetectElfData(program)),
 			new Option(OPTION_GROUP_ELF_HEADER, OPTION_GEN_SHSTRTAB, true),
+			new Option(OPTION_GROUP_ELF_HEADER, OPTION_GEN_COMMENT, true),
 			new Option(OPTION_GROUP_SYMBOLS, OPTION_GEN_STRTAB, true),
 			new Option(OPTION_GROUP_SYMBOLS, OPTION_DYN_SYMBOLS, false),
 			new Option(OPTION_GROUP_SYMBOLS, OPTION_STRIP_LEADING_UNDERSCORE, false),
@@ -307,6 +315,7 @@ public class ElfRelocatableObjectExporter extends Exporter {
 		e_ident_data = OptionUtils.getOption(OPTION_ELF_DATA, options, ElfConstants.ELF_DATA_NONE);
 		generateSectionNamesStringTable =
 			OptionUtils.getOption(OPTION_GEN_SHSTRTAB, options, false);
+		generateSectionComment = OptionUtils.getOption(OPTION_GEN_COMMENT, options, false);
 		generateStringAndSymbolTables = OptionUtils.getOption(OPTION_GEN_STRTAB, options, false);
 		includeDynamicSymbols = OptionUtils.getOption(OPTION_DYN_SYMBOLS, options, false);
 		stripLeadingUnderscore =
@@ -571,6 +580,10 @@ public class ElfRelocatableObjectExporter extends Exporter {
 				}
 			}
 
+			if (generateSectionComment) {
+				addSectionComment();
+			}
+
 			if (generateSectionNamesStringTable) {
 				taskMonitor.setMessage("Generating section names string table...");
 				addSectionNameStringTable();
@@ -600,6 +613,11 @@ public class ElfRelocatableObjectExporter extends Exporter {
 		symtab.addFileSymbol(elf.getFileName());
 
 		symbolsByName = new HashMap<>();
+	}
+
+	private void addSectionComment() {
+		String strComment = "ghidra-delinker-extension " + BuildConfig.GIT_VERSION;
+		comment = new ElfRelocatableSectionComment(elf, ".comment", strComment);
 	}
 
 	private void addSectionForMemoryBlock(MemoryBlock memoryBlock,

@@ -31,6 +31,7 @@
 
 plugins {
   id("com.diffplug.spotless") version "6.20.0"
+  id("com.github.gmazzo.buildconfig") version "5.3.5"
 }
 
 //----------------------START "DO NOT MODIFY" SECTION------------------------------
@@ -81,6 +82,7 @@ spotless {
 		eclipse().configFile("developer_scripts/GhidraEclipseFormatter.xml")
 		toggleOffOn()
 		removeUnusedImports()
+		target 'src/*/java/**/*.java'
 	}
 	format("license", {
 		licenseHeader("""/*
@@ -99,6 +101,19 @@ spotless {
 """, "package ")
 		target 'src/*/java/**/*.java'
 	})
+}
+
+def getGitHash = { ->
+    def stdout = new ByteArrayOutputStream()
+    exec {
+        commandLine 'git', 'describe', '--tags', '--dirty'
+        standardOutput = stdout
+    }
+    return stdout.toString().trim()
+}
+
+buildConfig {
+	buildConfigField String, "GIT_VERSION", "${getGitHash()}"
 }
 
 // For Java 9, we must explicitly export references to the internal classes we are using.

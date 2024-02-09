@@ -26,6 +26,8 @@ import java.util.Objects;
 import java.util.TreeMap;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import javax.swing.JComboBox;
 
@@ -398,17 +400,17 @@ public class ElfRelocatableObjectExporter extends Exporter {
 	private class Section {
 		private final MemoryBlock memoryBlock;
 		private final String name;
-		private final AddressSetView addressSet;
+		private final AddressSetView sectionSet;
 
 		private ElfRelocatableSection section;
 		private ElfRelocatableSection relSection;
 		private Predicate<Relocation> predicateRelocation;
 
-		public Section(MemoryBlock memoryBlock, AddressSetView addressSet,
+		public Section(MemoryBlock memoryBlock, AddressSetView sectionSet,
 				Predicate<Relocation> predicateRelocation) {
 			this.memoryBlock = memoryBlock;
 			this.name = memoryBlock.getName();
-			this.addressSet = addressSet;
+			this.sectionSet = sectionSet;
 			this.predicateRelocation = predicateRelocation;
 		}
 
@@ -428,47 +430,96 @@ public class ElfRelocatableObjectExporter extends Exporter {
 
 			if (memoryBlock.isInitialized()) {
 				byte[] bytes =
-					relocationTable.getOriginalBytes(addressSet, elf.getDataConverter(),
+					relocationTable.getOriginalBytes(sectionSet, elf.getDataConverter(),
 						encodeAddend, predicateRelocation);
 				section = new ElfRelocatableSectionProgBits(elf, name, bytes, flags);
 			}
 			else {
-				long length = addressSet.getNumAddresses();
+				long length = sectionSet.getNumAddresses();
 				section = new ElfRelocatableSectionNoBits(elf, name, length, flags);
 			}
 		}
 
-		public void addSymbols() {
+		public void addSymbols(RelocationTable relocationTable,
+				Predicate<Relocation> predicateRelocation) {
 			symtab.addSectionSymbol(section);
 
-			for (Symbol symbol : program.getSymbolTable().getAllSymbols(includeDynamicSymbols)) {
-				if (symbol.isPrimary() && addressSet.contains(symbol.getAddress())) {
-					String symbolName = getSymbolName(symbol.getName(true));
-					byte type = ElfSymbol.STT_NOTYPE;
-					byte visibility =
-						symbol.isGlobal() ? ElfSymbol.STB_GLOBAL : ElfSymbol.STB_LOCAL;
-					long offset =
-						Relocation.getAddressOffsetWithinSet(addressSet, symbol.getAddress());
-					long size = 0;
-
-					Object obj = symbol.getObject();
-					if (obj instanceof CodeUnit) {
-						CodeUnit codeUnit = (CodeUnit) obj;
-
-						type = ElfSymbol.STT_OBJECT;
-						size = codeUnit.getLength();
-					}
-					else if (obj instanceof Function) {
-						Function function = (Function) obj;
-
-						type = ElfSymbol.STT_FUNC;
-						size = (int) function.getBody().getNumAddresses();
-					}
-
-					symbolsByName.put(symbolName, symtab.addDefinedSymbol(section, symbolName,
-						visibility, type, size, offset));
+			for (Symbol symbol : program.getSymbolTable().getAllSymbols(true)) {
+				if (!isSymbolInteresting(symbol, relocationTable, predicateRelocation)) {
+					continue;
 				}
+
+				String symbolName = getSymbolName(symbol.getName(true));
+				byte type = determineSymbolType(symbol);
+				byte visibility = determineSymbolVisibility(symbol);
+				long offset = Relocation.getAddressOffsetWithinSet(sectionSet, symbol.getAddress());
+				long size = determineSymbolSize(symbol);
+
+				symbolsByName.put(symbolName,
+					symtab.addDefinedSymbol(section, symbolName, visibility, type, size, offset));
 			}
+		}
+
+		private boolean isSymbolInteresting(Symbol symbol, RelocationTable relocationTable,
+				Predicate<Relocation> predicateRelocation) {
+			if (!symbol.isPrimary() || !sectionSet.contains(symbol.getAddress())) {
+				return false;
+			}
+
+			if (symbol.isDynamic() && !includeDynamicSymbols) {
+				// Even if we don't want dynamic symbols, we still need them for internal relocations.
+				// FIXME: investigate section-relative relocations for internal relocations with dynamic symbols.
+				Iterable<Relocation> itRelocations =
+					() -> relocationTable.getRelocations(fileSet, predicateRelocation);
+				Stream<Relocation> relocations =
+					StreamSupport.stream(itRelocations.spliterator(), false);
+				String symbolName = getSymbolName(symbol.getName());
+
+				return relocations
+						.anyMatch(r -> getSymbolName(r.getSymbolName()).equals(symbolName));
+			}
+
+			return true;
+		}
+
+		private byte determineSymbolType(Symbol symbol) {
+			Object obj = symbol.getObject();
+
+			if (obj instanceof CodeUnit) {
+				return ElfSymbol.STT_OBJECT;
+			}
+			else if (obj instanceof Function) {
+				return ElfSymbol.STT_FUNC;
+			}
+
+			return ElfSymbol.STT_NOTYPE;
+		}
+
+		private long determineSymbolSize(Symbol symbol) {
+			Object obj = symbol.getObject();
+			if (obj instanceof CodeUnit) {
+				CodeUnit codeUnit = (CodeUnit) obj;
+
+				return codeUnit.getLength();
+			}
+			else if (obj instanceof Function) {
+				Function function = (Function) obj;
+
+				return function.getBody().getNumAddresses();
+			}
+
+			return 0;
+		}
+
+		private byte determineSymbolVisibility(Symbol symbol) {
+			if (includeDynamicSymbols) {
+				return ElfSymbol.STB_GLOBAL;
+			}
+			else if (!symbol.isDynamic()) {
+				return ElfSymbol.STB_GLOBAL;
+			}
+
+			return ElfSymbol.STB_LOCAL;
 		}
 
 		public void createElfRelocationTableSection(RelocationTable relocationTable)
@@ -478,7 +529,7 @@ public class ElfRelocatableObjectExporter extends Exporter {
 			}
 
 			List<Relocation> relocations = new ArrayList<>();
-			relocationTable.getRelocations(addressSet, predicateRelocation)
+			relocationTable.getRelocations(sectionSet, predicateRelocation)
 					.forEachRemaining(relocations::add);
 
 			if (relocations.isEmpty()) {
@@ -498,7 +549,7 @@ public class ElfRelocatableObjectExporter extends Exporter {
 
 				for (Relocation relocation : relocations) {
 					long offset =
-						Relocation.getAddressOffsetWithinSet(addressSet, relocation.getAddress());
+						Relocation.getAddressOffsetWithinSet(sectionSet, relocation.getAddress());
 					long type = relocationTypeMapper.apply(table, relocation, log);
 					long symindex = symtab
 							.indexOf(symbolsByName.get(getSymbolName(relocation.getSymbolName())));
@@ -522,7 +573,7 @@ public class ElfRelocatableObjectExporter extends Exporter {
 
 				for (Relocation relocation : relocations) {
 					long offset =
-						Relocation.getAddressOffsetWithinSet(addressSet, relocation.getAddress());
+						Relocation.getAddressOffsetWithinSet(sectionSet, relocation.getAddress());
 					long type = relocationTypeMapper.apply(table, relocation, log);
 					long symindex = symtab
 							.indexOf(symbolsByName.get(getSymbolName(relocation.getSymbolName())));
@@ -592,7 +643,7 @@ public class ElfRelocatableObjectExporter extends Exporter {
 				taskMonitor.setMessage("Generating symbol table...");
 
 				for (Section section : sections) {
-					section.addSymbols();
+					section.addSymbols(relocationTable, predicateRelocation);
 				}
 
 				computeExternalSymbols(relocationTable, predicateRelocation);

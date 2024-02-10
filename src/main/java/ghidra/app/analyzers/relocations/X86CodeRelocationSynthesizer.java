@@ -19,9 +19,9 @@ import java.util.List;
 
 import org.apache.commons.lang3.ArrayUtils;
 
-import ghidra.app.analyzers.relocations.utils.InstructionAbsoluteRelocationEmitter;
-import ghidra.app.analyzers.relocations.utils.InstructionRelativeRelocationEmitter;
-import ghidra.app.analyzers.relocations.utils.InstructionRelocationEmitter;
+import ghidra.app.analyzers.relocations.emitters.AbsoluteInstructionRelocationEmitter;
+import ghidra.app.analyzers.relocations.emitters.InstructionRelocationEmitter;
+import ghidra.app.analyzers.relocations.emitters.RelativeInstructionRelocationEmitter;
 import ghidra.app.util.importer.MessageLog;
 import ghidra.program.model.address.Address;
 import ghidra.program.model.address.AddressSetView;
@@ -39,15 +39,15 @@ import ghidra.program.model.symbol.ReferenceManager;
 
 public class X86CodeRelocationSynthesizer implements CodeRelocationSynthesizer {
 	private static class X86InstructionAbsoluteRelocationEmitter
-			extends InstructionAbsoluteRelocationEmitter {
+			extends AbsoluteInstructionRelocationEmitter {
 		private static final List<Byte> OPMASK_MOD_RM_EA_4BYTES =
 			Arrays.asList(new Byte[] { 0x07, -1, -1, -1, -1 });
 		private static final List<Byte> OPMASK_SIB_4BYTES =
 			Arrays.asList(new Byte[] { -8, -1, -1, -1, -1 });
 
-		public X86InstructionAbsoluteRelocationEmitter(Program program, AddressSetView set,
-				RelocationTable relocationTable) {
-			super(program, set, relocationTable);
+		public X86InstructionAbsoluteRelocationEmitter(Program program,
+				RelocationTable relocationTable, Function function) {
+			super(program, relocationTable, function);
 		}
 
 		@Override
@@ -58,6 +58,8 @@ public class X86CodeRelocationSynthesizer implements CodeRelocationSynthesizer {
 				return opValue;
 			}
 
+			// x86 has a bunch of operand masks that Ghidra doesn't represent as simple byte masks.
+			// Go through the exotic operand masks to see if one matches.
 			int opType = instruction.getOperandType(opIdx);
 			InstructionPrototype prototype = instruction.getPrototype();
 			Mask valueMask = prototype.getOperandValueMask(opIdx);
@@ -83,19 +85,19 @@ public class X86CodeRelocationSynthesizer implements CodeRelocationSynthesizer {
 	}
 
 	private static class X86InstructionRelativeRelocationEmitter
-			extends InstructionRelativeRelocationEmitter {
-		public X86InstructionRelativeRelocationEmitter(Program program, AddressSetView set,
-				RelocationTable relocationTable) {
-			super(program, set, relocationTable);
+			extends RelativeInstructionRelocationEmitter {
+		public X86InstructionRelativeRelocationEmitter(Program program,
+				RelocationTable relocationTable, Function function) {
+			super(program, relocationTable, function);
 		}
 
 		@Override
-		public long getReferenceOffset(Instruction instruction) throws MemoryAccessException {
+		public long getReferenceAddend(Instruction instruction) throws MemoryAccessException {
 			return instruction.getBytes().length;
 		}
 
 		@Override
-		public long getAddendOffset(Instruction instruction) throws MemoryAccessException {
+		public long getInstructionAddend(Instruction instruction) throws MemoryAccessException {
 			return instruction.getBytes().length - 1;
 		}
 	}
@@ -106,9 +108,9 @@ public class X86CodeRelocationSynthesizer implements CodeRelocationSynthesizer {
 		ReferenceManager referenceManager = program.getReferenceManager();
 
 		InstructionRelocationEmitter absolute =
-			new X86InstructionAbsoluteRelocationEmitter(program, set, relocationTable);
+			new X86InstructionAbsoluteRelocationEmitter(program, relocationTable, function);
 		InstructionRelocationEmitter relative =
-			new X86InstructionRelativeRelocationEmitter(program, set, relocationTable);
+			new X86InstructionRelativeRelocationEmitter(program, relocationTable, function);
 
 		for (Instruction instruction : program.getListing()
 				.getInstructions(function.getBody(), true)) {
@@ -119,8 +121,8 @@ public class X86CodeRelocationSynthesizer implements CodeRelocationSynthesizer {
 						.anyMatch(r -> absolute.isReferenceInteresting(r) |
 							relative.isReferenceInteresting(r));
 
-			foundRelocation |= absolute.processInstruction(function, instruction);
-			foundRelocation |= relative.processInstruction(function, instruction);
+			foundRelocation |= absolute.process(instruction);
+			foundRelocation |= relative.process(instruction);
 
 			if (isReferenceInteresting && !foundRelocation) {
 				log.appendMsg(fromAddress.toString(),

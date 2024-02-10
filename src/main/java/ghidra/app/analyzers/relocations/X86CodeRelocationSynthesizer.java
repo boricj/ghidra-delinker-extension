@@ -20,11 +20,10 @@ import java.util.List;
 import org.apache.commons.lang3.ArrayUtils;
 
 import ghidra.app.analyzers.relocations.emitters.AbsoluteInstructionRelocationEmitter;
+import ghidra.app.analyzers.relocations.emitters.FunctionInstructionSink;
+import ghidra.app.analyzers.relocations.emitters.FunctionInstructionSinkCodeRelocationSynthesizer;
 import ghidra.app.analyzers.relocations.emitters.InstructionRelocationEmitter;
 import ghidra.app.analyzers.relocations.emitters.RelativeInstructionRelocationEmitter;
-import ghidra.app.util.importer.MessageLog;
-import ghidra.program.model.address.Address;
-import ghidra.program.model.address.AddressSetView;
 import ghidra.program.model.lang.InstructionPrototype;
 import ghidra.program.model.lang.Mask;
 import ghidra.program.model.lang.OperandType;
@@ -33,11 +32,9 @@ import ghidra.program.model.listing.Function;
 import ghidra.program.model.listing.Instruction;
 import ghidra.program.model.listing.Program;
 import ghidra.program.model.mem.MemoryAccessException;
-import ghidra.program.model.relocobj.CodeRelocationSynthesizer;
 import ghidra.program.model.relocobj.RelocationTable;
-import ghidra.program.model.symbol.ReferenceManager;
 
-public class X86CodeRelocationSynthesizer implements CodeRelocationSynthesizer {
+public class X86CodeRelocationSynthesizer extends FunctionInstructionSinkCodeRelocationSynthesizer {
 	private static class X86InstructionAbsoluteRelocationEmitter
 			extends AbsoluteInstructionRelocationEmitter {
 		private static final List<Byte> OPMASK_MOD_RM_EA_4BYTES =
@@ -103,32 +100,14 @@ public class X86CodeRelocationSynthesizer implements CodeRelocationSynthesizer {
 	}
 
 	@Override
-	public void processFunction(Program program, AddressSetView set, Function function,
-			RelocationTable relocationTable, MessageLog log) throws MemoryAccessException {
-		ReferenceManager referenceManager = program.getReferenceManager();
-
+	public List<FunctionInstructionSink> getFunctionInstructionSinks(Program program,
+			RelocationTable relocationTable, Function function) {
 		InstructionRelocationEmitter absolute =
 			new X86InstructionAbsoluteRelocationEmitter(program, relocationTable, function);
 		InstructionRelocationEmitter relative =
 			new X86InstructionRelativeRelocationEmitter(program, relocationTable, function);
 
-		for (Instruction instruction : program.getListing()
-				.getInstructions(function.getBody(), true)) {
-			Address fromAddress = instruction.getAddress();
-			boolean foundRelocation = false;
-			boolean isReferenceInteresting =
-				Arrays.stream(referenceManager.getReferencesFrom(fromAddress))
-						.anyMatch(r -> absolute.isReferenceInteresting(r) |
-							relative.isReferenceInteresting(r));
-
-			foundRelocation |= absolute.process(instruction);
-			foundRelocation |= relative.process(instruction);
-
-			if (isReferenceInteresting && !foundRelocation) {
-				log.appendMsg(fromAddress.toString(),
-					"No relocation emitted for instruction with interesting primary reference.");
-			}
-		}
+		return List.of(absolute, relative);
 	}
 
 	@Override

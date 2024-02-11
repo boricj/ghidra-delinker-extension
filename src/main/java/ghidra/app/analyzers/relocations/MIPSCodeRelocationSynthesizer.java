@@ -14,258 +14,229 @@
 package ghidra.app.analyzers.relocations;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 
-import ghidra.app.analyzers.relocations.utils.ExecutionContext;
-import ghidra.app.analyzers.relocations.utils.ExecutionContext.ExecutionInterpreter;
+import ghidra.app.analyzers.relocations.emitters.BundleRelocationEmitter;
+import ghidra.app.analyzers.relocations.emitters.FunctionInstructionSink;
+import ghidra.app.analyzers.relocations.emitters.FunctionInstructionSinkCodeRelocationSynthesizer;
+import ghidra.app.analyzers.relocations.emitters.InstructionRelocationEmitter;
+import ghidra.app.analyzers.relocations.emitters.SymbolRelativeInstructionRelocationEmitter;
 import ghidra.app.analyzers.relocations.utils.SymbolWithOffset;
-import ghidra.app.util.importer.MessageLog;
-import ghidra.program.model.address.AddressSetView;
+import ghidra.program.model.lang.InstructionPrototype;
+import ghidra.program.model.lang.Mask;
 import ghidra.program.model.lang.OperandType;
 import ghidra.program.model.lang.Processor;
-import ghidra.program.model.lang.Register;
 import ghidra.program.model.listing.Function;
 import ghidra.program.model.listing.Instruction;
 import ghidra.program.model.listing.Program;
 import ghidra.program.model.mem.MemoryAccessException;
-import ghidra.program.model.relocobj.CodeRelocationSynthesizer;
 import ghidra.program.model.relocobj.RelocationHighPair;
 import ghidra.program.model.relocobj.RelocationTable;
 import ghidra.program.model.symbol.Reference;
 import ghidra.program.model.symbol.Symbol;
 import ghidra.program.model.symbol.SymbolIterator;
+import ghidra.program.model.symbol.SymbolTable;
 import ghidra.util.DataConverter;
 
-public class MIPSCodeRelocationSynthesizer implements CodeRelocationSynthesizer {
-	public static class MIPSExecutionInterpreter implements ExecutionInterpreter {
-		private final List<Register> registersToRemove = new ArrayList<>();
+public class MIPSCodeRelocationSynthesizer
+		extends FunctionInstructionSinkCodeRelocationSynthesizer {
+	private static class MIPS_26_InstructionRelocationEmitter extends InstructionRelocationEmitter {
+		private static final byte[] OPMASK_JTYPE = new byte[] { -1, -1, -1, 3 };
 
-		private final Program program;
+		public MIPS_26_InstructionRelocationEmitter(Program program,
+				RelocationTable relocationTable, Function function) {
+			super(program, relocationTable, function);
+		}
+
+		@Override
+		public OperandValueRaw getOperandValueRaw(Instruction instruction, int opIdx)
+				throws MemoryAccessException {
+			int opType = instruction.getOperandType(opIdx);
+			InstructionPrototype prototype = instruction.getPrototype();
+			Mask valueMask = prototype.getOperandValueMask(opIdx);
+			byte[] maskBytes = valueMask.getBytes();
+
+			if (OperandType.isAddress(opType)) {
+				if (Arrays.equals(maskBytes, OPMASK_JTYPE)) {
+					return new OperandValueRaw(instruction, 0, 4);
+				}
+			}
+
+			return null;
+		}
+
+		@Override
+		public long computeTargetAddress(Instruction instruction, Reference reference,
+				OperandValueRaw opValue) throws MemoryAccessException {
+			long target = instruction.getAddress().getOffset() & 0xf0000000;
+			return target | (opValue.unsignedValue & 0x3ffffff) << 2;
+		}
+
+		@Override
+		public boolean emitRelocation(Instruction instruction, Reference reference,
+				OperandValueRaw opValue, SymbolWithOffset symbol) throws MemoryAccessException {
+			if (symbol.offset % 4 != 0) {
+				return false;
+			}
+
+			relocationTable.addMIPS26(instruction.getAddress(), symbol.name, symbol.offset >> 2);
+			return true;
+		}
+	}
+
+	private static class MIPS_HI16LO16_BundleRelocationEmitter extends BundleRelocationEmitter {
 		private final DataConverter dc;
-		private final MessageLog log;
-		private final RelocationTable relocationTable;
-		private final Symbol gp;
 
-		public MIPSExecutionInterpreter(Program program, MessageLog log) {
-			this.program = program;
+		public MIPS_HI16LO16_BundleRelocationEmitter(Program program,
+				RelocationTable relocationTable, Function function) {
+			super(program, relocationTable, function);
+
 			this.dc = DataConverter.getInstance(program.getLanguage().isBigEndian());
-			this.log = log;
-			this.relocationTable = RelocationTable.get(program);
-
-			SymbolIterator it = program.getSymbolTable().getSymbols("_gp");
-			this.gp = it.hasNext() ? it.next() : null;
 		}
 
 		@Override
-		public void step(Instruction instruction, ExecutionContext context)
+		public boolean evaluateRoot(Reference reference, SymbolWithOffset symbol, Node node)
 				throws MemoryAccessException {
-			for (Register register : registersToRemove) {
-				context.remove(register);
-			}
-			registersToRemove.clear();
+			boolean foundRelocation = false;
 
-			switch (instruction.getMnemonicString()) {
-				case "lui":
-					execute_lui(instruction, context);
-					break;
-				case "_addiu":
-				case "addiu":
-					execute_addiu(instruction, context);
-					break;
-				case "lb":
-				case "lbu":
-				case "lh":
-				case "lhu":
-				case "lw":
-					execute_load(instruction, context);
-					break;
-				case "sb":
-				case "sh":
-				case "sw":
-					break;
-				case "addu":
-				case "or":
-					execute_rformat(instruction, context);
-					break;
-				default:
-					execute_other(instruction, context);
-					break;
-			}
-		}
-
-		private void execute_lui(Instruction instruction, ExecutionContext context) {
-			Register output = (Register) instruction.getOpObjects(0)[0];
-			context.put(instruction, output, Collections.emptyList());
-		}
-
-		private void execute_addiu(Instruction instruction, ExecutionContext context)
-				throws MemoryAccessException {
-			Register output = (Register) instruction.getOpObjects(0)[0];
-			Register input = (Register) instruction.getOpObjects(1)[0];
-
-			context.put(instruction, output, List.of(input));
-
-			// If gp is initialized, remove from context on next step.
-			if (output.getName().equals("gp")) {
-				registersToRemove.add(output);
-			}
-		}
-
-		private void execute_load(Instruction instruction, ExecutionContext context)
-				throws MemoryAccessException {
-			Register output = (Register) instruction.getOpObjects(0)[0];
-			Register input = (Register) instruction.getOpObjects(1)[1];
-
-			context.put(instruction, output, List.of(input));
-			context.remove(output);
-		}
-
-		private void execute_rformat(Instruction instruction, ExecutionContext context)
-				throws MemoryAccessException {
-			Register output = (Register) instruction.getOpObjects(0)[0];
-			Register input1 = (Register) instruction.getOpObjects(1)[0];
-			Register input2 = (Register) instruction.getOpObjects(2)[0];
-
-			context.put(instruction, output, List.of(input1, input2));
-		}
-
-		private void execute_other(Instruction instruction, ExecutionContext context)
-				throws MemoryAccessException {
-			if (instruction.getNumOperands() == 3) {
-				int op0 = instruction.getOperandType(0);
-				int op1 = instruction.getOperandType(1);
-				int op2 = instruction.getOperandType(2);
-
-				if ((op0 & OperandType.REGISTER) != 0 && (op1 & OperandType.REGISTER) != 0 &&
-					(op2 & (OperandType.REGISTER | OperandType.SCALAR)) != 0) {
-					Register output = (Register) instruction.getOpObjects(0)[0];
-					context.remove(output);
-				}
-			}
-		}
-
-		private Long buildAddress(SymbolWithOffset symbol, Reference reference,
-				Instruction mipsHi16, Instruction mipsLo16, Instruction mips26)
-				throws MemoryAccessException {
-			String originator = reference.getFromAddress().toString();
-			String msg = null;
-
-			Long address = null;
-
-			if (mipsHi16 != null && mipsLo16 != null) {
-				address = (dc.getInt(mipsHi16.getBytes()) << 16) & 0xffffffffL;
-				address += (short) dc.getInt(mipsLo16.getBytes());
-			}
-			else if (mipsHi16 == null && mipsLo16 != null && gp != null) {
-				address = gp.getAddress().getOffset();
-				address += (short) dc.getInt(mipsLo16.getBytes());
-			}
-			else if (mips26 != null) {
-				address = (reference.getFromAddress().getOffset() + 4) & 0xf0000000L;
-				address |= (dc.getInt(mips26.getBytes()) & 0x3ffffff) << 2;
-			}
-
-			if (address == null) {
-				return null;
-			}
-			else if (address != (symbol.address + symbol.offset)) {
-				//				msg = String.format(
-				//					"Address 0x%x recovered from instructions doesn't match address 0x%x+%d recovered from reference %s",
-				//					address, symbol.address, symbol.offset, reference);
-				//				log.appendMsg(originator, msg);
-				return null;
-			}
-			else if (mipsLo16 != null && (symbol.offset > 0x7fff)) {
-				msg = String.format(
-					"Addend in address 0x%x+%d exceeds 32767 for reference %s (not yet implemented)",
-					symbol.address, symbol.offset, reference);
-				log.appendMsg(originator, msg);
-				return null;
+			Instruction instruction = node.getInstruction();
+			if (isLo16Candidate(instruction)) {
+				foundRelocation |= evaluateLo16(reference, symbol, node, node);
 			}
 			else {
-				return address;
+				for (Node child : node.getChildren()) {
+					foundRelocation |= evaluateRoot(reference, symbol, child);
+				}
 			}
+
+			return foundRelocation;
+		}
+
+		public boolean evaluateLo16(Reference reference, SymbolWithOffset symbol, Node node,
+				Node nodeLo16) throws MemoryAccessException {
+			boolean foundRelocation = false;
+
+			for (Node child : node.getChildren()) {
+				Instruction instruction = child.getInstruction();
+
+				if (isHi16Candidate(instruction)) {
+					foundRelocation |= evaluateHi16(reference, symbol, child, nodeLo16);
+				}
+				else if (isLo16Candidate(instruction)) {
+					foundRelocation |= evaluateLo16(reference, symbol, child, child);
+					foundRelocation |= evaluateLo16(reference, symbol, child, nodeLo16);
+				}
+				else {
+					foundRelocation |= evaluateLo16(reference, symbol, child, nodeLo16);
+				}
+			}
+
+			return foundRelocation;
+		}
+
+		public boolean evaluateHi16(Reference reference, SymbolWithOffset symbol, Node node,
+				Node nodeLo16) throws MemoryAccessException {
+			Instruction hi16 = node.getInstruction();
+			Instruction lo16 = nodeLo16.getInstruction();
+
+			long toAddress = reference.getToAddress().getOffset();
+			long targetAddress = computeTargetAddress(hi16, lo16);
+			if (toAddress == targetAddress) {
+				return emitRelocation(hi16, lo16, symbol);
+			}
+
+			return false;
+		}
+
+		private long computeTargetAddress(Instruction hi16, Instruction lo16)
+				throws MemoryAccessException {
+			long target = (dc.getInt(hi16.getBytes()) << 16) & 0xffffffffL;
+			return target + (short) dc.getInt(lo16.getBytes());
+		}
+
+		private boolean emitRelocation(Instruction hi16, Instruction lo16, SymbolWithOffset symbol)
+				throws MemoryAccessException {
+			// FIXME: handle HI16/LO16 addends greater than 15 bits.
+			if (symbol.offset > 0x7fff) {
+				return false;
+			}
+
+			RelocationHighPair hiRel =
+				relocationTable.addHighPair(hi16.getAddress(), 4, 0xFFFF, symbol.name);
+			relocationTable.addLowPair(lo16.getAddress(), 4, 0xFFFF, hiRel, symbol.offset);
+			return true;
+		}
+
+		private boolean isHi16Candidate(Instruction instruction) {
+			List<String> mnemonics = List.of("lui");
+			String mnemonic = instruction.getMnemonicString();
+			if (mnemonic.startsWith("_")) {
+				mnemonic = mnemonic.substring(1);
+			}
+
+			return mnemonics.contains(mnemonic);
+		}
+
+		private boolean isLo16Candidate(Instruction instruction) {
+			List<String> mnemonics =
+				List.of("addiu", "lb", "lbu", "lh", "lhu", "lw", "sb", "sh", "sw");
+			String mnemonic = instruction.getMnemonicString();
+			if (mnemonic.startsWith("_")) {
+				mnemonic = mnemonic.substring(1);
+			}
+
+			return mnemonics.contains(mnemonic);
+		}
+	}
+
+	private static class MIPS_GPREL16_InstructionRelocationEmitter
+			extends SymbolRelativeInstructionRelocationEmitter {
+		private static final byte[] OPMASK_LOAD_STORE = new byte[] { -1, -1, -32, 3 };
+
+		public MIPS_GPREL16_InstructionRelocationEmitter(Program program,
+				RelocationTable relocationTable, Function function, Symbol fromSymbol) {
+			super(program, relocationTable, function, fromSymbol);
 		}
 
 		@Override
-		public void evaluateTrace(Reference reference, List<Instruction> trace,
-				ExecutionContext context) throws MemoryAccessException {
-			String originator = reference.getFromAddress().toString();
-			String msg = null;
-
-			SymbolWithOffset symbol = SymbolWithOffset.get(program, reference);
-			if (symbol == null) {
-				msg = String.format("Couldn't find symbol for reference %s", reference);
-				log.appendMsg(originator, msg);
-				return;
+		public OperandValueRaw getOperandValueRaw(Instruction instruction, int opIdx)
+				throws MemoryAccessException {
+			OperandValueRaw opValue = super.getOperandValueRaw(instruction, opIdx);
+			if (opValue != null) {
+				return opValue;
 			}
 
-			Instruction mipsHi16 = null;
-			Instruction mipsLo16 = null;
-			Instruction mips26 = null;
+			int opType = instruction.getOperandType(opIdx);
+			InstructionPrototype prototype = instruction.getPrototype();
+			Mask valueMask = prototype.getOperandValueMask(opIdx);
+			byte[] maskBytes = valueMask.getBytes();
 
-			for (Instruction instruction : trace) {
-				switch (instruction.getMnemonicString()) {
-					case "lui":
-						mipsHi16 = instruction;
-						break;
-					case "_addiu":
-					case "addiu":
-					case "lb":
-					case "lbu":
-					case "lh":
-					case "lhu":
-					case "lw":
-					case "sb":
-					case "sh":
-					case "sw":
-						if (mipsLo16 == null) {
-							mipsLo16 = instruction;
-						}
-						break;
-					case "j":
-					case "jal":
-						mips26 = instruction;
-						break;
-					default:
-						break;
+			if (OperandType.isAddress(opType)) {
+				if (Arrays.equals(maskBytes, OPMASK_LOAD_STORE)) {
+					return new OperandValueRaw(instruction, 0, 2);
 				}
 			}
 
-			Long builtAddress = buildAddress(symbol, reference, mipsHi16, mipsLo16, mips26);
-			if (builtAddress == null) {
-				return;
-			}
-
-			if (mipsHi16 != null && mipsLo16 != null) {
-				RelocationHighPair hiRel =
-					relocationTable.addHighPair(mipsHi16.getAddress(), 4, 0xFFFF, symbol.name);
-				relocationTable.addLowPair(mipsLo16.getAddress(), 4, 0xFFFF, hiRel, symbol.offset);
-			}
-			else if (mipsHi16 == null && mipsLo16 != null) {
-				relocationTable.addRelativeSymbol(mipsLo16.getAddress(), 4, 0xFFFF, 0, symbol.name,
-					symbol.offset, "_gp");
-			}
-			else if (mips26 != null) {
-				relocationTable.addMIPS26(mips26.getAddress(), symbol.name, symbol.offset);
-			}
-			else {
-				throw new RuntimeException(
-					"Address synthesized from instructions but instruction pattern not recognized!");
-			}
+			return opValue;
 		}
 	}
 
 	@Override
-	public void processFunction(Program program, AddressSetView set, Function function,
-			RelocationTable relocationTable, MessageLog log) throws MemoryAccessException {
-		ExecutionContext context = new ExecutionContext(function.getProgram(), log);
-		MIPSExecutionInterpreter interpreter =
-			new MIPSExecutionInterpreter(function.getProgram(), log);
+	public List<FunctionInstructionSink> getFunctionInstructionSinks(Program program,
+			RelocationTable relocationTable, Function function) {
+		List<FunctionInstructionSink> sinks = new ArrayList<>();
+		sinks.add(new MIPS_26_InstructionRelocationEmitter(program, relocationTable, function));
+		sinks.add(new MIPS_HI16LO16_BundleRelocationEmitter(program, relocationTable, function));
 
-		context.run(function.getProgram().getListing().getInstructions(function.getBody(), true),
-			interpreter);
+		SymbolTable symbolTable = program.getSymbolTable();
+		SymbolIterator _gp = symbolTable.getSymbols("_gp");
+		if (_gp.hasNext()) {
+			sinks.add(new MIPS_GPREL16_InstructionRelocationEmitter(program, relocationTable,
+				function, _gp.next()));
+		}
+
+		return sinks;
 	}
 
 	@Override

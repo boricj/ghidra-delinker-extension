@@ -139,30 +139,11 @@ public class RelocationAbsoluteTest {
 		new RelocationAbsolute(null, ram.getAddress(4), 2, null, -0xffff);
 	}
 
-	@Test(expected = IllegalArgumentException.class)
-	public void test_ShiftedAddendTooBig() {
-		new RelocationAbsolute(null, ram.getAddress(4), 2, 0xffff, 4, null, 0x100000);
-	}
-
-	@Test(expected = IllegalArgumentException.class)
-	public void test_ShiftedAddendTooSmall() {
-		new RelocationAbsolute(null, ram.getAddress(4), 2, 0xffff, 4, null, -0xfffff);
-	}
-
 	public void test_AddendNotTooBig() {
 		new RelocationAbsolute(null, ram.getAddress(4), 2, null, 0xffff);
 	}
 
 	public void test_AddendNotTooSmall() {
 		new RelocationAbsolute(null, ram.getAddress(4), 2, null, -0xfffe);
-	}
-
-	public void test_ShiftedAddendNotTooBig() {
-		new RelocationAbsolute(null, ram.getAddress(4), 2, 0xffff, 4, null, 0xfffff);
-	}
-
-	@Test(expected = IllegalArgumentException.class)
-	public void test_ShiftedAddendNotTooSmall() {
-		new RelocationAbsolute(null, ram.getAddress(4), 2, 0xffff, 4, null, -0xffffe);
 	}
 }

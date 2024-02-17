@@ -28,7 +28,7 @@ public class RelocationLowPair implements Relocation {
 	protected RelocationLowPair(RelocationTable relocationTable, Address address, int width,
 			long bitmask, RelocationHighPair relocationHi, long addend) {
 		// FIXME: Support large addends with carry and stuff.
-		Relocation.checkBitmask(width, bitmask, 0, addend);
+		Relocation.checkBitmask(width, bitmask, addend);
 
 		this.relocationTable = relocationTable;
 		this.address = address;

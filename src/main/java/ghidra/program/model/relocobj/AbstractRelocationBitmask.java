@@ -17,29 +17,27 @@ import ghidra.program.model.address.Address;
 import ghidra.program.model.address.AddressSetView;
 import ghidra.util.DataConverter;
 
-public abstract class AbstractRelocationBitmaskShifted implements Relocation {
+public abstract class AbstractRelocationBitmask implements Relocation {
 	private final RelocationTable relocationTable;
 	private final Address address;
 	private final int width;
 	private final long bitmask;
-	private final int shift;
 	private final String symbolName;
 	private final long addend;
 
-	protected AbstractRelocationBitmaskShifted(RelocationTable relocationTable, Address address,
+	protected AbstractRelocationBitmask(RelocationTable relocationTable, Address address,
 			int width, String symbolName, long addend) {
-		this(relocationTable, address, width, Relocation.getBitmask(width), 0, symbolName, addend);
+		this(relocationTable, address, width, Relocation.getBitmask(width), symbolName, addend);
 	}
 
-	protected AbstractRelocationBitmaskShifted(RelocationTable relocationTable, Address address,
-			int width, long bitmask, int shift, String symbolName, long addend) {
-		Relocation.checkBitmask(width, bitmask, shift, addend);
+	protected AbstractRelocationBitmask(RelocationTable relocationTable, Address address,
+			int width, long bitmask, String symbolName, long addend) {
+		Relocation.checkBitmask(width, bitmask, addend);
 
 		this.relocationTable = relocationTable;
 		this.address = address;
 		this.width = width;
 		this.bitmask = bitmask;
-		this.shift = shift;
 		this.symbolName = symbolName;
 		this.addend = addend;
 	}
@@ -60,10 +58,6 @@ public abstract class AbstractRelocationBitmaskShifted implements Relocation {
 
 	public long getBitmask() {
 		return bitmask;
-	}
-
-	public int getShift() {
-		return shift;
 	}
 
 	@Override
@@ -90,22 +84,20 @@ public abstract class AbstractRelocationBitmaskShifted implements Relocation {
 
 		int offset = (int) Relocation.getAddressOffsetWithinSet(addressSet, address);
 		long value = dc.getValue(buffer, offset, width) & ~bitmask;
-		int bitmaskShift = Long.numberOfTrailingZeros(Long.lowestOneBit(bitmask));
 		if (encodeAddend) {
-			value = value | ((addend >> shift) << bitmaskShift);
+			value = value | addend;
 		}
 		dc.putValue(value, width, buffer, offset);
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		if (!(obj instanceof AbstractRelocationBitmaskShifted)) {
+		if (!(obj instanceof AbstractRelocationBitmask)) {
 			return false;
 		}
 
-		AbstractRelocationBitmaskShifted rel = (AbstractRelocationBitmaskShifted) obj;
+		AbstractRelocationBitmask rel = (AbstractRelocationBitmask) obj;
 		return address.equals(rel.getAddress()) && width == rel.getWidth() &&
-			bitmask == rel.getBitmask() && shift == rel.getShift() &&
-			symbolName.equals(rel.getSymbolName()) && addend == rel.getAddend();
+			bitmask == rel.getBitmask() && symbolName.equals(rel.getSymbolName()) && addend == rel.getAddend();
 	}
 }

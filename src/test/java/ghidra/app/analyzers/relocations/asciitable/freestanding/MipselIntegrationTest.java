@@ -128,7 +128,7 @@ public class MipselIntegrationTest extends DelinkerIntegrationTest {
 		// 00400554  00000306 R_MIPS_LO16            00000000   .text
 		new ExpectRelocationLowPair(0x00400554, 4, 0xffff, "putchar", 0),
 		// 00400570  00003c07 R_MIPS_GPREL16         00000000   COLUMNS
-		new ExpectRelocationRelativeSymbol(0x00400570, 2, 0xffff, 0, "COLUMNS", 0, "_gp"),
+		new ExpectRelocationRelativeSymbol(0x00400570, 2, 0xffff, "COLUMNS", 0, "_gp"),
 		// 00400598  00002405 R_MIPS_HI16            00000000   s_ascii_properties
 		new ExpectRelocationHighPair(0x00400598, 4, 0xffff, "s_ascii_properties"),
 		// 0040059c  00002406 R_MIPS_LO16            00000000   s_ascii_properties
@@ -138,7 +138,7 @@ public class MipselIntegrationTest extends DelinkerIntegrationTest {
 		// 004005ac  00003b06 R_MIPS_LO16            000002a8   print_ascii_entry
 		new ExpectRelocationLowPair(0x004005ac, 4, 0xffff, "print_ascii_entry", 0),
 		// 004005b8  00003c07 R_MIPS_GPREL16         00000000   COLUMNS
-		new ExpectRelocationRelativeSymbol(0x004005b8, 2, 0xffff, 0, "COLUMNS", 0, "_gp"),
+		new ExpectRelocationRelativeSymbol(0x004005b8, 2, 0xffff, "COLUMNS", 0, "_gp"),
 		// 00400610  00003f05 R_MIPS_HI16            00000050   _ctype_
 		new ExpectRelocationHighPair(0x00400610, 4, 0xffff, "_ctype_"),
 		// 00400614  00003f06 R_MIPS_LO16            00000050   _ctype_

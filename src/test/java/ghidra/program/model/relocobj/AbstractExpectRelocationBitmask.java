@@ -13,25 +13,22 @@
  */
 package ghidra.program.model.relocobj;
 
-public abstract class AbstractExpectRelocationBitmaskShifted extends AbstractExpectRelocation {
+public abstract class AbstractExpectRelocationBitmask extends AbstractExpectRelocation {
 	private final long address;
 	private final int width;
 	private final long bitmask;
-	private final int shift;
 	private final String symbolName;
 	private final long addend;
 
-	public AbstractExpectRelocationBitmaskShifted(long address, int width, String symbolName,
+	public AbstractExpectRelocationBitmask(long address, int width, String symbolName,
 			long addend) {
-		this(address, width, Relocation.getBitmask(width), 0, symbolName, addend);
+		this(address, width, Relocation.getBitmask(width), symbolName, addend);
 	}
 
-	public AbstractExpectRelocationBitmaskShifted(long address, int width, long bitmask, int shift,
-			String symbolName, long addend) {
+	public AbstractExpectRelocationBitmask(long address, int width, long bitmask, String symbolName, long addend) {
 		this.address = address;
 		this.width = width;
 		this.bitmask = bitmask;
-		this.shift = shift;
 		this.symbolName = symbolName;
 		this.addend = addend;
 	}
@@ -39,13 +36,12 @@ public abstract class AbstractExpectRelocationBitmaskShifted extends AbstractExp
 	// This equals() method is intentionally not implementing an equivalence relation.
 	@Override
 	public boolean equals(Object obj) {
-		if (!(obj instanceof AbstractRelocationBitmaskShifted)) {
+		if (!(obj instanceof AbstractRelocationBitmask)) {
 			return false;
 		}
 
-		AbstractRelocationBitmaskShifted relocation = (AbstractRelocationBitmaskShifted) obj;
+		AbstractRelocationBitmask relocation = (AbstractRelocationBitmask) obj;
 		return address == relocation.getAddress().getOffset() && width == relocation.getWidth() &&
-			bitmask == relocation.getBitmask() && shift == relocation.getShift() &&
-			symbolName.equals(relocation.getSymbolName()) && addend == relocation.getAddend();
+			bitmask == relocation.getBitmask() && symbolName.equals(relocation.getSymbolName()) && addend == relocation.getAddend();
 	}
 }

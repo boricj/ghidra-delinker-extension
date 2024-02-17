@@ -15,14 +15,14 @@ package ghidra.program.model.relocobj;
 
 import ghidra.program.model.address.Address;
 
-public class RelocationRelativePC extends AbstractRelocationBitmaskShifted {
+public class RelocationRelativePC extends AbstractRelocationBitmask {
 	protected RelocationRelativePC(RelocationTable relocationTable, Address address, int width,
 			String symbolName, long addend) {
 		super(relocationTable, address, width, symbolName, addend);
 	}
 
 	protected RelocationRelativePC(RelocationTable relocationTable, Address address, int width,
-			long bitmask, int shift, String symbolName, long addend) {
-		super(relocationTable, address, width, bitmask, shift, symbolName, addend);
+			long bitmask, String symbolName, long addend) {
+		super(relocationTable, address, width, bitmask, symbolName, addend);
 	}
 }

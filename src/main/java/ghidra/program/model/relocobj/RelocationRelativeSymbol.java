@@ -15,7 +15,7 @@ package ghidra.program.model.relocobj;
 
 import ghidra.program.model.address.Address;
 
-public class RelocationRelativeSymbol extends AbstractRelocationBitmaskShifted {
+public class RelocationRelativeSymbol extends AbstractRelocationBitmask {
 	private final String relativeSymbolName;
 
 	protected RelocationRelativeSymbol(RelocationTable relocationTable, Address address, int width,
@@ -26,8 +26,8 @@ public class RelocationRelativeSymbol extends AbstractRelocationBitmaskShifted {
 	}
 
 	protected RelocationRelativeSymbol(RelocationTable relocationTable, Address address, int width,
-			long bitmask, int shift, String symbolName, long addend, String relativeSymbolName) {
-		super(relocationTable, address, width, bitmask, shift, symbolName, addend);
+			long bitmask, String symbolName, long addend, String relativeSymbolName) {
+		super(relocationTable, address, width, bitmask, symbolName, addend);
 
 		this.relativeSymbolName = relativeSymbolName;
 	}

@@ -207,10 +207,9 @@ public class RelocationTable {
 		return (RelocationAbsolute) add(rel);
 	}
 
-	public RelocationAbsolute addAbsolute(Address address, int width, long bitmask, int shift,
-			String symbolName, long addend) {
+	public RelocationAbsolute addAbsolute(Address address, int width, long bitmask, String symbolName, long addend) {
 		RelocationAbsolute rel =
-			new RelocationAbsolute(this, address, width, bitmask, shift, symbolName, addend);
+			new RelocationAbsolute(this, address, width, bitmask, symbolName, addend);
 		return (RelocationAbsolute) add(rel);
 	}
 
@@ -242,10 +241,9 @@ public class RelocationTable {
 		return (RelocationRelativePC) add(rel);
 	}
 
-	public RelocationRelativePC addRelativePC(Address address, int width, long bitmask, int shift,
-			String symbolName, long addend) {
+	public RelocationRelativePC addRelativePC(Address address, int width, long bitmask, String symbolName, long addend) {
 		RelocationRelativePC rel =
-			new RelocationRelativePC(this, address, width, bitmask, shift, symbolName, addend);
+			new RelocationRelativePC(this, address, width, bitmask, symbolName, addend);
 		return (RelocationRelativePC) add(rel);
 	}
 
@@ -256,10 +254,8 @@ public class RelocationTable {
 		return (RelocationRelativeSymbol) add(rel);
 	}
 
-	public RelocationRelativeSymbol addRelativeSymbol(Address address, int width, long bitmask,
-			int shift, String symbolName, long addend, String relativeSymbolName) {
-		RelocationRelativeSymbol rel = new RelocationRelativeSymbol(this, address, width, bitmask,
-			shift, symbolName, addend, relativeSymbolName);
+	public RelocationRelativeSymbol addRelativeSymbol(Address address, int width, long bitmask, String symbolName, long addend, String relativeSymbolName) {
+		RelocationRelativeSymbol rel = new RelocationRelativeSymbol(this, address, width, bitmask, symbolName, addend, relativeSymbolName);
 		return (RelocationRelativeSymbol) add(rel);
 	}
 

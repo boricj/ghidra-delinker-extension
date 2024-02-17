@@ -31,7 +31,7 @@ public class RelocationHighPair implements Relocation {
 
 	protected RelocationHighPair(RelocationTable relocationTable, Address address, int width,
 			long bitmask, String symbolName) {
-		Relocation.checkBitmask(width, bitmask, 0, null);
+		Relocation.checkBitmask(width, bitmask, null);
 
 		this.relocationTable = relocationTable;
 		this.address = address;

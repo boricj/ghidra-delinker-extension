@@ -37,7 +37,7 @@ public interface Relocation {
 		return intersectedRange.getNumAddresses() - 1;
 	}
 
-	public static void checkBitmask(int width, long bitmask, int shift, Long addend) {
+	public static void checkBitmask(int width, long bitmask, Long addend) {
 		long bitcount = Long.bitCount(bitmask);
 		long highestOneBit = Long.numberOfTrailingZeros(Long.highestOneBit(bitmask));
 		long lowestOneBit = Long.numberOfTrailingZeros(Long.lowestOneBit(bitmask));
@@ -52,10 +52,10 @@ public interface Relocation {
 			throw new IllegalArgumentException("bitmask wider than relocation width");
 		}
 		if (addend != null) {
-			if (addend >= 0 && ((addend >> shift) >> highestOneBit) != 0) {
+			if (addend >= 0 && (addend >> highestOneBit) != 0) {
 				throw new IllegalArgumentException("addend must fit inside bitmask");
 			}
-			else if (addend < 0 && ((addend >> shift) >> highestOneBit) != -1L) {
+			else if (addend < 0 && (addend >> highestOneBit) != -1L) {
 				throw new IllegalArgumentException("addend must fit inside bitmask");
 			}
 		}

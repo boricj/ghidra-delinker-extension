@@ -76,17 +76,16 @@ public class MipsRelocationTypeMapper implements ElfRelocationTypeMapper {
 			RelocationRelativeSymbol rel = (RelocationRelativeSymbol) r;
 			int width = rel.getWidth();
 			long bitfield = rel.getBitmask();
-			int shift = rel.getShift();
 			String symbol = rel.getRelativeSymbolName();
 
-			if (width == 4 && bitfield == 0xffff && shift == 0 && symbol.equals("_gp")) {
+			if (width == 4 && bitfield == 0xffff && symbol.equals("_gp")) {
 				return MIPS_ElfRelocationConstants.R_MIPS_GPREL16;
 			}
 			else {
 				log.appendMsg(relSectionName,
 					String.format(
-						"Unknown RelocationRelativeSymbol width %d bitfield 0x%x shift %d symbol %s at %s",
-						width, bitfield, shift, symbol, r.getAddress()));
+						"Unknown RelocationRelativeSymbol width %d bitfield 0x%x symbol %s at %s",
+						width, bitfield, symbol, r.getAddress()));
 				return MIPS_ElfRelocationConstants.R_MIPS_NONE;
 			}
 		}

@@ -22,9 +22,9 @@ import ghidra.program.model.address.Address;
  * counter is in (i.e. it takes the upper 4 bits from the current PC and the next 26 bits from the immediate). It's an
  * hybrid between an absolute and relative jump and therefore require its own relocation type for proper modelization.
  */
-public class RelocationMIPS26 extends AbstractRelocationBitmaskShifted {
+public class RelocationMIPS26 extends AbstractRelocationBitmask {
 	protected RelocationMIPS26(RelocationTable relocationTable, Address address, String symbolName,
 			long addend) {
-		super(relocationTable, address, 4, 0x3ffffff, 2, symbolName, addend);
+		super(relocationTable, address, 4, 0x3ffffff, symbolName, addend);
 	}
 }

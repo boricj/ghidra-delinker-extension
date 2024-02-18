@@ -18,7 +18,8 @@ public class ExpectRelocationAbsolute extends AbstractExpectRelocationBitmask {
 		super(address, width, symbolName, addend);
 	}
 
-	public ExpectRelocationAbsolute(long address, int width, long bitmask, String symbolName, long addend) {
+	public ExpectRelocationAbsolute(long address, int width, long bitmask, String symbolName,
+			long addend) {
 		super(address, width, bitmask, symbolName, addend);
 	}
 

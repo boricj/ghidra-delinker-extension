@@ -14,24 +14,17 @@
 package ghidra.app.analyzers.relocations;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
-
-import org.apache.commons.lang3.ArrayUtils;
+import java.util.stream.Stream;
 
 import ghidra.app.analyzers.relocations.emitters.AbsoluteInstructionRelocationEmitter;
 import ghidra.app.analyzers.relocations.emitters.FunctionInstructionSink;
 import ghidra.app.analyzers.relocations.emitters.FunctionInstructionSinkCodeRelocationSynthesizer;
 import ghidra.app.analyzers.relocations.emitters.InstructionRelocationEmitter;
-import ghidra.app.analyzers.relocations.emitters.RelativeInstructionRelocationEmitter;
-import ghidra.program.model.lang.InstructionPrototype;
-import ghidra.program.model.lang.Mask;
-import ghidra.program.model.lang.OperandType;
+import ghidra.app.analyzers.relocations.emitters.RelativeNextInstructionRelocationEmitter;
 import ghidra.program.model.lang.Processor;
 import ghidra.program.model.listing.Function;
-import ghidra.program.model.listing.Instruction;
 import ghidra.program.model.listing.Program;
-import ghidra.program.model.mem.MemoryAccessException;
 import ghidra.program.model.relocobj.RelocationTable;
 
 public class X86CodeRelocationSynthesizer extends FunctionInstructionSinkCodeRelocationSynthesizer {
@@ -42,60 +35,46 @@ public class X86CodeRelocationSynthesizer extends FunctionInstructionSinkCodeRel
 		private static final List<Byte> OPMASK_SIB_4BYTES =
 			Arrays.asList(new Byte[] { -8, -1, -1, -1, -1 });
 
+		private static final List<List<Byte>> EXTRA_MASKS =
+			List.of(OPMASK_MOD_RM_EA_4BYTES, OPMASK_SIB_4BYTES);
+		private static final List<List<Byte>> MASKS =
+			Stream.concat(MASKS_ALLONES.stream(), EXTRA_MASKS.stream()).toList();
+
 		public X86InstructionAbsoluteRelocationEmitter(Program program,
 				RelocationTable relocationTable, Function function) {
 			super(program, relocationTable, function);
 		}
 
 		@Override
-		public OperandValueRaw getOperandValueRaw(Instruction instruction, int opIdx)
-				throws MemoryAccessException {
-			OperandValueRaw opValue = super.getOperandValueRaw(instruction, opIdx);
-			if (opValue != null) {
-				return opValue;
-			}
-
-			// x86 has a bunch of operand masks that Ghidra doesn't represent as simple byte masks.
-			// Go through the exotic operand masks to see if one matches.
-			int opType = instruction.getOperandType(opIdx);
-			InstructionPrototype prototype = instruction.getPrototype();
-			Mask valueMask = prototype.getOperandValueMask(opIdx);
-			byte[] maskBytes = valueMask.getBytes();
-
-			if (OperandType.isAddress(opType)) {
-				List<Byte> maskList = Arrays.asList(ArrayUtils.toObject(maskBytes));
-				int index;
-
-				index = Collections.indexOfSubList(maskList, OPMASK_MOD_RM_EA_4BYTES);
-				if (index != -1) {
-					return new OperandValueRaw(instruction, index + 1, 4);
-				}
-
-				index = Collections.indexOfSubList(maskList, OPMASK_SIB_4BYTES);
-				if (index != -1) {
-					return new OperandValueRaw(instruction, index + 1, 4);
-				}
-			}
-
-			return opValue;
-		}
-	}
-
-	private static class X86InstructionRelativeRelocationEmitter
-			extends RelativeInstructionRelocationEmitter {
-		public X86InstructionRelativeRelocationEmitter(Program program,
-				RelocationTable relocationTable, Function function) {
-			super(program, relocationTable, function);
+		public List<List<Byte>> getMasks() {
+			return MASKS;
 		}
 
 		@Override
-		public long getReferenceAddend(Instruction instruction) throws MemoryAccessException {
-			return instruction.getBytes().length;
+		public int getSizeFromMask(List<Byte> mask) {
+			if (mask.equals(OPMASK_MOD_RM_EA_4BYTES)) {
+				return 4;
+			}
+			else if (mask.equals(OPMASK_SIB_4BYTES)) {
+				return 4;
+			}
+
+			return super.getSizeFromMask(mask);
 		}
 
 		@Override
-		public long getInstructionAddend(Instruction instruction) throws MemoryAccessException {
-			return instruction.getBytes().length - 1;
+		public int indexOfMask(List<Byte> instructionOperandMask, List<Byte> operandMask) {
+			int offset = super.indexOfMask(instructionOperandMask, operandMask);
+			if (offset != -1) {
+				if (operandMask.equals(OPMASK_MOD_RM_EA_4BYTES)) {
+					offset += 1;
+				}
+				else if (operandMask.equals(OPMASK_SIB_4BYTES)) {
+					offset += 1;
+				}
+			}
+
+			return offset;
 		}
 	}
 
@@ -105,7 +84,7 @@ public class X86CodeRelocationSynthesizer extends FunctionInstructionSinkCodeRel
 		InstructionRelocationEmitter absolute =
 			new X86InstructionAbsoluteRelocationEmitter(program, relocationTable, function);
 		InstructionRelocationEmitter relative =
-			new X86InstructionRelativeRelocationEmitter(program, relocationTable, function);
+			new RelativeNextInstructionRelocationEmitter(program, relocationTable, function);
 
 		return List.of(absolute, relative);
 	}

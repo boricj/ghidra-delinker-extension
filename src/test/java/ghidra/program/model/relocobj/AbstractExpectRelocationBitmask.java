@@ -25,7 +25,8 @@ public abstract class AbstractExpectRelocationBitmask extends AbstractExpectRelo
 		this(address, width, Relocation.getBitmask(width), symbolName, addend);
 	}
 
-	public AbstractExpectRelocationBitmask(long address, int width, long bitmask, String symbolName, long addend) {
+	public AbstractExpectRelocationBitmask(long address, int width, long bitmask, String symbolName,
+			long addend) {
 		this.address = address;
 		this.width = width;
 		this.bitmask = bitmask;
@@ -42,6 +43,7 @@ public abstract class AbstractExpectRelocationBitmask extends AbstractExpectRelo
 
 		AbstractRelocationBitmask relocation = (AbstractRelocationBitmask) obj;
 		return address == relocation.getAddress().getOffset() && width == relocation.getWidth() &&
-			bitmask == relocation.getBitmask() && symbolName.equals(relocation.getSymbolName()) && addend == relocation.getAddend();
+			bitmask == relocation.getBitmask() && symbolName.equals(relocation.getSymbolName()) &&
+			addend == relocation.getAddend();
 	}
 }

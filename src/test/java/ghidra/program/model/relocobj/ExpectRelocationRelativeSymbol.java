@@ -23,7 +23,8 @@ public class ExpectRelocationRelativeSymbol extends AbstractExpectRelocationBitm
 		this.relativeSymbolName = relativeSymbolName;
 	}
 
-	public ExpectRelocationRelativeSymbol(long address, int width, long bitmask, String symbolName, long addend, String relativeSymbolName) {
+	public ExpectRelocationRelativeSymbol(long address, int width, long bitmask, String symbolName,
+			long addend, String relativeSymbolName) {
 		super(address, width, bitmask, symbolName, addend);
 
 		this.relativeSymbolName = relativeSymbolName;

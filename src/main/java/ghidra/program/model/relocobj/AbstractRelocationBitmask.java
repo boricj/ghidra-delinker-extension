@@ -98,6 +98,7 @@ public abstract class AbstractRelocationBitmask implements Relocation {
 
 		AbstractRelocationBitmask rel = (AbstractRelocationBitmask) obj;
 		return address.equals(rel.getAddress()) && width == rel.getWidth() &&
-			bitmask == rel.getBitmask() && symbolName.equals(rel.getSymbolName()) && addend == rel.getAddend();
+			bitmask == rel.getBitmask() && symbolName.equals(rel.getSymbolName()) &&
+			addend == rel.getAddend();
 	}
 }

@@ -18,7 +18,8 @@ public class ExpectRelocationRelativePC extends AbstractExpectRelocationBitmask 
 		super(address, width, symbolName, addend);
 	}
 
-	public ExpectRelocationRelativePC(long address, int width, long bitmask, String symbolName, long addend) {
+	public ExpectRelocationRelativePC(long address, int width, long bitmask, String symbolName,
+			long addend) {
 		super(address, width, bitmask, symbolName, addend);
 	}
 

@@ -26,8 +26,9 @@ import ghidra.program.model.symbol.Reference;
 import ghidra.program.util.ProgramUtilities;
 import ghidra.util.DataConverter;
 
-public class AbsoluteInstructionRelocationEmitter extends InstructionRelocationEmitter {
-	public AbsoluteInstructionRelocationEmitter(Program program, RelocationTable relocationTable,
+public class RelativeCurrentInstructionRelocationEmitter extends InstructionRelocationEmitter {
+	public RelativeCurrentInstructionRelocationEmitter(Program program,
+			RelocationTable relocationTable,
 			Function function) {
 		super(program, relocationTable, function);
 	}
@@ -36,21 +37,23 @@ public class AbsoluteInstructionRelocationEmitter extends InstructionRelocationE
 	public long computeValue(Instruction instruction, int operandIndex, Reference reference,
 			int offset, List<Byte> mask) throws MemoryAccessException {
 		DataConverter dc = ProgramUtilities.getDataConverter(instruction.getProgram());
-		return dc.getValue(instruction.getBytes(), offset, getSizeFromMask(mask));
+		return dc.getSignedValue(instruction.getBytes(), offset, getSizeFromMask(mask));
 	}
 
 	@Override
 	public boolean matches(Instruction instruction, int operandIndex, Reference reference,
 			int offset, List<Byte> mask) throws MemoryAccessException {
-		long address = computeValue(instruction, operandIndex, reference, offset, mask);
+
+		long origin = instruction.getAddress().getUnsignedOffset();
+		long relative = computeValue(instruction, operandIndex, reference, offset, mask);
 		long target = reference.getToAddress().getUnsignedOffset();
 
-		return address == target;
+		return origin + relative == target;
 	}
 
 	@Override
 	public long computeAddend(Instruction instruction, int operandIndex, SymbolWithOffset symbol,
-			Reference reference, int offset, List<Byte> mask) {
+			Reference reference, int offset, List<Byte> mask) throws MemoryAccessException {
 		return symbol.offset;
 	}
 
@@ -61,7 +64,7 @@ public class AbsoluteInstructionRelocationEmitter extends InstructionRelocationE
 		RelocationTable relocationTable = getRelocationTable();
 		Address fromAddress = instruction.getAddress();
 
-		relocationTable.addAbsolute(fromAddress.add(offset), getSizeFromMask(mask), symbol.name,
+		relocationTable.addRelativePC(fromAddress.add(offset), getSizeFromMask(mask), symbol.name,
 			addend);
 		return true;
 	}

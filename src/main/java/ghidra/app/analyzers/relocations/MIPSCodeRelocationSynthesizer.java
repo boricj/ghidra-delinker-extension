@@ -23,9 +23,7 @@ import ghidra.app.analyzers.relocations.emitters.FunctionInstructionSinkCodeRelo
 import ghidra.app.analyzers.relocations.emitters.InstructionRelocationEmitter;
 import ghidra.app.analyzers.relocations.emitters.SymbolRelativeInstructionRelocationEmitter;
 import ghidra.app.analyzers.relocations.utils.SymbolWithOffset;
-import ghidra.program.model.lang.InstructionPrototype;
-import ghidra.program.model.lang.Mask;
-import ghidra.program.model.lang.OperandType;
+import ghidra.program.model.address.Address;
 import ghidra.program.model.lang.Processor;
 import ghidra.program.model.listing.Function;
 import ghidra.program.model.listing.Instruction;
@@ -37,12 +35,13 @@ import ghidra.program.model.symbol.Reference;
 import ghidra.program.model.symbol.Symbol;
 import ghidra.program.model.symbol.SymbolIterator;
 import ghidra.program.model.symbol.SymbolTable;
+import ghidra.program.util.ProgramUtilities;
 import ghidra.util.DataConverter;
 
 public class MIPSCodeRelocationSynthesizer
 		extends FunctionInstructionSinkCodeRelocationSynthesizer {
 	private static class MIPS_26_InstructionRelocationEmitter extends InstructionRelocationEmitter {
-		private static final byte[] OPMASK_JTYPE = new byte[] { -1, -1, -1, 3 };
+		private static final List<Byte> OPMASK_JTYPE = Arrays.asList(new Byte[] { -1, -1, -1, 3 });
 
 		public MIPS_26_InstructionRelocationEmitter(Program program,
 				RelocationTable relocationTable, Function function) {
@@ -50,37 +49,47 @@ public class MIPSCodeRelocationSynthesizer
 		}
 
 		@Override
-		public OperandValueRaw getOperandValueRaw(Instruction instruction, int opIdx)
+		public List<List<Byte>> getMasks() {
+			return List.of(OPMASK_JTYPE);
+		}
+
+		@Override
+		public long computeValue(Instruction instruction, int operandIndex, Reference reference,
+				int offset, List<Byte> mask) throws MemoryAccessException {
+			DataConverter dc = ProgramUtilities.getDataConverter(instruction.getProgram());
+			long value = dc.getValue(instruction.getBytes(), offset, getSizeFromMask(mask));
+			return (value & 0x3ffffff) << 2;
+		}
+
+		@Override
+		public boolean matches(Instruction instruction, int operandIndex, Reference reference,
+				int offset, List<Byte> mask) throws MemoryAccessException {
+			long origin = instruction.getAddress().getUnsignedOffset() & 0xfffffffff0000000L;
+			long value = computeValue(instruction, operandIndex, reference, offset, mask);
+			long target = reference.getToAddress().getUnsignedOffset();
+
+			return (origin | value) == target;
+		}
+
+		@Override
+		public long computeAddend(Instruction instruction, int operandIndex,
+				SymbolWithOffset symbol, Reference reference, int offset, List<Byte> mask)
 				throws MemoryAccessException {
-			int opType = instruction.getOperandType(opIdx);
-			InstructionPrototype prototype = instruction.getPrototype();
-			Mask valueMask = prototype.getOperandValueMask(opIdx);
-			byte[] maskBytes = valueMask.getBytes();
-
-			if (OperandType.isAddress(opType)) {
-				if (Arrays.equals(maskBytes, OPMASK_JTYPE)) {
-					return new OperandValueRaw(instruction, 0, 4);
-				}
-			}
-
-			return null;
+			return symbol.offset >> 2;
 		}
 
 		@Override
-		public long computeTargetAddress(Instruction instruction, Reference reference,
-				OperandValueRaw opValue) throws MemoryAccessException {
-			long target = instruction.getAddress().getOffset() & 0xf0000000;
-			return target | (opValue.unsignedValue & 0x3ffffff) << 2;
-		}
-
-		@Override
-		public boolean emitRelocation(Instruction instruction, Reference reference,
-				OperandValueRaw opValue, SymbolWithOffset symbol) throws MemoryAccessException {
-			if (symbol.offset % 4 != 0) {
+		public boolean emitRelocation(Instruction instruction, int operandIndex,
+				SymbolWithOffset symbol, Reference reference, int offset, List<Byte> mask,
+				long addend) throws MemoryAccessException {
+			if (addend < 0 || addend > 0x3ffffff) {
 				return false;
 			}
 
-			relocationTable.addMIPS26(instruction.getAddress(), symbol.name, symbol.offset >> 2);
+			RelocationTable relocationTable = getRelocationTable();
+			Address fromAddress = instruction.getAddress();
+
+			relocationTable.addMIPS26(fromAddress.add(offset), symbol.name, addend);
 			return true;
 		}
 	}
@@ -192,7 +201,8 @@ public class MIPSCodeRelocationSynthesizer
 
 	private static class MIPS_GPREL16_InstructionRelocationEmitter
 			extends SymbolRelativeInstructionRelocationEmitter {
-		private static final byte[] OPMASK_LOAD_STORE = new byte[] { -1, -1, -32, 3 };
+		private static final List<Byte> OPMASK_LOAD_STORE =
+			Arrays.asList(new Byte[] { -1, -1, -32, 3 });
 
 		public MIPS_GPREL16_InstructionRelocationEmitter(Program program,
 				RelocationTable relocationTable, Function function, Symbol fromSymbol) {
@@ -200,25 +210,13 @@ public class MIPSCodeRelocationSynthesizer
 		}
 
 		@Override
-		public OperandValueRaw getOperandValueRaw(Instruction instruction, int opIdx)
-				throws MemoryAccessException {
-			OperandValueRaw opValue = super.getOperandValueRaw(instruction, opIdx);
-			if (opValue != null) {
-				return opValue;
-			}
+		public List<List<Byte>> getMasks() {
+			return List.of(OPMASK_LOAD_STORE);
+		}
 
-			int opType = instruction.getOperandType(opIdx);
-			InstructionPrototype prototype = instruction.getPrototype();
-			Mask valueMask = prototype.getOperandValueMask(opIdx);
-			byte[] maskBytes = valueMask.getBytes();
-
-			if (OperandType.isAddress(opType)) {
-				if (Arrays.equals(maskBytes, OPMASK_LOAD_STORE)) {
-					return new OperandValueRaw(instruction, 0, 2);
-				}
-			}
-
-			return opValue;
+		@Override
+		public int getSizeFromMask(List<Byte> mask) {
+			return 2;
 		}
 	}
 

@@ -45,7 +45,7 @@ public class I386_main_o_IntegrationTest extends DelinkerIntegrationTest {
 			Map.entry(0x8a, new byte[] { 0x3e, 0x01, 0x00, 0x00 }),
 			Map.entry(0xd5, new byte[] { -65, -1, -1, -1 }),
 			Map.entry(0x151, new byte[] { -90, -1, -1, -1 }),
-			Map.entry(0x163, new byte[] { 0x67, -24, -5, -1, -1, -1 }),
+			Map.entry(0x163, new byte[] { 0x67, -24, -4, -1, -1, -1 }),
 			Map.entry(0x21e, new byte[] { 0x1d, -1, -1, -1 }));
 
 		compareElfSectionBytes(INPUT_FORMAT, ctypeFile, ".text", exportedFile, ".text",

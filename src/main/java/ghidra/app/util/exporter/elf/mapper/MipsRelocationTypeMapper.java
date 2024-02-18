@@ -78,7 +78,7 @@ public class MipsRelocationTypeMapper implements ElfRelocationTypeMapper {
 			long bitfield = rel.getBitmask();
 			String symbol = rel.getRelativeSymbolName();
 
-			if (width == 4 && bitfield == 0xffff && symbol.equals("_gp")) {
+			if (width == 2 && bitfield == 0xffff && symbol.equals("_gp")) {
 				return MIPS_ElfRelocationConstants.R_MIPS_GPREL16;
 			}
 			else {

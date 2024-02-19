@@ -23,6 +23,7 @@ import ghidra.program.model.relocobj.RelocationAbsolute;
 import ghidra.program.model.relocobj.RelocationHighPair;
 import ghidra.program.model.relocobj.RelocationLowPair;
 import ghidra.program.model.relocobj.RelocationMIPS26;
+import ghidra.program.model.relocobj.RelocationRelativePC;
 import ghidra.program.model.relocobj.RelocationRelativeSymbol;
 
 public class MipsRelocationTypeMapper implements ElfRelocationTypeMapper {
@@ -86,6 +87,22 @@ public class MipsRelocationTypeMapper implements ElfRelocationTypeMapper {
 					String.format(
 						"Unknown RelocationRelativeSymbol width %d bitfield 0x%x symbol %s at %s",
 						width, bitfield, symbol, r.getAddress()));
+				return MIPS_ElfRelocationConstants.R_MIPS_NONE;
+			}
+		}
+		else if (r instanceof RelocationRelativePC) {
+			RelocationRelativePC rel = (RelocationRelativePC) r;
+			int width = rel.getWidth();
+			long bitfield = rel.getBitmask();
+
+			if (width == 2 && bitfield == 0xffff) {
+				return MIPS_ElfRelocationConstants.R_MIPS_PC16;
+			}
+			else {
+				log.appendMsg(relSectionName,
+					String.format(
+						"Unknown RelocationRelativeSymbol width %d bitfield 0x%x at %s", width,
+						bitfield, r.getAddress()));
 				return MIPS_ElfRelocationConstants.R_MIPS_NONE;
 			}
 		}

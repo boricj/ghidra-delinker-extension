@@ -21,6 +21,7 @@ import ghidra.app.analyzers.relocations.emitters.BundleRelocationEmitter;
 import ghidra.app.analyzers.relocations.emitters.FunctionInstructionSink;
 import ghidra.app.analyzers.relocations.emitters.FunctionInstructionSinkCodeRelocationSynthesizer;
 import ghidra.app.analyzers.relocations.emitters.InstructionRelocationEmitter;
+import ghidra.app.analyzers.relocations.emitters.RelativeNextInstructionRelocationEmitter;
 import ghidra.app.analyzers.relocations.emitters.SymbolRelativeInstructionRelocationEmitter;
 import ghidra.app.analyzers.relocations.utils.SymbolWithOffset;
 import ghidra.program.model.address.Address;
@@ -199,6 +200,45 @@ public class MIPSCodeRelocationSynthesizer
 		}
 	}
 
+	/**
+	 * The SYSTEM V APPLICATION BINARY INTERFACE MIPS® RISC Processor Supplement 3rd Edition
+	 * defines R_MIPS_PC16 to be sign–extend(A) + S – P. This is borderline useless on MIPS
+	 * since the branch instructions family uses immediates that are shifted right by two bits.
+	 * The issue was identified back in 1999 [1] and GNU binutils unilaterally decided to fix
+	 * it for good in 2005 [2]. It's been in the binutils history for almost two decades [3],
+	 * obsoleting R_MIPS_GNU_REL16_S2.
+	 * 
+	 * The object file exporters will probably not emit these relocations under nominal
+	 * conditions, but synthesizing these relocations will take care of primary references
+	 * located inside branch instructions.
+	 * 
+	 * [1] https://sourceware.org/pipermail/binutils/1999-October/000952.html
+	 * [2] https://sourceware.org/pipermail/binutils/2005-November/045157.html
+	 * [3] https://github.com/bminor/binutils-gdb/commit/bad36eacdad37042c4efb1c5fbf48476b47de82b
+	 */
+	private static class MIPS_PC16_InstructionRelocationEmitter
+			extends RelativeNextInstructionRelocationEmitter {
+
+		public MIPS_PC16_InstructionRelocationEmitter(Program program,
+				RelocationTable relocationTable, Function function) {
+			super(program, relocationTable, function);
+		}
+
+		@Override
+		public long computeAddend(Instruction instruction, int operandIndex,
+				SymbolWithOffset symbol, Reference reference, int offset, List<Byte> mask)
+				throws MemoryAccessException {
+			return super.computeAddend(instruction, operandIndex, symbol, reference, offset,
+				mask) >> 2;
+		}
+
+		@Override
+		public long computeValue(Instruction instruction, int operandIndex, Reference reference,
+				int offset, List<Byte> mask) throws MemoryAccessException {
+			return super.computeValue(instruction, operandIndex, reference, offset, mask) << 2;
+		}
+	}
+
 	private static class MIPS_GPREL16_InstructionRelocationEmitter
 			extends SymbolRelativeInstructionRelocationEmitter {
 		private static final List<Byte> OPMASK_LOAD_STORE =
@@ -226,6 +266,7 @@ public class MIPSCodeRelocationSynthesizer
 		List<FunctionInstructionSink> sinks = new ArrayList<>();
 		sinks.add(new MIPS_26_InstructionRelocationEmitter(program, relocationTable, function));
 		sinks.add(new MIPS_HI16LO16_BundleRelocationEmitter(program, relocationTable, function));
+		sinks.add(new MIPS_PC16_InstructionRelocationEmitter(program, relocationTable, function));
 
 		SymbolTable symbolTable = program.getSymbolTable();
 		SymbolIterator _gp = symbolTable.getSymbols("_gp");

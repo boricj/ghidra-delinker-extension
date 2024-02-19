@@ -30,6 +30,7 @@ import ghidra.program.model.relocobj.ExpectRelocationAbsolute;
 import ghidra.program.model.relocobj.ExpectRelocationHighPair;
 import ghidra.program.model.relocobj.ExpectRelocationLowPair;
 import ghidra.program.model.relocobj.ExpectRelocationMIPS26;
+import ghidra.program.model.relocobj.ExpectRelocationRelativePC;
 import ghidra.program.model.relocobj.ExpectRelocationRelativeSymbol;
 import ghidra.program.model.relocobj.Relocation;
 import ghidra.program.model.relocobj.RelocationTable;
@@ -44,6 +45,12 @@ public class MipselIntegrationTest extends DelinkerIntegrationTest {
 
 	private static final List<Relocation> EXPECTED_RELOCATIONS = List.of(
 		// .rel.text
+		new ExpectRelocationRelativePC(0x00400160, 2, "LAB_0040016c", -1),
+		new ExpectRelocationRelativePC(0x00400184, 2, "LAB_00400190", -1),
+		new ExpectRelocationRelativePC(0x004001a8, 2, "LAB_004001b4", -1),
+		new ExpectRelocationRelativePC(0x004001c4, 2, "LAB_004001e0", -1),
+		new ExpectRelocationRelativePC(0x004001e4, 2, "LAB_004001cc", -1),
+		new ExpectRelocationRelativePC(0x004001f4, 2, "LAB_00400208", -1),
 		// 00400208  00002605 R_MIPS_HI16            00000000   errno
 		new ExpectRelocationHighPair(0x00400208, 4, 0xffff, "errno"),
 		// 00400210  00002606 R_MIPS_LO16            00000000   errno
@@ -56,6 +63,7 @@ public class MipselIntegrationTest extends DelinkerIntegrationTest {
 		new ExpectRelocationHighPair(0x0040023c, 4, 0xffff, "environ"),
 		// 00400240  00003106 R_MIPS_LO16            00000008   environ
 		new ExpectRelocationLowPair(0x00400240, 4, 0xffff, "environ", 0),
+		new ExpectRelocationRelativePC(0x00400250, 2, "LAB_0040024c", -1),
 		// 00400258  00002a05 R_MIPS_HI16            00000004   _auxv
 		new ExpectRelocationHighPair(0x00400258, 4, 0xffff, "_auxv"),
 		// 0040025c  00002a06 R_MIPS_LO16            00000004   _auxv
@@ -66,10 +74,12 @@ public class MipselIntegrationTest extends DelinkerIntegrationTest {
 		new ExpectRelocationHighPair(0x0040028c, 4, 0xffff, "sys_write"),
 		// 00400290  00000306 R_MIPS_LO16            00000000   .text
 		new ExpectRelocationLowPair(0x00400290, 4, 0xffff, "sys_write", 0),
+		new ExpectRelocationRelativePC(0x0040029c, 2, "LAB_004002b4", -1),
 		// 004002b8  00002605 R_MIPS_HI16            00000000   errno
 		new ExpectRelocationHighPair(0x004002b8, 4, 0xffff, "errno"),
 		// 004002bc  00002606 R_MIPS_LO16            00000000   errno
 		new ExpectRelocationLowPair(0x004002bc, 4, 0xffff, "errno", 0),
+		new ExpectRelocationRelativePC(0x004002c4, 2, "LAB_004002a4", -1),
 		// 004002dc  00000305 R_MIPS_HI16            00000000   .text
 		new ExpectRelocationHighPair(0x004002dc, 4, 0xffff, "fileno"),
 		// 004002e0  00000306 R_MIPS_LO16            00000000   .text
@@ -78,18 +88,24 @@ public class MipselIntegrationTest extends DelinkerIntegrationTest {
 		new ExpectRelocationHighPair(0x004002f8, 4, 0xffff, "write"),
 		// 004002fc  00003006 R_MIPS_LO16            00000134   write
 		new ExpectRelocationLowPair(0x004002fc, 4, 0xffff, "write", 0),
+		new ExpectRelocationRelativePC(0x00400308, 2, "LAB_00400324", -1),
+		new ExpectRelocationRelativePC(0x00400328, 2, "LAB_00400314", -1),
 		// 0040033c  00000305 R_MIPS_HI16            00000000   .text
 		new ExpectRelocationHighPair(0x0040033c, 4, 0xffff, "fputc"),
 		// 00400340  00000306 R_MIPS_LO16            00000000   .text
 		new ExpectRelocationLowPair(0x00400340, 4, 0xffff, "fputc", 0),
+		new ExpectRelocationRelativePC(0x00400374, 2, "LAB_00400394", -1),
 		// 00400380  00000305 R_MIPS_HI16            00000000   .text
 		new ExpectRelocationHighPair(0x00400380, 4, 0xffff, "putchar"),
 		// 00400384  00000306 R_MIPS_LO16            00000000   .text
 		new ExpectRelocationLowPair(0x00400384, 4, 0xffff, "putchar", 0),
+		new ExpectRelocationRelativePC(0x00400394, 2, "LAB_004003e0", -1),
+		new ExpectRelocationRelativePC(0x004003bc, 2, "LAB_0040037c", -1),
 		// 004003c8  00000305 R_MIPS_HI16            00000000   .text
 		new ExpectRelocationHighPair(0x004003c8, 4, 0xffff, "putchar"),
 		// 004003cc  00000306 R_MIPS_LO16            00000000   .text
 		new ExpectRelocationLowPair(0x004003cc, 4, 0xffff, "putchar", 0),
+		new ExpectRelocationRelativePC(0x004003d8, 2, "LAB_00400390", -1),
 		// 00400420  00003305 R_MIPS_HI16            0000020c   print_number
 		new ExpectRelocationHighPair(0x00400420, 4, 0xffff, "print_number"),
 		// 00400424  00003306 R_MIPS_LO16            0000020c   print_number
@@ -103,6 +119,7 @@ public class MipselIntegrationTest extends DelinkerIntegrationTest {
 		new ExpectRelocationHighPair(0x00400448, 4, 0xffff, "isgraph"),
 		// 0040044c  00003806 R_MIPS_LO16            00000590   isgraph
 		new ExpectRelocationLowPair(0x0040044c, 4, 0xffff, "isgraph", 0),
+		new ExpectRelocationRelativePC(0x00400458, 2, "LAB_00400494", -1),
 		// 00400464  00000305 R_MIPS_HI16            00000000   .text
 		new ExpectRelocationHighPair(0x00400464, 4, 0xffff, "putchar"),
 		// 00400468  00000306 R_MIPS_LO16            00000000   .text
@@ -111,22 +128,30 @@ public class MipselIntegrationTest extends DelinkerIntegrationTest {
 		new ExpectRelocationHighPair(0x00400478, 4, 0xffff, "putchar"),
 		// 0040047c  00000306 R_MIPS_LO16            00000000   .text
 		new ExpectRelocationLowPair(0x0040047c, 4, 0xffff, "putchar", 0),
+		new ExpectRelocationRelativePC(0x0040048c, 2, "LAB_004004c8", -1),
 		// 00400498  00000305 R_MIPS_HI16            00000000   .text
 		new ExpectRelocationHighPair(0x00400498, 4, 0xffff, "putchar"),
 		// 0040049c  00000306 R_MIPS_LO16            00000000   .text
 		new ExpectRelocationLowPair(0x0040049c, 4, 0xffff, "putchar", 0),
+		new ExpectRelocationRelativePC(0x004004a8, 2, "LAB_00400474", -1),
 		// 004004b4  00000305 R_MIPS_HI16            00000000   .text
 		new ExpectRelocationHighPair(0x004004b4, 4, 0xffff, "putchar"),
 		// 004004b8  00000306 R_MIPS_LO16            00000000   .text
 		new ExpectRelocationLowPair(0x004004b8, 4, 0xffff, "putchar", 0),
+		new ExpectRelocationRelativePC(0x004004cc, 2, "LAB_00400510", -1),
+		new ExpectRelocationRelativePC(0x004004ec, 2, "LAB_004004b0", -1),
 		// 004004f8  00000305 R_MIPS_HI16            00000000   .text
 		new ExpectRelocationHighPair(0x004004f8, 4, 0xffff, "putchar"),
 		// 004004fc  00000306 R_MIPS_LO16            00000000   .text
 		new ExpectRelocationLowPair(0x004004fc, 4, 0xffff, "putchar", 0),
+		new ExpectRelocationRelativePC(0x00400508, 2, "LAB_004004c4", -1),
+
+		new ExpectRelocationRelativePC(0x00400544, 2, "LAB_00400564", -1),
 		// 00400550  00000305 R_MIPS_HI16            00000000   .text
 		new ExpectRelocationHighPair(0x00400550, 4, 0xffff, "putchar"),
 		// 00400554  00000306 R_MIPS_LO16            00000000   .text
 		new ExpectRelocationLowPair(0x00400554, 4, 0xffff, "putchar", 0),
+		new ExpectRelocationRelativePC(0x00400568, 2, "LAB_004005dc", -1),
 		// 00400570  00003c07 R_MIPS_GPREL16         00000000   COLUMNS
 		new ExpectRelocationRelativeSymbol(0x00400570, 2, 0xffff, "COLUMNS", 0, "_gp"),
 		// 00400598  00002405 R_MIPS_HI16            00000000   s_ascii_properties
@@ -139,46 +164,61 @@ public class MipselIntegrationTest extends DelinkerIntegrationTest {
 		new ExpectRelocationLowPair(0x004005ac, 4, 0xffff, "print_ascii_entry", 0),
 		// 004005b8  00003c07 R_MIPS_GPREL16         00000000   COLUMNS
 		new ExpectRelocationRelativeSymbol(0x004005b8, 2, 0xffff, "COLUMNS", 0, "_gp"),
+		new ExpectRelocationRelativePC(0x004005c8, 2, "LAB_0040054c", -1),
+
+		new ExpectRelocationRelativePC(0x004005d4, 2, "LAB_00400550", -1),
+
+		new ExpectRelocationRelativePC(0x00400604, 2, "LAB_0040062c", -1),
 		// 00400610  00003f05 R_MIPS_HI16            00000050   _ctype_
 		new ExpectRelocationHighPair(0x00400610, 4, 0xffff, "_ctype_"),
 		// 00400614  00003f06 R_MIPS_LO16            00000050   _ctype_
 		new ExpectRelocationLowPair(0x00400614, 4, 0xffff, "_ctype_", 1),
+		new ExpectRelocationRelativePC(0x0040063c, 2, "LAB_00400664", -1),
 		// 00400648  00003f05 R_MIPS_HI16            00000050   _ctype_
 		new ExpectRelocationHighPair(0x00400648, 4, 0xffff, "_ctype_"),
 		// 0040064c  00003f06 R_MIPS_LO16            00000050   _ctype_
 		new ExpectRelocationLowPair(0x0040064c, 4, 0xffff, "_ctype_", 1),
+		new ExpectRelocationRelativePC(0x00400674, 2, "LAB_0040069c", -1),
 		// 00400680  00003f05 R_MIPS_HI16            00000050   _ctype_
 		new ExpectRelocationHighPair(0x00400680, 4, 0xffff, "_ctype_"),
 		// 00400684  00003f06 R_MIPS_LO16            00000050   _ctype_
 		new ExpectRelocationLowPair(0x00400684, 4, 0xffff, "_ctype_", 1),
+		new ExpectRelocationRelativePC(0x004006ac, 2, "LAB_004006d4", -1),
 		// 004006b8  00003f05 R_MIPS_HI16            00000050   _ctype_
 		new ExpectRelocationHighPair(0x004006b8, 4, 0xffff, "_ctype_"),
 		// 004006bc  00003f06 R_MIPS_LO16            00000050   _ctype_
 		new ExpectRelocationLowPair(0x004006bc, 4, 0xffff, "_ctype_", 1),
+		new ExpectRelocationRelativePC(0x004006e4, 2, "LAB_0040070c", -1),
 		// 004006f0  00003f05 R_MIPS_HI16            00000050   _ctype_
 		new ExpectRelocationHighPair(0x004006f0, 4, 0xffff, "_ctype_"),
 		// 004006f4  00003f06 R_MIPS_LO16            00000050   _ctype_
 		new ExpectRelocationLowPair(0x004006f4, 4, 0xffff, "_ctype_", 1),
+		new ExpectRelocationRelativePC(0x0040071c, 2, "LAB_00400744", -1),
 		// 00400728  00003f05 R_MIPS_HI16            00000050   _ctype_
 		new ExpectRelocationHighPair(0x00400728, 4, 0xffff, "_ctype_"),
 		// 0040072c  00003f06 R_MIPS_LO16            00000050   _ctype_
 		new ExpectRelocationLowPair(0x0040072c, 4, 0xffff, "_ctype_", 1),
+		new ExpectRelocationRelativePC(0x00400754, 2, "LAB_0040077c", -1),
 		// 00400760  00003f05 R_MIPS_HI16            00000050   _ctype_
 		new ExpectRelocationHighPair(0x00400760, 4, 0xffff, "_ctype_"),
 		// 00400764  00003f06 R_MIPS_LO16            00000050   _ctype_
 		new ExpectRelocationLowPair(0x00400764, 4, 0xffff, "_ctype_", 1),
+		new ExpectRelocationRelativePC(0x0040078c, 2, "LAB_004007b4", -1),
 		// 00400798  00003f05 R_MIPS_HI16            00000050   _ctype_
 		new ExpectRelocationHighPair(0x00400798, 4, 0xffff, "_ctype_"),
 		// 0040079c  00003f06 R_MIPS_LO16            00000050   _ctype_
 		new ExpectRelocationLowPair(0x0040079c, 4, 0xffff, "_ctype_", 1),
+		new ExpectRelocationRelativePC(0x004007c4, 2, "LAB_004007ec", -1),
 		// 004007d0  00003f05 R_MIPS_HI16            00000050   _ctype_
 		new ExpectRelocationHighPair(0x004007d0, 4, 0xffff, "_ctype_"),
 		// 004007d4  00003f06 R_MIPS_LO16            00000050   _ctype_
 		new ExpectRelocationLowPair(0x004007d4, 4, 0xffff, "_ctype_", 1),
+		new ExpectRelocationRelativePC(0x004007fc, 2, "LAB_00400824", -1),
 		// 00400808  00003f05 R_MIPS_HI16            00000050   _ctype_
 		new ExpectRelocationHighPair(0x00400808, 4, 0xffff, "_ctype_"),
 		// 0040080c  00003f06 R_MIPS_LO16            00000050   _ctype_
 		new ExpectRelocationLowPair(0x0040080c, 4, 0xffff, "_ctype_", 1),
+		new ExpectRelocationRelativePC(0x00400834, 2, "LAB_0040085c", -1),
 		// 00400840  00003f05 R_MIPS_HI16            00000050   _ctype_
 		new ExpectRelocationHighPair(0x00400840, 4, 0xffff, "_ctype_"),
 		// 00400844  00003f06 R_MIPS_LO16            00000050   _ctype_
@@ -195,10 +235,16 @@ public class MipselIntegrationTest extends DelinkerIntegrationTest {
 		new ExpectRelocationLowPair(0x0040089c, 4, 0xffff, "sys_kill", 0),
 
 		// .rel.text.nolibc_memcpy
+		new ExpectRelocationRelativePC(0x004008c4, 2, "LAB_00400904", -1),
+		new ExpectRelocationRelativePC(0x004008d4, 2, "LAB_004008f4", -1),
+		new ExpectRelocationRelativePC(0x004008f4, 2, "LAB_004008dc", -1),
+		new ExpectRelocationRelativePC(0x0040090c, 2, "LAB_004008f4", -1),
 		// 0040091c  00000305 R_MIPS_HI16            00000000   .text
 		new ExpectRelocationHighPair(0x0040091c, 4, 0xffff, "_nolibc_memcpy_up"),
 		// 00400920  00000306 R_MIPS_LO16            00000000   .text
 		new ExpectRelocationLowPair(0x00400920, 4, 0xffff, "_nolibc_memcpy_up", 0),
+		new ExpectRelocationRelativePC(0x00400944, 2, "LAB_00400958", -1),
+		new ExpectRelocationRelativePC(0x0040095c, 2, "LAB_0040094c", -1),
 
 		// .rel.text.nolibc_abort
 		// 00400974  00000305 R_MIPS_HI16            00000000   .text
@@ -209,6 +255,7 @@ public class MipselIntegrationTest extends DelinkerIntegrationTest {
 		new ExpectRelocationHighPair(0x0040098c, 4, 0xffff, "sys_kill"),
 		// 00400990  00000306 R_MIPS_LO16            00000000   .text
 		new ExpectRelocationLowPair(0x00400990, 4, 0xffff, "sys_kill", 0),
+		new ExpectRelocationRelativePC(0x0040099c, 2, "LAB_0040099c", -1),
 
 		// .rel.rodata
 		// 004009b0  00003802 R_MIPS_32              00000590   isgraph

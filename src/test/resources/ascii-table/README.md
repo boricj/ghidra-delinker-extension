@@ -1,6 +1,6 @@
 # ascii-table test case
 
-This is a simple test case for the delinker, adapted from this [case study](https://boricj.direct.quickconnect.to/reverse-engineering/2023/05/15/part-2.html), suitable as a basic end-to-end integration test.
+This is a simple test case for the delinker, adapted from this [case study](https://boricj.net/reverse-engineering/2023/05/15/part-2.html), suitable as a basic end-to-end integration test.
 
 Any relocation synthesizer implementation should be able to at least successfully delink its corresponding freestanding artifact, in order to demonstrate a minimum level of functionality, as well as having its test harness integrated for basic anti-regression testing.
 

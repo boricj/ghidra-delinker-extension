@@ -7,7 +7,7 @@ Use-cases include:
  * [Advanced binary patching](https://boricj.net/reverse-engineering/2023/08/28/part-10.html), by leveraging the linker to mend both original and modified parts together instead of doing this work by hand ;
  * [Software ports](https://boricj.net/atari-jaguar-sdk/2024/01/02/part-5.html), by isolating system-independent code from a program and replacing the rest ;
  * Converting [programs](https://boricj.net/atari-jaguar-sdk/2023/12/18/part-3.html) or object files from one file format to another ;
- * Library creation, by extracting parts of a program and reusing them in another context ;
+ * [Creating](https://boricj.net/tenchu1/2024/03/11/part-5.html) [libraries](https://boricj.net/tenchu1/2024/03/18/part-6.html), by extracting parts of a program and reusing them in another context ;
  * Decompilation projects, by splitting a program into multiple object files and reimplementing these _Ship of Theseus_-style ;
  * …
 

@@ -26,6 +26,7 @@ import ghidra.app.analyzers.relocations.emitters.SymbolRelativeInstructionReloca
 import ghidra.app.analyzers.relocations.utils.SymbolWithOffset;
 import ghidra.program.model.address.Address;
 import ghidra.program.model.lang.Processor;
+import ghidra.program.model.lang.Register;
 import ghidra.program.model.listing.Function;
 import ghidra.program.model.listing.Instruction;
 import ghidra.program.model.listing.Program;
@@ -96,6 +97,12 @@ public class MIPSCodeRelocationSynthesizer
 	}
 
 	private static class MIPS_HI16LO16_BundleRelocationEmitter extends BundleRelocationEmitter {
+		private final static String LUI = "lui";
+		private final static String ADDIU = "addiu";
+		private final static String ADDU = "addu";
+		private final static List<String> LOAD_STORES =
+			List.of("lb", "lbu", "lh", "lhu", "lw", "sb", "sh", "sw");
+
 		private final DataConverter dc;
 
 		public MIPS_HI16LO16_BundleRelocationEmitter(Program program,
@@ -121,6 +128,21 @@ public class MIPSCodeRelocationSynthesizer
 			}
 
 			return foundRelocation;
+		}
+
+		@Override
+		public boolean isInstructionRelatedToNode(Instruction instruction, Node node) {
+			Instruction parentInstruction = node.getInstruction();
+
+			// Verify that inputs and output registers are coherent.
+			Register outputRegister = getOutputRegister(parentInstruction);
+			List<Register> inputRegisters = getInputRegisters(instruction);
+
+			if (outputRegister == null || inputRegisters == null) {
+				return true;
+			}
+
+			return inputRegisters.contains(outputRegister);
 		}
 
 		public boolean evaluateLo16(Reference reference, SymbolWithOffset symbol, Node node,
@@ -178,25 +200,52 @@ public class MIPSCodeRelocationSynthesizer
 			return true;
 		}
 
-		private boolean isHi16Candidate(Instruction instruction) {
-			List<String> mnemonics = List.of("lui");
+		private String getNormalizedMnemonic(Instruction instruction) {
 			String mnemonic = instruction.getMnemonicString();
 			if (mnemonic.startsWith("_")) {
 				mnemonic = mnemonic.substring(1);
 			}
+			return mnemonic;
+		}
 
-			return mnemonics.contains(mnemonic);
+		private boolean isHi16Candidate(Instruction instruction) {
+			String mnemonic = getNormalizedMnemonic(instruction);
+
+			return LUI.equals(mnemonic);
 		}
 
 		private boolean isLo16Candidate(Instruction instruction) {
-			List<String> mnemonics =
-				List.of("addiu", "lb", "lbu", "lh", "lhu", "lw", "sb", "sh", "sw");
-			String mnemonic = instruction.getMnemonicString();
-			if (mnemonic.startsWith("_")) {
-				mnemonic = mnemonic.substring(1);
+			String mnemonic = getNormalizedMnemonic(instruction);
+
+			return LOAD_STORES.contains(mnemonic) || ADDIU.equals(mnemonic);
+		}
+
+		private List<Register> getInputRegisters(Instruction instruction) {
+			String mnemonic = getNormalizedMnemonic(instruction);
+
+			if (LOAD_STORES.contains(mnemonic)) {
+				return List.of((Register) instruction.getOpObjects(1)[1]);
+			}
+			else if (mnemonic.equals(ADDIU)) {
+				return List.of((Register) instruction.getOpObjects(1)[0]);
+			}
+			else if (mnemonic.equals(ADDU)) {
+				return List.of((Register) instruction.getOpObjects(1)[0],
+					(Register) instruction.getOpObjects(2)[0]);
 			}
 
-			return mnemonics.contains(mnemonic);
+			return null;
+		}
+
+		private Register getOutputRegister(Instruction instruction) {
+			String mnemonic = getNormalizedMnemonic(instruction);
+
+			if (LOAD_STORES.contains(mnemonic) || mnemonic.equals(ADDIU) || mnemonic.equals(ADDU) ||
+				mnemonic.equals(LUI)) {
+				return (Register) instruction.getOpObjects(0)[0];
+			}
+
+			return null;
 		}
 	}
 

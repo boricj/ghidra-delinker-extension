@@ -119,7 +119,7 @@ public class MIPSCodeRelocationSynthesizer
 
 			Instruction instruction = node.getInstruction();
 			if (isLo16Candidate(instruction)) {
-				foundRelocation |= evaluateLo16(reference, symbol, node, node);
+				foundRelocation |= evaluateLo16(reference, symbol, node, node, null, 0);
 			}
 			else {
 				for (Node child : node.getChildren()) {
@@ -146,21 +146,28 @@ public class MIPSCodeRelocationSynthesizer
 		}
 
 		public boolean evaluateLo16(Reference reference, SymbolWithOffset symbol, Node node,
-				Node nodeLo16) throws MemoryAccessException {
+				Node nodeLo16, Node extraNodeLo16, int extraAddend) throws MemoryAccessException {
 			boolean foundRelocation = false;
+
+			int extraNodeLo16Addend = 0;
+			if (extraNodeLo16 != null) {
+				extraNodeLo16Addend = (short) dc.getInt(extraNodeLo16.getInstruction().getBytes());
+			}
 
 			for (Node child : node.getChildren()) {
 				Instruction instruction = child.getInstruction();
 
 				if (isHi16Candidate(instruction)) {
-					foundRelocation |= evaluateHi16(reference, symbol, child, nodeLo16);
+					foundRelocation |= evaluateHi16(reference, symbol, child, nodeLo16,
+						extraAddend + extraNodeLo16Addend);
 				}
 				else if (isLo16Candidate(instruction)) {
-					foundRelocation |= evaluateLo16(reference, symbol, child, child);
-					foundRelocation |= evaluateLo16(reference, symbol, child, nodeLo16);
+					foundRelocation |= evaluateLo16(reference, symbol, child, child, nodeLo16,
+						extraAddend + extraNodeLo16Addend);
 				}
 				else {
-					foundRelocation |= evaluateLo16(reference, symbol, child, nodeLo16);
+					foundRelocation |= evaluateLo16(reference, symbol, child, nodeLo16,
+						extraNodeLo16, extraAddend);
 				}
 			}
 
@@ -168,14 +175,14 @@ public class MIPSCodeRelocationSynthesizer
 		}
 
 		public boolean evaluateHi16(Reference reference, SymbolWithOffset symbol, Node node,
-				Node nodeLo16) throws MemoryAccessException {
+				Node nodeLo16, int extraAddend) throws MemoryAccessException {
 			Instruction hi16 = node.getInstruction();
 			Instruction lo16 = nodeLo16.getInstruction();
 
 			long toAddress = reference.getToAddress().getOffset();
-			long targetAddress = computeTargetAddress(hi16, lo16);
+			long targetAddress = computeTargetAddress(hi16, lo16) + extraAddend;
 			if (toAddress == targetAddress) {
-				return emitRelocation(hi16, lo16, symbol);
+				return emitRelocation(hi16, lo16, symbol, extraAddend);
 			}
 
 			return false;
@@ -187,16 +194,18 @@ public class MIPSCodeRelocationSynthesizer
 			return target + (short) dc.getInt(lo16.getBytes());
 		}
 
-		private boolean emitRelocation(Instruction hi16, Instruction lo16, SymbolWithOffset symbol)
+		private boolean emitRelocation(Instruction hi16, Instruction lo16, SymbolWithOffset symbol,
+				int extraAddend)
 				throws MemoryAccessException {
 			// FIXME: handle HI16/LO16 addends greater than 15 bits.
-			if (symbol.offset > 0x7fff) {
+			long lo16addend = symbol.offset - extraAddend;
+			if (lo16addend > 0x7fff) {
 				return false;
 			}
 
 			RelocationHighPair hiRel =
 				relocationTable.addHighPair(hi16.getAddress(), 4, 0xFFFF, symbol.name);
-			relocationTable.addLowPair(lo16.getAddress(), 4, 0xFFFF, hiRel, symbol.offset);
+			relocationTable.addLowPair(lo16.getAddress(), 4, 0xFFFF, hiRel, lo16addend);
 			return true;
 		}
 

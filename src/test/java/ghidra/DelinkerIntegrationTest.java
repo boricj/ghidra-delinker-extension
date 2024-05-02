@@ -134,6 +134,7 @@ public abstract class DelinkerIntegrationTest extends AbstractProgramBasedTest {
 			List<String> memoryBlockNames) {
 		AddressFactory addressFactory = program.getAddressFactory();
 		AddressSet set = addressFactory.getAddressSet();
+		set.clear();
 
 		List<MemoryBlock> memoryBlocks =
 			memoryBlockNames.stream().map(n -> program.getMemory().getBlock(n)).toList();

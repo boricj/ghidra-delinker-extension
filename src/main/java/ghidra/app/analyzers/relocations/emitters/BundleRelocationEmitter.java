@@ -14,15 +14,20 @@
 package ghidra.app.analyzers.relocations.emitters;
 
 import java.util.Arrays;
-import java.util.Set;
-import java.util.HashSet;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import ghidra.app.analyzers.relocations.utils.SymbolWithOffset;
 import ghidra.app.util.importer.MessageLog;
 import ghidra.program.model.address.Address;
+import ghidra.program.model.block.BasicBlockModel;
+import ghidra.program.model.block.CodeBlock;
+import ghidra.program.model.block.CodeBlockModel;
+import ghidra.program.model.block.CodeBlockReference;
+import ghidra.program.model.block.CodeBlockReferenceIterator;
 import ghidra.program.model.lang.Register;
 import ghidra.program.model.listing.Function;
 import ghidra.program.model.listing.Instruction;
@@ -79,7 +84,9 @@ public abstract class BundleRelocationEmitter implements FunctionInstructionSink
 	private final TaskMonitor monitor;
 	private final MessageLog log;
 
-	private final Map<Register, Node> registerNodes = new HashMap<>();
+	private final CodeBlockModel codeBlockModel;
+	private final Map<CodeBlock, Map<Register, Node>> codeBlockRegisterNodes = new HashMap<>();
+	private CodeBlock currentCodeBlock;
 
 	public BundleRelocationEmitter(Program program, RelocationTable relocationTable,
 			Function function, TaskMonitor monitor, MessageLog log) {
@@ -88,6 +95,8 @@ public abstract class BundleRelocationEmitter implements FunctionInstructionSink
 		this.function = function;
 		this.monitor = monitor;
 		this.log = log;
+
+		this.codeBlockModel = new BasicBlockModel(program);
 	}
 
 	public Program getProgram() {
@@ -113,6 +122,7 @@ public abstract class BundleRelocationEmitter implements FunctionInstructionSink
 	@Override
 	public boolean process(Instruction instruction)
 			throws MemoryAccessException, CancelledException {
+		Map<Register, Node> registerNodes = getRegisterNodesForInstruction(instruction);
 		ReferenceManager referenceManager = program.getReferenceManager();
 		Address fromAddress = instruction.getAddress();
 		boolean foundRelocation = false;
@@ -138,7 +148,7 @@ public abstract class BundleRelocationEmitter implements FunctionInstructionSink
 			foundRelocation |= evaluateRoot(reference, symbol, node);
 		}
 
-		updateRegisterNodes(instruction);
+		updateRegisterNodes(instruction, registerNodes);
 
 		return foundRelocation;
 	}
@@ -147,7 +157,7 @@ public abstract class BundleRelocationEmitter implements FunctionInstructionSink
 		return true;
 	}
 
-	private void updateRegisterNodes(Instruction instruction) {
+	private void updateRegisterNodes(Instruction instruction, Map<Register, Node> registerNodes) {
 		List<Node> children = Arrays.stream(instruction.getInputObjects())
 				.map(o -> registerNodes.getOrDefault(o, null))
 				.filter(o -> o != null)
@@ -163,6 +173,61 @@ public abstract class BundleRelocationEmitter implements FunctionInstructionSink
 		}
 
 		registerNodes.putAll(newOutputRegisterNodes);
+	}
+
+	private Map<Register, Node> getRegisterNodesForInstruction(Instruction instruction)
+			throws CancelledException {
+		Address address = instruction.getAddress();
+
+		if (currentCodeBlock == null || !currentCodeBlock.contains(address)) {
+			currentCodeBlock = codeBlockModel.getCodeBlockAt(address, monitor);
+		}
+
+		if (!codeBlockRegisterNodes.containsKey(currentCodeBlock)) {
+			CodeBlock latestPredecessorCodeBlock = findLatestPredecessorCodeBlock(currentCodeBlock);
+			Map<Register, Node> latestPredecessorRegisterNodes =
+				codeBlockRegisterNodes.get(latestPredecessorCodeBlock);
+
+			if (latestPredecessorRegisterNodes != null) {
+				codeBlockRegisterNodes.put(currentCodeBlock,
+					new HashMap<>(latestPredecessorRegisterNodes));
+			}
+			else {
+				codeBlockRegisterNodes.put(currentCodeBlock, new HashMap<>());
+			}
+		}
+
+		return codeBlockRegisterNodes.get(currentCodeBlock);
+	}
+
+	private CodeBlock findLatestPredecessorCodeBlock(CodeBlock codeBlock)
+			throws CancelledException {
+		Address codeBlockAddress = codeBlock.getMinAddress();
+
+		CodeBlock bestCodeBlockCandidate = null;
+		CodeBlockReferenceIterator it = codeBlock.getSources(monitor);
+		while (it.hasNext()) {
+			CodeBlockReference ref = it.next();
+			CodeBlock codeBlockCandidate = ref.getSourceBlock();
+			Address candidateMaxAddress = codeBlockCandidate.getMaxAddress();
+
+			if (!function.getBody().contains(codeBlockCandidate) ||
+				codeBlockCandidate.equals(codeBlock) ||
+				candidateMaxAddress.compareTo(codeBlockAddress) >= 0) {
+				continue;
+			}
+
+			if (bestCodeBlockCandidate == null) {
+				bestCodeBlockCandidate = codeBlockCandidate;
+				continue;
+			}
+
+			if (candidateMaxAddress.compareTo(bestCodeBlockCandidate.getMaxAddress()) > 0) {
+				bestCodeBlockCandidate = codeBlockCandidate;
+			}
+		}
+
+		return bestCodeBlockCandidate;
 	}
 
 	public abstract boolean evaluateRoot(Reference reference, SymbolWithOffset symbol, Node node)

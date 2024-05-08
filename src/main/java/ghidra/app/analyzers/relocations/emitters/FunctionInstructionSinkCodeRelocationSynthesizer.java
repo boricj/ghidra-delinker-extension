@@ -28,17 +28,20 @@ import ghidra.program.model.relocobj.CodeRelocationSynthesizer;
 import ghidra.program.model.relocobj.RelocationTable;
 import ghidra.program.model.symbol.Reference;
 import ghidra.program.model.symbol.ReferenceManager;
+import ghidra.util.exception.CancelledException;
+import ghidra.util.task.TaskMonitor;
 
 public abstract class FunctionInstructionSinkCodeRelocationSynthesizer
 		implements CodeRelocationSynthesizer {
 
 	@Override
 	public void processFunction(Program program, AddressSetView set, Function function,
-			RelocationTable relocationTable, MessageLog log) throws MemoryAccessException {
+			RelocationTable relocationTable, TaskMonitor monitor, MessageLog log)
+			throws MemoryAccessException, CancelledException {
 		ReferenceManager referenceManager = program.getReferenceManager();
 		Listing listing = program.getListing();
 		List<FunctionInstructionSink> sinks =
-			getFunctionInstructionSinks(program, relocationTable, function);
+			getFunctionInstructionSinks(program, relocationTable, function, monitor, log);
 
 		for (Instruction instruction : listing.getInstructions(function.getBody(), true)) {
 			Address fromAddress = instruction.getAddress();
@@ -59,5 +62,6 @@ public abstract class FunctionInstructionSinkCodeRelocationSynthesizer
 	}
 
 	public abstract List<FunctionInstructionSink> getFunctionInstructionSinks(Program program,
-			RelocationTable relocationTable, Function function);
+			RelocationTable relocationTable, Function function, TaskMonitor monitor,
+			MessageLog log);
 }

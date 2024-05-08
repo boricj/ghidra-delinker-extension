@@ -16,13 +16,15 @@ package ghidra.app.analyzers.relocations.emitters;
 import ghidra.program.model.listing.Instruction;
 import ghidra.program.model.mem.MemoryAccessException;
 import ghidra.program.model.symbol.Reference;
+import ghidra.util.exception.CancelledException;
 
 /**
  * This interface is used for processing the instructions of a function in
  * ascending address order.
  */
 public interface FunctionInstructionSink {
-	public abstract boolean process(Instruction instruction) throws MemoryAccessException;
+	public abstract boolean process(Instruction instruction)
+			throws MemoryAccessException, CancelledException;
 
 	public default boolean isReferenceInteresting(Reference reference) {
 		boolean interesting = reference.isPrimary();

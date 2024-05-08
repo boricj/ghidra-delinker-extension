@@ -22,6 +22,7 @@ import ghidra.program.model.listing.Program;
 import ghidra.program.model.mem.MemoryAccessException;
 import ghidra.program.model.relocobj.DataRelocationSynthesizer;
 import ghidra.program.model.relocobj.RelocationTable;
+import ghidra.util.task.TaskMonitor;
 
 public class AbsoluteDataRelocationSynthesizer implements DataRelocationSynthesizer {
 	public AbsoluteDataRelocationSynthesizer() {
@@ -29,7 +30,8 @@ public class AbsoluteDataRelocationSynthesizer implements DataRelocationSynthesi
 
 	@Override
 	public void processPointer(Program program, AddressSetView addressSet, Data pointer,
-			RelocationTable relocationTable, MessageLog log) throws MemoryAccessException {
+			RelocationTable relocationTable, TaskMonitor monitor, MessageLog log)
+			throws MemoryAccessException {
 		if (!pointer.isInitializedMemory()) {
 			return;
 		}

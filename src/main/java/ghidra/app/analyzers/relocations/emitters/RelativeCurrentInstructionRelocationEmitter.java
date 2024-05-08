@@ -16,6 +16,7 @@ package ghidra.app.analyzers.relocations.emitters;
 import java.util.List;
 
 import ghidra.app.analyzers.relocations.utils.SymbolWithOffset;
+import ghidra.app.util.importer.MessageLog;
 import ghidra.program.model.address.Address;
 import ghidra.program.model.listing.Function;
 import ghidra.program.model.listing.Instruction;
@@ -25,12 +26,13 @@ import ghidra.program.model.relocobj.RelocationTable;
 import ghidra.program.model.symbol.Reference;
 import ghidra.program.util.ProgramUtilities;
 import ghidra.util.DataConverter;
+import ghidra.util.task.TaskMonitor;
 
 public class RelativeCurrentInstructionRelocationEmitter extends InstructionRelocationEmitter {
 	public RelativeCurrentInstructionRelocationEmitter(Program program,
-			RelocationTable relocationTable,
-			Function function) {
-		super(program, relocationTable, function);
+			RelocationTable relocationTable, Function function, TaskMonitor monitor,
+			MessageLog log) {
+		super(program, relocationTable, function, monitor, log);
 	}
 
 	@Override

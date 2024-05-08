@@ -24,6 +24,7 @@ import ghidra.app.analyzers.relocations.emitters.InstructionRelocationEmitter;
 import ghidra.app.analyzers.relocations.emitters.RelativeNextInstructionRelocationEmitter;
 import ghidra.app.analyzers.relocations.emitters.SymbolRelativeInstructionRelocationEmitter;
 import ghidra.app.analyzers.relocations.utils.SymbolWithOffset;
+import ghidra.app.util.importer.MessageLog;
 import ghidra.program.model.address.Address;
 import ghidra.program.model.lang.Processor;
 import ghidra.program.model.lang.Register;
@@ -39,6 +40,7 @@ import ghidra.program.model.symbol.SymbolIterator;
 import ghidra.program.model.symbol.SymbolTable;
 import ghidra.program.util.ProgramUtilities;
 import ghidra.util.DataConverter;
+import ghidra.util.task.TaskMonitor;
 
 public class MIPSCodeRelocationSynthesizer
 		extends FunctionInstructionSinkCodeRelocationSynthesizer {
@@ -46,8 +48,9 @@ public class MIPSCodeRelocationSynthesizer
 		private static final List<Byte> OPMASK_JTYPE = Arrays.asList(new Byte[] { -1, -1, -1, 3 });
 
 		public MIPS_26_InstructionRelocationEmitter(Program program,
-				RelocationTable relocationTable, Function function) {
-			super(program, relocationTable, function);
+				RelocationTable relocationTable, Function function, TaskMonitor monitor,
+				MessageLog log) {
+			super(program, relocationTable, function, monitor, log);
 		}
 
 		@Override
@@ -106,8 +109,9 @@ public class MIPSCodeRelocationSynthesizer
 		private final DataConverter dc;
 
 		public MIPS_HI16LO16_BundleRelocationEmitter(Program program,
-				RelocationTable relocationTable, Function function) {
-			super(program, relocationTable, function);
+				RelocationTable relocationTable, Function function, TaskMonitor monitor,
+				MessageLog log) {
+			super(program, relocationTable, function, monitor, log);
 
 			this.dc = DataConverter.getInstance(program.getLanguage().isBigEndian());
 		}
@@ -203,6 +207,7 @@ public class MIPSCodeRelocationSynthesizer
 				return false;
 			}
 
+			RelocationTable relocationTable = getRelocationTable();
 			RelocationHighPair hiRel =
 				relocationTable.addHighPair(hi16.getAddress(), 4, 0xFFFF, symbol.name);
 			relocationTable.addLowPair(lo16.getAddress(), 4, 0xFFFF, hiRel, lo16addend);
@@ -278,8 +283,9 @@ public class MIPSCodeRelocationSynthesizer
 			extends RelativeNextInstructionRelocationEmitter {
 
 		public MIPS_PC16_InstructionRelocationEmitter(Program program,
-				RelocationTable relocationTable, Function function) {
-			super(program, relocationTable, function);
+				RelocationTable relocationTable, Function function, TaskMonitor monitor,
+				MessageLog log) {
+			super(program, relocationTable, function, monitor, log);
 		}
 
 		@Override
@@ -303,8 +309,9 @@ public class MIPSCodeRelocationSynthesizer
 			Arrays.asList(new Byte[] { -1, -1, -32, 3 });
 
 		public MIPS_GPREL16_InstructionRelocationEmitter(Program program,
-				RelocationTable relocationTable, Function function, Symbol fromSymbol) {
-			super(program, relocationTable, function, fromSymbol);
+				RelocationTable relocationTable, Function function, Symbol fromSymbol,
+				TaskMonitor monitor, MessageLog log) {
+			super(program, relocationTable, function, fromSymbol, monitor, log);
 		}
 
 		@Override
@@ -320,17 +327,21 @@ public class MIPSCodeRelocationSynthesizer
 
 	@Override
 	public List<FunctionInstructionSink> getFunctionInstructionSinks(Program program,
-			RelocationTable relocationTable, Function function) {
+			RelocationTable relocationTable, Function function, TaskMonitor monitor,
+			MessageLog log) {
 		List<FunctionInstructionSink> sinks = new ArrayList<>();
-		sinks.add(new MIPS_26_InstructionRelocationEmitter(program, relocationTable, function));
-		sinks.add(new MIPS_HI16LO16_BundleRelocationEmitter(program, relocationTable, function));
-		sinks.add(new MIPS_PC16_InstructionRelocationEmitter(program, relocationTable, function));
+		sinks.add(new MIPS_26_InstructionRelocationEmitter(program, relocationTable, function,
+			monitor, log));
+		sinks.add(new MIPS_HI16LO16_BundleRelocationEmitter(program, relocationTable, function,
+			monitor, log));
+		sinks.add(new MIPS_PC16_InstructionRelocationEmitter(program, relocationTable, function,
+			monitor, log));
 
 		SymbolTable symbolTable = program.getSymbolTable();
 		SymbolIterator _gp = symbolTable.getSymbols("_gp");
 		if (_gp.hasNext()) {
 			sinks.add(new MIPS_GPREL16_InstructionRelocationEmitter(program, relocationTable,
-				function, _gp.next()));
+				function, _gp.next(), monitor, log));
 		}
 
 		return sinks;

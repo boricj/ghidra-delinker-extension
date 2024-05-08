@@ -22,10 +22,12 @@ import ghidra.app.analyzers.relocations.emitters.FunctionInstructionSink;
 import ghidra.app.analyzers.relocations.emitters.FunctionInstructionSinkCodeRelocationSynthesizer;
 import ghidra.app.analyzers.relocations.emitters.InstructionRelocationEmitter;
 import ghidra.app.analyzers.relocations.emitters.RelativeNextInstructionRelocationEmitter;
+import ghidra.app.util.importer.MessageLog;
 import ghidra.program.model.lang.Processor;
 import ghidra.program.model.listing.Function;
 import ghidra.program.model.listing.Program;
 import ghidra.program.model.relocobj.RelocationTable;
+import ghidra.util.task.TaskMonitor;
 
 public class X86CodeRelocationSynthesizer extends FunctionInstructionSinkCodeRelocationSynthesizer {
 	private static class X86InstructionAbsoluteRelocationEmitter
@@ -41,8 +43,9 @@ public class X86CodeRelocationSynthesizer extends FunctionInstructionSinkCodeRel
 			Stream.concat(MASKS_ALLONES.stream(), EXTRA_MASKS.stream()).toList();
 
 		public X86InstructionAbsoluteRelocationEmitter(Program program,
-				RelocationTable relocationTable, Function function) {
-			super(program, relocationTable, function);
+				RelocationTable relocationTable, Function function, TaskMonitor monitor,
+				MessageLog log) {
+			super(program, relocationTable, function, monitor, log);
 		}
 
 		@Override
@@ -80,11 +83,14 @@ public class X86CodeRelocationSynthesizer extends FunctionInstructionSinkCodeRel
 
 	@Override
 	public List<FunctionInstructionSink> getFunctionInstructionSinks(Program program,
-			RelocationTable relocationTable, Function function) {
+			RelocationTable relocationTable, Function function, TaskMonitor monitor,
+			MessageLog log) {
 		InstructionRelocationEmitter absolute =
-			new X86InstructionAbsoluteRelocationEmitter(program, relocationTable, function);
+			new X86InstructionAbsoluteRelocationEmitter(program, relocationTable, function, monitor,
+				log);
 		InstructionRelocationEmitter relative =
-			new RelativeNextInstructionRelocationEmitter(program, relocationTable, function);
+			new RelativeNextInstructionRelocationEmitter(program, relocationTable, function,
+				monitor, log);
 
 		return List.of(absolute, relative);
 	}

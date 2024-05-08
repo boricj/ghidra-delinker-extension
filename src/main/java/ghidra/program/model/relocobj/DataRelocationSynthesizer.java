@@ -19,10 +19,12 @@ import ghidra.program.model.listing.Data;
 import ghidra.program.model.listing.Program;
 import ghidra.program.model.mem.MemoryAccessException;
 import ghidra.util.classfinder.ExtensionPoint;
+import ghidra.util.task.TaskMonitor;
 
 public interface DataRelocationSynthesizer extends ExtensionPoint {
 	public void processPointer(Program program, AddressSetView set, Data pointer,
-			RelocationTable relocationTable, MessageLog log) throws MemoryAccessException;
+			RelocationTable relocationTable, TaskMonitor monitor, MessageLog log)
+			throws MemoryAccessException;
 
 	public boolean canAnalyze(Program program);
 }

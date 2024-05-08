@@ -20,6 +20,7 @@ import java.util.List;
 import org.apache.commons.lang3.ArrayUtils;
 
 import ghidra.app.analyzers.relocations.utils.SymbolWithOffset;
+import ghidra.app.util.importer.MessageLog;
 import ghidra.program.model.address.Address;
 import ghidra.program.model.lang.InstructionPrototype;
 import ghidra.program.model.lang.Mask;
@@ -31,6 +32,7 @@ import ghidra.program.model.relocobj.RelocationTable;
 import ghidra.program.model.symbol.Reference;
 import ghidra.program.model.symbol.ReferenceManager;
 import ghidra.util.DataConverter;
+import ghidra.util.task.TaskMonitor;
 
 /**
  * This class streamlines the processing of relocations that fit within one
@@ -55,6 +57,8 @@ public abstract class InstructionRelocationEmitter implements FunctionInstructio
 	private final Program program;
 	private final RelocationTable relocationTable;
 	private final Function function;
+	private final TaskMonitor monitor;
+	private final MessageLog log;
 
 	public static class OperandValueRaw {
 		public int offset;
@@ -76,10 +80,12 @@ public abstract class InstructionRelocationEmitter implements FunctionInstructio
 	}
 
 	public InstructionRelocationEmitter(Program program, RelocationTable relocationTable,
-			Function function) {
+			Function function, TaskMonitor monitor, MessageLog log) {
 		this.program = program;
 		this.relocationTable = relocationTable;
 		this.function = function;
+		this.monitor = monitor;
+		this.log = log;
 	}
 
 	public Program getProgram() {
@@ -92,6 +98,14 @@ public abstract class InstructionRelocationEmitter implements FunctionInstructio
 
 	public Function getFunction() {
 		return function;
+	}
+
+	public TaskMonitor getTaskMonitor() {
+		return monitor;
+	}
+
+	public MessageLog getMessageLog() {
+		return log;
 	}
 
 	@Override

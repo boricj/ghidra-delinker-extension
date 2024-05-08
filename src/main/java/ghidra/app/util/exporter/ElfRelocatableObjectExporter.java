@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -64,7 +65,6 @@ import ghidra.program.model.relocobj.RelocationTable;
 import ghidra.program.model.symbol.Symbol;
 import ghidra.util.classfinder.ClassSearcher;
 import ghidra.util.task.TaskMonitor;
-
 import ghidra_delinker_extension.BuildConfig;
 
 /**
@@ -96,6 +96,7 @@ public class ElfRelocatableObjectExporter extends Exporter {
 
 	private Map<String, ElfRelocatableSymbol> symbolsByName;
 	private List<Section> sections = new ArrayList<>();
+	private Set<String> symbolNamesRelocationFileSet;
 
 	private static final String OPTION_GROUP_ELF_HEADER = "ELF header";
 	private static final String OPTION_GROUP_SYMBOLS = "Symbols";
@@ -469,14 +470,9 @@ public class ElfRelocatableObjectExporter extends Exporter {
 			if (symbol.isDynamic() && !includeDynamicSymbols) {
 				// Even if we don't want dynamic symbols, we still need them for internal relocations.
 				// FIXME: investigate section-relative relocations for internal relocations with dynamic symbols.
-				Iterable<Relocation> itRelocations =
-					() -> relocationTable.getRelocations(fileSet, predicateRelocation);
-				Stream<Relocation> relocations =
-					StreamSupport.stream(itRelocations.spliterator(), false);
 				String symbolName = getSymbolName(symbol.getName());
 
-				return relocations
-						.anyMatch(r -> getSymbolName(r.getSymbolName()).equals(symbolName));
+				return symbolNamesRelocationFileSet.contains(symbolName);
 			}
 
 			return true;
@@ -618,6 +614,12 @@ public class ElfRelocatableObjectExporter extends Exporter {
 		Predicate<Relocation> predicateRelocation =
 			relocationTable.predicateInterestingRelocations(fileSet);
 
+		for (MemoryBlock memoryBlock : program.getMemory().getBlocks()) {
+			addSectionForMemoryBlock(memoryBlock, predicateRelocation);
+		}
+
+		taskMonitor.setIndeterminate(true);
+
 		try (RandomAccessFile raf = new RandomAccessFile(file, "rw")) {
 			elf = new ElfRelocatableObject.Builder(file.getName())
 					.setType(ElfConstants.ET_REL)
@@ -626,13 +628,16 @@ public class ElfRelocatableObjectExporter extends Exporter {
 					.setData(e_ident_data)
 					.build();
 
+			if (generateSectionComment) {
+				addSectionComment();
+			}
+
 			if (generateStringAndSymbolTables) {
 				addStringAndSymbolTables();
 			}
 
-			for (MemoryBlock memoryBlock : program.getMemory().getBlocks()) {
-				addSectionForMemoryBlock(memoryBlock, predicateRelocation);
-			}
+			taskMonitor.setMessage("Compute file symbol set...");
+			computeSymbolNamesRelocationFileSet(relocationTable, predicateRelocation);
 
 			for (Section section : sections) {
 				taskMonitor.setMessage(String.format("Creating section %s...", section.getName()));
@@ -657,10 +662,6 @@ public class ElfRelocatableObjectExporter extends Exporter {
 				}
 			}
 
-			if (generateSectionComment) {
-				addSectionComment();
-			}
-
 			if (generateSectionNamesStringTable) {
 				taskMonitor.setMessage("Generating section names string table...");
 				addSectionNameStringTable();
@@ -681,6 +682,16 @@ public class ElfRelocatableObjectExporter extends Exporter {
 			return null;
 		}
 		return (Program) domainObj;
+	}
+
+	private void computeSymbolNamesRelocationFileSet(RelocationTable relocationTable,
+			Predicate<Relocation> predicateRelocation) {
+		Iterable<Relocation> itRelocations =
+			() -> relocationTable.getRelocations(fileSet, predicateRelocation);
+		Stream<Relocation> relocations =
+			StreamSupport.stream(itRelocations.spliterator(), false);
+		symbolNamesRelocationFileSet =
+			relocations.map(r -> r.getSymbolName()).collect(Collectors.toSet());
 	}
 
 	private void addStringAndSymbolTables() {

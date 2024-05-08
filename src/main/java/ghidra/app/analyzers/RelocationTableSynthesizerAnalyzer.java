@@ -81,19 +81,29 @@ public class RelocationTableSynthesizerAnalyzer extends AbstractAnalyzer {
 				"No data relocation synthesizers found for this processor!");
 		}
 
+		monitor.setMessage("Relocation table synthesizer: compute work size");
+		monitor.setIndeterminate(true);
+		monitor.setMaximum(calculateMaximumProgress(program, set));
+		monitor.setProgress(0);
+		monitor.setIndeterminate(false);
+
 		for (Function function : functionManager.getFunctions(set, true)) {
 			monitor.setMessage("Relocation table synthesizer: " + function.getName(true));
-			monitor.checkCancelled();
 
 			processFunction(codeSynthesizers, set, function, relocationTable, monitor, log);
+
+			monitor.incrementProgress(function.getBody().getNumAddresses());
+			monitor.checkCancelled();
 		}
 
 		for (Data data : listing.getDefinedData(set, true)) {
 			monitor.setMessage(
 				"Relocation table synthesizer: " + data.getAddressString(true, true));
-			monitor.checkCancelled();
 
 			processData(dataSynthesizers, set, data, relocationTable, monitor, log);
+
+			monitor.incrementProgress(data.getLength());
+			monitor.checkCancelled();
 		}
 
 		return true;
@@ -143,6 +153,23 @@ public class RelocationTableSynthesizerAnalyzer extends AbstractAnalyzer {
 					log);
 			}
 		}
+	}
+
+	private static long calculateMaximumProgress(Program program, AddressSetView set) {
+		Listing listing = program.getListing();
+		FunctionManager functionManager = program.getFunctionManager();
+
+		long progressSize = 0;
+
+		for (Function function : functionManager.getFunctions(set, true)) {
+			progressSize += function.getBody().getNumAddresses();
+		}
+
+		for (Data data : listing.getDefinedData(set, true)) {
+			progressSize += data.getLength();
+		}
+
+		return progressSize;
 	}
 
 	@Override

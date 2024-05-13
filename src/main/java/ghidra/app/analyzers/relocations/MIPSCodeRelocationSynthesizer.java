@@ -122,7 +122,8 @@ public class MIPSCodeRelocationSynthesizer
 			boolean foundRelocation = false;
 
 			Instruction instruction = node.getInstruction();
-			if (isLo16Candidate(instruction)) {
+			if (isLo16Candidate(instruction) &&
+				!isReferenceOnOutputRegister(instruction, reference)) {
 				foundRelocation |= evaluateLo16(reference, symbol, node, node, null, 0);
 			}
 			else {
@@ -135,18 +136,28 @@ public class MIPSCodeRelocationSynthesizer
 		}
 
 		@Override
-		public boolean isInstructionRelatedToNode(Instruction instruction, Node node) {
+		public boolean isInstructionReferenceRelatedToNode(Instruction instruction,
+				Reference reference, Node node) {
+			boolean result =
+				super.isInstructionReferenceRelatedToNode(instruction, reference, node);
 			Instruction parentInstruction = node.getInstruction();
 
 			// Verify that inputs and output registers are coherent.
 			Register outputRegister = getOutputRegister(parentInstruction);
-			List<Register> inputRegisters = getInputRegisters(instruction);
+			List<Register> inputRegisters;
 
-			if (outputRegister == null || inputRegisters == null) {
-				return true;
+			if (isReferenceOnOutputRegister(instruction, reference)) {
+				inputRegisters = List.of(getOutputRegister(instruction));
+			}
+			else {
+				inputRegisters = getInputRegisters(instruction);
 			}
 
-			return inputRegisters.contains(outputRegister);
+			if (outputRegister != null && inputRegisters != null) {
+				result &= inputRegisters.contains(outputRegister);
+			}
+
+			return result;
 		}
 
 		public boolean evaluateLo16(Reference reference, SymbolWithOffset symbol, Node node,
@@ -252,6 +263,10 @@ public class MIPSCodeRelocationSynthesizer
 
 		private boolean isLo16Candidate(Instruction instruction) {
 			return isLOADSTORE(instruction) || isADDIU(instruction);
+		}
+
+		private boolean isReferenceOnOutputRegister(Instruction instruction, Reference reference) {
+			return isLOADSTORE(instruction) && reference.getOperandIndex() == 0;
 		}
 
 		private List<Register> getInputRegisters(Instruction instruction) {

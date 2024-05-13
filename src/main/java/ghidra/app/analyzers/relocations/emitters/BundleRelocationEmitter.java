@@ -141,7 +141,8 @@ public abstract class BundleRelocationEmitter implements FunctionInstructionSink
 			operands.addAll(Arrays.asList(instruction.getResultObjects()));
 			List<Node> children = operands.stream()
 					.map(operand -> registerNodes.getOrDefault(operand, null))
-					.filter(node -> node != null && isInstructionRelatedToNode(instruction, node))
+					.filter(node -> node != null &&
+						isInstructionReferenceRelatedToNode(instruction, reference, node))
 					.toList();
 
 			Node node = new Node(instruction, null, children);
@@ -153,7 +154,8 @@ public abstract class BundleRelocationEmitter implements FunctionInstructionSink
 		return foundRelocation;
 	}
 
-	public boolean isInstructionRelatedToNode(Instruction instruction, Node node) {
+	public boolean isInstructionReferenceRelatedToNode(Instruction instruction, Reference reference,
+			Node node) {
 		return true;
 	}
 

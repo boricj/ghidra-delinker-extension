@@ -173,7 +173,10 @@ public class RelocationTable {
 		synchronized (relocations) {
 			Relocation relocation = relocations.getOrDefault(address, newRelocation);
 			if (!relocation.equals(newRelocation)) {
-				throw new IllegalStateException("relocation already exists at this address");
+				String msg = String.format(
+					"Non-equivalent relocation already exists at address %s for symbol %s", address,
+					relocation.getSymbolName());
+				throw new IllegalArgumentException(msg);
 			}
 
 			relocations.put(address, relocation);

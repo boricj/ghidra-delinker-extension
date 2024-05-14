@@ -76,6 +76,23 @@ public abstract class BundleRelocationEmitter implements FunctionInstructionSink
 		public List<Node> getChildren() {
 			return children;
 		}
+
+		@Override
+		public String toString() {
+			return String.format("%s> %s", instruction.getAddress(), instruction);
+		}
+
+		public String dumpGraph(int indentLevel) {
+			String nodeString = "";
+			for (int i = 0; i < indentLevel; i++) {
+				nodeString += "    ";
+			}
+			nodeString += this + "\n";
+
+			List<String> childrenStrings =
+				children.stream().map(n -> n.dumpGraph(indentLevel + 1)).toList();
+			return nodeString + String.join("", childrenStrings);
+		}
 	}
 
 	private final Program program;
@@ -146,7 +163,14 @@ public abstract class BundleRelocationEmitter implements FunctionInstructionSink
 					.toList();
 
 			Node node = new Node(instruction, null, children);
-			foundRelocation |= evaluateRoot(reference, symbol, node);
+			try {
+				foundRelocation |= evaluateRoot(reference, symbol, node);
+			}
+			catch (RuntimeException ex) {
+				String msg = String.format(
+					"Caught exception while processing instruction graph:\n%s", node.dumpGraph(0));
+				throw new RuntimeException(msg, ex);
+			}
 		}
 
 		updateRegisterNodes(instruction, registerNodes);

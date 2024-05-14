@@ -355,10 +355,14 @@ public class MIPSCodeRelocationSynthesizer
 		private static final List<Byte> OPMASK_LOAD_STORE =
 			Arrays.asList(new Byte[] { -1, -1, -32, 3 });
 
+		private final Register gp;
+
 		public MIPS_GPREL16_InstructionRelocationEmitter(Program program,
 				RelocationTable relocationTable, Function function, Symbol fromSymbol,
 				TaskMonitor monitor, MessageLog log) {
 			super(program, relocationTable, function, fromSymbol, monitor, log);
+
+			gp = program.getRegister("gp");
 		}
 
 		@Override
@@ -369,6 +373,17 @@ public class MIPSCodeRelocationSynthesizer
 		@Override
 		public int getSizeFromMask(List<Byte> mask) {
 			return 2;
+		}
+
+		@Override
+		public boolean matches(Instruction instruction, int operandIndex, Reference reference,
+				int offset, List<Byte> mask) throws MemoryAccessException {
+			Object[] objects = instruction.getOpObjects(operandIndex);
+			if (!Arrays.asList(objects).contains(gp)) {
+				return false;
+			}
+
+			return super.matches(instruction, operandIndex, reference, offset, mask);
 		}
 	}
 

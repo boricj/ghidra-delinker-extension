@@ -103,8 +103,11 @@ public class MIPSCodeRelocationSynthesizer
 		private final static String LUI = "lui";
 		private final static String ADDIU = "addiu";
 		private final static String ADDU = "addu";
-		private final static List<String> LOADS = List.of("lb", "lbu", "lh", "lhu", "lw");
-		private final static List<String> STORES = List.of("sb", "sh", "sw");
+		private final static String LWL = "lwl";
+		private final static String SWL = "swl";
+		private final static List<String> LOADS =
+			List.of("lb", "lbu", "lh", "lhu", "lw", LWL, "lwr");
+		private final static List<String> STORES = List.of("sb", "sh", "sw", SWL, "swr");
 
 		private final DataConverter dc;
 
@@ -167,6 +170,11 @@ public class MIPSCodeRelocationSynthesizer
 			int extraNodeLo16Addend = 0;
 			if (extraNodeLo16 != null) {
 				extraNodeLo16Addend = (short) dc.getInt(extraNodeLo16.getInstruction().getBytes());
+			}
+
+			Instruction lo16Instruction = node.getInstruction();
+			if (isLWL(lo16Instruction) || isSWL(lo16Instruction)) {
+				extraAddend -= ((short) dc.getInt(lo16Instruction.getBytes())) % 4;
 			}
 
 			for (Node child : node.getChildren()) {
@@ -255,6 +263,14 @@ public class MIPSCodeRelocationSynthesizer
 
 		private boolean isADDU(Instruction instruction) {
 			return ADDU.equals(getNormalizedMnemonic(instruction));
+		}
+
+		private boolean isLWL(Instruction instruction) {
+			return LWL.equals(getNormalizedMnemonic(instruction));
+		}
+
+		private boolean isSWL(Instruction instruction) {
+			return SWL.equals(getNormalizedMnemonic(instruction));
 		}
 
 		private boolean isHi16Candidate(Instruction instruction) {

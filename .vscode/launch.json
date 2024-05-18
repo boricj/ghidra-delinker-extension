@@ -1,31 +1,32 @@
 {
-    "configurations": [
-        {
-            "args": "ghidra.GhidraRun",
-            "console": "internalConsole",
-            "mainClass": "ghidra.GhidraLauncher",
-            "name": "Ghidra Debug",
-            "projectName": "ghidra-delinker-extension",
-            "request": "launch",
-            "shortenCommandLine": "argfile",
-            "type": "java",
-            "vmArgs": [
-                "-XX:+IgnoreUnrecognizedVMOptions",
-                "-XX:+ShowCodeDetailsInExceptionMessages",
-                "-Djava.system.class.loader=ghidra.GhidraClassLoader",
-                "-Declipse.project.dir=${workspaceFolder}",
-                "-Dpython.console.encoding=UTF-8",
-                "-Dfile.encoding=UTF8",
-                "-Dlog4j.configuration=${env:GHIDRA_INSTALL_DIR}/support/debug.log4j.xml",
-                "-Dlog4j.skipJansi=true",
-                "-Duser.country=US",
-                "-Duser.language=en",
-                "-Dsun.stdout.encoding=UTF-8",
-                "-Dsun.err.encoding=UTF-8",
-                "-Dvisualvm.display.name=Ghidra",
-                "-Dghidra.test.property.timeout.disable=true"
-            ]
-        }
-    ],
-    "version": "0.2.0"
+	"configurations": [
+		{
+			"args": "ghidra.GhidraRun",
+			"console": "internalConsole",
+			"mainClass": "ghidra.GhidraLauncher",
+			"name": "Ghidra (Debug)",
+			"projectName": "ghidra-delinker-extension",
+			"request": "launch",
+			"shortenCommandLine": "argfile",
+			"type": "java",
+			"classPaths": [
+				"${env:GHIDRA_INSTALL_DIR}/Ghidra/Framework/Utility/lib/Utility.jar",
+				"${workspaceFolder}/build"
+			],
+			"vmArgs": [
+				"-Dawt.useSystemAAFontSettings=on",
+				"-Declipse.project.dir=${workspaceFolder}",
+				"-Dfile.encoding=UTF8",
+				"-Djava.system.class.loader=ghidra.GhidraClassLoader",
+				"-Dlog4j.configurationFile=${env:GHIDRA_INSTALL_DIR}/support/debug.log4j.xml",
+				"-Dpython.console.encoding=UTF-8",
+				"-Dsun.java2d.pmoffscreen=false",
+				"-Dsun.java2d.uiScale=1",
+				"-Dsun.java2d.xrender=true",
+				"-showversion",
+				"-Xshare:off"
+			]
+		}
+	],
+	"version": "0.2.0"
 }

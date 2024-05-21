@@ -42,7 +42,7 @@ import ghidra.program.util.ProgramUtilities;
 import ghidra.util.DataConverter;
 import ghidra.util.task.TaskMonitor;
 
-public class MIPSCodeRelocationSynthesizer
+public class MipsCodeRelocationSynthesizer
 		extends FunctionInstructionSinkCodeRelocationSynthesizer {
 	private static class MIPS_26_InstructionRelocationEmitter extends InstructionRelocationEmitter {
 		private static final List<Byte> OPMASK_JTYPE = Arrays.asList(new Byte[] { -1, -1, -1, 3 });

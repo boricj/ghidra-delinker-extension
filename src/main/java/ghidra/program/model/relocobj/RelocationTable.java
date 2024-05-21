@@ -30,13 +30,9 @@ import ghidra.program.model.address.Address;
 import ghidra.program.model.address.AddressFactory;
 import ghidra.program.model.address.AddressRange;
 import ghidra.program.model.address.AddressSetView;
-import ghidra.program.model.listing.CodeUnit;
-import ghidra.program.model.listing.Listing;
 import ghidra.program.model.listing.Program;
 import ghidra.program.model.mem.MemoryAccessException;
 import ghidra.program.model.mem.MemoryBlock;
-import ghidra.program.model.symbol.Reference;
-import ghidra.program.model.symbol.ReferenceManager;
 import ghidra.util.DataConverter;
 
 public class RelocationTable {
@@ -264,36 +260,5 @@ public class RelocationTable {
 		RelocationRelativeSymbol rel = new RelocationRelativeSymbol(this, address, width, bitmask,
 			symbolName, addend, relativeSymbolName);
 		return (RelocationRelativeSymbol) add(rel);
-	}
-
-	public Predicate<Relocation> predicateInterestingRelocations(final AddressSetView addressSet) {
-		return new Predicate<Relocation>() {
-			@Override
-			public boolean test(Relocation r) {
-				if (r instanceof RelocationRelativePC) {
-					RelocationRelativePC relocation = (RelocationRelativePC) r;
-
-					ReferenceManager referenceManager = currentProgram.getReferenceManager();
-					Listing listing = currentProgram.getListing();
-					CodeUnit codeUnit = listing.getCodeUnitContaining(relocation.getAddress());
-
-					Address fromAddress = codeUnit.getAddress();
-					AddressRange fromRange = addressSet.getRangeContaining(fromAddress);
-
-					for (Reference reference : referenceManager.getReferencesFrom(fromAddress)) {
-						if (!reference.isPrimary()) {
-							continue;
-						}
-
-						Address toAddress = reference.getToAddress();
-						if (fromRange.contains(toAddress)) {
-							return false;
-						}
-					}
-				}
-
-				return true;
-			}
-		};
 	}
 }

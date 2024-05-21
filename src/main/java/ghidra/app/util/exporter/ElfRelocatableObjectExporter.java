@@ -611,8 +611,9 @@ public class ElfRelocatableObjectExporter extends Exporter {
 		this.fileSet = fileSet;
 
 		RelocationTable relocationTable = RelocationTable.get(program);
+		final AddressSetView predicateSet = fileSet;
 		Predicate<Relocation> predicateRelocation =
-			relocationTable.predicateInterestingRelocations(fileSet);
+			(Relocation r) -> r.isNeeded(program, predicateSet);
 
 		for (MemoryBlock memoryBlock : program.getMemory().getBlocks()) {
 			addSectionForMemoryBlock(memoryBlock, predicateRelocation);

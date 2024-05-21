@@ -15,6 +15,7 @@ package ghidra.program.model.relocobj;
 
 import ghidra.program.model.address.Address;
 import ghidra.program.model.address.AddressSetView;
+import ghidra.program.model.listing.Program;
 import ghidra.util.DataConverter;
 
 public interface Relocation {
@@ -30,6 +31,10 @@ public interface Relocation {
 
 	public void unapply(byte[] buffer, AddressSetView bufferAddressSet, DataConverter dc,
 			boolean encodeAddend);
+
+	default public boolean isNeeded(Program program, AddressSetView addressSet) {
+		return true;
+	}
 
 	public static long getAddressOffsetWithinSet(AddressSetView addressSet, Address address) {
 		Address minAddress = addressSet.getMinAddress();

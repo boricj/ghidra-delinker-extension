@@ -87,7 +87,7 @@ public class MIPSCodeRelocationSynthesizer
 		public boolean emitRelocation(Instruction instruction, int operandIndex,
 				SymbolWithOffset symbol, Reference reference, int offset, List<Byte> mask,
 				long addend) throws MemoryAccessException {
-			if (addend < 0 || addend > 0x3ffffff) {
+			if (addend < -0x4000000 || addend > 0x3ffffff) {
 				return false;
 			}
 

@@ -23,18 +23,38 @@ import ghidra.program.model.symbol.Reference;
 import ghidra.program.model.symbol.ReferenceManager;
 
 public class RelocationRelativePC extends AbstractRelocationBitmask {
+	private final boolean isTransparent;
+
 	protected RelocationRelativePC(RelocationTable relocationTable, Address address, int width,
 			String symbolName, long addend) {
-		super(relocationTable, address, width, symbolName, addend);
+		this(relocationTable, address, width, symbolName, addend, true);
 	}
 
 	protected RelocationRelativePC(RelocationTable relocationTable, Address address, int width,
 			long bitmask, String symbolName, long addend) {
+		this(relocationTable, address, width, bitmask, symbolName, addend, true);
+	}
+
+	protected RelocationRelativePC(RelocationTable relocationTable, Address address, int width,
+			String symbolName, long addend, boolean isTransparent) {
+		super(relocationTable, address, width, symbolName, addend);
+
+		this.isTransparent = isTransparent;
+	}
+
+	protected RelocationRelativePC(RelocationTable relocationTable, Address address, int width,
+			long bitmask, String symbolName, long addend, boolean isTransparent) {
 		super(relocationTable, address, width, bitmask, symbolName, addend);
+
+		this.isTransparent = isTransparent;
 	}
 
 	@Override
 	public boolean isNeeded(Program program, AddressSetView addressSet) {
+		if (!isTransparent) {
+			return true;
+		}
+
 		ReferenceManager referenceManager = program.getReferenceManager();
 		Listing listing = program.getListing();
 		CodeUnit codeUnit = listing.getCodeUnitContaining(getAddress());

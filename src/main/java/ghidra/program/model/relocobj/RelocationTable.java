@@ -241,10 +241,25 @@ public class RelocationTable {
 		return (RelocationRelativePC) add(rel);
 	}
 
+	public RelocationRelativePC addRelativePC(Address address, int width, String symbolName,
+			long addend, boolean isTransparent) {
+		RelocationRelativePC rel =
+			new RelocationRelativePC(this, address, width, symbolName, addend, isTransparent);
+		return (RelocationRelativePC) add(rel);
+	}
+
 	public RelocationRelativePC addRelativePC(Address address, int width, long bitmask,
 			String symbolName, long addend) {
 		RelocationRelativePC rel =
 			new RelocationRelativePC(this, address, width, bitmask, symbolName, addend);
+		return (RelocationRelativePC) add(rel);
+	}
+
+	public RelocationRelativePC addRelativePC(Address address, int width, long bitmask,
+			String symbolName, long addend, boolean isTransparent) {
+		RelocationRelativePC rel =
+			new RelocationRelativePC(this, address, width, bitmask, symbolName, addend,
+				isTransparent);
 		return (RelocationRelativePC) add(rel);
 	}
 

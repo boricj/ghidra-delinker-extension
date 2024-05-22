@@ -63,5 +63,5 @@ public abstract class FunctionInstructionSinkCodeRelocationSynthesizer
 
 	public abstract List<FunctionInstructionSink> getFunctionInstructionSinks(Program program,
 			RelocationTable relocationTable, Function function, TaskMonitor monitor,
-			MessageLog log);
+			MessageLog log) throws CancelledException;
 }

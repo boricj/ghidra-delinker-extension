@@ -27,6 +27,7 @@ import ghidra.program.model.lang.Processor;
 import ghidra.program.model.listing.Function;
 import ghidra.program.model.listing.Program;
 import ghidra.program.model.relocobj.RelocationTable;
+import ghidra.util.exception.CancelledException;
 import ghidra.util.task.TaskMonitor;
 
 public class X86CodeRelocationSynthesizer extends FunctionInstructionSinkCodeRelocationSynthesizer {
@@ -84,7 +85,7 @@ public class X86CodeRelocationSynthesizer extends FunctionInstructionSinkCodeRel
 	@Override
 	public List<FunctionInstructionSink> getFunctionInstructionSinks(Program program,
 			RelocationTable relocationTable, Function function, TaskMonitor monitor,
-			MessageLog log) {
+			MessageLog log) throws CancelledException {
 		InstructionRelocationEmitter absolute =
 			new X86InstructionAbsoluteRelocationEmitter(program, relocationTable, function, monitor,
 				log);

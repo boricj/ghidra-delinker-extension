@@ -40,6 +40,7 @@ import ghidra.program.model.symbol.SymbolIterator;
 import ghidra.program.model.symbol.SymbolTable;
 import ghidra.program.util.ProgramUtilities;
 import ghidra.util.DataConverter;
+import ghidra.util.exception.CancelledException;
 import ghidra.util.task.TaskMonitor;
 
 public class MipsCodeRelocationSynthesizer
@@ -390,7 +391,7 @@ public class MipsCodeRelocationSynthesizer
 	@Override
 	public List<FunctionInstructionSink> getFunctionInstructionSinks(Program program,
 			RelocationTable relocationTable, Function function, TaskMonitor monitor,
-			MessageLog log) {
+			MessageLog log) throws CancelledException {
 		List<FunctionInstructionSink> sinks = new ArrayList<>();
 		sinks.add(new MIPS_26_InstructionRelocationEmitter(program, relocationTable, function,
 			monitor, log));

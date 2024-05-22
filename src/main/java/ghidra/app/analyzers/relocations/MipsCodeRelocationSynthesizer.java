@@ -15,7 +15,11 @@ package ghidra.app.analyzers.relocations;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import ghidra.app.analyzers.relocations.emitters.BundleRelocationEmitter;
 import ghidra.app.analyzers.relocations.emitters.FunctionInstructionSink;
@@ -26,14 +30,22 @@ import ghidra.app.analyzers.relocations.emitters.SymbolRelativeInstructionReloca
 import ghidra.app.analyzers.relocations.utils.SymbolWithOffset;
 import ghidra.app.util.importer.MessageLog;
 import ghidra.program.model.address.Address;
+import ghidra.program.model.block.BasicBlockModel;
+import ghidra.program.model.block.CodeBlock;
+import ghidra.program.model.block.CodeBlockIterator;
+import ghidra.program.model.block.CodeBlockModel;
+import ghidra.program.model.block.CodeBlockReference;
+import ghidra.program.model.block.CodeBlockReferenceIterator;
 import ghidra.program.model.lang.Processor;
 import ghidra.program.model.lang.Register;
 import ghidra.program.model.listing.Function;
 import ghidra.program.model.listing.Instruction;
+import ghidra.program.model.listing.Listing;
 import ghidra.program.model.listing.Program;
 import ghidra.program.model.mem.MemoryAccessException;
 import ghidra.program.model.relocobj.RelocationHighPair;
 import ghidra.program.model.relocobj.RelocationTable;
+import ghidra.program.model.symbol.FlowType;
 import ghidra.program.model.symbol.Reference;
 import ghidra.program.model.symbol.Symbol;
 import ghidra.program.model.symbol.SymbolIterator;
@@ -48,10 +60,14 @@ public class MipsCodeRelocationSynthesizer
 	private static class MIPS_26_InstructionRelocationEmitter extends InstructionRelocationEmitter {
 		private static final List<Byte> OPMASK_JTYPE = Arrays.asList(new Byte[] { -1, -1, -1, 3 });
 
+		private final Set<Instruction> branchesToShiftByOne;
+
 		public MIPS_26_InstructionRelocationEmitter(Program program,
-				RelocationTable relocationTable, Function function, TaskMonitor monitor,
-				MessageLog log) {
+				RelocationTable relocationTable, Function function,
+				Set<Instruction> branchesToShiftByOne, TaskMonitor monitor, MessageLog log) {
 			super(program, relocationTable, function, monitor, log);
+
+			this.branchesToShiftByOne = branchesToShiftByOne;
 		}
 
 		@Override
@@ -88,6 +104,11 @@ public class MipsCodeRelocationSynthesizer
 		public boolean emitRelocation(Instruction instruction, int operandIndex,
 				SymbolWithOffset symbol, Reference reference, int offset, List<Byte> mask,
 				long addend) throws MemoryAccessException {
+			if (branchesToShiftByOne.contains(instruction)) {
+				logBranchDelaySlotWithHI16(instruction.getAddress(), getMessageLog());
+				addend -= 1;
+			}
+
 			if (addend < -0x4000000 || addend > 0x3ffffff) {
 				return false;
 			}
@@ -330,10 +351,14 @@ public class MipsCodeRelocationSynthesizer
 	private static class MIPS_PC16_InstructionRelocationEmitter
 			extends RelativeNextInstructionRelocationEmitter {
 
+		private final Set<Instruction> branchesToShiftByOne;
+
 		public MIPS_PC16_InstructionRelocationEmitter(Program program,
-				RelocationTable relocationTable, Function function, TaskMonitor monitor,
-				MessageLog log) {
+				RelocationTable relocationTable, Function function,
+				Set<Instruction> branchesToShiftByOne, TaskMonitor monitor, MessageLog log) {
 			super(program, relocationTable, function, monitor, log);
+
+			this.branchesToShiftByOne = branchesToShiftByOne;
 		}
 
 		@Override
@@ -348,6 +373,28 @@ public class MipsCodeRelocationSynthesizer
 		public long computeValue(Instruction instruction, int operandIndex, Reference reference,
 				int offset, List<Byte> mask) throws MemoryAccessException {
 			return super.computeValue(instruction, operandIndex, reference, offset, mask) << 2;
+		}
+
+		@Override
+		public boolean emitRelocation(Instruction instruction, int operandIndex,
+				SymbolWithOffset symbol, Reference reference, int offset, List<Byte> mask,
+				long addend) throws MemoryAccessException {
+			if (branchesToShiftByOne.contains(instruction)) {
+				// FIXME: clean up hack job for branch delay slots with HI16.
+				logBranchDelaySlotWithHI16(instruction.getAddress(), getMessageLog());
+				addend -= 1;
+
+				RelocationTable relocationTable = getRelocationTable();
+				Address fromAddress = instruction.getAddress();
+
+				relocationTable.addRelativePC(fromAddress.add(offset), getSizeFromMask(mask),
+					symbol.name, addend, false);
+				return true;
+			}
+			else {
+				return super.emitRelocation(instruction, operandIndex, symbol, reference, offset,
+					mask, addend);
+			}
 		}
 	}
 
@@ -392,13 +439,15 @@ public class MipsCodeRelocationSynthesizer
 	public List<FunctionInstructionSink> getFunctionInstructionSinks(Program program,
 			RelocationTable relocationTable, Function function, TaskMonitor monitor,
 			MessageLog log) throws CancelledException {
+		Set<Instruction> branchesToShiftByOne =
+			detectBranchDelaySlotsWithHI16(program, function, monitor);
 		List<FunctionInstructionSink> sinks = new ArrayList<>();
 		sinks.add(new MIPS_26_InstructionRelocationEmitter(program, relocationTable, function,
-			monitor, log));
+			branchesToShiftByOne, monitor, log));
 		sinks.add(new MIPS_HI16LO16_BundleRelocationEmitter(program, relocationTable, function,
 			monitor, log));
 		sinks.add(new MIPS_PC16_InstructionRelocationEmitter(program, relocationTable, function,
-			monitor, log));
+			branchesToShiftByOne, monitor, log));
 
 		SymbolTable symbolTable = program.getSymbolTable();
 		SymbolIterator _gp = symbolTable.getSymbols("_gp");
@@ -408,6 +457,98 @@ public class MipsCodeRelocationSynthesizer
 		}
 
 		return sinks;
+	}
+
+	/**
+	 * The MIPS instruction set has the following quirks that can combine into a complete mess:
+	 * 	* It relies on pairs of HI16/LO16 relocations to load absolute 32-bit pointers.
+	 * 	* It has branch delay slots.
+	 *
+	 * One common MIPS optimization trick done by assemblers is to fill these delay slots by
+	 * duplicating the target instruction inside the delay slot and shifting the branch target one
+	 * instruction forward, resulting in an instruction stream shortened by one instruction.
+	 *
+	 * Unfortunately, some assemblers can decide to vacuum up instructions with a HI16 relocation,
+	 * meaning that a LO16 relocation could have multiple HI16 relocation parents. This pattern
+	 * can't be expressed by any object file format that I'm aware of. Therefore, we need to undo
+	 * this optimization by shifting these branch targets back one instruction in order to recover
+	 * valid HI16/LO16 relocation pairs.
+	 */
+	private Set<Instruction> detectBranchDelaySlotsWithHI16(Program program, Function function,
+			TaskMonitor monitor) throws CancelledException {
+		Set<Instruction> set = new HashSet<>();
+		CodeBlockModel codeBlockModel = new BasicBlockModel(program);
+
+		CodeBlockIterator it = codeBlockModel.getCodeBlocksContaining(function.getBody(), monitor);
+		while (it.hasNext()) {
+			set.addAll(
+				detectBranchDelaySlotsWithHI16_CodeBlock(program, function, it.next(), monitor));
+		}
+
+		return set;
+	}
+
+	private Set<Instruction> detectBranchDelaySlotsWithHI16_CodeBlock(Program program,
+			Function function, CodeBlock codeBlock, TaskMonitor monitor) throws CancelledException {
+		CodeBlockReferenceIterator refIt = codeBlock.getSources(monitor);
+		List<CodeBlock> sources = new ArrayList<>();
+		CodeBlock fallThrough = null;
+
+		while (refIt.hasNext()) {
+			CodeBlockReference ref = refIt.next();
+			CodeBlock sourceCodeBlock = ref.getSourceBlock();
+			if (!function.getBody().contains(sourceCodeBlock)) {
+				// This deoptimization is strictly scoped to within a function, bail out.
+				return Collections.emptySet();
+			}
+
+			if (ref.getFlowType() == FlowType.FALL_THROUGH) {
+				fallThrough = sourceCodeBlock;
+			}
+			else {
+				sources.add(sourceCodeBlock);
+			}
+		}
+
+		if (!sources.isEmpty() && fallThrough != null) {
+			return detectBranchDelaySlotsWithHI16_CodeBlockSources(program, function, codeBlock,
+				sources);
+		}
+
+		return Collections.emptySet();
+	}
+
+	private Set<Instruction> detectBranchDelaySlotsWithHI16_CodeBlockSources(Program program,
+			Function function, CodeBlock codeBlock, List<CodeBlock> sources)
+			throws CancelledException {
+		Listing listing = program.getListing();
+		Instruction targetInstruction =
+			(Instruction) listing.getCodeUnitAt(codeBlock.getMinAddress());
+		Instruction previousInstruction =
+			(Instruction) listing.getCodeUnitBefore(targetInstruction.getAddress());
+		if (!previousInstruction.getMnemonicString().equals("lui") &&
+			!previousInstruction.getMnemonicString().equals("_lui")) {
+			return Collections.emptySet();
+		}
+
+		return sources.stream()
+				.map(c -> (Instruction) listing.getCodeUnitContaining(c.getMaxAddress()))
+				.filter(i -> {
+					try {
+						return Arrays.equals(i.getBytes(), previousInstruction.getBytes());
+					}
+					catch (MemoryAccessException ex) {
+						return false;
+					}
+				})
+				.map(i -> (Instruction) listing.getCodeUnitBefore(i.getAddress()))
+				.filter(i -> i.getAddress().compareTo(targetInstruction.getAddress()) < 0)
+				.collect(Collectors.toSet());
+	}
+
+	private static void logBranchDelaySlotWithHI16(Address address, MessageLog log) {
+		log.appendMsg(address.toString(),
+			"Branch instruction target adjusted to deoptimize possible HI16 relocation inside delay slot");
 	}
 
 	@Override

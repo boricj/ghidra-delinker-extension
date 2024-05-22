@@ -85,7 +85,7 @@ public abstract class AbstractRelocationBitmask implements Relocation {
 		int offset = (int) Relocation.getAddressOffsetWithinSet(addressSet, address);
 		long value = dc.getValue(buffer, offset, width) & ~bitmask;
 		if (encodeAddend) {
-			value = value | addend;
+			value = value | (addend & bitmask);
 		}
 		dc.putValue(value, width, buffer, offset);
 	}

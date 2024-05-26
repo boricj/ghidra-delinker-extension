@@ -542,7 +542,6 @@ public class MipsCodeRelocationSynthesizer
 					}
 				})
 				.map(i -> (Instruction) listing.getCodeUnitBefore(i.getAddress()))
-				.filter(i -> i.getAddress().compareTo(targetInstruction.getAddress()) < 0)
 				.collect(Collectors.toSet());
 	}
 

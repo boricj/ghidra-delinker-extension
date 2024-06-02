@@ -23,8 +23,6 @@ import ghidra.program.model.address.AddressFactory;
 import ghidra.program.model.address.AddressSetView;
 
 public class I386_main_o_IntegrationTest extends DelinkerIntegrationTest {
-	private static final String INPUT_FORMAT = "elf32-little";
-
 	private static final File ctypeFile =
 		new File("src/test/resources/ascii-table/reference/freestanding/i386/main.o");
 
@@ -48,9 +46,8 @@ public class I386_main_o_IntegrationTest extends DelinkerIntegrationTest {
 			Map.entry(0x163, new byte[] { 0x67, -24, -4, -1, -1, -1 }),
 			Map.entry(0x21e, new byte[] { 0x1d, -1, -1, -1 }));
 
-		compareElfSectionBytes(INPUT_FORMAT, ctypeFile, ".text", exportedFile, ".text",
-			text_patches);
-		compareElfSectionBytes(INPUT_FORMAT, ctypeFile, ".rodata", exportedFile, ".rodata");
-		compareElfSectionSizes(INPUT_FORMAT, ctypeFile, ".rel.rodata", exportedFile, ".rel.rodata");
+		compareElfSectionBytes(ctypeFile, ".text", exportedFile, ".text", text_patches);
+		compareElfSectionBytes(ctypeFile, ".rodata", exportedFile, ".rodata");
+		compareElfSectionSizes(ctypeFile, ".rel.rodata", exportedFile, ".rel.rodata");
 	}
 }

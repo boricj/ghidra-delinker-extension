@@ -22,8 +22,6 @@ import ghidra.program.model.address.AddressFactory;
 import ghidra.program.model.address.AddressSetView;
 
 public class Mipsel_ctype_o_IntegrationTest extends DelinkerIntegrationTest {
-	private static final String INPUT_FORMAT = "elf32-little";
-
 	private static final File ctypeFile =
 		new File("src/test/resources/ascii-table/reference/freestanding/mipsel/ctype.o");
 
@@ -39,8 +37,8 @@ public class Mipsel_ctype_o_IntegrationTest extends DelinkerIntegrationTest {
 				.union(af.getAddressSet(af.getAddress("00400a00"), af.getAddress("00400b0f"))); 	// .rodata
 		File exportedFile = exportElfObjectFile(set, null);
 
-		compareElfSectionBytes(INPUT_FORMAT, ctypeFile, ".text", exportedFile, ".text");
-		compareElfSectionSizes(INPUT_FORMAT, ctypeFile, ".rel.text", exportedFile, ".rel.text");
-		compareElfSectionBytes(INPUT_FORMAT, ctypeFile, ".rodata", exportedFile, ".rodata");
+		compareElfSectionBytes(ctypeFile, ".text", exportedFile, ".text");
+		compareElfSectionSizes(ctypeFile, ".rel.text", exportedFile, ".rel.text");
+		compareElfSectionBytes(ctypeFile, ".rodata", exportedFile, ".rodata");
 	}
 }

@@ -23,8 +23,6 @@ import ghidra.program.model.address.AddressFactory;
 import ghidra.program.model.address.AddressSetView;
 
 public class Mipsel_main_o_IntegrationTest extends DelinkerIntegrationTest {
-	private static final String INPUT_FORMAT = "elf32-little";
-
 	private static final File mainFile =
 		new File("src/test/resources/ascii-table/reference/freestanding/mipsel/main.o");
 
@@ -61,20 +59,19 @@ public class Mipsel_main_o_IntegrationTest extends DelinkerIntegrationTest {
 			Map.entry(0x3ac, new byte[2]),
 			Map.entry(0x404, new byte[2]));
 
-		compareElfSectionBytes(INPUT_FORMAT, mainFile, ".text", exportedFile, ".text",
-			text_patches);
-		compareElfSectionSizes(INPUT_FORMAT, mainFile, ".rel.text", exportedFile, ".rel.text");
-		//compareElfSectionBytes(INPUT_FORMAT, mainFile, exportedFile, ".text.nolibc_raise");
-		//compareElfSectionSizes(INPUT_FORMAT, mainFile, exportedFile, ".rel.text.nolibc_raise");
-		//compareElfSectionSizes(INPUT_FORMAT, mainFile, exportedFile, ".text.nolibc_memove");
-		//compareElfSectionBytes(INPUT_FORMAT, mainFile, exportedFile, ".text.nolibc_memcpy");
-		//compareElfSectionSizes(INPUT_FORMAT, mainFile, exportedFile, ".rel.text.nolibc_memcpy");
-		//compareElfSectionSizes(INPUT_FORMAT, mainFile, exportedFile, ".text.nolibc_memset");
-		//compareElfSectionBytes(INPUT_FORMAT, mainFile, exportedFile, ".text.nolibc_abort");
-		//compareElfSectionSizes(INPUT_FORMAT, mainFile, exportedFile, ".rel.text.nolibc_abort");
-		compareElfSectionBytes(INPUT_FORMAT, mainFile, ".sdata", exportedFile, ".sdata");
-		compareElfSectionBytes(INPUT_FORMAT, mainFile, ".rodata", exportedFile, ".rodata");
-		compareElfSectionSizes(INPUT_FORMAT, mainFile, ".rel.rodata", exportedFile, ".rel.rodata");
-		compareElfSectionBytes(INPUT_FORMAT, mainFile, ".sbss", exportedFile, ".sbss");
+		compareElfSectionBytes(mainFile, ".text", exportedFile, ".text", text_patches);
+		compareElfSectionSizes(mainFile, ".rel.text", exportedFile, ".rel.text");
+		//compareElfSectionBytes(mainFile, exportedFile, ".text.nolibc_raise");
+		//compareElfSectionSizes(mainFile, exportedFile, ".rel.text.nolibc_raise");
+		//compareElfSectionSizes(mainFile, exportedFile, ".text.nolibc_memove");
+		//compareElfSectionBytes(mainFile, exportedFile, ".text.nolibc_memcpy");
+		//compareElfSectionSizes(mainFile, exportedFile, ".rel.text.nolibc_memcpy");
+		//compareElfSectionSizes(mainFile, exportedFile, ".text.nolibc_memset");
+		//compareElfSectionBytes(mainFile, exportedFile, ".text.nolibc_abort");
+		//compareElfSectionSizes(mainFile, exportedFile, ".rel.text.nolibc_abort");
+		compareElfSectionBytes(mainFile, ".sdata", exportedFile, ".sdata");
+		compareElfSectionBytes(mainFile, ".rodata", exportedFile, ".rodata");
+		compareElfSectionSizes(mainFile, ".rel.rodata", exportedFile, ".rel.rodata");
+		compareElfSectionBytes(mainFile, ".sbss", exportedFile, ".sbss");
 	}
 }

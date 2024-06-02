@@ -216,7 +216,7 @@ public final class ElfRelocatableObject implements ByteArrayConverter, Writeable
 		return os.toByteArray();
 	}
 
-	public void finalize() {
+	public void layout() {
 		long offset;
 
 		if (is32Bit()) {

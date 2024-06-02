@@ -739,7 +739,7 @@ public class ElfRelocatableObjectExporter extends Exporter {
 	}
 
 	private void writeOutFile(RandomAccessFile raf) throws IOException {
-		elf.finalize();
+		elf.layout();
 		elf.write(raf, elf.getDataConverter());
 	}
 

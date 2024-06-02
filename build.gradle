@@ -101,6 +101,7 @@ spotless {
 """, "package ")
 		target 'src/*/java/**/*.java'
 	})
+	lineEndings 'UNIX'
 }
 
 def getGitHash = { ->

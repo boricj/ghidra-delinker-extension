@@ -34,6 +34,7 @@ import ghidra.app.util.DropDownOption;
 import ghidra.app.util.EnumDropDownOption;
 import ghidra.app.util.Option;
 import ghidra.app.util.OptionUtils;
+import ghidra.app.util.ProgramUtil;
 import ghidra.app.util.bin.format.elf.ElfConstants;
 import ghidra.app.util.bin.format.elf.ElfSectionHeaderConstants;
 import ghidra.app.util.bin.format.elf.ElfSymbol;
@@ -300,7 +301,7 @@ public class ElfRelocatableObjectExporter extends Exporter {
 
 	@Override
 	public List<Option> getOptions(DomainObjectService domainObjectService) {
-		Program program = getProgram(domainObjectService.getDomainObject());
+		Program program = ProgramUtil.getProgram(domainObjectService.getDomainObject());
 		if (program == null) {
 			return EMPTY_OPTIONS;
 		}
@@ -544,7 +545,7 @@ public class ElfRelocatableObjectExporter extends Exporter {
 	@Override
 	public boolean export(File file, DomainObject domainObj, AddressSetView fileSet,
 			TaskMonitor taskMonitor) throws IOException, ExporterException {
-		program = getProgram(domainObj);
+		program = ProgramUtil.getProgram(domainObj);
 		if (program == null) {
 			return false;
 		}
@@ -623,13 +624,6 @@ public class ElfRelocatableObjectExporter extends Exporter {
 		}
 
 		return true;
-	}
-
-	public static Program getProgram(DomainObject domainObj) {
-		if (!(domainObj instanceof Program)) {
-			return null;
-		}
-		return (Program) domainObj;
 	}
 
 	private void computeSymbolNamesRelocationFileSet(RelocationTable relocationTable,

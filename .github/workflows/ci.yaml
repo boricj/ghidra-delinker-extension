@@ -78,12 +78,12 @@ jobs:
         with:
           run: gradle test jacocoTestReport
       -
-        name: "Collect test reports"
-        uses: dorny/test-reporter@v1
+        name: "Upload test results"
+        uses: actions/upload-artifact@v3
         with:
-          name: "JUnit tests (${{ matrix.ghidra }})"
+          name: "test-results (${{ matrix.ghidra }})"
           path: "build/test-results/test/*.xml"
-          reporter: java-junit
+          if-no-files-found: "error"
         if: ${{ !cancelled() }}
       -
         name: "Upload reports"

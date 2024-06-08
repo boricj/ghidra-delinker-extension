@@ -1,0 +1,33 @@
+name: "Collect test reports"
+
+on:
+  workflow_run:
+    workflows:
+      - "ci"
+    types:
+      - completed
+
+jobs:
+  collect-test-reports:
+    runs-on: ubuntu-latest
+    permissions:
+      actions: "read"
+      checks: "write"
+      contents: "read"
+    strategy:
+      fail-fast: false
+      matrix:
+        ghidra:
+          - "10.3.3"
+          - "10.4"
+          - "11.0"
+    steps:
+      -
+        name: "Collect test reports"
+        uses: dorny/test-reporter@v1
+        with:
+          name: "JUnit tests (${{ matrix.ghidra }})"
+          artifact: "test-results (${{ matrix.ghidra }})"
+          path: "*.xml"
+          reporter: java-junit
+        if: ${{ !cancelled() }}

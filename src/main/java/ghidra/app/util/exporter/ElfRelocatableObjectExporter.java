@@ -31,6 +31,7 @@ import java.util.stream.StreamSupport;
 
 import ghidra.app.util.DomainObjectService;
 import ghidra.app.util.DropDownOption;
+import ghidra.app.util.EnumDropDownOption;
 import ghidra.app.util.Option;
 import ghidra.app.util.OptionUtils;
 import ghidra.app.util.bin.format.elf.ElfConstants;
@@ -342,14 +343,6 @@ public class ElfRelocatableObjectExporter extends Exporter {
 		generateRelocationTables = OptionUtils.getOption(OPTION_GEN_REL, options, false);
 		relocationTableFormat =
 			OptionUtils.getOption(OPTION_REL_FMT, options, ElfSectionHeaderConstants.SHT_NULL);
-	}
-
-	private class EnumDropDownOption<T extends Enum<T>> extends DropDownOption<T> {
-		public EnumDropDownOption(String group, String name, Class<T> class_, T defaultValue) {
-			super(group, name, Arrays.stream(class_.getEnumConstants())
-					.collect(Collectors.toMap(v -> v, T::toString)),
-				class_, defaultValue);
-		}
 	}
 
 	private class Section {

@@ -13,7 +13,6 @@
  */
 package ghidra.app.util.exporter;
 
-import java.awt.Component;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -30,9 +29,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-import javax.swing.JComboBox;
-
 import ghidra.app.util.DomainObjectService;
+import ghidra.app.util.DropDownOption;
 import ghidra.app.util.Option;
 import ghidra.app.util.OptionUtils;
 import ghidra.app.util.bin.format.elf.ElfConstants;
@@ -344,50 +342,6 @@ public class ElfRelocatableObjectExporter extends Exporter {
 		generateRelocationTables = OptionUtils.getOption(OPTION_GEN_REL, options, false);
 		relocationTableFormat =
 			OptionUtils.getOption(OPTION_REL_FMT, options, ElfSectionHeaderConstants.SHT_NULL);
-	}
-
-	private class DropDownOption<T> extends Option {
-		private final Map<T, String> values;
-		private final Map<String, T> reverseValues = new HashMap<>();
-		private final Class<T> class_;
-		private final T defaultValue;
-		private final JComboBox<String> comp;
-
-		public DropDownOption(String group, String name, Map<T, String> values, Class<T> class_,
-				T defaultValue) {
-			super(group, name, defaultValue);
-
-			this.values = values;
-			for (Map.Entry<T, String> entry : values.entrySet()) {
-				this.reverseValues.put(entry.getValue(), entry.getKey());
-			}
-
-			this.defaultValue = defaultValue;
-			this.class_ = class_;
-
-			this.comp = new JComboBox<String>(values.values().toArray(new String[values.size()]));
-			this.comp.setSelectedItem(values.get(defaultValue));
-		}
-
-		@Override
-		public Component getCustomEditorComponent() {
-			return comp;
-		}
-
-		@Override
-		public Option copy() {
-			return new DropDownOption<T>(getGroup(), getName(), values, class_, defaultValue);
-		}
-
-		@Override
-		public T getValue() {
-			return reverseValues.get(comp.getSelectedItem());
-		}
-
-		@Override
-		public Class<?> getValueClass() {
-			return class_;
-		}
 	}
 
 	private class EnumDropDownOption<T extends Enum<T>> extends DropDownOption<T> {

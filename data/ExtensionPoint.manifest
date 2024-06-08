@@ -1,3 +1,4 @@
 CodeRelocationSynthesizer
+CoffRelocationTypeMapper
 DataRelocationSynthesizer
 ElfRelocationTypeMapper

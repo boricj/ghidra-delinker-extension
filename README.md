@@ -11,6 +11,13 @@ Use-cases include:
  * Decompilation projects, by splitting a program into multiple object files and reimplementing these _Ship of Theseus_-style ;
  * …
 
+Matrix of supported instruction set architectures and object files:
+
+|               | x86  | MIPS |
+| ------------- | ---- | ---- |
+| COFF          | ✅ | ❌ |
+| ELF           | ✅ | ✅ |
+
 ## Building (CLI)
 
  * Clone this repository ;
@@ -29,7 +36,7 @@ The Ghidra extension archive will be created inside the `dist/` directory.
 
  1. Select a set of addresses in the Listing view ;
  2. Run the `Relocation table synthesizer` analyzer (available in one-shot mode) ;
- 3. Invoke the `ELF relocatable object` exporter with `File > Export Program…`
+ 3. Invoke a relocatable object file exporter with `File > Export Program…`
 
 The reconstructed relocations can be viewed with `Window > Relocation table (synthesized)`.
 

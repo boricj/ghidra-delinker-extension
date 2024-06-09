@@ -29,7 +29,6 @@ import java.util.Map;
 import org.junit.After;
 import org.junit.Before;
 
-import db.DBConstants;
 import db.DBHandle;
 import generic.jar.ResourceFile;
 import ghidra.app.analyzers.RelocationTableSynthesizerAnalyzer;
@@ -41,6 +40,7 @@ import ghidra.app.util.exporter.ElfRelocatableObjectExporter;
 import ghidra.app.util.exporter.Exporter;
 import ghidra.app.util.importer.MessageLog;
 import ghidra.framework.GModule;
+import ghidra.framework.data.OpenMode;
 import ghidra.framework.model.DomainObject;
 import ghidra.framework.store.db.PrivateDatabase;
 import ghidra.program.database.ProgramDB;
@@ -107,7 +107,7 @@ public abstract class DelinkerIntegrationTest extends AbstractProgramBasedTest {
 
 		try {
 			dbHandle = pdb.open(TaskMonitor.DUMMY);
-			program = new ProgramDB(dbHandle, DBConstants.UPDATE, TaskMonitor.DUMMY, this);
+			program = new ProgramDB(dbHandle, OpenMode.UPDATE, TaskMonitor.DUMMY, this);
 		}
 		catch (VersionException e) {
 			if (!e.isUpgradable()) {
@@ -115,12 +115,12 @@ public abstract class DelinkerIntegrationTest extends AbstractProgramBasedTest {
 			}
 
 			dbHandle = pdb.openForUpdate(TaskMonitor.DUMMY);
-			program = new ProgramDB(dbHandle, DBConstants.UPGRADE, TaskMonitor.DUMMY, this);
+			program = new ProgramDB(dbHandle, OpenMode.UPGRADE, TaskMonitor.DUMMY, this);
 			dbHandle.save(null, null, TaskMonitor.DUMMY);
 			program.release(this);
 
 			dbHandle = pdb.open(TaskMonitor.DUMMY);
-			program = new ProgramDB(dbHandle, DBConstants.UPDATE, TaskMonitor.DUMMY, this);
+			program = new ProgramDB(dbHandle, OpenMode.UPDATE, TaskMonitor.DUMMY, this);
 		}
 
 		return program;

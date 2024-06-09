@@ -14,7 +14,7 @@
 package ghidra.app.util.exporter.elf.mapper;
 
 import ghidra.app.util.bin.format.elf.ElfConstants;
-import ghidra.app.util.bin.format.elf.relocation.MIPS_ElfRelocationConstants;
+import ghidra.app.util.bin.format.elf.relocation.MIPS_ElfRelocationType;
 import ghidra.app.util.exporter.elf.ElfRelocatableObject;
 import ghidra.app.util.exporter.elf.ElfRelocatableSection;
 import ghidra.app.util.importer.MessageLog;
@@ -36,13 +36,13 @@ public class MipsRelocationTypeMapper implements ElfRelocationTypeMapper {
 			int width = rel.getWidth();
 			switch (width) {
 				case 4:
-					return MIPS_ElfRelocationConstants.R_MIPS_32;
+					return MIPS_ElfRelocationType.R_MIPS_32.typeId();
 				case 8:
-					return MIPS_ElfRelocationConstants.R_MIPS_64;
+					return MIPS_ElfRelocationType.R_MIPS_64.typeId();
 				default:
 					log.appendMsg(relSectionName, String.format(
 						"Unknown RelocationAbsolute width %d at %s", width, r.getAddress()));
-					return MIPS_ElfRelocationConstants.R_MIPS_NONE;
+					return MIPS_ElfRelocationType.R_MIPS_NONE.typeId();
 			}
 		}
 		else if (r instanceof RelocationHighPair) {
@@ -50,13 +50,13 @@ public class MipsRelocationTypeMapper implements ElfRelocationTypeMapper {
 			long bitfield = rel.getBitmask();
 
 			if (bitfield == 0xffff) {
-				return MIPS_ElfRelocationConstants.R_MIPS_HI16;
+				return MIPS_ElfRelocationType.R_MIPS_HI16.typeId();
 			}
 			else {
 				log.appendMsg(relSectionName,
 					String.format("Unknown RelocationHighPair bitfield 0x%x at %s", bitfield,
 						r.getAddress()));
-				return MIPS_ElfRelocationConstants.R_MIPS_NONE;
+				return MIPS_ElfRelocationType.R_MIPS_NONE.typeId();
 			}
 		}
 		else if (r instanceof RelocationLowPair) {
@@ -64,13 +64,13 @@ public class MipsRelocationTypeMapper implements ElfRelocationTypeMapper {
 			long bitfield = rel.getBitmask();
 
 			if (bitfield == 0xffff) {
-				return MIPS_ElfRelocationConstants.R_MIPS_LO16;
+				return MIPS_ElfRelocationType.R_MIPS_LO16.typeId();
 			}
 			else {
 				log.appendMsg(relSectionName,
 					String.format("Unknown RelocationHighPair bitfield 0x%x at %s", bitfield,
 						r.getAddress()));
-				return MIPS_ElfRelocationConstants.R_MIPS_NONE;
+				return MIPS_ElfRelocationType.R_MIPS_NONE.typeId();
 			}
 		}
 		else if (r instanceof RelocationRelativeSymbol) {
@@ -80,14 +80,14 @@ public class MipsRelocationTypeMapper implements ElfRelocationTypeMapper {
 			String symbol = rel.getRelativeSymbolName();
 
 			if (width == 2 && bitfield == 0xffff && symbol.equals("_gp")) {
-				return MIPS_ElfRelocationConstants.R_MIPS_GPREL16;
+				return MIPS_ElfRelocationType.R_MIPS_GPREL16.typeId();
 			}
 			else {
 				log.appendMsg(relSectionName,
 					String.format(
 						"Unknown RelocationRelativeSymbol width %d bitfield 0x%x symbol %s at %s",
 						width, bitfield, symbol, r.getAddress()));
-				return MIPS_ElfRelocationConstants.R_MIPS_NONE;
+				return MIPS_ElfRelocationType.R_MIPS_NONE.typeId();
 			}
 		}
 		else if (r instanceof RelocationRelativePC) {
@@ -96,23 +96,23 @@ public class MipsRelocationTypeMapper implements ElfRelocationTypeMapper {
 			long bitfield = rel.getBitmask();
 
 			if (width == 2 && bitfield == 0xffff) {
-				return MIPS_ElfRelocationConstants.R_MIPS_PC16;
+				return MIPS_ElfRelocationType.R_MIPS_PC16.typeId();
 			}
 			else {
 				log.appendMsg(relSectionName,
 					String.format(
 						"Unknown RelocationRelativeSymbol width %d bitfield 0x%x at %s", width,
 						bitfield, r.getAddress()));
-				return MIPS_ElfRelocationConstants.R_MIPS_NONE;
+				return MIPS_ElfRelocationType.R_MIPS_NONE.typeId();
 			}
 		}
 		else if (r instanceof RelocationMIPS26) {
-			return MIPS_ElfRelocationConstants.R_MIPS_26;
+			return MIPS_ElfRelocationType.R_MIPS_26.typeId();
 		}
 		else {
 			log.appendMsg(relSectionName, String.format("Unknown relocation type %s at %s",
 				r.getClass().getSimpleName(), r.getAddress()));
-			return MIPS_ElfRelocationConstants.R_MIPS_NONE;
+			return MIPS_ElfRelocationType.R_MIPS_NONE.typeId();
 		}
 	}
 

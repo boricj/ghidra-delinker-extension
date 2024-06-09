@@ -14,7 +14,7 @@
 package ghidra.app.util.exporter.elf.mapper;
 
 import ghidra.app.util.bin.format.elf.ElfConstants;
-import ghidra.app.util.bin.format.elf.relocation.X86_32_ElfRelocationConstants;
+import ghidra.app.util.bin.format.elf.relocation.X86_32_ElfRelocationType;
 import ghidra.app.util.exporter.elf.ElfRelocatableObject;
 import ghidra.app.util.exporter.elf.ElfRelocatableSection;
 import ghidra.app.util.importer.MessageLog;
@@ -32,11 +32,11 @@ public class X86RelocationTypeMapper implements ElfRelocationTypeMapper {
 			int width = rel.getWidth();
 			switch (width) {
 				case 4:
-					return X86_32_ElfRelocationConstants.R_386_32;
+					return X86_32_ElfRelocationType.R_386_32.typeId();
 				default:
 					log.appendMsg(relSectionName, String.format(
 						"Unknown RelocationAbsolute width %d at %s", width, r.getAddress()));
-					return X86_32_ElfRelocationConstants.R_386_NONE;
+					return X86_32_ElfRelocationType.R_386_NONE.typeId();
 			}
 		}
 		else if (r instanceof RelocationRelativePC) {
@@ -44,17 +44,17 @@ public class X86RelocationTypeMapper implements ElfRelocationTypeMapper {
 			int width = rel.getWidth();
 			switch (width) {
 				case 4:
-					return X86_32_ElfRelocationConstants.R_386_PC32;
+					return X86_32_ElfRelocationType.R_386_PC32.typeId();
 				default:
 					log.appendMsg(relSectionName, String.format(
 						"Unknown RelocationRelative width %d at %s", width, r.getAddress()));
-					return X86_32_ElfRelocationConstants.R_386_NONE;
+					return X86_32_ElfRelocationType.R_386_NONE.typeId();
 			}
 		}
 		else {
 			log.appendMsg(relSectionName, String.format("Unknown relocation type %s at %s",
 				r.getClass().getSimpleName(), r.getAddress()));
-			return X86_32_ElfRelocationConstants.R_386_NONE;
+			return X86_32_ElfRelocationType.R_386_NONE.typeId();
 		}
 	}
 

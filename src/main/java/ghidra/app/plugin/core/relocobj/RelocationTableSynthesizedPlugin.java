@@ -13,13 +13,16 @@
  */
 package ghidra.app.plugin.core.relocobj;
 
+import static ghidra.framework.model.DomainObjectEvent.RESTORED;
+import static ghidra.program.util.ProgramEvent.IMAGE_BASE_CHANGED;
+import static ghidra.program.util.ProgramEvent.RELOCATION_ADDED;
+
 import docking.action.DockingAction;
 import ghidra.MiscellaneousPluginPackage;
 import ghidra.app.events.ProgramActivatedPluginEvent;
 import ghidra.app.events.ProgramLocationPluginEvent;
 import ghidra.app.plugin.PluginCategoryNames;
 import ghidra.app.services.GoToService;
-import ghidra.framework.model.DomainObject;
 import ghidra.framework.model.DomainObjectChangedEvent;
 import ghidra.framework.model.DomainObjectListener;
 import ghidra.framework.plugintool.Plugin;
@@ -28,7 +31,6 @@ import ghidra.framework.plugintool.PluginInfo;
 import ghidra.framework.plugintool.PluginTool;
 import ghidra.framework.plugintool.util.PluginStatus;
 import ghidra.program.model.listing.Program;
-import ghidra.program.util.ChangeManager;
 import ghidra.util.table.SelectionNavigationAction;
 import ghidra.util.table.actions.MakeProgramSelectionAction;
 
@@ -36,7 +38,7 @@ import ghidra.util.table.actions.MakeProgramSelectionAction;
 @PluginInfo(
 	status = PluginStatus.UNSTABLE,
 	packageName = MiscellaneousPluginPackage.NAME,
-	category = PluginCategoryNames.MISC,
+	category = PluginCategoryNames.CODE_VIEWER,
 	shortDescription = "Manages synthesized relocation information",
 	description = "This plugin manages synthesized relocation information, to be used for exporting relocatable object files.",
 	servicesRequired = { GoToService.class },
@@ -102,9 +104,7 @@ public class RelocationTableSynthesizedPlugin extends Plugin implements DomainOb
 
 	@Override
 	public void domainObjectChanged(DomainObjectChangedEvent ev) {
-		if (ev.containsEvent(ChangeManager.DOCR_IMAGE_BASE_CHANGED) ||
-			ev.containsEvent(ChangeManager.DOCR_RELOCATION_ADDED) ||
-			ev.containsEvent(DomainObject.DO_OBJECT_RESTORED)) {
+		if (ev.contains(IMAGE_BASE_CHANGED, RELOCATION_ADDED, RESTORED)) {
 			provider.setProgram(currentProgram);
 		}
 	}

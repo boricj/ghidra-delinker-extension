@@ -79,7 +79,7 @@ class RelocationProvider extends ComponentProviderAdapter {
 		table = threadedPanel.getTable();
 
 		GoToService goToService = serviceProvider.getService(GoToService.class);
-		table.installNavigation(goToService, goToService.getDefaultNavigatable());
+		table.installNavigation(serviceProvider, goToService.getDefaultNavigatable());
 
 		table.setPreferredScrollableViewportSize(new Dimension(300, 200));
 		table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);

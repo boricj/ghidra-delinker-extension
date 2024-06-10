@@ -1,13 +1,12 @@
 #include <ctype.h>
 #include <stdio.h>
-#include <unistd.h>
 
 typedef struct {
     int (*matches)(int);
     char flag;
 } ascii_property;
 
-const int const NUM_ASCII_PROPERTIES = 10;
+const int NUM_ASCII_PROPERTIES = 10;
 const ascii_property s_ascii_properties[] = {
     { isgraph, 'g', },
     { isprint, 'p', },
@@ -24,7 +23,9 @@ const ascii_property s_ascii_properties[] = {
 int COLUMNS = 4;
 
 void print_number(int num) {
-    for (int n = 3; n >= 0; n--) {
+    int n;
+
+    for (n = 3; n >= 0; n--) {
         int digit = (num >> (4 * n)) % 16;
 
         if (digit < 10)
@@ -35,6 +36,8 @@ void print_number(int num) {
 }
 
 void print_ascii_entry(char character, const ascii_property properties[], int num_ascii_properties) {
+    int k;
+
     print_number(character);
     putchar(' ');
 
@@ -44,7 +47,7 @@ void print_ascii_entry(char character, const ascii_property properties[], int nu
         putchar(' ');
     putchar(' ');
 
-    for (int k = 0; k < num_ascii_properties; k++) {
+    for (k = 0; k < num_ascii_properties; k++) {
         const ascii_property *property = &properties[k];
 
         if (property->matches(character))
@@ -55,7 +58,9 @@ void print_ascii_entry(char character, const ascii_property properties[], int nu
 }
 
 int main() {
-    for (int i = 0; i < 128; i++) {
+    int i;
+
+    for (i = 0; i < 128; i++) {
         int x = i % COLUMNS;
         int y = i / COLUMNS;
         int character = x * 128 / COLUMNS + y;

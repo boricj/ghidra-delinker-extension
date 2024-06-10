@@ -4278,7 +4278,7 @@ $LASF15:
 	.ascii	"_auxv\000"
 $LASF69:
 	.ascii	"/home/boricj/Documents/ghidra/plugins/unlinker/src/test/"
-	.ascii	"resources/ascii-table/reference/freestanding\000"
+	.ascii	"resources/ascii-table/reference/elf_linux_freestanding\000"
 $LASF53:
 	.ascii	"memmove\000"
 $LASF68:

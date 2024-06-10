@@ -36,6 +36,8 @@ import ghidra.app.util.DomainObjectService;
 import ghidra.app.util.Option;
 import ghidra.app.util.bin.ByteProvider;
 import ghidra.app.util.bin.FileByteProvider;
+import ghidra.app.util.bin.format.coff.CoffFileHeader;
+import ghidra.app.util.bin.format.coff.CoffSectionHeader;
 import ghidra.app.util.bin.format.elf.ElfException;
 import ghidra.app.util.bin.format.elf.ElfHeader;
 import ghidra.app.util.exporter.Exporter;
@@ -108,6 +110,30 @@ public abstract class DelinkerIntegrationTest extends AbstractProgramBasedTest {
 		@Override
 		public byte[] getSectionBytes(String name) throws IOException {
 			return header.getSection(name).getRawInputStream().readAllBytes();
+		}
+	}
+
+	public class CoffObjectFile implements ObjectFile {
+		private final Program program;
+		private final ByteProvider byteProvider;
+		private final CoffFileHeader header;
+
+		public CoffObjectFile(Program program, File file) throws IOException {
+			this.program = program;
+			this.byteProvider = new FileByteProvider(file, null, AccessMode.READ);
+			this.header = new CoffFileHeader(byteProvider);
+			this.header.parse(byteProvider, TaskMonitor.DUMMY);
+		}
+
+		@Override
+		public byte[] getSectionBytes(String name) throws IOException {
+			CoffSectionHeader section = header.getSections()
+					.stream()
+					.filter(s -> s.getName().equals(name))
+					.findFirst()
+					.get();
+			return byteProvider.readBytes(section.getPointerToRawData(),
+				section.getSize(program.getLanguage()));
 		}
 	}
 

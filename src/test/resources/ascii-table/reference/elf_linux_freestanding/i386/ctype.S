@@ -1202,7 +1202,7 @@ _ctype_:
 .LASF9:
 	.string	"isdigit"
 .LASF14:
-	.string	"/home/boricj/Documents/ghidra-delinker-extension/src/test/resources/ascii-table/reference/freestanding"
+	.string	"/home/boricj/Documents/ghidra-delinker-extension/src/test/resources/ascii-table/reference/elf_linux_freestanding"
 .LASF2:
 	.string	"isxdigit"
 .LASF4:

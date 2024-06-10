@@ -1294,7 +1294,7 @@ $Ldebug_line0:
 	.section	.debug_str,"MS",@progbits,1
 $LASF14:
 	.ascii	"/home/boricj/Documents/ghidra/plugins/unlinker/src/test/"
-	.ascii	"resources/ascii-table/reference/freestanding\000"
+	.ascii	"resources/ascii-table/reference/elf_linux_freestanding\000"
 $LASF0:
 	.ascii	"unsigned int\000"
 $LASF6:

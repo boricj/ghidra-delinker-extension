@@ -46,16 +46,16 @@ $ (cd reference/static && CFLAGS='-Og -gdwarf-4' LDFLAGS='-static' ../../configu
 $ ninja -C reference/static
 ```
 
-## Freestanding artifacts
+## Linux freestanding artifacts
 
 The freestanding artifacts requires nolibc, which can be found under `tools/include/nolibc/` in the Linux source code.
 
 To generate the freestanding artifacts, use the following commands:
 
 ```sh
-$ rm -rf reference/freestanding
-$ mkdir -p reference/freestanding
-$ (cd reference/freestanding && CFLAGS="-Og -gdwarf-4 -ffreestanding -fno-pic -no-pie -fno-plt -I../../include -I${NOLIBC_PATH}" \
+$ rm -rf reference/elf_linux_freestanding
+$ mkdir -p reference/elf_linux_freestanding
+$ (cd reference/elf_linux_freestanding && CFLAGS="-Og -gdwarf-4 -ffreestanding -fno-pic -no-pie -fno-plt -I../../include -I${NOLIBC_PATH}" \
 	mips_CFLAGS='-march=mips3 -mno-abicalls -mlong-calls -G4' \
 	mipsel_CFLAGS='-march=mips3 -mno-abicalls -mlong-calls -G4' \
 	mips64_CFLAGS='-mno-abicalls -G8' \
@@ -63,7 +63,7 @@ $ (cd reference/freestanding && CFLAGS="-Og -gdwarf-4 -ffreestanding -fno-pic -n
 	riscv64_CFLAGS='-msmall-data-limit=8' \
 	LDFLAGS='-static -no-pie -nostdlib -lgcc' \
 	../../configure.py --with-ctype ../..)
-$ ninja -C reference/freestanding aarch64 arm i386 mips mipsel riscv64 s390x x86_64
+$ ninja -C reference/elf_linux_freestanding aarch64 arm i386 mips mipsel riscv64 s390x x86_64
 ```
 
 Freestanding artifacts are expected to not have position-independent code.

@@ -4205,7 +4205,7 @@ environ:
 .LASF6:
 	.string	"long long unsigned int"
 .LASF69:
-	.string	"/home/boricj/Documents/ghidra-delinker-extension/src/test/resources/ascii-table/reference/freestanding"
+	.string	"/home/boricj/Documents/ghidra-delinker-extension/src/test/resources/ascii-table/reference/elf_linux_freestanding"
 .LASF5:
 	.string	"unsigned int"
 .LASF59:

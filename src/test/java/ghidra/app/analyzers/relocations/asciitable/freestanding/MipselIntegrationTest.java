@@ -281,7 +281,7 @@ public class MipselIntegrationTest extends DelinkerIntegrationTest {
 
 	@Override
 	protected String getProgramName() {
-		return "src/test/resources/ascii-table/reference/freestanding/mipsel/ascii-table.elf.gzf";
+		return "src/test/resources/ascii-table/reference/elf_linux_freestanding/mipsel/ascii-table.elf.gzf";
 	}
 
 	@Test

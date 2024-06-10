@@ -11,7 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package ghidra.app.util.exporter.asciitable.freestanding;
+package ghidra.app.util.exporter.asciitable.elf_linux_freestanding;
 
 import java.io.File;
 import java.util.Map;
@@ -25,11 +25,11 @@ import ghidra.program.model.address.AddressSetView;
 
 public class I386_main_o_IntegrationTest extends DelinkerIntegrationTest {
 	private static final File mainFile =
-		new File("src/test/resources/ascii-table/reference/freestanding/i386/main.o");
+		new File("src/test/resources/ascii-table/reference/elf_linux_freestanding/i386/main.o");
 
 	@Override
 	protected String getProgramName() {
-		return "src/test/resources/ascii-table/reference/freestanding/i386/ascii-table.elf.gzf";
+		return "src/test/resources/ascii-table/reference/elf_linux_freestanding/i386/ascii-table.elf.gzf";
 	}
 
 	@Test

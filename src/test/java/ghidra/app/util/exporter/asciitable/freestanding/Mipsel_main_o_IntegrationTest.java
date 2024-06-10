@@ -19,6 +19,7 @@ import java.util.Map;
 import org.junit.Test;
 
 import ghidra.DelinkerIntegrationTest;
+import ghidra.app.util.exporter.ElfRelocatableObjectExporter;
 import ghidra.program.model.address.AddressFactory;
 import ghidra.program.model.address.AddressSetView;
 
@@ -43,7 +44,7 @@ public class Mipsel_main_o_IntegrationTest extends DelinkerIntegrationTest {
 				.union(af.getAddressSet(af.getAddress("00410b10"), af.getAddress("00410b17")))      // .sdata
 				.union(af.getAddressSet(af.getAddress("004009b0"), af.getAddress("004009ff")))      // .rodata
 				.union(af.getAddressSet(af.getAddress("00410b18"), af.getAddress("00410b23")));     // .sbss
-		File exportedFile = exportElfObjectFile(set, null);
+		File exportedFile = exportObjectFile(set, new ElfRelocatableObjectExporter(), null);
 
 		Map<Integer, byte[]> text_patches = Map.ofEntries(
 			Map.entry(0x140, new byte[2]),
@@ -59,19 +60,14 @@ public class Mipsel_main_o_IntegrationTest extends DelinkerIntegrationTest {
 			Map.entry(0x3ac, new byte[2]),
 			Map.entry(0x404, new byte[2]));
 
-		compareElfSectionBytes(mainFile, ".text", exportedFile, ".text", text_patches);
-		compareElfSectionSizes(mainFile, ".rel.text", exportedFile, ".rel.text");
-		//compareElfSectionBytes(mainFile, exportedFile, ".text.nolibc_raise");
-		//compareElfSectionSizes(mainFile, exportedFile, ".rel.text.nolibc_raise");
-		//compareElfSectionSizes(mainFile, exportedFile, ".text.nolibc_memove");
-		//compareElfSectionBytes(mainFile, exportedFile, ".text.nolibc_memcpy");
-		//compareElfSectionSizes(mainFile, exportedFile, ".rel.text.nolibc_memcpy");
-		//compareElfSectionSizes(mainFile, exportedFile, ".text.nolibc_memset");
-		//compareElfSectionBytes(mainFile, exportedFile, ".text.nolibc_abort");
-		//compareElfSectionSizes(mainFile, exportedFile, ".rel.text.nolibc_abort");
-		compareElfSectionBytes(mainFile, ".sdata", exportedFile, ".sdata");
-		compareElfSectionBytes(mainFile, ".rodata", exportedFile, ".rodata");
-		compareElfSectionSizes(mainFile, ".rel.rodata", exportedFile, ".rel.rodata");
-		compareElfSectionBytes(mainFile, ".sbss", exportedFile, ".sbss");
+		ObjectFile mainObjectFile = new ElfObjectFile(mainFile);
+		ObjectFile exportedObjectFile = new ElfObjectFile(exportedFile);
+
+		mainObjectFile.compareSectionBytes(".text", exportedObjectFile, ".text", text_patches);
+		mainObjectFile.compareSectionSizes(".rel.text", exportedObjectFile, ".rel.text");
+		mainObjectFile.compareSectionBytes(".sdata", exportedObjectFile, ".sdata");
+		mainObjectFile.compareSectionBytes(".rodata", exportedObjectFile, ".rodata");
+		mainObjectFile.compareSectionSizes(".rel.rodata", exportedObjectFile, ".rel.rodata");
+		mainObjectFile.compareSectionBytes(".sbss", exportedObjectFile, ".sbss");
 	}
 }

@@ -19,11 +19,12 @@ import java.util.Map;
 import org.junit.Test;
 
 import ghidra.DelinkerIntegrationTest;
+import ghidra.app.util.exporter.ElfRelocatableObjectExporter;
 import ghidra.program.model.address.AddressFactory;
 import ghidra.program.model.address.AddressSetView;
 
 public class I386_main_o_IntegrationTest extends DelinkerIntegrationTest {
-	private static final File ctypeFile =
+	private static final File mainFile =
 		new File("src/test/resources/ascii-table/reference/freestanding/i386/main.o");
 
 	@Override
@@ -37,7 +38,7 @@ public class I386_main_o_IntegrationTest extends DelinkerIntegrationTest {
 		AddressSetView set = af.getAddressSet(af.getAddress("08049000"), af.getAddress("0804924d"))	// .text
 				.union(af.getAddressSet(af.getAddress("0804b000"), af.getAddress("0804b003")))	 	// .data
 				.union(af.getAddressSet(af.getAddress("0804a000"), af.getAddress("0804a053"))); 	// .rodata
-		File exportedFile = exportElfObjectFile(set, null);
+		File exportedFile = exportObjectFile(set, new ElfRelocatableObjectExporter(), null);
 
 		Map<Integer, byte[]> text_patches = Map.ofEntries(
 			Map.entry(0x8a, new byte[] { 0x3e, 0x01, 0x00, 0x00 }),
@@ -46,8 +47,11 @@ public class I386_main_o_IntegrationTest extends DelinkerIntegrationTest {
 			Map.entry(0x163, new byte[] { 0x67, -24, -4, -1, -1, -1 }),
 			Map.entry(0x21e, new byte[] { 0x1d, -1, -1, -1 }));
 
-		compareElfSectionBytes(ctypeFile, ".text", exportedFile, ".text", text_patches);
-		compareElfSectionBytes(ctypeFile, ".rodata", exportedFile, ".rodata");
-		compareElfSectionSizes(ctypeFile, ".rel.rodata", exportedFile, ".rel.rodata");
+		ObjectFile mainObjectFile = new ElfObjectFile(mainFile);
+		ObjectFile exportedObjectFile = new ElfObjectFile(exportedFile);
+
+		mainObjectFile.compareSectionBytes(".text", exportedObjectFile, ".text", text_patches);
+		mainObjectFile.compareSectionBytes(".rodata", exportedObjectFile, ".rodata");
+		mainObjectFile.compareSectionSizes(".rel.rodata", exportedObjectFile, ".rel.rodata");
 	}
 }

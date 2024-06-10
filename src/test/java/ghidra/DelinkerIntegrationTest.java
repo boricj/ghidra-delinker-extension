@@ -34,9 +34,10 @@ import generic.jar.ResourceFile;
 import ghidra.app.analyzers.RelocationTableSynthesizerAnalyzer;
 import ghidra.app.util.DomainObjectService;
 import ghidra.app.util.Option;
+import ghidra.app.util.bin.ByteProvider;
 import ghidra.app.util.bin.FileByteProvider;
+import ghidra.app.util.bin.format.elf.ElfException;
 import ghidra.app.util.bin.format.elf.ElfHeader;
-import ghidra.app.util.exporter.ElfRelocatableObjectExporter;
 import ghidra.app.util.exporter.Exporter;
 import ghidra.app.util.importer.MessageLog;
 import ghidra.framework.GModule;
@@ -60,6 +61,55 @@ import utility.application.ApplicationLayout;
 public abstract class DelinkerIntegrationTest extends AbstractProgramBasedTest {
 	private static DBHandle dbHandle = null;
 	private static Program program = null;
+
+	public interface ObjectFile {
+		public byte[] getSectionBytes(String name) throws IOException;
+
+		public default void compareSectionBytes(String referenceSectionName,
+				ObjectFile exportedFile, String exportedSectionName) throws Exception {
+			compareSectionBytes(referenceSectionName, exportedFile, exportedSectionName,
+				Collections.emptyMap());
+		}
+
+		public default void compareSectionBytes(String referenceSectionName,
+				ObjectFile exportedFile, String exportedSectionName, Map<Integer, byte[]> patches)
+				throws Exception {
+			byte[] expectedBytes = getSectionBytes(referenceSectionName);
+			byte[] actualBytes = exportedFile.getSectionBytes(exportedSectionName);
+
+			for (Map.Entry<Integer, byte[]> entry : patches.entrySet()) {
+				byte[] patch = entry.getValue();
+				System.arraycopy(patch, 0, expectedBytes, entry.getKey(), patch.length);
+			}
+
+			assertArrayEquals(expectedBytes, actualBytes);
+		}
+
+		public default void compareSectionSizes(String referenceSectionName,
+				ObjectFile exportedFile, String exportedSectionName) throws Exception {
+			byte[] expectedBytes = getSectionBytes(referenceSectionName);
+			byte[] actualBytes = exportedFile.getSectionBytes(exportedSectionName);
+
+			assertEquals(expectedBytes.length, actualBytes.length);
+		}
+	}
+
+	public class ElfObjectFile implements ObjectFile {
+		private final ByteProvider byteProvider;
+		private final ElfHeader header;
+
+		public ElfObjectFile(File file) throws ElfException, IOException {
+			this.byteProvider = new FileByteProvider(file, null, AccessMode.READ);
+			this.header = new ElfHeader(byteProvider, s -> {
+			});
+			this.header.parse();
+		}
+
+		@Override
+		public byte[] getSectionBytes(String name) throws IOException {
+			return header.getSection(name).getRawInputStream().readAllBytes();
+		}
+	}
 
 	public static class IntegrationTestApplicationLayout extends GhidraTestApplicationLayout {
 		public IntegrationTestApplicationLayout(File userSettingsDir)
@@ -149,14 +199,14 @@ public abstract class DelinkerIntegrationTest extends AbstractProgramBasedTest {
 		return set;
 	}
 
-	protected File exportElfObjectFile(AddressSetView set, List<Option> options) throws Exception {
+	public File exportObjectFile(AddressSetView set, Exporter exporter, List<Option> options)
+			throws Exception {
 		Program program = getProgram();
 		MessageLog log = new MessageLog();
 		RelocationTableSynthesizerAnalyzer analyzer = new RelocationTableSynthesizerAnalyzer();
 
 		assertTrue(analyzer.added(program, set, TaskMonitor.DUMMY, log));
 
-		Exporter exporter = new ElfRelocatableObjectExporter();
 		if (options == null) {
 			options = exporter.getOptions(new DomainObjectService() {
 				@Override
@@ -171,45 +221,5 @@ public abstract class DelinkerIntegrationTest extends AbstractProgramBasedTest {
 		assertTrue(exporter.export(exportedFile, program, set, TaskMonitor.DUMMY));
 
 		return exportedFile;
-	}
-
-	private byte[] extractElfSectionBytes(File file, String sectionName) throws Exception {
-		try (FileByteProvider byteProvider = new FileByteProvider(file, null, AccessMode.READ)) {
-			ElfHeader header = new ElfHeader(byteProvider, s -> {
-			});
-			header.parse();
-			return header.getSection(sectionName).getRawInputStream().readAllBytes();
-		}
-	}
-
-	protected void compareElfSectionBytes(File referenceFile, String referenceSectionName,
-			File exportedFile, String exportedSectionName) throws Exception {
-		compareElfSectionBytes(referenceFile, referenceSectionName, exportedFile,
-			exportedSectionName, Collections.emptyMap());
-	}
-
-	protected void compareElfSectionBytes(File referenceFile, String referenceSectionName,
-			File exportedFile, String exportedSectionName,
-			Map<Integer, byte[]> patches) throws Exception {
-		byte[] expectedBytes =
-			extractElfSectionBytes(referenceFile, referenceSectionName);
-		byte[] actualBytes = extractElfSectionBytes(exportedFile, exportedSectionName);
-
-		for (Map.Entry<Integer, byte[]> entry : patches.entrySet()) {
-			byte[] patch = entry.getValue();
-			System.arraycopy(patch, 0, expectedBytes, entry.getKey(), patch.length);
-		}
-
-		assertArrayEquals(expectedBytes, actualBytes);
-	}
-
-	protected void compareElfSectionSizes(File referenceFile, String referenceSectionName,
-			File exportedFile, String exportedSectionName)
-			throws Exception {
-		byte[] expectedBytes =
-			extractElfSectionBytes(referenceFile, referenceSectionName);
-		byte[] actualBytes = extractElfSectionBytes(exportedFile, exportedSectionName);
-
-		assertEquals(expectedBytes.length, actualBytes.length);
 	}
 }

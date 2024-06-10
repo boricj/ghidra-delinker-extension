@@ -18,6 +18,7 @@ import java.io.File;
 import org.junit.Test;
 
 import ghidra.DelinkerIntegrationTest;
+import ghidra.app.util.exporter.ElfRelocatableObjectExporter;
 import ghidra.program.model.address.AddressFactory;
 import ghidra.program.model.address.AddressSetView;
 
@@ -35,10 +36,13 @@ public class Mipsel_ctype_o_IntegrationTest extends DelinkerIntegrationTest {
 		AddressFactory af = getProgram().getAddressFactory();
 		AddressSetView set = af.getAddressSet(af.getAddress("00400600"), af.getAddress("0040086f"))	// .text
 				.union(af.getAddressSet(af.getAddress("00400a00"), af.getAddress("00400b0f"))); 	// .rodata
-		File exportedFile = exportElfObjectFile(set, null);
+		File exportedFile = exportObjectFile(set, new ElfRelocatableObjectExporter(), null);
 
-		compareElfSectionBytes(ctypeFile, ".text", exportedFile, ".text");
-		compareElfSectionSizes(ctypeFile, ".rel.text", exportedFile, ".rel.text");
-		compareElfSectionBytes(ctypeFile, ".rodata", exportedFile, ".rodata");
+		ObjectFile ctypeObjectFile = new ElfObjectFile(ctypeFile);
+		ObjectFile exportedObjectFile = new ElfObjectFile(exportedFile);
+
+		ctypeObjectFile.compareSectionBytes(".text", exportedObjectFile, ".text");
+		ctypeObjectFile.compareSectionSizes(".rel.text", exportedObjectFile, ".rel.text");
+		ctypeObjectFile.compareSectionBytes(".rodata", exportedObjectFile, ".rodata");
 	}
 }

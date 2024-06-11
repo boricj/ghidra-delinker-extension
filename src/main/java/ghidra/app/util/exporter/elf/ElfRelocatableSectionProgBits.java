@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 
 import ghidra.app.util.bin.format.elf.ElfSectionHeaderConstants;
+import ghidra.program.model.address.AddressSetView;
 import ghidra.util.DataConverter;
 
 public final class ElfRelocatableSectionProgBits extends ElfRelocatableSection {
@@ -24,8 +25,8 @@ public final class ElfRelocatableSectionProgBits extends ElfRelocatableSection {
 	private final long flags;
 
 	public ElfRelocatableSectionProgBits(ElfRelocatableObject elf, String name, byte[] bytes,
-			long flags) {
-		super(elf, name);
+			AddressSetView addressSet, long flags) {
+		super(elf, name, addressSet);
 
 		this.bytes = bytes;
 		this.flags = flags;

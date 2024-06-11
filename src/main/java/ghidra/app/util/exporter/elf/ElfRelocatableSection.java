@@ -20,17 +20,25 @@ import java.io.IOException;
 import ghidra.app.util.bin.ByteArrayConverter;
 import ghidra.app.util.bin.format.Writeable;
 import ghidra.app.util.bin.format.elf.ElfSectionHeaderConstants;
+import ghidra.program.model.address.Address;
+import ghidra.program.model.address.AddressSetView;
 import ghidra.util.DataConverter;
 import ghidra.util.exception.NotYetImplementedException;
 
 public abstract class ElfRelocatableSection implements ByteArrayConverter, Writeable {
 	private final ElfRelocatableObject elf;
 	private final String name;
+	private final AddressSetView addressSet;
 	protected int index;
 
 	public ElfRelocatableSection(ElfRelocatableObject elf, String name) {
+		this(elf, name, null);
+	}
+
+	public ElfRelocatableSection(ElfRelocatableObject elf, String name, AddressSetView addressSet) {
 		this.elf = elf;
 		this.name = name;
+		this.addressSet = addressSet;
 	}
 
 	public ElfRelocatableObject getElfRelocatableObject() {
@@ -43,6 +51,12 @@ public abstract class ElfRelocatableSection implements ByteArrayConverter, Write
 
 	public String getName() {
 		return name;
+	}
+
+	public long getOffset(Address address) {
+		Address minAddress = addressSet.getMinAddress();
+		AddressSetView intersectedRange = addressSet.intersectRange(minAddress, address);
+		return intersectedRange.getNumAddresses() - 1;
 	}
 
 	public int getShName() {

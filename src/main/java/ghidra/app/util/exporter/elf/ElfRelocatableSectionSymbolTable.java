@@ -15,6 +15,7 @@ package ghidra.app.util.exporter.elf;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.util.HashMap;
 import java.util.TreeSet;
 
 import ghidra.app.util.bin.format.elf.ElfSectionHeaderConstants;
@@ -24,6 +25,7 @@ import ghidra.util.exception.NotYetImplementedException;
 
 public final class ElfRelocatableSectionSymbolTable extends ElfRelocatableSection {
 	private final TreeSet<ElfRelocatableSymbol> symbols = new TreeSet<>();
+	private final HashMap<String, ElfRelocatableSymbol> lookup = new HashMap<>();
 	private final ElfRelocatableSectionStringTable stringTable;
 
 	public ElfRelocatableSectionSymbolTable(ElfRelocatableObject elf, String name,
@@ -128,6 +130,7 @@ public final class ElfRelocatableSectionSymbolTable extends ElfRelocatableSectio
 			new ElfRelocatableSymbol(name, 0, 0, 0, info, ElfSymbol.STV_DEFAULT,
 				shndx);
 		symbols.add(symbol);
+		lookup.put(name, symbol);
 		return symbol;
 	}
 
@@ -140,6 +143,7 @@ public final class ElfRelocatableSectionSymbolTable extends ElfRelocatableSectio
 			new ElfRelocatableSymbol(name, st_name, offset, size, info, ElfSymbol.STV_DEFAULT,
 				shndx);
 		symbols.add(symbol);
+		lookup.put(name, symbol);
 		return symbol;
 	}
 
@@ -150,6 +154,11 @@ public final class ElfRelocatableSectionSymbolTable extends ElfRelocatableSectio
 		ElfRelocatableSymbol symbol =
 			new ElfRelocatableSymbol(name, st_name, 0, 0, info, ElfSymbol.STV_DEFAULT, shndx);
 		symbols.add(symbol);
+		lookup.put(name, symbol);
 		return symbol;
+	}
+
+	public ElfRelocatableSymbol get(String name) {
+		return lookup.get(name);
 	}
 }

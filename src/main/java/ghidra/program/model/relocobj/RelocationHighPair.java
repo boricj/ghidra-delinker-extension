@@ -101,7 +101,9 @@ public class RelocationHighPair implements Relocation {
 
 	protected void addRelocationLo(RelocationLowPair relocationLo) {
 		synchronized (relocations) {
-			relocations.add(relocationLo);
+			if (!relocations.contains(relocationLo)) {
+				relocations.add(relocationLo);
+			}
 		}
 	}
 

@@ -14,6 +14,7 @@
 package ghidra.program.model.relocobj;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import ghidra.program.model.address.Address;
@@ -111,6 +112,10 @@ public class RelocationHighPair implements Relocation {
 		synchronized (relocations) {
 			relocations.remove(relocationLo);
 		}
+	}
+
+	public List<RelocationLowPair> getLowPairs() {
+		return Collections.unmodifiableList(relocations);
 	}
 
 	@Override

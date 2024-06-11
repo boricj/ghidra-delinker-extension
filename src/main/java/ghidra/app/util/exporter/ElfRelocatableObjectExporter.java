@@ -273,11 +273,12 @@ public class ElfRelocatableObjectExporter extends Exporter {
 	}
 
 	private static ElfRelocationTypeMapper findRelocationTypeMapperFor(
-			ElfRelocatableSection section, MessageLog log) {
+			ElfRelocatableSection section,
+			MessageLog log) {
 		List<ElfRelocationTypeMapper> mappers =
 			ClassSearcher.getInstances(ElfRelocationTypeMapper.class)
 					.stream()
-					.filter(s -> s.canApply(section.getElfRelocatableObject()))
+					.filter(s -> s.canProcess(section.getElfRelocatableObject()))
 					.collect(Collectors.toList());
 
 		if (mappers.isEmpty()) {
@@ -287,9 +288,10 @@ public class ElfRelocatableObjectExporter extends Exporter {
 
 		ElfRelocationTypeMapper mapper = mappers.get(0);
 		if (mappers.size() > 1) {
-			log.appendMsg(section.getName(),
+			String msg =
 				String.format("Multiple applicable ELF relocation type mappers found, using %s",
-					mapper.getClass().getName()));
+					mapper.getClass().getName());
+			log.appendMsg(section.getName(), msg);
 		}
 
 		return mapper;
@@ -381,11 +383,11 @@ public class ElfRelocatableObjectExporter extends Exporter {
 				byte[] bytes =
 					relocationTable.getOriginalBytes(sectionSet, elf.getDataConverter(),
 						encodeAddend, predicateRelocation);
-				section = new ElfRelocatableSectionProgBits(elf, name, bytes, flags);
+				section = new ElfRelocatableSectionProgBits(elf, name, bytes, sectionSet, flags);
 			}
 			else {
 				long length = sectionSet.getNumAddresses();
-				section = new ElfRelocatableSectionNoBits(elf, name, length, flags);
+				section = new ElfRelocatableSectionNoBits(elf, name, length, sectionSet, flags);
 			}
 		}
 
@@ -480,53 +482,15 @@ public class ElfRelocatableObjectExporter extends Exporter {
 				return;
 			}
 
+			ElfRelocationTypeMapper relocationMapper = findRelocationTypeMapperFor(section, log);
 			if (relocationTableFormat == ElfSectionHeaderConstants.SHT_REL) {
-				ElfRelocationTypeMapper relocationTypeMapper =
-					findRelocationTypeMapperFor(section, log);
-				if (relocationTypeMapper == null) {
-					return;
-				}
-
 				String relName = String.format(".rel%s%s", (name.startsWith(".") ? "" : "."), name);
-				ElfRelocatableSectionRelTable table =
-					new ElfRelocatableSectionRelTable(elf, relName, symtab, section);
-
-				for (Relocation relocation : relocations) {
-					long offset =
-						Relocation.getAddressOffsetWithinSet(sectionSet, relocation.getAddress());
-					long type = relocationTypeMapper.apply(table, relocation, log);
-					long symindex = symtab
-							.indexOf(symbolsByName.get(getSymbolName(relocation.getSymbolName())));
-
-					table.add(offset, type, symindex);
-				}
-
-				relSection = table;
+				relSection = new ElfRelocatableSectionRelTable(elf, relName, symtab, section);
 			}
 			else if (relocationTableFormat == ElfSectionHeaderConstants.SHT_RELA) {
-				ElfRelocationTypeMapper relocationTypeMapper =
-					findRelocationTypeMapperFor(section, log);
-				if (relocationTypeMapper == null) {
-					return;
-				}
-
 				String relName =
 					String.format(".rela%s%s", (name.startsWith(".") ? "" : "."), name);
-				ElfRelocatableSectionRelaTable table =
-					new ElfRelocatableSectionRelaTable(elf, relName, symtab, section);
-
-				for (Relocation relocation : relocations) {
-					long offset =
-						Relocation.getAddressOffsetWithinSet(sectionSet, relocation.getAddress());
-					long type = relocationTypeMapper.apply(table, relocation, log);
-					long symindex = symtab
-							.indexOf(symbolsByName.get(getSymbolName(relocation.getSymbolName())));
-					long addend = relocation.getAddend();
-
-					table.add(offset, type, symindex, addend);
-				}
-
-				relSection = table;
+				relSection = new ElfRelocatableSectionRelaTable(elf, relName, symtab, section);
 			}
 			else if (relocationTableFormat == ElfSectionHeaderConstants.SHT_NULL) {
 				log.appendMsg(name,
@@ -538,6 +502,10 @@ public class ElfRelocatableObjectExporter extends Exporter {
 					"Unsupported relocation table format %d, skipping relocation table generation",
 					relocationTableFormat));
 				return;
+			}
+
+			if (relocationMapper != null) {
+				relocationMapper.process(relSection, relocations, log);
 			}
 		}
 	}

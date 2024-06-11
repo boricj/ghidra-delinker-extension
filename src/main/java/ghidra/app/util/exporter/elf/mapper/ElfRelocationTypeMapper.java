@@ -13,6 +13,8 @@
  */
 package ghidra.app.util.exporter.elf.mapper;
 
+import java.util.List;
+
 import ghidra.app.util.exporter.elf.ElfRelocatableObject;
 import ghidra.app.util.exporter.elf.ElfRelocatableSection;
 import ghidra.app.util.importer.MessageLog;
@@ -20,7 +22,7 @@ import ghidra.program.model.relocobj.Relocation;
 import ghidra.util.classfinder.ExtensionPoint;
 
 public interface ElfRelocationTypeMapper extends ExtensionPoint {
-	public int apply(ElfRelocatableSection relSection, Relocation r, MessageLog log);
+	public void process(ElfRelocatableSection table, List<Relocation> relocations, MessageLog log);
 
-	public boolean canApply(ElfRelocatableObject object);
+	public boolean canProcess(ElfRelocatableObject object);
 }

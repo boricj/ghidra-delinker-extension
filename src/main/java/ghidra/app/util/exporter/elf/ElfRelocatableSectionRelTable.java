@@ -87,10 +87,6 @@ public final class ElfRelocatableSectionRelTable extends ElfRelocatableSection {
 		throw new NotYetImplementedException();
 	}
 
-	public void add(long offset, long type, long symindex) {
-		relocations.add(new Relocation(offset, type, symindex));
-	}
-
 	@Override
 	public int getShLink() {
 		return symtab.getIndex();
@@ -118,5 +114,17 @@ public final class ElfRelocatableSectionRelTable extends ElfRelocatableSection {
 		else {
 			throw new NotYetImplementedException();
 		}
+	}
+
+	public ElfRelocatableSection getSection() {
+		return section;
+	}
+
+	public ElfRelocatableSectionSymbolTable getSymtab() {
+		return symtab;
+	}
+
+	public void add(long offset, long type, long symindex) {
+		relocations.add(new Relocation(offset, type, symindex));
 	}
 }

@@ -91,12 +91,12 @@ public final class ElfRelocatableSymbol implements Comparable<ElfRelocatableSymb
 		return name.compareTo(other.name);
 	}
 
-	public byte[] toBytes(DataConverter dc, ElfRelocatableSectionSymbolTable symbolTable)
+	public byte[] toBytes(DataConverter dc, ElfRelocatableSectionSymbolTable symtab)
 			throws IOException {
 		ByteArrayOutputStream os = new ByteArrayOutputStream();
 		DataOutputStream dos = new DataOutputStream(os);
 
-		if (symbolTable.getElfRelocatableObject().is32Bit()) {
+		if (symtab.getElfRelocatableObject().is32Bit()) {
 			dos.write(dc.getBytes(st_name));
 			dos.write(dc.getBytes((int) value));
 			dos.write(dc.getBytes((int) size));
@@ -104,7 +104,7 @@ public final class ElfRelocatableSymbol implements Comparable<ElfRelocatableSymb
 			dos.writeByte(other);
 			dos.write(dc.getBytes(shndx));
 		}
-		else if (symbolTable.getElfRelocatableObject().is64Bit()) {
+		else if (symtab.getElfRelocatableObject().is64Bit()) {
 			dos.write(dc.getBytes(st_name));
 			dos.writeByte(info);
 			dos.writeByte(other);

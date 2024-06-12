@@ -124,7 +124,7 @@ public final class ElfRelocatableSectionRelaTable extends ElfRelocatableSection 
 		return section;
 	}
 
-	public ElfRelocatableSectionSymbolTable getSymtab() {
+	public ElfRelocatableSectionSymbolTable getSymbolTable() {
 		return symtab;
 	}
 

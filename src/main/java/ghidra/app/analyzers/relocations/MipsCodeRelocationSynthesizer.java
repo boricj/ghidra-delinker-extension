@@ -449,8 +449,8 @@ public class MipsCodeRelocationSynthesizer
 		sinks.add(new MIPS_PC16_InstructionRelocationEmitter(program, relocationTable, function,
 			branchesToShiftByOne, monitor, log));
 
-		SymbolTable symbolTable = program.getSymbolTable();
-		SymbolIterator _gp = symbolTable.getSymbols("_gp");
+		SymbolTable symtab = program.getSymbolTable();
+		SymbolIterator _gp = symtab.getSymbols("_gp");
 		if (_gp.hasNext()) {
 			sinks.add(new MIPS_GPREL16_InstructionRelocationEmitter(program, relocationTable,
 				function, _gp.next(), monitor, log));

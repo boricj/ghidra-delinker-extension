@@ -167,7 +167,7 @@ public class Mips_RelocationTypeMapper implements ElfRelocationTypeMapper {
 
 	private void emit(ElfRelocatableSectionRelTable relTable, Relocation relocation, long type) {
 		ElfRelocatableSection section = relTable.getSection();
-		ElfRelocatableSectionSymbolTable symtab = relTable.getSymtab();
+		ElfRelocatableSectionSymbolTable symtab = relTable.getSymbolTable();
 
 		long offset = section.getOffset(relocation.getAddress());
 		long symindex = symtab.indexOf(symtab.get(relocation.getSymbolName()));

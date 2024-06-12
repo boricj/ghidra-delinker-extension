@@ -26,13 +26,13 @@ import ghidra.util.exception.NotYetImplementedException;
 public final class ElfRelocatableSectionSymbolTable extends ElfRelocatableSection {
 	private final TreeSet<ElfRelocatableSymbol> symbols = new TreeSet<>();
 	private final HashMap<String, ElfRelocatableSymbol> lookup = new HashMap<>();
-	private final ElfRelocatableSectionStringTable stringTable;
+	private final ElfRelocatableSectionStringTable strtab;
 
 	public ElfRelocatableSectionSymbolTable(ElfRelocatableObject elf, String name,
-			ElfRelocatableSectionStringTable stringTable) {
+			ElfRelocatableSectionStringTable strtab) {
 		super(elf, name);
 
-		this.stringTable = stringTable;
+		this.strtab = strtab;
 		this.index = elf.add(this);
 
 		addNullSymbol();
@@ -74,7 +74,7 @@ public final class ElfRelocatableSectionSymbolTable extends ElfRelocatableSectio
 
 	@Override
 	public int getShLink() {
-		return stringTable.getIndex();
+		return strtab.getIndex();
 	}
 
 	@Override
@@ -113,7 +113,7 @@ public final class ElfRelocatableSectionSymbolTable extends ElfRelocatableSectio
 	}
 
 	public ElfRelocatableSymbol addFileSymbol(String name) {
-		int st_name = stringTable.add(name);
+		int st_name = strtab.add(name);
 		byte info = ElfSymbol.STT_FILE | (ElfSymbol.STB_LOCAL << 4);
 		ElfRelocatableSymbol symbol =
 			new ElfRelocatableSymbol(name, st_name, 0, 0, info, ElfSymbol.STV_DEFAULT,
@@ -136,7 +136,7 @@ public final class ElfRelocatableSectionSymbolTable extends ElfRelocatableSectio
 
 	public ElfRelocatableSymbol addDefinedSymbol(ElfRelocatableSection section, String name,
 			byte visibility, byte type, long size, long offset) {
-		int st_name = stringTable.add(name);
+		int st_name = strtab.add(name);
 		byte info = (byte) (type | (visibility << 4));
 		short shndx = (short) section.getIndex();
 		ElfRelocatableSymbol symbol =
@@ -148,7 +148,7 @@ public final class ElfRelocatableSectionSymbolTable extends ElfRelocatableSectio
 	}
 
 	public ElfRelocatableSymbol addExternalSymbol(String name) {
-		int st_name = stringTable.add(name);
+		int st_name = strtab.add(name);
 		byte info = (byte) (ElfSymbol.STT_NOTYPE | (ElfSymbol.STB_GLOBAL << 4));
 		short shndx = (short) ElfSectionHeaderConstants.SHN_UNDEF;
 		ElfRelocatableSymbol symbol =

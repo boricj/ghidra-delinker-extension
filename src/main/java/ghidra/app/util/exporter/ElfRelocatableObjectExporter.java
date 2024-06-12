@@ -94,8 +94,10 @@ public class ElfRelocatableObjectExporter extends Exporter {
 	private AddressSetView programSet;
 	private AddressSetView fileSet;
 
+	private RelocationTable relocationTable;
+	private Predicate<Relocation> predicateRelocation;
 	private Map<String, ElfRelocatableSymbol> symbolsByName;
-	private List<Section> sections = new ArrayList<>();
+	private List<Section> sections;
 	private Set<String> symbolNamesRelocationFileSet;
 
 	private static final String OPTION_GROUP_ELF_HEADER = "ELF header";
@@ -355,22 +357,18 @@ public class ElfRelocatableObjectExporter extends Exporter {
 
 		private ElfRelocatableSection section;
 		private ElfRelocatableSection relSection;
-		private Predicate<Relocation> predicateRelocation;
 
-		public Section(MemoryBlock memoryBlock, AddressSetView sectionSet,
-				Predicate<Relocation> predicateRelocation) {
+		public Section(MemoryBlock memoryBlock, AddressSetView sectionSet) {
 			this.memoryBlock = memoryBlock;
 			this.name = memoryBlock.getName();
 			this.sectionSet = sectionSet;
-			this.predicateRelocation = predicateRelocation;
 		}
 
 		public String getName() {
 			return name;
 		}
 
-		public void createElfSection(RelocationTable relocationTable, boolean encodeAddend)
-				throws MemoryAccessException {
+		public void createElfSection(boolean encodeAddend) throws MemoryAccessException {
 			if (section != null) {
 				throw new IllegalStateException();
 			}
@@ -391,12 +389,11 @@ public class ElfRelocatableObjectExporter extends Exporter {
 			}
 		}
 
-		public void addSymbols(RelocationTable relocationTable,
-				Predicate<Relocation> predicateRelocation) {
+		public void addSymbols() {
 			symtab.addSectionSymbol(section);
 
 			for (Symbol symbol : program.getSymbolTable().getAllSymbols(true)) {
-				if (!isSymbolInteresting(symbol, relocationTable, predicateRelocation)) {
+				if (!isSymbolInteresting(symbol)) {
 					continue;
 				}
 
@@ -411,8 +408,7 @@ public class ElfRelocatableObjectExporter extends Exporter {
 			}
 		}
 
-		private boolean isSymbolInteresting(Symbol symbol, RelocationTable relocationTable,
-				Predicate<Relocation> predicateRelocation) {
+		private boolean isSymbolInteresting(Symbol symbol) {
 			if (!symbol.isPrimary() || !sectionSet.contains(symbol.getAddress())) {
 				return false;
 			}
@@ -468,7 +464,7 @@ public class ElfRelocatableObjectExporter extends Exporter {
 			return ElfSymbol.STB_LOCAL;
 		}
 
-		public void createElfRelocationTableSection(RelocationTable relocationTable)
+		public void createElfRelocationTableSection()
 				throws MemoryAccessException {
 			if (relSection != null) {
 				throw new IllegalStateException();
@@ -526,13 +522,13 @@ public class ElfRelocatableObjectExporter extends Exporter {
 		this.programSet = memory;
 		this.fileSet = fileSet;
 
-		RelocationTable relocationTable = RelocationTable.get(program);
+		relocationTable = RelocationTable.get(program);
 		final AddressSetView predicateSet = fileSet;
-		Predicate<Relocation> predicateRelocation =
-			(Relocation r) -> r.isNeeded(program, predicateSet);
+		predicateRelocation = (Relocation r) -> r.isNeeded(program, predicateSet);
 
+		sections = new ArrayList<>();
 		for (MemoryBlock memoryBlock : program.getMemory().getBlocks()) {
-			addSectionForMemoryBlock(memoryBlock, predicateRelocation);
+			addSectionForMemoryBlock(memoryBlock);
 		}
 
 		taskMonitor.setIndeterminate(true);
@@ -554,27 +550,28 @@ public class ElfRelocatableObjectExporter extends Exporter {
 			}
 
 			taskMonitor.setMessage("Compute file symbol set...");
-			computeSymbolNamesRelocationFileSet(relocationTable, predicateRelocation);
+			computeSymbolNamesRelocationFileSet();
 
 			for (Section section : sections) {
 				taskMonitor.setMessage(String.format("Creating section %s...", section.getName()));
-				section.createElfSection(relocationTable, generateRelocationTables);
+				section.createElfSection(generateRelocationTables);
 			}
 
 			if (generateStringAndSymbolTables) {
 				taskMonitor.setMessage("Generating symbol table...");
 
 				for (Section section : sections) {
-					section.addSymbols(relocationTable, predicateRelocation);
+					section.addSymbols();
 				}
 
-				computeExternalSymbols(relocationTable, predicateRelocation);
+				computeExternalSymbols();
 
 				if (generateRelocationTables) {
 					for (Section section : sections) {
-						taskMonitor.setMessage(String.format(
-							"Creating relocation table for section %s...", section.getName()));
-						section.createElfRelocationTableSection(relocationTable);
+						String msg = String.format("Creating relocation table for section %s...",
+							section.getName());
+						taskMonitor.setMessage(msg);
+						section.createElfRelocationTableSection();
 					}
 				}
 			}
@@ -594,8 +591,7 @@ public class ElfRelocatableObjectExporter extends Exporter {
 		return true;
 	}
 
-	private void computeSymbolNamesRelocationFileSet(RelocationTable relocationTable,
-			Predicate<Relocation> predicateRelocation) {
+	private void computeSymbolNamesRelocationFileSet() {
 		Iterable<Relocation> itRelocations =
 			() -> relocationTable.getRelocations(fileSet, predicateRelocation);
 		Stream<Relocation> relocations =
@@ -618,18 +614,16 @@ public class ElfRelocatableObjectExporter extends Exporter {
 		comment = new ElfRelocatableSectionComment(elf, ".comment", strComment);
 	}
 
-	private void addSectionForMemoryBlock(MemoryBlock memoryBlock,
-			Predicate<Relocation> predicateRelocation) {
+	private void addSectionForMemoryBlock(MemoryBlock memoryBlock) {
 		AddressSet memoryBlockSet =
 			new AddressSet(memoryBlock.getStart(), memoryBlock.getEnd()).intersect(fileSet);
 
 		if (!memoryBlockSet.isEmpty()) {
-			sections.add(new Section(memoryBlock, memoryBlockSet, predicateRelocation));
+			sections.add(new Section(memoryBlock, memoryBlockSet));
 		}
 	}
 
-	private void computeExternalSymbols(RelocationTable relocationTable,
-			Predicate<Relocation> predicateRelocation) {
+	private void computeExternalSymbols() {
 		for (Relocation relocation : (Iterable<Relocation>) () -> relocationTable
 				.getRelocations(fileSet, predicateRelocation)) {
 			String symbolName = getSymbolName(relocation.getSymbolName());

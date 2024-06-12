@@ -15,12 +15,14 @@ package ghidra;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.AccessMode;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -40,6 +42,12 @@ import ghidra.app.util.bin.format.coff.CoffFileHeader;
 import ghidra.app.util.bin.format.coff.CoffSectionHeader;
 import ghidra.app.util.bin.format.elf.ElfException;
 import ghidra.app.util.bin.format.elf.ElfHeader;
+import ghidra.app.util.bin.format.elf.ElfRelocation;
+import ghidra.app.util.bin.format.elf.ElfRelocationTable;
+import ghidra.app.util.bin.format.elf.ElfSectionHeader;
+import ghidra.app.util.bin.format.elf.ElfSectionHeaderConstants;
+import ghidra.app.util.bin.format.elf.ElfSymbol;
+import ghidra.app.util.bin.format.elf.ElfSymbolTable;
 import ghidra.app.util.exporter.Exporter;
 import ghidra.app.util.importer.MessageLog;
 import ghidra.framework.GModule;
@@ -110,6 +118,65 @@ public abstract class DelinkerIntegrationTest extends AbstractProgramBasedTest {
 		@Override
 		public byte[] getSectionBytes(String name) throws IOException {
 			return header.getSection(name).getRawInputStream().readAllBytes();
+		}
+
+		public void hasSymbolAtAddress(String symbolTable, String symbolName, String sectionName,
+				int offset) {
+			ElfSymbolTable symtab = getSymbolTable(symbolTable);
+
+			List<ElfSymbol> symbols = Arrays.asList(symtab.getSymbols());
+			assertTrue(symbols.stream()
+					.filter(symbol -> symbol.getNameAsString().equals(symbolName))
+					.anyMatch(symbol -> {
+						ElfSectionHeader section =
+							header.getSections()[symbol.getSectionHeaderIndex()];
+						return section.getNameAsString().equals(sectionName) &&
+							symbol.getValue() == offset;
+					}));
+		}
+
+		public void hasUndefinedSymbol(String symbolTable, String symbolName) {
+			ElfSymbolTable symtab = getSymbolTable(symbolTable);
+
+			List<ElfSymbol> symbols = Arrays.asList(symtab.getSymbols());
+			assertTrue(symbols.stream()
+					.filter(symbol -> symbol.getNameAsString().equals(symbolName))
+					.anyMatch(symbol -> symbol
+							.getSectionHeaderIndex() == ElfSectionHeaderConstants.SHN_UNDEF));
+		}
+
+		public void hasRelocationAtAddress(String relTable, long offset, int type,
+				String symbolName, long value) {
+			ElfRelocationTable rel = getRelocationTable(relTable);
+			ElfSymbolTable symtab = rel.getAssociatedSymbolTable();
+
+			List<ElfRelocation> rels = Arrays.asList(rel.getRelocations());
+			assertTrue(rels.stream()
+					.filter(r -> r.getOffset() == offset)
+					.anyMatch(r -> r.getType() == type && r.getAddend() == value &&
+						symtab.getSymbol(r.getSymbolIndex()).getNameAsString().equals(symbolName)));
+		}
+
+		private ElfSymbolTable getSymbolTable(String name) {
+			ElfSymbolTable symtab = Arrays.asList(header.getSymbolTables())
+					.stream()
+					.filter(t -> t.getTableSectionHeader().getNameAsString().equals(name))
+					.findFirst()
+					.orElse(null);
+			assertNotNull(symtab);
+
+			return symtab;
+		}
+
+		private ElfRelocationTable getRelocationTable(String name) {
+			ElfRelocationTable relTable = Arrays.asList(header.getRelocationTables())
+					.stream()
+					.filter(t -> t.getTableSectionHeader().getNameAsString().equals(name))
+					.findFirst()
+					.orElse(null);
+			assertNotNull(relTable);
+
+			return relTable;
 		}
 	}
 

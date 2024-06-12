@@ -19,6 +19,7 @@ import java.util.Map;
 import org.junit.Test;
 
 import ghidra.DelinkerIntegrationTest;
+import ghidra.app.util.bin.format.elf.relocation.X86_32_ElfRelocationType;
 import ghidra.app.util.exporter.ElfRelocatableObjectExporter;
 import ghidra.program.model.address.AddressFactory;
 import ghidra.program.model.address.AddressSetView;
@@ -48,10 +49,78 @@ public class ELF_I386_ascii_table_main_o_Test extends DelinkerIntegrationTest {
 			Map.entry(0x21e, new byte[] { 0x1d, -1, -1, -1 }));
 
 		ObjectFile mainObjectFile = new ElfObjectFile(mainFile);
-		ObjectFile exportedObjectFile = new ElfObjectFile(exportedFile);
+		ElfObjectFile exported = new ElfObjectFile(exportedFile);
 
-		mainObjectFile.compareSectionBytes(".text", exportedObjectFile, ".text", text_patches);
-		mainObjectFile.compareSectionBytes(".rodata", exportedObjectFile, ".rodata");
-		mainObjectFile.compareSectionSizes(".rel.rodata", exportedObjectFile, ".rel.rodata");
+		mainObjectFile.compareSectionBytes(".text", exported, ".text", text_patches);
+		mainObjectFile.compareSectionBytes(".rodata", exported, ".rodata");
+		mainObjectFile.compareSectionSizes(".rel.rodata", exported, ".rel.rodata");
+
+		exported.hasSymbolAtAddress(".symtab", "sys_getpid", ".text", 0x00000000);
+		exported.hasSymbolAtAddress(".symtab", "sys_kill", ".text", 0x00000008);
+		exported.hasSymbolAtAddress(".symtab", "sys_write", ".text", 0x00000016);
+		exported.hasSymbolAtAddress(".symtab", "_nolibc_memcpy_up", ".text", 0x0000002a);
+		exported.hasSymbolAtAddress(".symtab", "fileno", ".text", 0x0000004a);
+		exported.hasSymbolAtAddress(".symtab", "_start", ".text", 0x00000061);
+		exported.hasSymbolAtAddress(".symtab", "write", ".text", 0x00000098);
+		exported.hasSymbolAtAddress(".symtab", "fputc", ".text", 0x000000bc);
+		exported.hasSymbolAtAddress(".symtab", "putchar", ".text", 0x000000f0);
+		exported.hasSymbolAtAddress(".symtab", "print_number", ".text", 0x000000fb);
+		exported.hasSymbolAtAddress(".symtab", "print_ascii_entry", ".text", 0x0000013f);
+		exported.hasSymbolAtAddress(".symtab", "main", ".text", 0x000001cc);
+		exported.hasSymbolAtAddress(".symtab", "s_ascii_properties", ".rodata", 0x00000000);
+		exported.hasSymbolAtAddress(".symtab", "NUM_ASCII_PROPERTIES", ".rodata", 0x00000050);
+		exported.hasSymbolAtAddress(".symtab", "COLUMNS", ".data", 0x00000000);
+
+		exported.hasUndefinedSymbol(".symtab", "_auxv");
+		exported.hasUndefinedSymbol(".symtab", "environ");
+		exported.hasUndefinedSymbol(".symtab", "errno");
+		exported.hasUndefinedSymbol(".symtab", "isalnum");
+		exported.hasUndefinedSymbol(".symtab", "isalpha");
+		exported.hasUndefinedSymbol(".symtab", "iscntrl");
+		exported.hasUndefinedSymbol(".symtab", "isdigit");
+		exported.hasUndefinedSymbol(".symtab", "isgraph");
+		exported.hasUndefinedSymbol(".symtab", "islower");
+		exported.hasUndefinedSymbol(".symtab", "isprint");
+		exported.hasUndefinedSymbol(".symtab", "ispunct");
+		exported.hasUndefinedSymbol(".symtab", "isspace");
+		exported.hasUndefinedSymbol(".symtab", "isupper");
+
+		exported.hasRelocationAtAddress(".rel.text", 0x00000053,
+			X86_32_ElfRelocationType.R_386_32.typeId(), "errno", 0);
+		exported.hasRelocationAtAddress(".rel.text", 0x0000006a,
+			X86_32_ElfRelocationType.R_386_32.typeId(), "environ", 0);
+		exported.hasRelocationAtAddress(".rel.text", 0x0000007c,
+			X86_32_ElfRelocationType.R_386_32.typeId(), "_auxv", 0);
+		exported.hasRelocationAtAddress(".rel.text", 0x000000b1,
+			X86_32_ElfRelocationType.R_386_32.typeId(), "errno", 0);
+		exported.hasRelocationAtAddress(".rel.text", 0x00000165,
+			X86_32_ElfRelocationType.R_386_PC32.typeId(), "isgraph", 0);
+		exported.hasRelocationAtAddress(".rel.text", 0x000001fa,
+			X86_32_ElfRelocationType.R_386_32.typeId(), "COLUMNS", 0);
+		exported.hasRelocationAtAddress(".rel.text", 0x00000215,
+			X86_32_ElfRelocationType.R_386_32.typeId(), "s_ascii_properties", 0);
+		exported.hasRelocationAtAddress(".rel.text", 0x00000224,
+			X86_32_ElfRelocationType.R_386_32.typeId(), "COLUMNS", 0);
+
+		exported.hasRelocationAtAddress(".rel.rodata", 0x00000000,
+			X86_32_ElfRelocationType.R_386_32.typeId(), "isgraph", 0);
+		exported.hasRelocationAtAddress(".rel.rodata", 0x00000008,
+			X86_32_ElfRelocationType.R_386_32.typeId(), "isprint", 0);
+		exported.hasRelocationAtAddress(".rel.rodata", 0x00000010,
+			X86_32_ElfRelocationType.R_386_32.typeId(), "iscntrl", 0);
+		exported.hasRelocationAtAddress(".rel.rodata", 0x00000018,
+			X86_32_ElfRelocationType.R_386_32.typeId(), "isspace", 0);
+		exported.hasRelocationAtAddress(".rel.rodata", 0x00000020,
+			X86_32_ElfRelocationType.R_386_32.typeId(), "ispunct", 0);
+		exported.hasRelocationAtAddress(".rel.rodata", 0x00000028,
+			X86_32_ElfRelocationType.R_386_32.typeId(), "isalnum", 0);
+		exported.hasRelocationAtAddress(".rel.rodata", 0x00000030,
+			X86_32_ElfRelocationType.R_386_32.typeId(), "isalpha", 0);
+		exported.hasRelocationAtAddress(".rel.rodata", 0x00000038,
+			X86_32_ElfRelocationType.R_386_32.typeId(), "isdigit", 0);
+		exported.hasRelocationAtAddress(".rel.rodata", 0x00000040,
+			X86_32_ElfRelocationType.R_386_32.typeId(), "isupper", 0);
+		exported.hasRelocationAtAddress(".rel.rodata", 0x00000048,
+			X86_32_ElfRelocationType.R_386_32.typeId(), "islower", 0);
 	}
 }

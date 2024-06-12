@@ -13,12 +13,16 @@
  */
 package ghidra.app.util.exporter.coff.mapper;
 
+import java.util.List;
+
+import ghidra.app.util.exporter.coff.CoffRelocatableRelocationTable;
 import ghidra.app.util.importer.MessageLog;
 import ghidra.program.model.relocobj.Relocation;
 import ghidra.util.classfinder.ExtensionPoint;
 
 public interface CoffRelocationTypeMapper extends ExtensionPoint {
-	public short apply(Relocation r, MessageLog log);
+	public void process(CoffRelocatableRelocationTable relTable, List<Relocation> relocations,
+			MessageLog log);
 
-	public boolean canApply(int machine);
+	public boolean canProcess(int machine);
 }

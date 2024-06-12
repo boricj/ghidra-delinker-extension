@@ -27,25 +27,23 @@ public class CoffRelocatableObject implements Writeable {
 	public final static int FILE_HEADER_SIZE = 20;
 	public final static int SECTION_HEADERS_OFFSET = FILE_HEADER_OFFSET + FILE_HEADER_SIZE;
 
-	private final CoffRelocatableSection[] sections;
-	private final CoffRelocatableSymbolTable symbolTable;
-	private final CoffRelocatableStringTable stringTable;
+	private final List<CoffRelocatableSection> sections = new ArrayList<>();
+	private final CoffRelocatableSymbolTable symtab;
+	private final CoffRelocatableStringTable strtab;
 	private final short machine;
 	private final int timeDateStamp;
 	private final int characteristics;
 
 	public final static class Builder {
-		private final List<CoffRelocatableSection> sections = new ArrayList<>();
-		private final CoffRelocatableSymbolTable symbolTable;
-		private final CoffRelocatableStringTable stringTable;
+		private final CoffRelocatableSymbolTable symtab;
+		private final CoffRelocatableStringTable strtab;
 		private short machine = MachineConstants.IMAGE_FILE_MACHINE_UNKNOWN;
 		private int timeDateStamp = 0;
 		private int characteristics = 0;
 
-		public Builder(CoffRelocatableSymbolTable symbolTable,
-				CoffRelocatableStringTable stringTable) {
-			this.symbolTable = symbolTable;
-			this.stringTable = stringTable;
+		public Builder(CoffRelocatableSymbolTable symtab, CoffRelocatableStringTable strtab) {
+			this.symtab = symtab;
+			this.strtab = strtab;
 		}
 
 		public Builder setMachine(short machine) {
@@ -63,29 +61,26 @@ public class CoffRelocatableObject implements Writeable {
 			return this;
 		}
 
-		public Builder addSection(CoffRelocatableSection section) {
-			sections.add(section);
-			return this;
-		}
-
 		public CoffRelocatableObject build() {
 			return new CoffRelocatableObject(this);
 		}
 	}
 
 	private CoffRelocatableObject(CoffRelocatableObject.Builder builder) {
-		this.sections = builder.sections.toArray(new CoffRelocatableSection[0]);
-		this.symbolTable = builder.symbolTable;
-		this.stringTable = builder.stringTable;
+		this.symtab = builder.symtab;
+		this.strtab = builder.strtab;
 		this.machine = builder.machine;
 		this.timeDateStamp = builder.timeDateStamp;
 		this.characteristics = builder.characteristics;
-		layout();
 	}
 
-	private void layout() {
+	public void addSection(CoffRelocatableSection section) {
+		sections.add(section);
+	}
+
+	public void layout() {
 		int position =
-			SECTION_HEADERS_OFFSET + sections.length * CoffRelocatableSection.HEADER_SIZE;
+			SECTION_HEADERS_OFFSET + sections.size() * CoffRelocatableSection.HEADER_SIZE;
 		for (CoffRelocatableSection section : sections) {
 			byte[] data = section.getData();
 			if (data != null) {
@@ -98,23 +93,21 @@ public class CoffRelocatableObject implements Writeable {
 			relocationTable.offset = position;
 			position += relocationTable.size();
 		}
-		symbolTable.offset = position;
-	}
-
-	public CoffRelocatableSymbolTable getSymbolTable() {
-		return symbolTable;
+		symtab.offset = position;
 	}
 
 	@Override
 	public void write(RandomAccessFile raf, DataConverter dc) throws IOException {
+		layout();
+
 		raf.seek(0);
 		raf.setLength(0);
 		byte[] fileHeader = new byte[FILE_HEADER_SIZE];
 		dc.putShort(fileHeader, 0, machine);
-		dc.putShort(fileHeader, 2, (short) sections.length);
+		dc.putShort(fileHeader, 2, (short) sections.size());
 		dc.putInt(fileHeader, 4, timeDateStamp);
-		dc.putInt(fileHeader, 8, symbolTable.offset);
-		dc.putInt(fileHeader, 12, symbolTable.getHeaderSymbolCount());
+		dc.putInt(fileHeader, 8, symtab.offset);
+		dc.putInt(fileHeader, 12, symtab.getHeaderSymbolCount());
 		dc.putShort(fileHeader, 16, (short) 0);
 		dc.putShort(fileHeader, 18, (short) characteristics);
 		raf.write(fileHeader);
@@ -127,7 +120,7 @@ public class CoffRelocatableObject implements Writeable {
 		for (CoffRelocatableSection section : sections) {
 			section.getRelocationTable().write(raf, dc);
 		}
-		symbolTable.write(raf, dc);
-		stringTable.write(raf, dc);
+		symtab.write(raf, dc);
+		strtab.write(raf, dc);
 	}
 }

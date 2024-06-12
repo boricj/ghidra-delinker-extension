@@ -20,9 +20,11 @@ import java.util.List;
 
 import ghidra.util.DataConverter;
 
-public class CoffRelocatableSectionRelocationTable {
+public class CoffRelocatableRelocationTable {
 	public final static int RECORD_SIZE = 10;
 
+	private final CoffRelocatableSection section;
+	private final List<Relocation> relocations = new ArrayList<>();
 	protected int offset;
 
 	public static final class Relocation {
@@ -37,43 +39,37 @@ public class CoffRelocatableSectionRelocationTable {
 		}
 	}
 
-	public static final class Builder {
-		private final List<Relocation> relocations = new ArrayList<>();
-
-		public void addRelocation(Relocation relocation) {
-			relocations.add(relocation);
-		}
-
-		public CoffRelocatableSectionRelocationTable build() {
-			return new CoffRelocatableSectionRelocationTable(this);
-		}
+	public CoffRelocatableRelocationTable(CoffRelocatableSection section) {
+		this.section = section;
 	}
 
-	private final Relocation[] relocations;
+	public CoffRelocatableSection getSection() {
+		return section;
+	}
 
-	private CoffRelocatableSectionRelocationTable(Builder builder) {
-		relocations = builder.relocations.toArray(new Relocation[0]);
+	public void addRelocation(int offset, int symbol, short type) {
+		relocations.add(new Relocation(offset, symbol, type));
 	}
 
 	public boolean linkOverflow() {
-		return relocations.length > 65535;
+		return relocations.size() > 65535;
 	}
 
 	public short headerCount() {
 		if (linkOverflow()) {
 			return (short) 65535;
 		}
-		return (short) relocations.length;
+		return (short) relocations.size();
 	}
 
 	public int size() {
-		return (linkOverflow() ? RECORD_SIZE : 0) + (relocations.length * RECORD_SIZE);
+		return (linkOverflow() ? RECORD_SIZE : 0) + (relocations.size() * RECORD_SIZE);
 	}
 
 	public void write(DataOutput out, DataConverter dc) throws IOException {
 		byte[] record = new byte[RECORD_SIZE];
 		if (linkOverflow()) {
-			dc.putInt(record, 0, relocations.length);
+			dc.putInt(record, 0, relocations.size());
 			dc.putInt(record, 4, 0);
 			dc.putShort(record, 8, (short) 0);
 			out.write(record);

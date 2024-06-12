@@ -16,7 +16,8 @@ package ghidra.app.util.exporter.coff;
 import java.io.DataOutput;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import ghidra.util.DataConverter;
 
@@ -29,72 +30,32 @@ public class CoffRelocatableSymbol {
 	private final short sectionNumber;
 	private final short type;
 	private final byte storageClass;
-	private final CoffRelocatableSymbolAux[] auxSymbols;
+	private final List<CoffRelocatableSymbolAux> auxSymbols;
 	private final int auxSymbolCount;
 	protected int index;
 
-	public final static class Builder {
-		private final String shortName;
-		private final int longNameIndex;
-		private final ArrayList<CoffRelocatableSymbolAux> auxSymbols = new ArrayList<>();
-		private int auxSymbolCount = 0;
-
-		private int value;
-		private short sectionNumber;
-		private short type;
-		private byte storageClass;
-
-		public Builder setValue(int value) {
-			this.value = value;
-			return this;
-		}
-
-		public Builder setSectionNumber(short sectionNumber) {
-			this.sectionNumber = sectionNumber;
-			return this;
-		}
-
-		public Builder setType(short type) {
-			this.type = type;
-			return this;
-		}
-
-		public Builder setStorageClass(byte storageClass) {
-			this.storageClass = storageClass;
-			return this;
-		}
-
-		public Builder addAuxSymbol(CoffRelocatableSymbolAux symbol) {
-			auxSymbols.add(symbol);
-			auxSymbolCount += symbol.symbolCount();
-			return this;
-		}
-
-		public Builder(CoffRelocatableStringTable stringTable, String name) {
-			if (name.getBytes(StandardCharsets.UTF_8).length <= 8) {
-				this.shortName = name;
-				this.longNameIndex = 0;
-			}
-			else {
-				this.shortName = null;
-				this.longNameIndex = stringTable.add(name);
-			}
-		}
-
-		public CoffRelocatableSymbol build() {
-			return new CoffRelocatableSymbol(this);
-		}
+	public CoffRelocatableSymbol(CoffRelocatableStringTable strtab, String name, int value,
+			short type, short sectionNumber, byte storageClass) {
+		this(strtab, name, value, type, sectionNumber, storageClass, Collections.emptyList());
 	}
 
-	private CoffRelocatableSymbol(Builder builder) {
-		this.shortName = builder.shortName;
-		this.longNameIndex = builder.longNameIndex;
-		this.value = builder.value;
-		this.sectionNumber = builder.sectionNumber;
-		this.type = builder.type;
-		this.storageClass = builder.storageClass;
-		this.auxSymbols = builder.auxSymbols.toArray(new CoffRelocatableSymbolAux[0]);
-		this.auxSymbolCount = builder.auxSymbolCount;
+	public CoffRelocatableSymbol(CoffRelocatableStringTable strtab, String name, int value,
+			short type, short sectionNumber, byte storageClass,
+			List<CoffRelocatableSymbolAux> auxSymbols) {
+		if (name.getBytes(StandardCharsets.UTF_8).length <= 8) {
+			this.shortName = name;
+			this.longNameIndex = 0;
+		}
+		else {
+			this.shortName = null;
+			this.longNameIndex = strtab.add(name);
+		}
+		this.value = value;
+		this.sectionNumber = sectionNumber;
+		this.type = type;
+		this.storageClass = storageClass;
+		this.auxSymbols = auxSymbols;
+		this.auxSymbolCount = auxSymbols.stream().mapToInt(a -> a.symbolCount()).sum();
 	}
 
 	public int symbolCount() {

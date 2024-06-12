@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -35,14 +34,11 @@ import ghidra.app.util.EnumDropDownOption;
 import ghidra.app.util.Option;
 import ghidra.app.util.OptionUtils;
 import ghidra.app.util.bin.format.coff.CoffMachineType;
-import ghidra.app.util.bin.format.coff.CoffSymbolSectionNumber;
 import ghidra.app.util.bin.format.coff.CoffSymbolStorageClass;
 import ghidra.app.util.bin.format.pe.SectionFlags;
 import ghidra.app.util.exporter.coff.CoffRelocatableObject;
 import ghidra.app.util.exporter.coff.CoffRelocatableSection;
-import ghidra.app.util.exporter.coff.CoffRelocatableSectionRelocationTable;
 import ghidra.app.util.exporter.coff.CoffRelocatableStringTable;
-import ghidra.app.util.exporter.coff.CoffRelocatableSymbol;
 import ghidra.app.util.exporter.coff.CoffRelocatableSymbolTable;
 import ghidra.app.util.exporter.coff.mapper.CoffRelocationTypeMapper;
 import ghidra.app.util.importer.MessageLog;
@@ -70,8 +66,12 @@ public class CoffRelocatableObjectExporter extends Exporter {
 	private AddressSetView fileSet;
 	private int machine;
 	private LeadingUnderscore leadingUnderscore;
-	private final CoffRelocatableStringTable stringTable = new CoffRelocatableStringTable();
-	private final Map<String, Integer> symbolNameToNumber = new HashMap<>();
+
+	private RelocationTable relocationTable;
+	private Predicate<Relocation> predicateRelocation;
+
+	private CoffRelocatableStringTable strtab;
+	private CoffRelocatableSymbolTable symtab;
 
 	private static final String OPTION_GROUP_COFF_HEADER = "COFF header";
 	private static final String OPTION_GROUP_SYMBOLS = "Symbols";
@@ -170,7 +170,7 @@ public class CoffRelocatableObjectExporter extends Exporter {
 		List<CoffRelocationTypeMapper> mappers =
 			ClassSearcher.getInstances(CoffRelocationTypeMapper.class)
 					.stream()
-					.filter(s -> s.canApply(machine))
+					.filter(s -> s.canProcess(machine))
 					.toList();
 
 		if (mappers.isEmpty()) {
@@ -217,6 +217,193 @@ public class CoffRelocatableObjectExporter extends Exporter {
 			OptionUtils.getOption(OPTION_LEADING_UNDERSCORE, options, LeadingUnderscore.DO_NOTHING);
 	}
 
+	private class Section {
+		private final short number;
+		private final MemoryBlock memoryBlock;
+		private final String name;
+		private final AddressSetView sectionSet;
+		private final List<Relocation> relocations;
+		private final byte[] data;
+		private CoffRelocatableSection section;
+
+		public Section(short number, MemoryBlock memoryBlock, AddressSetView sectionSet)
+				throws MemoryAccessException {
+			this.number = number;
+			this.memoryBlock = memoryBlock;
+			this.name = memoryBlock.getName();
+			this.sectionSet = sectionSet;
+			this.relocations = new ArrayList<>();
+			relocationTable.getRelocations(sectionSet, predicateRelocation)
+					.forEachRemaining(relocations::add);
+			if (memoryBlock.isInitialized()) {
+				this.data =
+					relocationTable.getOriginalBytes(sectionSet, DataConverter.getInstance(false),
+						false, predicateRelocation);
+			}
+			else {
+				this.data = null;
+			}
+		}
+
+		public short headerRelocationCount() {
+			if (relocations.size() > 65535) {
+				return (short) 65535;
+			}
+			else {
+				return (short) relocations.size();
+			}
+		}
+
+		public void addSymbols() {
+			AddressSet memoryBlockSet =
+				new AddressSet(memoryBlock.getStart(), memoryBlock.getEnd()).intersect(fileSet);
+			for (Symbol symbol : program.getSymbolTable().getAllSymbols(true)) {
+				if (!symbol.isPrimary() || !memoryBlockSet.contains(symbol.getAddress())) {
+					continue;
+				}
+				long offset =
+					Relocation.getAddressOffsetWithinSet(memoryBlockSet, symbol.getAddress());
+				String symbolName = symbol.getName();
+				String coffSymbolName = getCoffSymbolName(symbol);
+				var obj = symbol.getObject();
+				short type = 0x00;
+				byte storageClass = (byte) CoffSymbolStorageClass.C_STAT;
+				if (obj instanceof Function) {
+					type |= 0x20;
+					storageClass = CoffSymbolStorageClass.C_EXT;
+				}
+				symtab.addDefinedSymbol(symbolName, coffSymbolName, number, (int) offset, type,
+					storageClass);
+			}
+		}
+
+		public void buildCoffRelocationTable(CoffRelocationTypeMapper relocationTypeMapper) {
+			relocationTypeMapper.process(section.getRelocationTable(), relocations, log);
+		}
+
+		public CoffRelocatableSection buildCoffSection() {
+			int characteristics = 0;
+			if (memoryBlock.isRead()) {
+				characteristics |= SectionFlags.IMAGE_SCN_MEM_READ.getMask();
+			}
+			if (memoryBlock.isWrite()) {
+				characteristics |= SectionFlags.IMAGE_SCN_MEM_WRITE.getMask();
+			}
+			if (memoryBlock.isExecute()) {
+				characteristics |= SectionFlags.IMAGE_SCN_MEM_EXECUTE.getMask();
+			}
+			if (memoryBlock.isInitialized()) {
+				characteristics |= SectionFlags.IMAGE_SCN_CNT_INITIALIZED_DATA.getMask();
+			}
+			section = new CoffRelocatableSection(memoryBlock.getName(), sectionSet, characteristics,
+				data, symtab, strtab);
+			return section;
+		}
+	}
+
+	private List<Section> calculateSections()
+			throws ExporterException {
+		List<Section> sections = new ArrayList<>();
+		for (MemoryBlock memoryBlock : program.getMemory().getBlocks()) {
+			AddressSet memoryBlockSet =
+				new AddressSet(memoryBlock.getStart(), memoryBlock.getEnd()).intersect(fileSet);
+			if (memoryBlockSet.isEmpty()) {
+				continue;
+			}
+			Section section;
+			try {
+				section = new Section(
+					(short) (sections.size() + 1),
+					memoryBlock,
+					memoryBlockSet);
+			}
+			catch (MemoryAccessException e) {
+				throw new ExporterException(e);
+			}
+			sections.add(section);
+			symtab.addSectionSymbol(
+				section.name,
+				section.number,
+				(int) memoryBlock.getSize(),
+				section.headerRelocationCount());
+			section.addSymbols();
+		}
+		return sections;
+	}
+
+	private void calculateExternalSymbols(Memory memory) {
+		final AddressSetView finalFileSet = fileSet;
+		for (Relocation relocation : (Iterable<Relocation>) () -> relocationTable
+				.getRelocations(finalFileSet, predicateRelocation)) {
+			final String symbolName = relocation.getSymbolName();
+			if (symbolName != null && symtab.getSymbolNumber(symbolName) == -1 &&
+				memory.contains(relocation.getAddress())) {
+				// TODO: should plumb the symbol through instead, this is pretty convoluted and probably not right
+				Optional<Symbol> symbol =
+					Arrays.stream(program.getSymbolTable().getSymbols(relocation.getAddress()))
+							.filter((sym -> Objects.equals(sym.getName(), symbolName)))
+							.findFirst();
+				String coffSymbolName = symbol.isPresent() ? getCoffSymbolName(symbol.get())
+						: getCoffSymbolName(symbolName, () -> false);
+				symtab.addUndefinedSymbol(symbolName, coffSymbolName);
+			}
+		}
+	}
+
+	@Override
+	public boolean export(File file, DomainObject domainObj, AddressSetView fileSet,
+			TaskMonitor taskMonitor) throws ExporterException, IOException {
+		program = getProgram(domainObj);
+		if (program == null) {
+			return false;
+		}
+		Memory memory = program.getMemory();
+		if (fileSet == null) {
+			fileSet = memory;
+		}
+
+		this.fileSet = fileSet;
+
+		relocationTable = RelocationTable.get(program);
+		final AddressSetView predicateSet = fileSet;
+		predicateRelocation = (Relocation r) -> r.isNeeded(program, predicateSet);
+
+		taskMonitor.setIndeterminate(true);
+
+		CoffRelocationTypeMapper relocationTypeMapper = findRelocationTypeMapperFor(machine, log);
+		if (relocationTypeMapper == null) {
+			throw new RuntimeException("No relocation type mapper found for machine");
+		}
+
+		strtab = new CoffRelocatableStringTable();
+		symtab = new CoffRelocatableSymbolTable(strtab);
+		symtab.addFileSymbol(file.getName());
+
+		taskMonitor.setMessage("Calculating sections.");
+		List<Section> sections = calculateSections();
+
+		taskMonitor.setMessage("Calculating external symbols.");
+		calculateExternalSymbols(memory);
+
+		taskMonitor.setMessage("Building COFF sections.");
+		final CoffRelocatableObject object =
+			new CoffRelocatableObject.Builder(symtab, strtab).setMachine((short) machine).build();
+		for (Section section : sections) {
+			object.addSection(section.buildCoffSection());
+		}
+
+		taskMonitor.setMessage("Building COFF relocation tables.");
+		for (Section section : sections) {
+			section.buildCoffRelocationTable(relocationTypeMapper);
+		}
+
+		taskMonitor.setMessage("Writing COFF object to disk.");
+		try (RandomAccessFile raf = new RandomAccessFile(file, "rw")) {
+			object.write(raf, new LittleEndianDataConverter());
+		}
+		return true;
+	}
+
 	public String getCoffSymbolName(String symbolName, BooleanSupplier isCdecl) {
 		switch (leadingUnderscore) {
 			case PREPEND_CDECL:
@@ -246,230 +433,5 @@ public class CoffRelocatableObjectExporter extends Exporter {
 		BooleanSupplier isCdecl = () -> symbol.getObject() instanceof Function func &&
 			Objects.equals(func.getCallingConventionName(), "__cdecl");
 		return getCoffSymbolName(symbolName, isCdecl);
-	}
-
-	private class Section {
-		private final short number;
-		private final MemoryBlock memoryBlock;
-		private final String name;
-		private final AddressSetView sectionSet;
-		private final Relocation[] relocations;
-		private final byte[] data;
-		private CoffRelocatableSectionRelocationTable relocationTable;
-
-		public Section(short number, MemoryBlock memoryBlock, AddressSetView sectionSet,
-				Predicate<Relocation> predicateRelocation, RelocationTable relocationTable)
-				throws MemoryAccessException {
-			this.number = number;
-			this.memoryBlock = memoryBlock;
-			this.name = memoryBlock.getName();
-			this.sectionSet = sectionSet;
-			List<Relocation> relocations = new ArrayList<>();
-			relocationTable.getRelocations(sectionSet, predicateRelocation)
-					.forEachRemaining(relocations::add);
-			this.relocations = relocations.toArray(new Relocation[0]);
-			if (memoryBlock.isInitialized()) {
-				this.data =
-					relocationTable.getOriginalBytes(sectionSet, DataConverter.getInstance(false),
-						false, predicateRelocation);
-			}
-			else {
-				this.data = null;
-			}
-		}
-
-		public short headerRelocationCount() {
-			if (relocations.length > 65535) {
-				return (short) 65535;
-			}
-			else {
-				return (short) relocations.length;
-			}
-		}
-
-		public void addSymbols(CoffRelocatableSymbolTable.Builder symbolTableBuilder,
-				CoffRelocatableStringTable stringTable) {
-			AddressSet memoryBlockSet =
-				new AddressSet(memoryBlock.getStart(), memoryBlock.getEnd()).intersect(fileSet);
-			for (Symbol symbol : program.getSymbolTable().getAllSymbols(true)) {
-				if (!symbol.isPrimary() || !memoryBlockSet.contains(symbol.getAddress())) {
-					continue;
-				}
-				long offset =
-					Relocation.getAddressOffsetWithinSet(memoryBlockSet, symbol.getAddress());
-				String symbolName = symbol.getName();
-				var obj = symbol.getObject();
-				short type = 0x00;
-				byte storageClass = (byte) CoffSymbolStorageClass.C_STAT;
-				if (obj instanceof Function) {
-					type |= 0x20;
-					storageClass = CoffSymbolStorageClass.C_EXT;
-				}
-				var symbolBuilder =
-					new CoffRelocatableSymbol.Builder(stringTable, getCoffSymbolName(symbol))
-							.setValue((int) offset)
-							.setSectionNumber(number)
-							.setType(type)
-							.setStorageClass(storageClass);
-				int symbolIndex = symbolTableBuilder.addSymbol(symbolBuilder.build());
-				symbolNameToNumber.put(symbolName, symbolIndex);
-			}
-		}
-
-		public void buildCoffRelocationTable(CoffRelocationTypeMapper relocationTypeMapper) {
-			var coffRelocationTableBuilder = new CoffRelocatableSectionRelocationTable.Builder();
-			for (Relocation relocation : relocations) {
-				int offset =
-					(int) Relocation.getAddressOffsetWithinSet(sectionSet, relocation.getAddress());
-				int symbolIndex = symbolNameToNumber.getOrDefault(relocation.getSymbolName(), -1);
-				short type = relocationTypeMapper.apply(relocation, log);
-				coffRelocationTableBuilder
-						.addRelocation(new CoffRelocatableSectionRelocationTable.Relocation(offset,
-							symbolIndex, type));
-			}
-			relocationTable = coffRelocationTableBuilder.build();
-		}
-
-		public CoffRelocatableSection buildCoffSection(CoffRelocatableStringTable stringTable) {
-			int characteristics = 0;
-			if (memoryBlock.isRead()) {
-				characteristics |= SectionFlags.IMAGE_SCN_MEM_READ.getMask();
-			}
-			if (memoryBlock.isWrite()) {
-				characteristics |= SectionFlags.IMAGE_SCN_MEM_WRITE.getMask();
-			}
-			if (memoryBlock.isExecute()) {
-				characteristics |= SectionFlags.IMAGE_SCN_MEM_EXECUTE.getMask();
-			}
-			if (memoryBlock.isInitialized()) {
-				characteristics |= SectionFlags.IMAGE_SCN_CNT_INITIALIZED_DATA.getMask();
-			}
-			return new CoffRelocatableSection.Builder(relocationTable, stringTable,
-				memoryBlock.getName())
-						.setCharacteristics(characteristics)
-						.setData(data)
-						.build();
-		}
-	}
-
-	private List<Section> calculateSections(CoffRelocatableSymbolTable.Builder symbolTableBuilder,
-			Predicate<Relocation> predicateRelocation, RelocationTable relocationTable)
-			throws ExporterException {
-		List<Section> sections = new ArrayList<>();
-		for (MemoryBlock memoryBlock : program.getMemory().getBlocks()) {
-			AddressSet memoryBlockSet =
-				new AddressSet(memoryBlock.getStart(), memoryBlock.getEnd()).intersect(fileSet);
-			if (memoryBlockSet.isEmpty()) {
-				continue;
-			}
-			Section section;
-			try {
-				section = new Section(
-					(short) (sections.size() + 1),
-					memoryBlock,
-					memoryBlockSet,
-					predicateRelocation,
-					relocationTable);
-			}
-			catch (MemoryAccessException e) {
-				throw new ExporterException(e);
-			}
-			sections.add(section);
-			symbolTableBuilder.addSectionSymbol(
-				section.name,
-				section.number,
-				(int) memoryBlock.getSize(),
-				section.headerRelocationCount());
-			section.addSymbols(symbolTableBuilder, stringTable);
-		}
-		return sections;
-	}
-
-	private void calculateExternalSymbols(RelocationTable relocationTable,
-			Predicate<Relocation> predicateRelocation, Memory memory,
-			CoffRelocatableSymbolTable.Builder symbolTableBuilder) {
-		final AddressSetView finalFileSet = fileSet;
-		for (Relocation relocation : (Iterable<Relocation>) () -> relocationTable
-				.getRelocations(finalFileSet, predicateRelocation)) {
-			final String symbolName = relocation.getSymbolName();
-			if (symbolName != null && !symbolNameToNumber.containsKey(symbolName) &&
-				memory.contains(relocation.getAddress())) {
-				// TODO: should plumb the symbol through instead, this is pretty convoluted and probably not right
-				Optional<Symbol> symbol =
-					Arrays.stream(program.getSymbolTable().getSymbols(relocation.getAddress()))
-							.filter((sym -> Objects.equals(sym.getName(), symbolName)))
-							.findFirst();
-				String coffSymbolName = symbol.isPresent() ? getCoffSymbolName(symbol.get())
-						: getCoffSymbolName(symbolName, () -> false);
-				int symbolIndex = symbolTableBuilder.addSymbol(
-					new CoffRelocatableSymbol.Builder(stringTable, coffSymbolName)
-							.setSectionNumber(CoffSymbolSectionNumber.N_UNDEF)
-							.setType((short) 0x20)
-							.setStorageClass((byte) CoffSymbolStorageClass.C_EXT)
-							.build());
-				symbolNameToNumber.put(symbolName, symbolIndex);
-			}
-		}
-	}
-
-	@Override
-	public boolean export(File file, DomainObject domainObj, AddressSetView fileSet,
-			TaskMonitor taskMonitor) throws ExporterException, IOException {
-		program = getProgram(domainObj);
-		if (program == null) {
-			return false;
-		}
-		Memory memory = program.getMemory();
-		if (fileSet == null) {
-			fileSet = memory;
-		}
-		this.fileSet = fileSet;
-
-		taskMonitor.setIndeterminate(true);
-
-		CoffRelocationTypeMapper relocationTypeMapper = findRelocationTypeMapperFor(machine, log);
-		if (relocationTypeMapper == null) {
-			throw new RuntimeException("No relocation type mapper found for machine");
-		}
-
-		RelocationTable relocationTable = RelocationTable.get(program);
-		final AddressSetView predicateSet = fileSet;
-		Predicate<Relocation> predicateRelocation =
-			(Relocation r) -> r.isNeeded(program, predicateSet);
-		final CoffRelocatableSymbolTable.Builder symbolTableBuilder =
-			new CoffRelocatableSymbolTable.Builder(stringTable);
-		symbolTableBuilder.addFileSymbol(file.getName());
-
-		taskMonitor.setMessage("Calculating sections.");
-		List<Section> sections =
-			calculateSections(symbolTableBuilder, predicateRelocation, relocationTable);
-
-		taskMonitor.setMessage("Calculating external symbols.");
-		calculateExternalSymbols(relocationTable, predicateRelocation, memory, symbolTableBuilder);
-
-		taskMonitor.setMessage("Building COFF symbol table.");
-		final CoffRelocatableSymbolTable symbolTable = symbolTableBuilder.build();
-
-		taskMonitor.setMessage("Building COFF relocation tables.");
-		for (Section section : sections) {
-			section.buildCoffRelocationTable(relocationTypeMapper);
-		}
-
-		taskMonitor.setMessage("Building COFF sections.");
-		final CoffRelocatableObject.Builder objectBuilder =
-			new CoffRelocatableObject.Builder(symbolTable, stringTable)
-					.setMachine((short) machine);
-		for (Section section : sections) {
-			objectBuilder.addSection(section.buildCoffSection(stringTable));
-		}
-
-		taskMonitor.setMessage("Building COFF object.");
-		final CoffRelocatableObject object = objectBuilder.build();
-
-		taskMonitor.setMessage("Writing COFF object to disk.");
-		try (RandomAccessFile raf = new RandomAccessFile(file, "rw")) {
-			object.write(raf, new LittleEndianDataConverter());
-		}
-		return true;
 	}
 }

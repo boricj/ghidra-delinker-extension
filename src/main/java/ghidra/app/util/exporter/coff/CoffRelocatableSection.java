@@ -18,12 +18,16 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 import ghidra.app.util.bin.format.pe.SectionHeader;
+import ghidra.program.model.address.Address;
+import ghidra.program.model.address.AddressSetView;
 import ghidra.util.DataConverter;
 
 public class CoffRelocatableSection {
 	public final static int HEADER_SIZE = 40;
 
-	private final CoffRelocatableSectionRelocationTable relocationTable;
+	private final AddressSetView addressSet;
+	private final CoffRelocatableSymbolTable symtab;
+	private final CoffRelocatableRelocationTable relocationTable;
 	private final String shortName;
 	private final int longNameIndex;
 	private final int virtualSize;
@@ -32,64 +36,37 @@ public class CoffRelocatableSection {
 	private final byte[] data;
 	protected int dataOffset;
 
-	public final static class Builder {
-		private final CoffRelocatableSectionRelocationTable relocationTable;
-		private final String shortName;
-		private final int longNameIndex;
-		private int virtualSize = 0;
-		private int virtualAddress = 0;
-		private int characteristics = 0;
-		private byte[] data = null;
-
-		public Builder(CoffRelocatableSectionRelocationTable relocationTable,
-				CoffRelocatableStringTable stringTable, String name) {
-			this.relocationTable = relocationTable;
-			if (name.length() <= 8) {
-				this.shortName = name;
-				this.longNameIndex = 0;
-			}
-			else {
-				this.shortName = null;
-				this.longNameIndex = stringTable.add(name);
-			}
+	public CoffRelocatableSection(String name, AddressSetView addressSet, int characteristics,
+			byte[] data, CoffRelocatableSymbolTable symtab,
+			CoffRelocatableStringTable strtab) {
+		this.addressSet = addressSet;
+		this.symtab = symtab;
+		this.relocationTable = new CoffRelocatableRelocationTable(this);
+		if (name.length() <= 8) {
+			this.shortName = name;
+			this.longNameIndex = 0;
 		}
-
-		public Builder setVirtualSize(int virtualSize) {
-			this.virtualSize = virtualSize;
-			return this;
+		else {
+			this.shortName = null;
+			this.longNameIndex = strtab.add(name);
 		}
-
-		public Builder setVirtualAddress(int virtualAddress) {
-			this.virtualAddress = virtualAddress;
-			return this;
-		}
-
-		public Builder setCharacteristics(int characteristics) {
-			this.characteristics = characteristics;
-			return this;
-		}
-
-		public Builder setData(byte[] data) {
-			this.data = data;
-			return this;
-		}
-
-		public CoffRelocatableSection build() {
-			return new CoffRelocatableSection(this);
-		}
+		this.virtualSize = 0;
+		this.virtualAddress = 0;
+		this.characteristics = characteristics;
+		this.data = data;
 	}
 
-	private CoffRelocatableSection(Builder builder) {
-		this.relocationTable = builder.relocationTable;
-		this.shortName = builder.shortName;
-		this.longNameIndex = builder.longNameIndex;
-		this.virtualSize = builder.virtualSize;
-		this.virtualAddress = builder.virtualAddress;
-		this.characteristics = builder.characteristics;
-		this.data = builder.data;
+	public CoffRelocatableSymbolTable getSymbolTable() {
+		return symtab;
 	}
 
-	public CoffRelocatableSectionRelocationTable getRelocationTable() {
+	public long getOffset(Address address) {
+		Address minAddress = addressSet.getMinAddress();
+		AddressSetView intersectedRange = addressSet.intersectRange(minAddress, address);
+		return intersectedRange.getNumAddresses() - 1;
+	}
+
+	public CoffRelocatableRelocationTable getRelocationTable() {
 		return relocationTable;
 	}
 

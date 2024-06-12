@@ -40,6 +40,7 @@ import ghidra.app.util.bin.ByteProvider;
 import ghidra.app.util.bin.FileByteProvider;
 import ghidra.app.util.bin.format.coff.CoffFileHeader;
 import ghidra.app.util.bin.format.coff.CoffSectionHeader;
+import ghidra.app.util.bin.format.coff.CoffSymbolSectionNumber;
 import ghidra.app.util.bin.format.elf.ElfException;
 import ghidra.app.util.bin.format.elf.ElfHeader;
 import ghidra.app.util.bin.format.elf.ElfRelocation;
@@ -194,13 +195,50 @@ public abstract class DelinkerIntegrationTest extends AbstractProgramBasedTest {
 
 		@Override
 		public byte[] getSectionBytes(String name) throws IOException {
+			CoffSectionHeader section = getSection(name);
+			return byteProvider.readBytes(section.getPointerToRawData(),
+				section.getSize(program.getLanguage()));
+		}
+
+		public void hasSymbolAtAddress(String symbolName, String sectionName, int offset) {
+			assertTrue(header.getSymbols()
+					.stream()
+					.filter(symbol -> symbol.getName().equals(symbolName))
+					.anyMatch(symbol -> {
+						CoffSectionHeader section =
+							header.getSections().get(symbol.getSectionNumber() - 1);
+						return section.getName().equals(sectionName) && symbol.getValue() == offset;
+					}));
+		}
+
+		public void hasUndefinedSymbol(String symbolName) {
+			assertTrue(header.getSymbols()
+					.stream()
+					.filter(symbol -> symbol.getName().equals(symbolName))
+					.anyMatch(
+						symbol -> symbol.getSectionNumber() == CoffSymbolSectionNumber.N_UNDEF));
+		}
+
+		public void hasRelocationAtAddress(String sectionName, long offset, int type,
+				String symbolName) {
+			CoffSectionHeader section = getSection(sectionName);
+			assertTrue(section.getRelocations()
+					.stream()
+					.filter(r -> r.getAddress() == offset)
+					.anyMatch(r -> header.getSymbolAtIndex(r.getSymbolIndex())
+							.getName()
+							.equals(symbolName) &&
+						r.getType() == type));
+		}
+
+		private CoffSectionHeader getSection(String name) {
 			CoffSectionHeader section = header.getSections()
 					.stream()
 					.filter(s -> s.getName().equals(name))
 					.findFirst()
-					.get();
-			return byteProvider.readBytes(section.getPointerToRawData(),
-				section.getSize(program.getLanguage()));
+					.orElse(null);
+			assertNotNull(section);
+			return section;
 		}
 	}
 

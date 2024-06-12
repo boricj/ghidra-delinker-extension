@@ -22,7 +22,7 @@ import ghidra.app.util.exporter.CoffRelocatableObjectExporter;
 import ghidra.program.model.address.AddressFactory;
 import ghidra.program.model.address.AddressSetView;
 
-public class I386_main_o_IntegrationTest extends DelinkerIntegrationTest {
+public class COFF_I386_ascii_table_main_o_Test extends DelinkerIntegrationTest {
 	private static final File mainFile =
 		new File("src/test/resources/ascii-table/reference/coff_windows/i386/main.obj");
 

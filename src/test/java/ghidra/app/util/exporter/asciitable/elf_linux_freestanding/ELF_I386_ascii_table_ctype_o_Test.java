@@ -22,20 +22,20 @@ import ghidra.app.util.exporter.ElfRelocatableObjectExporter;
 import ghidra.program.model.address.AddressFactory;
 import ghidra.program.model.address.AddressSetView;
 
-public class Mipsel_ctype_o_IntegrationTest extends DelinkerIntegrationTest {
+public class ELF_I386_ascii_table_ctype_o_Test extends DelinkerIntegrationTest {
 	private static final File ctypeFile =
-		new File("src/test/resources/ascii-table/reference/elf_linux_freestanding/mipsel/ctype.o");
+		new File("src/test/resources/ascii-table/reference/elf_linux_freestanding/i386/ctype.o");
 
 	@Override
 	protected String getProgramName() {
-		return "src/test/resources/ascii-table/reference/elf_linux_freestanding/mipsel/ascii-table.elf.gzf";
+		return "src/test/resources/ascii-table/reference/elf_linux_freestanding/i386/ascii-table.elf.gzf";
 	}
 
 	@Test
 	public void testExport_ctype_o() throws Exception {
 		AddressFactory af = getProgram().getAddressFactory();
-		AddressSetView set = af.getAddressSet(af.getAddress("00400600"), af.getAddress("0040086f"))	// .text
-				.union(af.getAddressSet(af.getAddress("00400a00"), af.getAddress("00400b0f"))); 	// .rodata
+		AddressSetView set = af.getAddressSet(af.getAddress("0804924e"), af.getAddress("0804938e"))	// .text
+				.union(af.getAddressSet(af.getAddress("0804a060"), af.getAddress("0804a160"))); 	// .rodata
 		File exportedFile = exportObjectFile(set, new ElfRelocatableObjectExporter(), null);
 
 		ObjectFile ctypeObjectFile = new ElfObjectFile(ctypeFile);

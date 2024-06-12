@@ -32,7 +32,7 @@ import ghidra.program.model.relocobj.Relocation;
 import ghidra.program.model.relocobj.RelocationTable;
 import ghidra.util.task.TaskMonitor;
 
-public class hi16_move_lo16_Test extends DelinkerIntegrationTest {
+public class Mipsel_hi16_move_lo16_Test extends DelinkerIntegrationTest {
 	private static final List<String> MEMORY_BLOCK_NAMES = List.of(".text");
 
 	private static final List<Relocation> EXPECTED_RELOCATIONS = List.of(

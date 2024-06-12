@@ -23,7 +23,7 @@ import ghidra.app.util.exporter.ElfRelocatableObjectExporter;
 import ghidra.program.model.address.AddressFactory;
 import ghidra.program.model.address.AddressSetView;
 
-public class I386_main_o_IntegrationTest extends DelinkerIntegrationTest {
+public class ELF_I386_ascii_table_main_o_Test extends DelinkerIntegrationTest {
 	private static final File mainFile =
 		new File("src/test/resources/ascii-table/reference/elf_linux_freestanding/i386/main.o");
 

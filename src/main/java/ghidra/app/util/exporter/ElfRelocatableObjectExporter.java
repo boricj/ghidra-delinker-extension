@@ -416,7 +416,7 @@ public class ElfRelocatableObjectExporter extends Exporter {
 			if (symbol.isDynamic() && !includeDynamicSymbols) {
 				// Even if we don't want dynamic symbols, we still need them for internal relocations.
 				// FIXME: investigate section-relative relocations for internal relocations with dynamic symbols.
-				String symbolName = getSymbolName(symbol.getName());
+				String symbolName = getSymbolName(symbol.getName(true));
 
 				return symbolNamesRelocationFileSet.contains(symbolName);
 			}

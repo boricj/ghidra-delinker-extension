@@ -35,11 +35,13 @@ public class X86CodeRelocationSynthesizer extends FunctionInstructionSinkCodeRel
 			extends AbsoluteInstructionRelocationEmitter {
 		private static final List<Byte> OPMASK_MOD_RM_EA_4BYTES =
 			Arrays.asList(new Byte[] { 0x07, -1, -1, -1, -1 });
+		private static final List<Byte> OPMASK_MOD_RM_SIB_4BYTES =
+			Arrays.asList(new Byte[] { -1, -1, -1, -1, -1 });
 		private static final List<Byte> OPMASK_SIB_4BYTES =
 			Arrays.asList(new Byte[] { -8, -1, -1, -1, -1 });
 
 		private static final List<List<Byte>> EXTRA_MASKS =
-			List.of(OPMASK_MOD_RM_EA_4BYTES, OPMASK_SIB_4BYTES);
+			List.of(OPMASK_MOD_RM_EA_4BYTES, OPMASK_MOD_RM_SIB_4BYTES, OPMASK_SIB_4BYTES);
 		private static final List<List<Byte>> MASKS =
 			Stream.concat(MASKS_ALLONES.stream(), EXTRA_MASKS.stream()).toList();
 
@@ -59,6 +61,9 @@ public class X86CodeRelocationSynthesizer extends FunctionInstructionSinkCodeRel
 			if (mask.equals(OPMASK_MOD_RM_EA_4BYTES)) {
 				return 4;
 			}
+			if (mask.equals(OPMASK_MOD_RM_SIB_4BYTES)) {
+				return 4;
+			}
 			else if (mask.equals(OPMASK_SIB_4BYTES)) {
 				return 4;
 			}
@@ -71,6 +76,9 @@ public class X86CodeRelocationSynthesizer extends FunctionInstructionSinkCodeRel
 			int offset = super.indexOfMask(instructionOperandMask, operandMask);
 			if (offset != -1) {
 				if (operandMask.equals(OPMASK_MOD_RM_EA_4BYTES)) {
+					offset += 1;
+				}
+				if (operandMask.equals(OPMASK_MOD_RM_SIB_4BYTES)) {
 					offset += 1;
 				}
 				else if (operandMask.equals(OPMASK_SIB_4BYTES)) {

@@ -174,13 +174,13 @@ public class CoffRelocatableObjectExporter extends Exporter {
 					.toList();
 
 		if (mappers.isEmpty()) {
-			log.appendMsg("No applicable ELF relocation type mappers found");
+			log.appendMsg("No applicable COFF relocation type mappers found");
 			return null;
 		}
 
 		CoffRelocationTypeMapper mapper = mappers.get(0);
 		if (mappers.size() > 1) {
-			log.appendMsg("Multiple applicable ELF relocation type mappers found, using " +
+			log.appendMsg("Multiple applicable COFF relocation type mappers found, using " +
 				mapper.getClass().getName());
 		}
 

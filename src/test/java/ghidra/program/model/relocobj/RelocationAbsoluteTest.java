@@ -53,7 +53,7 @@ public class RelocationAbsoluteTest {
 			0x7a, 0x7b, 0x7c, 0x7d, 0x7e, 0x7f };
 		relocation.unapply(buffer,
 			addressFactory.getAddressSet(ram.getAddress(0), ram.getAddress(15)),
-			DataConverter.getInstance(true), true);
+			DataConverter.getInstance(true), true, false);
 		assertArrayEquals(expected, buffer);
 	}
 
@@ -71,7 +71,7 @@ public class RelocationAbsoluteTest {
 			0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
 		relocation.unapply(buffer,
 			addressFactory.getAddressSet(ram.getAddress(0), ram.getAddress(15)),
-			DataConverter.getInstance(false), true);
+			DataConverter.getInstance(false), true, false);
 		assertArrayEquals(expected, buffer);
 	}
 
@@ -89,7 +89,7 @@ public class RelocationAbsoluteTest {
 			0x7a, 0x7b, 0x7c, 0x7d, 0x7e, 0x7f };
 		relocation.unapply(buffer,
 			addressFactory.getAddressSet(ram.getAddress(0), ram.getAddress(15)),
-			DataConverter.getInstance(true), false);
+			DataConverter.getInstance(true), false, false);
 		assertArrayEquals(expected, buffer);
 	}
 
@@ -107,7 +107,7 @@ public class RelocationAbsoluteTest {
 			0x7a, 0x7b, 0x7c, 0x7d, 0x7e, 0x7f };
 		relocation.unapply(buffer,
 			addressFactory.getAddressSet(ram.getAddress(0), ram.getAddress(15)),
-			DataConverter.getInstance(true), true);
+			DataConverter.getInstance(true), true, false);
 		assertArrayEquals(expected, buffer);
 	}
 
@@ -125,7 +125,7 @@ public class RelocationAbsoluteTest {
 			(byte) 0xff, (byte) 0xfc, 0x78, 0x79, 0x7a, 0x7b, 0x7c, 0x7d, 0x7e, 0x7f };
 		relocation.unapply(buffer,
 			addressFactory.getAddressSet(ram.getAddress(0), ram.getAddress(15)),
-			DataConverter.getInstance(true), true);
+			DataConverter.getInstance(true), true, false);
 		assertArrayEquals(expected, buffer);
 	}
 

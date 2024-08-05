@@ -380,7 +380,7 @@ public class ElfRelocatableObjectExporter extends Exporter {
 			if (memoryBlock.isInitialized()) {
 				byte[] bytes =
 					relocationTable.getOriginalBytes(sectionSet, elf.getDataConverter(),
-						encodeAddend, predicateRelocation);
+						encodeAddend, false, predicateRelocation);
 				section = new ElfRelocatableSectionProgBits(elf, name, bytes, sectionSet, flags);
 			}
 			else {

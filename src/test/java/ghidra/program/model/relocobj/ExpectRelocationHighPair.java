@@ -69,7 +69,7 @@ public class ExpectRelocationHighPair implements Relocation {
 
 	@Override
 	public void unapply(byte[] buffer, AddressSetView bufferAddressSet, DataConverter dc,
-			boolean encodeAddend) {
+			boolean encodeAddend, boolean adjustRelativeWithTargetSize) {
 		throw new UnsupportedOperationException("Unimplemented method 'unapply'");
 	}
 }

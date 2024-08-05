@@ -30,7 +30,7 @@ public interface Relocation {
 	public void delete();
 
 	public void unapply(byte[] buffer, AddressSetView bufferAddressSet, DataConverter dc,
-			boolean encodeAddend);
+			boolean encodeAddend, boolean adjustRelativeWithTargetSize);
 
 	default public boolean isNeeded(Program program, AddressSetView addressSet) {
 		return true;

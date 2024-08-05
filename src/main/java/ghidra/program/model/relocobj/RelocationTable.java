@@ -70,12 +70,15 @@ public class RelocationTable {
 	}
 
 	public byte[] getOriginalBytes(AddressSetView addressSet, DataConverter dc,
-			boolean encodeAddend) throws MemoryAccessException {
-		return getOriginalBytes(addressSet, dc, encodeAddend, relocation -> true);
+			boolean encodeAddend, boolean adjustRelativeWithTargetSize)
+			throws MemoryAccessException {
+		return getOriginalBytes(addressSet, dc, encodeAddend, adjustRelativeWithTargetSize,
+			relocation -> true);
 	}
 
 	public byte[] getOriginalBytes(AddressSetView addressSet, DataConverter dc,
-			boolean encodeAddend, Predicate<Relocation> predicate) throws MemoryAccessException {
+			boolean encodeAddend, boolean adjustRelativeWithTargetSize,
+			Predicate<Relocation> predicate) throws MemoryAccessException {
 		AddressFactory addressFactory = currentProgram.getAddressFactory();
 		MemoryBlock memoryBlock = currentProgram.getMemory().getBlock(addressSet.getMinAddress());
 		if (memoryBlock == null ||
@@ -97,7 +100,8 @@ public class RelocationTable {
 			for (Relocation relocation : (Iterable<Relocation>) () -> getRelocations(addressSet,
 				predicate)) {
 				if (predicate.test(relocation)) {
-					relocation.unapply(bytes, addressSet, dc, encodeAddend);
+					relocation.unapply(bytes, addressSet, dc, encodeAddend,
+						adjustRelativeWithTargetSize);
 				}
 			}
 		}

@@ -238,7 +238,7 @@ public class CoffRelocatableObjectExporter extends Exporter {
 			if (memoryBlock.isInitialized()) {
 				this.data =
 					relocationTable.getOriginalBytes(sectionSet, DataConverter.getInstance(false),
-						false, predicateRelocation);
+						true, true, predicateRelocation);
 			}
 			else {
 				this.data = null;

@@ -68,7 +68,7 @@ public class RelocationLowPair implements Relocation {
 
 	@Override
 	public void unapply(byte[] buffer, AddressSetView addressSet, DataConverter dc,
-			boolean encodeAddend) {
+			boolean encodeAddend, boolean adjustRelativeWithTargetSize) {
 		// Low relocation.
 		if (!addressSet.contains(address, address.add(width - 1))) {
 			throw new IllegalArgumentException("buffer does not contain low pair relocation");

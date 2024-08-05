@@ -74,7 +74,7 @@ public class RelocationHighPair implements Relocation {
 
 	@Override
 	public void unapply(byte[] buffer, AddressSetView addressSet, DataConverter dc,
-			boolean encodeAddend) {
+			boolean encodeAddend, boolean adjustRelativeWithTargetSize) {
 		if (relocations.isEmpty()) {
 			throw new IllegalStateException("hi relocation has no lo relocations");
 		}

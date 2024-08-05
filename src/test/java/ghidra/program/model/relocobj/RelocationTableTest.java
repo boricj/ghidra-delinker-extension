@@ -87,7 +87,8 @@ public class RelocationTableTest {
 		AddressSetView addressSet =
 			addressFactory.getAddressSet(ram.getAddress(0), ram.getAddress(15));
 		byte[] output =
-			relocationTable.getOriginalBytes(addressSet, DataConverter.getInstance(false), false);
+			relocationTable.getOriginalBytes(addressSet, DataConverter.getInstance(false), false,
+				false);
 		byte[] expected = new byte[] { 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a,
 			0x0b, 0x0c, 0x0d, 0x0e, 0x0f, 0x10 };
 		assertArrayEquals(expected, output);
@@ -101,7 +102,8 @@ public class RelocationTableTest {
 		addressSet = addressSet
 				.subtract(addressFactory.getAddressSet(ram.getAddress(4), ram.getAddress(11)));
 		byte[] output =
-			relocationTable.getOriginalBytes(addressSet, DataConverter.getInstance(false), false);
+			relocationTable.getOriginalBytes(addressSet, DataConverter.getInstance(false), false,
+				false);
 		byte[] expected = new byte[] { 0x01, 0x02, 0x03, 0x04, 0x0d, 0x0e, 0x0f, 0x10 };
 		assertArrayEquals(expected, output);
 	}
@@ -116,7 +118,8 @@ public class RelocationTableTest {
 		addressSet = addressSet
 				.subtract(addressFactory.getAddressSet(ram.getAddress(7), ram.getAddress(12)));
 		byte[] output =
-			relocationTable.getOriginalBytes(addressSet, DataConverter.getInstance(false), false);
+			relocationTable.getOriginalBytes(addressSet, DataConverter.getInstance(false), false,
+				false);
 		byte[] expected = new byte[] { 0x06, 0x07, 0x0e, 0x0f, 0x10 };
 		assertArrayEquals(expected, output);
 	}

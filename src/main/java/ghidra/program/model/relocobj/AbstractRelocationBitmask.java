@@ -77,7 +77,7 @@ public abstract class AbstractRelocationBitmask implements Relocation {
 
 	@Override
 	public void unapply(byte[] buffer, AddressSetView addressSet, DataConverter dc,
-			boolean encodeAddend) {
+			boolean encodeAddend, boolean adjustRelativeWithTargetSize) {
 		if (!addressSet.contains(address, address.add(width - 1))) {
 			throw new IllegalArgumentException("buffer does not contain relocation");
 		}
@@ -85,7 +85,13 @@ public abstract class AbstractRelocationBitmask implements Relocation {
 		int offset = (int) Relocation.getAddressOffsetWithinSet(addressSet, address);
 		long value = dc.getValue(buffer, offset, width) & ~bitmask;
 		if (encodeAddend) {
-			value = value | (addend & bitmask);
+			long realAddend = addend;
+			// FIXME: Kludge for COFF REL32 relocation type
+			if ((this instanceof RelocationRelativePC) && adjustRelativeWithTargetSize &&
+				width == 4) {
+				realAddend += 4;
+			}
+			value = value | (realAddend & bitmask);
 		}
 		dc.putValue(value, width, buffer, offset);
 	}

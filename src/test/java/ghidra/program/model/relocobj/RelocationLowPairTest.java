@@ -55,7 +55,7 @@ public class RelocationLowPairTest {
 			0x00, 0x00, 0x7c, 0x7d, 0x7e, 0x7f };
 		relocationLo.unapply(buffer,
 			addressFactory.getAddressSet(ram.getAddress(0), ram.getAddress(15)),
-			DataConverter.getInstance(true), false);
+			DataConverter.getInstance(true), false, false);
 		assertArrayEquals(expected, buffer);
 	}
 
@@ -75,7 +75,7 @@ public class RelocationLowPairTest {
 			0x7a, 0x7b, 0x7c, 0x7d, 0x7e, 0x7f };
 		relocationLo.unapply(buffer,
 			addressFactory.getAddressSet(ram.getAddress(0), ram.getAddress(15)),
-			DataConverter.getInstance(false), false);
+			DataConverter.getInstance(false), false, false);
 		assertArrayEquals(expected, buffer);
 	}
 
@@ -95,7 +95,7 @@ public class RelocationLowPairTest {
 			0x7a, 0x7b, 0x7c, 0x7d, 0x7e, 0x7f };
 		relocationLo.unapply(buffer,
 			addressFactory.getAddressSet(ram.getAddress(0), ram.getAddress(15)),
-			DataConverter.getInstance(false), false);
+			DataConverter.getInstance(false), false, false);
 		assertArrayEquals(expected, buffer);
 	}
 
@@ -115,7 +115,7 @@ public class RelocationLowPairTest {
 			0x7a, 0x7b, 0x7c, 0x7d, 0x7e, 0x7f };
 		relocationLo.unapply(buffer,
 			addressFactory.getAddressSet(ram.getAddress(0), ram.getAddress(15)),
-			DataConverter.getInstance(false), true);
+			DataConverter.getInstance(false), true, false);
 		assertArrayEquals(expected, buffer);
 	}
 }

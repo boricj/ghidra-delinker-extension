@@ -263,7 +263,7 @@ public class CoffRelocatableObjectExporter extends Exporter {
 				}
 				long offset =
 					Relocation.getAddressOffsetWithinSet(memoryBlockSet, symbol.getAddress());
-				String symbolName = symbol.getName();
+				String symbolName = symbol.getName(true);
 				String coffSymbolName = getCoffSymbolName(symbol);
 				var obj = symbol.getObject();
 				short type = 0x00;
@@ -341,7 +341,7 @@ public class CoffRelocatableObjectExporter extends Exporter {
 				// TODO: should plumb the symbol through instead, this is pretty convoluted and probably not right
 				Optional<Symbol> symbol =
 					Arrays.stream(program.getSymbolTable().getSymbols(relocation.getAddress()))
-							.filter((sym -> Objects.equals(sym.getName(), symbolName)))
+							.filter((sym -> Objects.equals(sym.getName(true), symbolName)))
 							.findFirst();
 				String coffSymbolName = symbol.isPresent() ? getCoffSymbolName(symbol.get())
 						: getCoffSymbolName(symbolName, () -> false);
@@ -429,7 +429,7 @@ public class CoffRelocatableObjectExporter extends Exporter {
 	}
 
 	public String getCoffSymbolName(Symbol symbol) {
-		String symbolName = symbol.getName();
+		String symbolName = symbol.getName(true);
 		BooleanSupplier isCdecl = () -> symbol.getObject() instanceof Function func &&
 			Objects.equals(func.getCallingConventionName(), "__cdecl");
 		return getCoffSymbolName(symbolName, isCdecl);

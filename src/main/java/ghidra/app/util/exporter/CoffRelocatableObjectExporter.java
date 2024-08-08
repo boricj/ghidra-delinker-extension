@@ -33,6 +33,7 @@ import ghidra.app.util.DropDownOption;
 import ghidra.app.util.EnumDropDownOption;
 import ghidra.app.util.Option;
 import ghidra.app.util.OptionUtils;
+import ghidra.app.util.ProgramUtil;
 import ghidra.app.util.bin.format.coff.CoffMachineType;
 import ghidra.app.util.bin.format.coff.CoffSymbolStorageClass;
 import ghidra.app.util.bin.format.pe.SectionFlags;
@@ -262,7 +263,7 @@ public class CoffRelocatableObjectExporter extends Exporter {
 					continue;
 				}
 				long offset =
-					Relocation.getAddressOffsetWithinSet(memoryBlockSet, symbol.getAddress());
+					ProgramUtil.getOffsetWithinAddressSet(memoryBlockSet, symbol.getAddress());
 				String symbolName = symbol.getName(true);
 				String coffSymbolName = getCoffSymbolName(symbol);
 				var obj = symbol.getObject();

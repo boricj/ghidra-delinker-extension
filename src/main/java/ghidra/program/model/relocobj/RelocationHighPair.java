@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import ghidra.app.util.ProgramUtil;
 import ghidra.program.model.address.Address;
 import ghidra.program.model.address.AddressSetView;
 import ghidra.util.DataConverter;
@@ -95,7 +96,7 @@ public class RelocationHighPair implements Relocation {
 			throw new IllegalArgumentException("buffer does not contain high pair relocation");
 		}
 
-		int offset = (int) Relocation.getAddressOffsetWithinSet(addressSet, address);
+		int offset = (int) ProgramUtil.getOffsetWithinAddressSet(addressSet, address);
 		long value = dc.getValue(buffer, offset, width) & ~bitmask;
 		dc.putValue(value, width, buffer, offset);
 	}

@@ -13,6 +13,7 @@
  */
 package ghidra.program.model.relocobj;
 
+import ghidra.app.util.ProgramUtil;
 import ghidra.program.model.address.Address;
 import ghidra.program.model.address.AddressSetView;
 import ghidra.util.DataConverter;
@@ -74,7 +75,7 @@ public class RelocationLowPair implements Relocation {
 			throw new IllegalArgumentException("buffer does not contain low pair relocation");
 		}
 
-		int offset = (int) Relocation.getAddressOffsetWithinSet(addressSet, address);
+		int offset = (int) ProgramUtil.getOffsetWithinAddressSet(addressSet, address);
 		long value = dc.getValue(buffer, offset, width) & ~bitmask;
 		if (encodeAddend) {
 			value = value | (addend << Long.numberOfTrailingZeros(Long.lowestOneBit(bitmask)));

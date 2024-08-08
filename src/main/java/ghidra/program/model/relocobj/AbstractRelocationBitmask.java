@@ -13,6 +13,7 @@
  */
 package ghidra.program.model.relocobj;
 
+import ghidra.app.util.ProgramUtil;
 import ghidra.program.model.address.Address;
 import ghidra.program.model.address.AddressSetView;
 import ghidra.util.DataConverter;
@@ -82,7 +83,7 @@ public abstract class AbstractRelocationBitmask implements Relocation {
 			throw new IllegalArgumentException("buffer does not contain relocation");
 		}
 
-		int offset = (int) Relocation.getAddressOffsetWithinSet(addressSet, address);
+		int offset = (int) ProgramUtil.getOffsetWithinAddressSet(addressSet, address);
 		long value = dc.getValue(buffer, offset, width) & ~bitmask;
 		if (encodeAddend) {
 			long realAddend = addend;

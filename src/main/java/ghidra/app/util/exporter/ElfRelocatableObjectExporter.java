@@ -400,7 +400,8 @@ public class ElfRelocatableObjectExporter extends Exporter {
 				String symbolName = getSymbolName(symbol.getName(true));
 				byte type = determineSymbolType(symbol);
 				byte visibility = determineSymbolVisibility(symbol);
-				long offset = Relocation.getAddressOffsetWithinSet(sectionSet, symbol.getAddress());
+				long offset =
+					ProgramUtil.getOffsetWithinAddressSet(sectionSet, symbol.getAddress());
 				long size = determineSymbolSize(symbol);
 
 				symbolsByName.put(symbolName,

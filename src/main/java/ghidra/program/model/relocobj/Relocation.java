@@ -36,12 +36,6 @@ public interface Relocation {
 		return true;
 	}
 
-	public static long getAddressOffsetWithinSet(AddressSetView addressSet, Address address) {
-		Address minAddress = addressSet.getMinAddress();
-		AddressSetView intersectedRange = addressSet.intersectRange(minAddress, address);
-		return intersectedRange.getNumAddresses() - 1;
-	}
-
 	public static void checkBitmask(int width, long bitmask, Long addend) {
 		long bitcount = Long.bitCount(bitmask);
 		long highestOneBit = Long.numberOfTrailingZeros(Long.highestOneBit(bitmask));

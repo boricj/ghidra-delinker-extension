@@ -14,6 +14,8 @@
 package ghidra.app.util;
 
 import ghidra.framework.model.DomainObject;
+import ghidra.program.model.address.Address;
+import ghidra.program.model.address.AddressSetView;
 import ghidra.program.model.listing.Program;
 
 public class ProgramUtil {
@@ -22,5 +24,11 @@ public class ProgramUtil {
 			return null;
 		}
 		return (Program) domainObj;
+	}
+
+	public static long getOffsetWithinAddressSet(AddressSetView addressSet, Address address) {
+		Address minAddress = addressSet.getMinAddress();
+		AddressSetView intersectedRange = addressSet.intersectRange(minAddress, address);
+		return intersectedRange.getNumAddresses() - 1;
 	}
 }

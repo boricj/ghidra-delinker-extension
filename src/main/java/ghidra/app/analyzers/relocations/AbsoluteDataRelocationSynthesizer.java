@@ -13,6 +13,7 @@
  */
 package ghidra.app.analyzers.relocations;
 
+import ghidra.app.analyzers.relocations.utils.DataRelocationSynthesizer;
 import ghidra.app.analyzers.relocations.utils.SymbolWithOffset;
 import ghidra.app.util.importer.MessageLog;
 import ghidra.program.model.address.Address;
@@ -20,7 +21,6 @@ import ghidra.program.model.address.AddressSetView;
 import ghidra.program.model.listing.Data;
 import ghidra.program.model.listing.Program;
 import ghidra.program.model.mem.MemoryAccessException;
-import ghidra.program.model.relocobj.DataRelocationSynthesizer;
 import ghidra.program.model.relocobj.RelocationTable;
 import ghidra.util.task.TaskMonitor;
 

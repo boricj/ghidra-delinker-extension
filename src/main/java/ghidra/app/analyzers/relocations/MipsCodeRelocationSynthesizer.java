@@ -23,10 +23,10 @@ import java.util.stream.Collectors;
 
 import ghidra.app.analyzers.relocations.emitters.BundleRelocationEmitter;
 import ghidra.app.analyzers.relocations.emitters.FunctionInstructionSink;
-import ghidra.app.analyzers.relocations.emitters.FunctionInstructionSinkCodeRelocationSynthesizer;
 import ghidra.app.analyzers.relocations.emitters.InstructionRelocationEmitter;
 import ghidra.app.analyzers.relocations.emitters.RelativeNextInstructionRelocationEmitter;
 import ghidra.app.analyzers.relocations.emitters.SymbolRelativeInstructionRelocationEmitter;
+import ghidra.app.analyzers.relocations.utils.FunctionInstructionSinkCodeRelocationSynthesizer;
 import ghidra.app.analyzers.relocations.utils.SymbolWithOffset;
 import ghidra.app.util.importer.MessageLog;
 import ghidra.program.model.address.Address;

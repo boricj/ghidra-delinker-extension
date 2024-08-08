@@ -19,9 +19,9 @@ import java.util.stream.Stream;
 
 import ghidra.app.analyzers.relocations.emitters.AbsoluteInstructionRelocationEmitter;
 import ghidra.app.analyzers.relocations.emitters.FunctionInstructionSink;
-import ghidra.app.analyzers.relocations.emitters.FunctionInstructionSinkCodeRelocationSynthesizer;
 import ghidra.app.analyzers.relocations.emitters.InstructionRelocationEmitter;
 import ghidra.app.analyzers.relocations.emitters.RelativeNextInstructionRelocationEmitter;
+import ghidra.app.analyzers.relocations.utils.FunctionInstructionSinkCodeRelocationSynthesizer;
 import ghidra.app.util.importer.MessageLog;
 import ghidra.program.model.lang.Processor;
 import ghidra.program.model.listing.Function;

@@ -16,6 +16,8 @@ package ghidra.app.analyzers;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import ghidra.app.analyzers.relocations.utils.CodeRelocationSynthesizer;
+import ghidra.app.analyzers.relocations.utils.DataRelocationSynthesizer;
 import ghidra.app.services.AbstractAnalyzer;
 import ghidra.app.services.AnalysisPriority;
 import ghidra.app.services.AnalyzerType;
@@ -27,8 +29,6 @@ import ghidra.program.model.listing.FunctionManager;
 import ghidra.program.model.listing.Listing;
 import ghidra.program.model.listing.Program;
 import ghidra.program.model.mem.MemoryAccessException;
-import ghidra.program.model.relocobj.CodeRelocationSynthesizer;
-import ghidra.program.model.relocobj.DataRelocationSynthesizer;
 import ghidra.program.model.relocobj.RelocationTable;
 import ghidra.util.classfinder.ClassSearcher;
 import ghidra.util.exception.CancelledException;

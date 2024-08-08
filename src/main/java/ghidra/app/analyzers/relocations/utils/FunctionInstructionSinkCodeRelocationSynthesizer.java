@@ -11,11 +11,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package ghidra.app.analyzers.relocations.emitters;
+package ghidra.app.analyzers.relocations.utils;
 
 import java.util.Arrays;
 import java.util.List;
 
+import ghidra.app.analyzers.relocations.emitters.FunctionInstructionSink;
 import ghidra.app.util.importer.MessageLog;
 import ghidra.program.model.address.Address;
 import ghidra.program.model.address.AddressSetView;
@@ -24,16 +25,17 @@ import ghidra.program.model.listing.Instruction;
 import ghidra.program.model.listing.Listing;
 import ghidra.program.model.listing.Program;
 import ghidra.program.model.mem.MemoryAccessException;
-import ghidra.program.model.relocobj.CodeRelocationSynthesizer;
 import ghidra.program.model.relocobj.RelocationTable;
 import ghidra.program.model.symbol.Reference;
 import ghidra.program.model.symbol.ReferenceManager;
 import ghidra.util.exception.CancelledException;
 import ghidra.util.task.TaskMonitor;
 
+/**
+ * This class adapts function instruction sinks as a code relocation synthesizer.
+ */
 public abstract class FunctionInstructionSinkCodeRelocationSynthesizer
 		implements CodeRelocationSynthesizer {
-
 	@Override
 	public void processFunction(Program program, AddressSetView set, Function function,
 			RelocationTable relocationTable, TaskMonitor monitor, MessageLog log)

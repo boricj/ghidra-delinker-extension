@@ -11,16 +11,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package ghidra.program.model.relocobj;
+package ghidra.app.analyzers.relocations.utils;
 
 import ghidra.app.util.importer.MessageLog;
 import ghidra.program.model.address.AddressSetView;
 import ghidra.program.model.listing.Data;
 import ghidra.program.model.listing.Program;
 import ghidra.program.model.mem.MemoryAccessException;
+import ghidra.program.model.relocobj.RelocationTable;
 import ghidra.util.classfinder.ExtensionPoint;
 import ghidra.util.task.TaskMonitor;
 
+/**
+ * This interface is for analyzing relocation spots within data.
+ */
 public interface DataRelocationSynthesizer extends ExtensionPoint {
 	public void processPointer(Program program, AddressSetView set, Data pointer,
 			RelocationTable relocationTable, TaskMonitor monitor, MessageLog log)

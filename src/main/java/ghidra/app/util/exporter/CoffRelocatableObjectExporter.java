@@ -268,10 +268,12 @@ public class CoffRelocatableObjectExporter extends Exporter {
 				String coffSymbolName = getCoffSymbolName(symbol);
 				var obj = symbol.getObject();
 				short type = 0x00;
-				byte storageClass = (byte) CoffSymbolStorageClass.C_STAT;
 				if (obj instanceof Function) {
 					type |= 0x20;
-					storageClass = CoffSymbolStorageClass.C_EXT;
+				}
+				byte storageClass = (byte) CoffSymbolStorageClass.C_EXT;
+				if (symbol.isDynamic()) {
+					storageClass = CoffSymbolStorageClass.C_STAT;
 				}
 				symtab.addDefinedSymbol(symbolName, coffSymbolName, number, (int) offset, type,
 					storageClass);

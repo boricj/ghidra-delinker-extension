@@ -22,12 +22,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 import java.util.TreeMap;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 import ghidra.app.util.DomainObjectService;
 import ghidra.app.util.DropDownOption;
@@ -78,7 +75,6 @@ public class ElfRelocatableObjectExporter extends Exporter {
 	private boolean generateSectionNamesStringTable;
 	private boolean generateSectionComment;
 	private boolean generateStringAndSymbolTables;
-	private boolean includeDynamicSymbols;
 	private LeadingUnderscore leadingUnderscore;
 	private boolean generateRelocationTables;
 	private int relocationTableFormat;
@@ -98,7 +94,6 @@ public class ElfRelocatableObjectExporter extends Exporter {
 	private Predicate<Relocation> predicateRelocation;
 	private Map<String, ElfRelocatableSymbol> symbolsByName;
 	private List<Section> sections;
-	private Set<String> symbolNamesRelocationFileSet;
 
 	private static final String OPTION_GROUP_ELF_HEADER = "ELF header";
 	private static final String OPTION_GROUP_SYMBOLS = "Symbols";
@@ -110,7 +105,6 @@ public class ElfRelocatableObjectExporter extends Exporter {
 	private static final String OPTION_GEN_SHSTRTAB = "Generate section names string table";
 	private static final String OPTION_GEN_STRTAB = "Generate string & symbol tables";
 	private static final String OPTION_GEN_COMMENT = "Generate .comment section";
-	private static final String OPTION_DYN_SYMBOLS = "Include dynamic symbols";
 	private static final String OPTION_LEADING_UNDERSCORE = "Leading underscore";
 	private static final String OPTION_GEN_REL = "Generate relocation tables";
 	private static final String OPTION_REL_FMT = "Relocation table format";
@@ -320,7 +314,6 @@ public class ElfRelocatableObjectExporter extends Exporter {
 			new Option(OPTION_GROUP_ELF_HEADER, OPTION_GEN_SHSTRTAB, true),
 			new Option(OPTION_GROUP_ELF_HEADER, OPTION_GEN_COMMENT, true),
 			new Option(OPTION_GROUP_SYMBOLS, OPTION_GEN_STRTAB, true),
-			new Option(OPTION_GROUP_SYMBOLS, OPTION_DYN_SYMBOLS, false),
 			new EnumDropDownOption<LeadingUnderscore>(OPTION_GROUP_SYMBOLS,
 				OPTION_LEADING_UNDERSCORE, LeadingUnderscore.class, LeadingUnderscore.DO_NOTHING),
 			new Option(OPTION_GROUP_RELOCATIONS, OPTION_GEN_REL, true),
@@ -342,7 +335,6 @@ public class ElfRelocatableObjectExporter extends Exporter {
 			OptionUtils.getOption(OPTION_GEN_SHSTRTAB, options, false);
 		generateSectionComment = OptionUtils.getOption(OPTION_GEN_COMMENT, options, false);
 		generateStringAndSymbolTables = OptionUtils.getOption(OPTION_GEN_STRTAB, options, false);
-		includeDynamicSymbols = OptionUtils.getOption(OPTION_DYN_SYMBOLS, options, false);
 		leadingUnderscore =
 			OptionUtils.getOption(OPTION_LEADING_UNDERSCORE, options, LeadingUnderscore.DO_NOTHING);
 		generateRelocationTables = OptionUtils.getOption(OPTION_GEN_REL, options, false);
@@ -410,19 +402,7 @@ public class ElfRelocatableObjectExporter extends Exporter {
 		}
 
 		private boolean isSymbolInteresting(Symbol symbol) {
-			if (!symbol.isPrimary() || !sectionSet.contains(symbol.getAddress())) {
-				return false;
-			}
-
-			if (symbol.isDynamic() && !includeDynamicSymbols) {
-				// Even if we don't want dynamic symbols, we still need them for internal relocations.
-				// FIXME: investigate section-relative relocations for internal relocations with dynamic symbols.
-				String symbolName = getSymbolName(symbol.getName(true));
-
-				return symbolNamesRelocationFileSet.contains(symbolName);
-			}
-
-			return true;
+			return symbol.isPrimary() && sectionSet.contains(symbol.getAddress());
 		}
 
 		private byte determineSymbolType(Symbol symbol) {
@@ -455,10 +435,7 @@ public class ElfRelocatableObjectExporter extends Exporter {
 		}
 
 		private byte determineSymbolVisibility(Symbol symbol) {
-			if (includeDynamicSymbols) {
-				return ElfSymbol.STB_GLOBAL;
-			}
-			else if (!symbol.isDynamic()) {
+			if (!symbol.isDynamic()) {
 				return ElfSymbol.STB_GLOBAL;
 			}
 
@@ -550,9 +527,6 @@ public class ElfRelocatableObjectExporter extends Exporter {
 				addStringAndSymbolTables();
 			}
 
-			taskMonitor.setMessage("Compute file symbol set...");
-			computeSymbolNamesRelocationFileSet();
-
 			for (Section section : sections) {
 				taskMonitor.setMessage(String.format("Creating section %s...", section.getName()));
 				section.createElfSection(generateRelocationTables);
@@ -590,15 +564,6 @@ public class ElfRelocatableObjectExporter extends Exporter {
 		}
 
 		return true;
-	}
-
-	private void computeSymbolNamesRelocationFileSet() {
-		Iterable<Relocation> itRelocations =
-			() -> relocationTable.getRelocations(fileSet, predicateRelocation);
-		Stream<Relocation> relocations =
-			StreamSupport.stream(itRelocations.spliterator(), false);
-		symbolNamesRelocationFileSet =
-			relocations.map(r -> r.getSymbolName()).collect(Collectors.toSet());
 	}
 
 	private void addStringAndSymbolTables() {

@@ -23,9 +23,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.TreeMap;
-import java.util.function.BooleanSupplier;
 import java.util.function.Predicate;
 
 import ghidra.app.util.DomainObjectService;
@@ -222,16 +220,11 @@ public class CoffRelocatableObjectExporter extends Exporter {
 		}
 
 		public void addSymbols() {
-			AddressSet memoryBlockSet =
-				new AddressSet(memoryBlock.getStart(), memoryBlock.getEnd()).intersect(fileSet);
-			for (Symbol symbol : program.getSymbolTable().getAllSymbols(true)) {
-				if (!symbol.isPrimary() || !memoryBlockSet.contains(symbol.getAddress())) {
-					continue;
-				}
-				long offset =
-					ProgramUtil.getOffsetWithinAddressSet(memoryBlockSet, symbol.getAddress());
+			ProgramUtil.getSectionSymbols(program, sectionSet).entrySet().forEach(entry -> {
+				Symbol symbol = entry.getValue();
 				String symbolName = symbol.getName(true);
-				String coffSymbolName = getCoffSymbolName(symbol);
+				long offset =
+					ProgramUtil.getOffsetWithinAddressSet(sectionSet, symbol.getAddress());
 				var obj = symbol.getObject();
 				short type = 0x00;
 				if (obj instanceof Function) {
@@ -241,9 +234,9 @@ public class CoffRelocatableObjectExporter extends Exporter {
 				if (symbol.isDynamic()) {
 					storageClass = CoffSymbolStorageClass.C_STAT;
 				}
-				symtab.addDefinedSymbol(symbolName, coffSymbolName, number, (int) offset, type,
+				symtab.addDefinedSymbol(entry.getKey(), symbolName, number, (int) offset, type,
 					storageClass);
-			}
+			});
 		}
 
 		public void buildCoffRelocationTable(CoffRelocationTypeMapper relocationTypeMapper) {
@@ -274,9 +267,9 @@ public class CoffRelocatableObjectExporter extends Exporter {
 			throws ExporterException {
 		List<Section> sections = new ArrayList<>();
 		for (MemoryBlock memoryBlock : program.getMemory().getBlocks()) {
-			AddressSet memoryBlockSet =
+			AddressSet sectionSet =
 				new AddressSet(memoryBlock.getStart(), memoryBlock.getEnd()).intersect(fileSet);
-			if (memoryBlockSet.isEmpty()) {
+			if (sectionSet.isEmpty()) {
 				continue;
 			}
 			Section section;
@@ -284,7 +277,7 @@ public class CoffRelocatableObjectExporter extends Exporter {
 				section = new Section(
 					(short) (sections.size() + 1),
 					memoryBlock,
-					memoryBlockSet);
+					sectionSet);
 			}
 			catch (MemoryAccessException e) {
 				throw new ExporterException(e);
@@ -301,22 +294,9 @@ public class CoffRelocatableObjectExporter extends Exporter {
 	}
 
 	private void calculateExternalSymbols(Memory memory) {
-		final AddressSetView finalFileSet = fileSet;
-		for (Relocation relocation : (Iterable<Relocation>) () -> relocationTable
-				.getRelocations(finalFileSet, predicateRelocation)) {
-			final String symbolName = relocation.getSymbolName();
-			if (symbolName != null && symtab.getSymbolNumber(symbolName) == -1 &&
-				memory.contains(relocation.getAddress())) {
-				// TODO: should plumb the symbol through instead, this is pretty convoluted and probably not right
-				Optional<Symbol> symbol =
-					Arrays.stream(program.getSymbolTable().getSymbols(relocation.getAddress()))
-							.filter((sym -> Objects.equals(sym.getName(true), symbolName)))
-							.findFirst();
-				String coffSymbolName = symbol.isPresent() ? getCoffSymbolName(symbol.get())
-						: getCoffSymbolName(symbolName, () -> false);
-				symtab.addUndefinedSymbol(symbolName, coffSymbolName);
-			}
-		}
+		ProgramUtil.getExternalSymbols(program, fileSet).entrySet().forEach(entry -> {
+			symtab.addUndefinedSymbol(entry.getKey(), entry.getValue().getName(true));
+		});
 	}
 
 	@Override
@@ -371,36 +351,5 @@ public class CoffRelocatableObjectExporter extends Exporter {
 			object.write(raf, new LittleEndianDataConverter());
 		}
 		return true;
-	}
-
-	public String getCoffSymbolName(String symbolName, BooleanSupplier isCdecl) {
-		switch (leadingUnderscore) {
-			case PREPEND_CDECL:
-				if (!isCdecl.getAsBoolean()) {
-					break;
-				}
-
-			case PREPEND:
-				symbolName = "_" + symbolName;
-				break;
-
-			case STRIP:
-				if (symbolName.startsWith("_")) {
-					symbolName = symbolName.substring(1);
-				}
-				break;
-
-			default:
-				break;
-		}
-
-		return symbolName;
-	}
-
-	public String getCoffSymbolName(Symbol symbol) {
-		String symbolName = symbol.getName(true);
-		BooleanSupplier isCdecl = () -> symbol.getObject() instanceof Function func &&
-			Objects.equals(func.getCallingConventionName(), "__cdecl");
-		return getCoffSymbolName(symbolName, isCdecl);
 	}
 }

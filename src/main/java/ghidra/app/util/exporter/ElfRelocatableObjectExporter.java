@@ -85,7 +85,6 @@ public class ElfRelocatableObjectExporter extends Exporter {
 	private ElfRelocatableSectionComment comment;
 
 	private Program program;
-	private AddressSetView programSet;
 	private AddressSetView fileSet;
 
 	private RelocationTable relocationTable;
@@ -360,11 +359,8 @@ public class ElfRelocatableObjectExporter extends Exporter {
 		public void addSymbols() {
 			symtab.addSectionSymbol(section);
 
-			for (Symbol symbol : program.getSymbolTable().getAllSymbols(true)) {
-				if (!isSymbolInteresting(symbol)) {
-					continue;
-				}
-
+			ProgramUtil.getSectionSymbols(program, sectionSet).entrySet().forEach(entry -> {
+				Symbol symbol = entry.getValue();
 				String symbolName = symbol.getName(true);
 				byte type = determineSymbolType(symbol);
 				byte visibility = determineSymbolVisibility(symbol);
@@ -372,13 +368,9 @@ public class ElfRelocatableObjectExporter extends Exporter {
 					ProgramUtil.getOffsetWithinAddressSet(sectionSet, symbol.getAddress());
 				long size = determineSymbolSize(symbol);
 
-				symbolsByName.put(symbolName,
+				symbolsByName.put(entry.getKey(),
 					symtab.addDefinedSymbol(section, symbolName, visibility, type, size, offset));
-			}
-		}
-
-		private boolean isSymbolInteresting(Symbol symbol) {
-			return symbol.isPrimary() && sectionSet.contains(symbol.getAddress());
+			});
 		}
 
 		private byte determineSymbolType(Symbol symbol) {
@@ -472,8 +464,6 @@ public class ElfRelocatableObjectExporter extends Exporter {
 			fileSet = memory;
 		}
 
-		// FIXME: Expose program address set.
-		this.programSet = memory;
 		this.fileSet = fileSet;
 
 		relocationTable = RelocationTable.get(program);
@@ -566,15 +556,10 @@ public class ElfRelocatableObjectExporter extends Exporter {
 	}
 
 	private void computeExternalSymbols() {
-		for (Relocation relocation : (Iterable<Relocation>) () -> relocationTable
-				.getRelocations(fileSet, predicateRelocation)) {
-			String symbolName = relocation.getSymbolName();
-
-			if (symbolName != null && !symbolsByName.containsKey(symbolName) &&
-				programSet.contains(relocation.getAddress())) {
-				symbolsByName.put(symbolName, symtab.addExternalSymbol(symbolName));
-			}
-		}
+		ProgramUtil.getExternalSymbols(program, fileSet).entrySet().forEach(entry -> {
+			symbolsByName.put(entry.getKey(),
+				symtab.addExternalSymbol(entry.getValue().getName(true)));
+		});
 	}
 
 	private void addSectionNameStringTable() {

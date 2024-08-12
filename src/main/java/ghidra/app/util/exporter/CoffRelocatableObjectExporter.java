@@ -30,7 +30,6 @@ import java.util.function.Predicate;
 
 import ghidra.app.util.DomainObjectService;
 import ghidra.app.util.DropDownOption;
-import ghidra.app.util.EnumDropDownOption;
 import ghidra.app.util.Option;
 import ghidra.app.util.OptionUtils;
 import ghidra.app.util.ProgramUtil;
@@ -66,7 +65,6 @@ public class CoffRelocatableObjectExporter extends Exporter {
 	private Program program;
 	private AddressSetView fileSet;
 	private int machine;
-	private LeadingUnderscore leadingUnderscore;
 
 	private RelocationTable relocationTable;
 	private Predicate<Relocation> predicateRelocation;
@@ -75,28 +73,8 @@ public class CoffRelocatableObjectExporter extends Exporter {
 	private CoffRelocatableSymbolTable symtab;
 
 	private static final String OPTION_GROUP_COFF_HEADER = "COFF header";
-	private static final String OPTION_GROUP_SYMBOLS = "Symbols";
 
 	private static final String OPTION_COFF_MACHINE = "COFF machine";
-	private static final String OPTION_LEADING_UNDERSCORE = "Leading underscore";
-
-	private enum LeadingUnderscore {
-		DO_NOTHING("Do nothing"),
-		PREPEND("Prepend"),
-		PREPEND_CDECL("Prepend to cdecl functions"),
-		STRIP("Strip");
-
-		private final String label;
-
-		LeadingUnderscore(String label) {
-			this.label = label;
-		}
-
-		@Override
-		public String toString() {
-			return label;
-		}
-	}
 
 	private static final Map<Short, String> COFF_MACHINES = new TreeMap<>(Map.ofEntries(
 		Map.entry(CoffMachineType.IMAGE_FILE_MACHINE_UNKNOWN, "(none)"),
@@ -159,13 +137,6 @@ public class CoffRelocatableObjectExporter extends Exporter {
 		return CoffMachineType.IMAGE_FILE_MACHINE_UNKNOWN;
 	}
 
-	private static LeadingUnderscore autodetectLeadingUnderscore(Program program) {
-		if (autodetectCoffMachine(program) == CoffMachineType.IMAGE_FILE_MACHINE_I386) {
-			return LeadingUnderscore.PREPEND;
-		}
-		return LeadingUnderscore.DO_NOTHING;
-	}
-
 	private static CoffRelocationTypeMapper findRelocationTypeMapperFor(
 			int machine, MessageLog log) {
 		List<CoffRelocationTypeMapper> mappers =
@@ -202,9 +173,6 @@ public class CoffRelocatableObjectExporter extends Exporter {
 		Option[] options = new Option[] {
 			new DropDownOption<>(OPTION_GROUP_COFF_HEADER, OPTION_COFF_MACHINE, COFF_MACHINES,
 				Short.class, autodetectCoffMachine(program)),
-			new EnumDropDownOption<>(OPTION_GROUP_SYMBOLS,
-				OPTION_LEADING_UNDERSCORE, LeadingUnderscore.class,
-				autodetectLeadingUnderscore(program)),
 		};
 
 		return Arrays.asList(options);
@@ -214,8 +182,6 @@ public class CoffRelocatableObjectExporter extends Exporter {
 	public void setOptions(List<Option> options) {
 		machine = OptionUtils.getOption(OPTION_COFF_MACHINE, options,
 			CoffMachineType.IMAGE_FILE_MACHINE_UNKNOWN);
-		leadingUnderscore =
-			OptionUtils.getOption(OPTION_LEADING_UNDERSCORE, options, LeadingUnderscore.DO_NOTHING);
 	}
 
 	private class Section {

@@ -28,7 +28,6 @@ import java.util.stream.Collectors;
 
 import ghidra.app.util.DomainObjectService;
 import ghidra.app.util.DropDownOption;
-import ghidra.app.util.EnumDropDownOption;
 import ghidra.app.util.Option;
 import ghidra.app.util.OptionUtils;
 import ghidra.app.util.ProgramUtil;
@@ -75,7 +74,6 @@ public class ElfRelocatableObjectExporter extends Exporter {
 	private boolean generateSectionNamesStringTable;
 	private boolean generateSectionComment;
 	private boolean generateStringAndSymbolTables;
-	private LeadingUnderscore leadingUnderscore;
 	private boolean generateRelocationTables;
 	private int relocationTableFormat;
 
@@ -105,26 +103,8 @@ public class ElfRelocatableObjectExporter extends Exporter {
 	private static final String OPTION_GEN_SHSTRTAB = "Generate section names string table";
 	private static final String OPTION_GEN_STRTAB = "Generate string & symbol tables";
 	private static final String OPTION_GEN_COMMENT = "Generate .comment section";
-	private static final String OPTION_LEADING_UNDERSCORE = "Leading underscore";
 	private static final String OPTION_GEN_REL = "Generate relocation tables";
 	private static final String OPTION_REL_FMT = "Relocation table format";
-
-	private static enum LeadingUnderscore {
-		DO_NOTHING("Do nothing"),
-		PREPEND("Prepend"),
-		STRIP("Strip");
-
-		private final String label;
-
-		private LeadingUnderscore(String label) {
-			this.label = label;
-		}
-
-		@Override
-		public String toString() {
-			return label;
-		}
-	}
 
 	private static final Map<Byte, String> ELF_CLASSES = new TreeMap<>(Map.ofEntries(
 		Map.entry(ElfConstants.ELF_CLASS_NONE, "(none)"),
@@ -314,8 +294,6 @@ public class ElfRelocatableObjectExporter extends Exporter {
 			new Option(OPTION_GROUP_ELF_HEADER, OPTION_GEN_SHSTRTAB, true),
 			new Option(OPTION_GROUP_ELF_HEADER, OPTION_GEN_COMMENT, true),
 			new Option(OPTION_GROUP_SYMBOLS, OPTION_GEN_STRTAB, true),
-			new EnumDropDownOption<LeadingUnderscore>(OPTION_GROUP_SYMBOLS,
-				OPTION_LEADING_UNDERSCORE, LeadingUnderscore.class, LeadingUnderscore.DO_NOTHING),
 			new Option(OPTION_GROUP_RELOCATIONS, OPTION_GEN_REL, true),
 			new DropDownOption<Integer>(OPTION_GROUP_RELOCATIONS, OPTION_REL_FMT,
 				ELF_RELOCATION_TABLE_TYPES, Integer.class,
@@ -335,8 +313,6 @@ public class ElfRelocatableObjectExporter extends Exporter {
 			OptionUtils.getOption(OPTION_GEN_SHSTRTAB, options, false);
 		generateSectionComment = OptionUtils.getOption(OPTION_GEN_COMMENT, options, false);
 		generateStringAndSymbolTables = OptionUtils.getOption(OPTION_GEN_STRTAB, options, false);
-		leadingUnderscore =
-			OptionUtils.getOption(OPTION_LEADING_UNDERSCORE, options, LeadingUnderscore.DO_NOTHING);
 		generateRelocationTables = OptionUtils.getOption(OPTION_GEN_REL, options, false);
 		relocationTableFormat =
 			OptionUtils.getOption(OPTION_REL_FMT, options, ElfSectionHeaderConstants.SHT_NULL);
@@ -389,7 +365,7 @@ public class ElfRelocatableObjectExporter extends Exporter {
 					continue;
 				}
 
-				String symbolName = getSymbolName(symbol.getName(true));
+				String symbolName = symbol.getName(true);
 				byte type = determineSymbolType(symbol);
 				byte visibility = determineSymbolVisibility(symbol);
 				long offset =
@@ -592,7 +568,7 @@ public class ElfRelocatableObjectExporter extends Exporter {
 	private void computeExternalSymbols() {
 		for (Relocation relocation : (Iterable<Relocation>) () -> relocationTable
 				.getRelocations(fileSet, predicateRelocation)) {
-			String symbolName = getSymbolName(relocation.getSymbolName());
+			String symbolName = relocation.getSymbolName();
 
 			if (symbolName != null && !symbolsByName.containsKey(symbolName) &&
 				programSet.contains(relocation.getAddress())) {
@@ -610,24 +586,5 @@ public class ElfRelocatableObjectExporter extends Exporter {
 	private void writeOutFile(RandomAccessFile raf) throws IOException {
 		elf.layout();
 		elf.write(raf, elf.getDataConverter());
-	}
-
-	private String getSymbolName(String name) {
-		switch (leadingUnderscore) {
-			case PREPEND:
-				name = "_" + name;
-				break;
-
-			case STRIP:
-				if (name.startsWith("_")) {
-					name = name.substring(1);
-				}
-				break;
-
-			default:
-				break;
-		}
-
-		return name;
 	}
 }

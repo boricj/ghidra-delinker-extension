@@ -46,42 +46,55 @@ public class ProgramUtil {
 	}
 
 	public static Map<String, Symbol> getSectionSymbols(Program program,
-			AddressSetView sectionSet) {
-		return getSymbols(program, s -> sectionSet.contains(s.getAddress()), false);
+			AddressSetView sectionSet, SymbolPreference symbolNamePreference) {
+		return getSymbols(program, s -> sectionSet.contains(s.getAddress()), symbolNamePreference,
+			false);
 	}
 
-	public static Map<String, Symbol> getExternalSymbols(Program program, AddressSetView fileSet) {
+	public static Map<String, Symbol> getExternalSymbols(Program program, AddressSetView fileSet,
+			SymbolPreference symbolNamePreference) {
 		Map<String, Symbol> externalSymbols =
-			getSymbols(program, s -> !fileSet.contains(s.getAddress()), true);
+			getSymbols(program, s -> !fileSet.contains(s.getAddress()), symbolNamePreference, true);
+		// Filtering out internal symbols with identical names is required for dealing with thunks.
+		Map<String, Symbol> internalSymbols =
+			getSymbols(program, s -> fileSet.contains(s.getAddress()), symbolNamePreference, false);
 
 		RelocationTable relocationTable = RelocationTable.get(program);
 		Stream<Relocation> relocations = StreamSupport.stream(
 			Spliterators.spliteratorUnknownSize(relocationTable.getRelocations(fileSet), 0), false);
 		return relocations.map(r -> r.getSymbolName())
-				.filter(s -> s != null && externalSymbols.containsKey(s))
+				.filter(s -> s != null && externalSymbols.containsKey(s) &&
+					!internalSymbols.containsKey(s))
 				.distinct()
 				.collect(Collectors.toMap(Function.identity(), s -> externalSymbols.get(s)));
 	}
 
 	private static Map<String, Symbol> getSymbols(Program program, Predicate<Symbol> predicate,
-			boolean allowDuplicates) {
+			SymbolPreference symbolNamePreference, boolean allowDuplicates) {
 		Stream<Symbol> symbols =
 			StreamSupport.stream(program.getSymbolTable().getAllSymbols(true).spliterator(), false);
 		Collection<List<Symbol>> symbolsPerAddress =
 			symbols.filter(predicate)
 					.collect(Collectors.groupingBy(Symbol::getAddress, Collectors.toList()))
 					.values();
-		Stream<Symbol> intermediate = symbolsPerAddress.stream().map(candidates -> {
-			return candidates.stream().filter(c -> c.isPrimary()).findAny().orElseThrow();
-		});
+		Stream<List<Symbol>> intermediate = symbolsPerAddress.stream()
+				.map(candidates -> List.of(SymbolPreference.PRIMARY.pick(candidates),
+					symbolNamePreference.pick(candidates)));
 
 		if (allowDuplicates) {
 			return intermediate.collect(
-				Collectors.toMap(s -> s.getName(true), Function.identity(), (a, b) -> a));
+				Collectors.toMap(l -> l.get(0).getName(true), l -> l.get(1), (a, b) -> {
+					if (!a.isPrimary()) {
+						return a;
+					}
+					else {
+						return b;
+					}
+				}));
 		}
 		else {
 			return intermediate
-					.collect(Collectors.toMap(s -> s.getName(true), Function.identity()));
+					.collect(Collectors.toMap(l -> l.get(0).getName(true), l -> l.get(1)));
 		}
 	}
 }

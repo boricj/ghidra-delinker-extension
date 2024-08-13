@@ -28,9 +28,11 @@ import java.util.stream.Collectors;
 
 import ghidra.app.util.DomainObjectService;
 import ghidra.app.util.DropDownOption;
+import ghidra.app.util.EnumDropDownOption;
 import ghidra.app.util.Option;
 import ghidra.app.util.OptionUtils;
 import ghidra.app.util.ProgramUtil;
+import ghidra.app.util.SymbolPreference;
 import ghidra.app.util.bin.format.elf.ElfConstants;
 import ghidra.app.util.bin.format.elf.ElfSectionHeaderConstants;
 import ghidra.app.util.bin.format.elf.ElfSymbol;
@@ -74,6 +76,7 @@ public class ElfRelocatableObjectExporter extends Exporter {
 	private boolean generateSectionNamesStringTable;
 	private boolean generateSectionComment;
 	private boolean generateStringAndSymbolTables;
+	private SymbolPreference symbolNamePreference;
 	private boolean generateRelocationTables;
 	private int relocationTableFormat;
 
@@ -92,6 +95,8 @@ public class ElfRelocatableObjectExporter extends Exporter {
 	private Map<String, ElfRelocatableSymbol> symbolsByName;
 	private List<Section> sections;
 
+	private static final SymbolPreference DEFAULT_SYMBOL_PREFERENCE = SymbolPreference.ITANIUM_ABI;
+
 	private static final String OPTION_GROUP_ELF_HEADER = "ELF header";
 	private static final String OPTION_GROUP_SYMBOLS = "Symbols";
 	private static final String OPTION_GROUP_RELOCATIONS = "Relocations";
@@ -101,6 +106,7 @@ public class ElfRelocatableObjectExporter extends Exporter {
 	private static final String OPTION_ELF_DATA = "ELF data";
 	private static final String OPTION_GEN_SHSTRTAB = "Generate section names string table";
 	private static final String OPTION_GEN_STRTAB = "Generate string & symbol tables";
+	private static final String OPTION_PREF_SYMNAME = "Symbol name preference";
 	private static final String OPTION_GEN_COMMENT = "Generate .comment section";
 	private static final String OPTION_GEN_REL = "Generate relocation tables";
 	private static final String OPTION_REL_FMT = "Relocation table format";
@@ -293,6 +299,8 @@ public class ElfRelocatableObjectExporter extends Exporter {
 			new Option(OPTION_GROUP_ELF_HEADER, OPTION_GEN_SHSTRTAB, true),
 			new Option(OPTION_GROUP_ELF_HEADER, OPTION_GEN_COMMENT, true),
 			new Option(OPTION_GROUP_SYMBOLS, OPTION_GEN_STRTAB, true),
+			new EnumDropDownOption<>(OPTION_GROUP_SYMBOLS, OPTION_PREF_SYMNAME,
+				SymbolPreference.class, DEFAULT_SYMBOL_PREFERENCE),
 			new Option(OPTION_GROUP_RELOCATIONS, OPTION_GEN_REL, true),
 			new DropDownOption<Integer>(OPTION_GROUP_RELOCATIONS, OPTION_REL_FMT,
 				ELF_RELOCATION_TABLE_TYPES, Integer.class,
@@ -312,6 +320,8 @@ public class ElfRelocatableObjectExporter extends Exporter {
 			OptionUtils.getOption(OPTION_GEN_SHSTRTAB, options, false);
 		generateSectionComment = OptionUtils.getOption(OPTION_GEN_COMMENT, options, false);
 		generateStringAndSymbolTables = OptionUtils.getOption(OPTION_GEN_STRTAB, options, false);
+		symbolNamePreference =
+			OptionUtils.getOption(OPTION_PREF_SYMNAME, options, DEFAULT_SYMBOL_PREFERENCE);
 		generateRelocationTables = OptionUtils.getOption(OPTION_GEN_REL, options, false);
 		relocationTableFormat =
 			OptionUtils.getOption(OPTION_REL_FMT, options, ElfSectionHeaderConstants.SHT_NULL);
@@ -359,18 +369,21 @@ public class ElfRelocatableObjectExporter extends Exporter {
 		public void addSymbols() {
 			symtab.addSectionSymbol(section);
 
-			ProgramUtil.getSectionSymbols(program, sectionSet).entrySet().forEach(entry -> {
-				Symbol symbol = entry.getValue();
-				String symbolName = symbol.getName(true);
-				byte type = determineSymbolType(symbol);
-				byte visibility = determineSymbolVisibility(symbol);
-				long offset =
-					ProgramUtil.getOffsetWithinAddressSet(sectionSet, symbol.getAddress());
-				long size = determineSymbolSize(symbol);
+			ProgramUtil.getSectionSymbols(program, sectionSet, symbolNamePreference)
+					.entrySet()
+					.forEach(entry -> {
+						Symbol symbol = entry.getValue();
+						String symbolName = symbol.getName(true);
+						byte type = determineSymbolType(symbol);
+						byte visibility = determineSymbolVisibility(symbol);
+						long offset =
+							ProgramUtil.getOffsetWithinAddressSet(sectionSet, symbol.getAddress());
+						long size = determineSymbolSize(symbol);
 
-				symbolsByName.put(entry.getKey(),
-					symtab.addDefinedSymbol(section, symbolName, visibility, type, size, offset));
-			});
+						symbolsByName.put(entry.getKey(),
+							symtab.addDefinedSymbol(section, symbolName, visibility, type, size,
+								offset));
+					});
 		}
 
 		private byte determineSymbolType(Symbol symbol) {
@@ -556,10 +569,12 @@ public class ElfRelocatableObjectExporter extends Exporter {
 	}
 
 	private void computeExternalSymbols() {
-		ProgramUtil.getExternalSymbols(program, fileSet).entrySet().forEach(entry -> {
-			symbolsByName.put(entry.getKey(),
-				symtab.addExternalSymbol(entry.getValue().getName(true)));
-		});
+		ProgramUtil.getExternalSymbols(program, fileSet, symbolNamePreference)
+				.entrySet()
+				.forEach(entry -> {
+					symbolsByName.put(entry.getKey(),
+						symtab.addExternalSymbol(entry.getValue().getName(true)));
+				});
 	}
 
 	private void addSectionNameStringTable() {

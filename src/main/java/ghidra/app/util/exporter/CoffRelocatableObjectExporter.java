@@ -28,9 +28,11 @@ import java.util.function.Predicate;
 
 import ghidra.app.util.DomainObjectService;
 import ghidra.app.util.DropDownOption;
+import ghidra.app.util.EnumDropDownOption;
 import ghidra.app.util.Option;
 import ghidra.app.util.OptionUtils;
 import ghidra.app.util.ProgramUtil;
+import ghidra.app.util.SymbolPreference;
 import ghidra.app.util.bin.format.coff.CoffMachineType;
 import ghidra.app.util.bin.format.coff.CoffSymbolStorageClass;
 import ghidra.app.util.bin.format.pe.SectionFlags;
@@ -63,6 +65,7 @@ public class CoffRelocatableObjectExporter extends Exporter {
 	private Program program;
 	private AddressSetView fileSet;
 	private int machine;
+	private SymbolPreference symbolNamePreference;
 
 	private RelocationTable relocationTable;
 	private Predicate<Relocation> predicateRelocation;
@@ -70,9 +73,13 @@ public class CoffRelocatableObjectExporter extends Exporter {
 	private CoffRelocatableStringTable strtab;
 	private CoffRelocatableSymbolTable symtab;
 
+	private static final SymbolPreference DEFAULT_SYMBOL_PREFERENCE = SymbolPreference.MSVC;
+
 	private static final String OPTION_GROUP_COFF_HEADER = "COFF header";
+	private static final String OPTION_GROUP_SYMBOLS = "Symbols";
 
 	private static final String OPTION_COFF_MACHINE = "COFF machine";
+	private static final String OPTION_PREF_SYMNAME = "Symbol name preference";
 
 	private static final Map<Short, String> COFF_MACHINES = new TreeMap<>(Map.ofEntries(
 		Map.entry(CoffMachineType.IMAGE_FILE_MACHINE_UNKNOWN, "(none)"),
@@ -171,6 +178,8 @@ public class CoffRelocatableObjectExporter extends Exporter {
 		Option[] options = new Option[] {
 			new DropDownOption<>(OPTION_GROUP_COFF_HEADER, OPTION_COFF_MACHINE, COFF_MACHINES,
 				Short.class, autodetectCoffMachine(program)),
+			new EnumDropDownOption<>(OPTION_GROUP_SYMBOLS, OPTION_PREF_SYMNAME,
+				SymbolPreference.class, DEFAULT_SYMBOL_PREFERENCE),
 		};
 
 		return Arrays.asList(options);
@@ -180,6 +189,8 @@ public class CoffRelocatableObjectExporter extends Exporter {
 	public void setOptions(List<Option> options) {
 		machine = OptionUtils.getOption(OPTION_COFF_MACHINE, options,
 			CoffMachineType.IMAGE_FILE_MACHINE_UNKNOWN);
+		symbolNamePreference =
+			OptionUtils.getOption(OPTION_PREF_SYMNAME, options, DEFAULT_SYMBOL_PREFERENCE);
 	}
 
 	private class Section {
@@ -220,23 +231,26 @@ public class CoffRelocatableObjectExporter extends Exporter {
 		}
 
 		public void addSymbols() {
-			ProgramUtil.getSectionSymbols(program, sectionSet).entrySet().forEach(entry -> {
-				Symbol symbol = entry.getValue();
-				String symbolName = symbol.getName(true);
-				long offset =
-					ProgramUtil.getOffsetWithinAddressSet(sectionSet, symbol.getAddress());
-				var obj = symbol.getObject();
-				short type = 0x00;
-				if (obj instanceof Function) {
-					type |= 0x20;
-				}
-				byte storageClass = (byte) CoffSymbolStorageClass.C_EXT;
-				if (symbol.isDynamic()) {
-					storageClass = CoffSymbolStorageClass.C_STAT;
-				}
-				symtab.addDefinedSymbol(entry.getKey(), symbolName, number, (int) offset, type,
-					storageClass);
-			});
+			ProgramUtil.getSectionSymbols(program, sectionSet, symbolNamePreference)
+					.entrySet()
+					.forEach(entry -> {
+						Symbol symbol = entry.getValue();
+						String symbolName = symbol.getName(true);
+						long offset =
+							ProgramUtil.getOffsetWithinAddressSet(sectionSet, symbol.getAddress());
+						var obj = symbol.getObject();
+						short type = 0x00;
+						if (obj instanceof Function) {
+							type |= 0x20;
+						}
+						byte storageClass = CoffSymbolStorageClass.C_EXT;
+						if (symbol.isDynamic()) {
+							storageClass = CoffSymbolStorageClass.C_STAT;
+						}
+						symtab.addDefinedSymbol(entry.getKey(), symbolName, number, (int) offset,
+							type,
+							storageClass);
+					});
 		}
 
 		public void buildCoffRelocationTable(CoffRelocationTypeMapper relocationTypeMapper) {
@@ -294,9 +308,11 @@ public class CoffRelocatableObjectExporter extends Exporter {
 	}
 
 	private void calculateExternalSymbols(Memory memory) {
-		ProgramUtil.getExternalSymbols(program, fileSet).entrySet().forEach(entry -> {
-			symtab.addUndefinedSymbol(entry.getKey(), entry.getValue().getName(true));
-		});
+		ProgramUtil.getExternalSymbols(program, fileSet, symbolNamePreference)
+				.entrySet()
+				.forEach(entry -> {
+					symtab.addUndefinedSymbol(entry.getKey(), entry.getValue().getName(true));
+				});
 	}
 
 	@Override

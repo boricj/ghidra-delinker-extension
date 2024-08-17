@@ -76,6 +76,7 @@ public class ElfRelocatableObjectExporter extends Exporter {
 	private boolean generateSectionNamesStringTable;
 	private boolean generateSectionComment;
 	private boolean generateStringAndSymbolTables;
+	private boolean globalDynamicSymbols;
 	private SymbolPreference symbolNamePreference;
 	private boolean generateRelocationTables;
 	private int relocationTableFormat;
@@ -108,6 +109,8 @@ public class ElfRelocatableObjectExporter extends Exporter {
 	private static final String OPTION_GEN_STRTAB = "Generate string & symbol tables";
 	private static final String OPTION_PREF_SYMNAME = "Symbol name preference";
 	private static final String OPTION_GEN_COMMENT = "Generate .comment section";
+	private static final String OPTION_DYN_SYMBOLS_GLOBAL =
+		"Give dynamic symbols global visibility";
 	private static final String OPTION_GEN_REL = "Generate relocation tables";
 	private static final String OPTION_REL_FMT = "Relocation table format";
 
@@ -299,6 +302,7 @@ public class ElfRelocatableObjectExporter extends Exporter {
 			new Option(OPTION_GROUP_ELF_HEADER, OPTION_GEN_SHSTRTAB, true),
 			new Option(OPTION_GROUP_ELF_HEADER, OPTION_GEN_COMMENT, true),
 			new Option(OPTION_GROUP_SYMBOLS, OPTION_GEN_STRTAB, true),
+			new Option(OPTION_GROUP_SYMBOLS, OPTION_DYN_SYMBOLS_GLOBAL, false),
 			new EnumDropDownOption<>(OPTION_GROUP_SYMBOLS, OPTION_PREF_SYMNAME,
 				SymbolPreference.class, DEFAULT_SYMBOL_PREFERENCE),
 			new Option(OPTION_GROUP_RELOCATIONS, OPTION_GEN_REL, true),
@@ -320,6 +324,7 @@ public class ElfRelocatableObjectExporter extends Exporter {
 			OptionUtils.getOption(OPTION_GEN_SHSTRTAB, options, false);
 		generateSectionComment = OptionUtils.getOption(OPTION_GEN_COMMENT, options, false);
 		generateStringAndSymbolTables = OptionUtils.getOption(OPTION_GEN_STRTAB, options, false);
+		globalDynamicSymbols = OptionUtils.getOption(OPTION_DYN_SYMBOLS_GLOBAL, options, false);
 		symbolNamePreference =
 			OptionUtils.getOption(OPTION_PREF_SYMNAME, options, DEFAULT_SYMBOL_PREFERENCE);
 		generateRelocationTables = OptionUtils.getOption(OPTION_GEN_REL, options, false);
@@ -416,7 +421,7 @@ public class ElfRelocatableObjectExporter extends Exporter {
 		}
 
 		private byte determineSymbolVisibility(Symbol symbol) {
-			if (!symbol.isDynamic()) {
+			if (!symbol.isDynamic() || globalDynamicSymbols) {
 				return ElfSymbol.STB_GLOBAL;
 			}
 

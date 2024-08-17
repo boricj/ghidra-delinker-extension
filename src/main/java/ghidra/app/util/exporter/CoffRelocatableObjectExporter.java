@@ -66,6 +66,7 @@ public class CoffRelocatableObjectExporter extends Exporter {
 	private AddressSetView fileSet;
 	private int machine;
 	private SymbolPreference symbolNamePreference;
+	private boolean externalDynamicSymbols;
 
 	private RelocationTable relocationTable;
 	private Predicate<Relocation> predicateRelocation;
@@ -80,6 +81,8 @@ public class CoffRelocatableObjectExporter extends Exporter {
 
 	private static final String OPTION_COFF_MACHINE = "COFF machine";
 	private static final String OPTION_PREF_SYMNAME = "Symbol name preference";
+	private static final String OPTION_DYN_SYMBOLS_EXTERNAL =
+		"Give dynamic symbols external visibility";
 
 	private static final Map<Short, String> COFF_MACHINES = new TreeMap<>(Map.ofEntries(
 		Map.entry(CoffMachineType.IMAGE_FILE_MACHINE_UNKNOWN, "(none)"),
@@ -180,6 +183,7 @@ public class CoffRelocatableObjectExporter extends Exporter {
 				Short.class, autodetectCoffMachine(program)),
 			new EnumDropDownOption<>(OPTION_GROUP_SYMBOLS, OPTION_PREF_SYMNAME,
 				SymbolPreference.class, DEFAULT_SYMBOL_PREFERENCE),
+			new Option(OPTION_GROUP_SYMBOLS, OPTION_DYN_SYMBOLS_EXTERNAL, false),
 		};
 
 		return Arrays.asList(options);
@@ -191,6 +195,7 @@ public class CoffRelocatableObjectExporter extends Exporter {
 			CoffMachineType.IMAGE_FILE_MACHINE_UNKNOWN);
 		symbolNamePreference =
 			OptionUtils.getOption(OPTION_PREF_SYMNAME, options, DEFAULT_SYMBOL_PREFERENCE);
+		externalDynamicSymbols = OptionUtils.getOption(OPTION_DYN_SYMBOLS_EXTERNAL, options, false);
 	}
 
 	private class Section {
@@ -243,9 +248,9 @@ public class CoffRelocatableObjectExporter extends Exporter {
 						if (obj instanceof Function) {
 							type |= 0x20;
 						}
-						byte storageClass = CoffSymbolStorageClass.C_EXT;
-						if (symbol.isDynamic()) {
-							storageClass = CoffSymbolStorageClass.C_STAT;
+						byte storageClass = CoffSymbolStorageClass.C_STAT;
+						if (!symbol.isDynamic() || externalDynamicSymbols) {
+							storageClass = CoffSymbolStorageClass.C_EXT;
 						}
 						symtab.addDefinedSymbol(entry.getKey(), symbolName, number, (int) offset,
 							type,

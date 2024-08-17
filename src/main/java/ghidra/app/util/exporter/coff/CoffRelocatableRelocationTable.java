@@ -62,14 +62,21 @@ public class CoffRelocatableRelocationTable {
 		return (short) relocations.size();
 	}
 
+	private int extendedCount() {
+		if (linkOverflow()) {
+			return relocations.size() + 1;
+		}
+		return relocations.size();
+	}
+
 	public int size() {
-		return (linkOverflow() ? RECORD_SIZE : 0) + (relocations.size() * RECORD_SIZE);
+		return extendedCount() * RECORD_SIZE;
 	}
 
 	public void write(DataOutput out, DataConverter dc) throws IOException {
 		byte[] record = new byte[RECORD_SIZE];
 		if (linkOverflow()) {
-			dc.putInt(record, 0, relocations.size());
+			dc.putInt(record, 0, extendedCount());
 			dc.putInt(record, 4, 0);
 			dc.putShort(record, 8, (short) 0);
 			out.write(record);

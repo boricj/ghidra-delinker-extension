@@ -72,6 +72,7 @@ import utility.application.ApplicationLayout;
 public abstract class DelinkerIntegrationTest extends AbstractProgramBasedTest {
 	private static DBHandle dbHandle = null;
 	private static Program program = null;
+	private static boolean initialized = false;
 
 	public interface ObjectFile {
 		public byte[] getSectionBytes(String name) throws IOException;
@@ -261,13 +262,18 @@ public abstract class DelinkerIntegrationTest extends AbstractProgramBasedTest {
 	public void setUp() throws Exception {
 		TestProgramManager.cleanDbTestDir();
 
-		initialize();
+		if (initialized == false) {
+			initialize();
+			initialized = true;
+		}
 	}
 
 	@Override
 	@After
 	public void tearDown() throws Exception {
-		dbHandle.close();
+		if (dbHandle != null) {
+			dbHandle.close();
+		}
 		dbHandle = null;
 		program = null;
 

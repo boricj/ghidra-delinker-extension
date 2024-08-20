@@ -24,9 +24,12 @@ import ghidra.app.util.exporter.ElfRelocatableObjectExporter;
 import ghidra.program.model.address.AddressFactory;
 import ghidra.program.model.address.AddressSetView;
 
-public class ELF_Mipsel_ascii_table_main_o_Test extends DelinkerIntegrationTest {
+public class ELF_Mipsel_ascii_table_Test extends DelinkerIntegrationTest {
 	private static final File mainFile =
 		new File("src/test/resources/ascii-table/reference/elf_linux_freestanding/mipsel/main.o");
+
+	private static final File ctypeFile =
+		new File("src/test/resources/ascii-table/reference/elf_linux_freestanding/mipsel/ctype.o");
 
 	@Override
 	protected String getProgramName() {
@@ -217,5 +220,78 @@ public class ELF_Mipsel_ascii_table_main_o_Test extends DelinkerIntegrationTest 
 			MIPS_ElfRelocationType.R_MIPS_32.typeId(), "isupper", 0);
 		exported.hasRelocationAtAddress(".rel.rodata", 0x00000048,
 			MIPS_ElfRelocationType.R_MIPS_32.typeId(), "islower", 0);
+	}
+
+	@Test
+	public void testExport_ctype_o() throws Exception {
+		AddressFactory af = getProgram().getAddressFactory();
+		AddressSetView set = af.getAddressSet(af.getAddress("00400600"), af.getAddress("0040086f"))	// .text
+				.union(af.getAddressSet(af.getAddress("00400a00"), af.getAddress("00400b0f"))); 	// .rodata
+		File exportedFile = exportObjectFile(set, new ElfRelocatableObjectExporter(), null);
+
+		ObjectFile ctypeObjectFile = new ElfObjectFile(ctypeFile);
+		ElfObjectFile exported = new ElfObjectFile(exportedFile);
+
+		ctypeObjectFile.compareSectionBytes(".text", exported, ".text");
+		ctypeObjectFile.compareSectionSizes(".rel.text", exported, ".rel.text");
+		ctypeObjectFile.compareSectionBytes(".rodata", exported, ".rodata");
+
+		exported.hasSymbolAtAddress(".symtab", "isalnum", ".text", 0x00000000);
+		exported.hasSymbolAtAddress(".symtab", "isalpha", ".text", 0x00000038);
+		exported.hasSymbolAtAddress(".symtab", "iscntrl", ".text", 0x00000070);
+		exported.hasSymbolAtAddress(".symtab", "isdigit", ".text", 0x000000a8);
+		exported.hasSymbolAtAddress(".symtab", "isgraph", ".text", 0x000000e0);
+		exported.hasSymbolAtAddress(".symtab", "islower", ".text", 0x00000118);
+		exported.hasSymbolAtAddress(".symtab", "isprint", ".text", 0x00000150);
+		exported.hasSymbolAtAddress(".symtab", "ispunct", ".text", 0x00000188);
+		exported.hasSymbolAtAddress(".symtab", "isspace", ".text", 0x000001c0);
+		exported.hasSymbolAtAddress(".symtab", "isupper", ".text", 0x000001f8);
+		exported.hasSymbolAtAddress(".symtab", "isxdigit", ".text", 0x00000230);
+		exported.hasSymbolAtAddress(".symtab", "_ctype_", ".rodata", 0x00000000);
+
+		exported.hasRelocationAtAddress(".rel.text", 0x00000010,
+			MIPS_ElfRelocationType.R_MIPS_HI16.typeId(), "_ctype_", 0);
+		exported.hasRelocationAtAddress(".rel.text", 0x00000014,
+			MIPS_ElfRelocationType.R_MIPS_LO16.typeId(), "_ctype_", 0);
+		exported.hasRelocationAtAddress(".rel.text", 0x00000048,
+			MIPS_ElfRelocationType.R_MIPS_HI16.typeId(), "_ctype_", 0);
+		exported.hasRelocationAtAddress(".rel.text", 0x0000004c,
+			MIPS_ElfRelocationType.R_MIPS_LO16.typeId(), "_ctype_", 0);
+		exported.hasRelocationAtAddress(".rel.text", 0x00000080,
+			MIPS_ElfRelocationType.R_MIPS_HI16.typeId(), "_ctype_", 0);
+		exported.hasRelocationAtAddress(".rel.text", 0x00000084,
+			MIPS_ElfRelocationType.R_MIPS_LO16.typeId(), "_ctype_", 0);
+		exported.hasRelocationAtAddress(".rel.text", 0x000000b8,
+			MIPS_ElfRelocationType.R_MIPS_HI16.typeId(), "_ctype_", 0);
+		exported.hasRelocationAtAddress(".rel.text", 0x000000bc,
+			MIPS_ElfRelocationType.R_MIPS_LO16.typeId(), "_ctype_", 0);
+		exported.hasRelocationAtAddress(".rel.text", 0x000000f0,
+			MIPS_ElfRelocationType.R_MIPS_HI16.typeId(), "_ctype_", 0);
+		exported.hasRelocationAtAddress(".rel.text", 0x000000f4,
+			MIPS_ElfRelocationType.R_MIPS_LO16.typeId(), "_ctype_", 0);
+		exported.hasRelocationAtAddress(".rel.text", 0x00000128,
+			MIPS_ElfRelocationType.R_MIPS_HI16.typeId(), "_ctype_", 0);
+		exported.hasRelocationAtAddress(".rel.text", 0x0000012c,
+			MIPS_ElfRelocationType.R_MIPS_LO16.typeId(), "_ctype_", 0);
+		exported.hasRelocationAtAddress(".rel.text", 0x00000160,
+			MIPS_ElfRelocationType.R_MIPS_HI16.typeId(), "_ctype_", 0);
+		exported.hasRelocationAtAddress(".rel.text", 0x00000164,
+			MIPS_ElfRelocationType.R_MIPS_LO16.typeId(), "_ctype_", 0);
+		exported.hasRelocationAtAddress(".rel.text", 0x00000198,
+			MIPS_ElfRelocationType.R_MIPS_HI16.typeId(), "_ctype_", 0);
+		exported.hasRelocationAtAddress(".rel.text", 0x0000019c,
+			MIPS_ElfRelocationType.R_MIPS_LO16.typeId(), "_ctype_", 0);
+		exported.hasRelocationAtAddress(".rel.text", 0x000001d0,
+			MIPS_ElfRelocationType.R_MIPS_HI16.typeId(), "_ctype_", 0);
+		exported.hasRelocationAtAddress(".rel.text", 0x000001d4,
+			MIPS_ElfRelocationType.R_MIPS_LO16.typeId(), "_ctype_", 0);
+		exported.hasRelocationAtAddress(".rel.text", 0x00000208,
+			MIPS_ElfRelocationType.R_MIPS_HI16.typeId(), "_ctype_", 0);
+		exported.hasRelocationAtAddress(".rel.text", 0x0000020c,
+			MIPS_ElfRelocationType.R_MIPS_LO16.typeId(), "_ctype_", 0);
+		exported.hasRelocationAtAddress(".rel.text", 0x00000240,
+			MIPS_ElfRelocationType.R_MIPS_HI16.typeId(), "_ctype_", 0);
+		exported.hasRelocationAtAddress(".rel.text", 0x00000244,
+			MIPS_ElfRelocationType.R_MIPS_LO16.typeId(), "_ctype_", 0);
 	}
 }

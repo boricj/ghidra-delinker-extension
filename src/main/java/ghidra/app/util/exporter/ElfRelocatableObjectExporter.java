@@ -49,6 +49,7 @@ import ghidra.app.util.exporter.elf.ElfRelocatableSymbol;
 import ghidra.app.util.exporter.elf.mapper.ElfRelocationTypeMapper;
 import ghidra.app.util.importer.MessageLog;
 import ghidra.app.util.visibility.IsSymbolDynamic;
+import ghidra.app.util.visibility.IsSymbolInsideFunction;
 import ghidra.framework.model.DomainObject;
 import ghidra.program.model.address.AddressSet;
 import ghidra.program.model.address.AddressSetView;
@@ -79,6 +80,7 @@ public class ElfRelocatableObjectExporter extends Exporter {
 	private boolean generateStringAndSymbolTables;
 	private SymbolPreference symbolNamePreference;
 	private boolean isDynamicSymbolLocal;
+	private boolean isSymbolInsideFunctionLocal;
 	private boolean generateRelocationTables;
 	private int relocationTableFormat;
 
@@ -113,6 +115,8 @@ public class ElfRelocatableObjectExporter extends Exporter {
 	private static final String OPTION_PREF_SYMNAME = "Symbol name preference";
 	private static final String OPTION_GEN_COMMENT = "Generate .comment section";
 	private static final String OPTION_VIS_DYNAMIC = "Give dynamic symbols local visibility";
+	private static final String OPTION_VIS_INSIDE_FUNCTIONS =
+		"Give symbols inside functions local visibility";
 	private static final String OPTION_GEN_REL = "Generate relocation tables";
 	private static final String OPTION_REL_FMT = "Relocation table format";
 
@@ -305,6 +309,7 @@ public class ElfRelocatableObjectExporter extends Exporter {
 			new Option(OPTION_GROUP_ELF_HEADER, OPTION_GEN_COMMENT, true),
 			new Option(OPTION_GROUP_SYMBOLS, OPTION_GEN_STRTAB, true),
 			new Option(OPTION_GROUP_SYMBOL_VISIBILITY, OPTION_VIS_DYNAMIC, true),
+			new Option(OPTION_GROUP_SYMBOL_VISIBILITY, OPTION_VIS_INSIDE_FUNCTIONS, true),
 			new EnumDropDownOption<>(OPTION_GROUP_SYMBOLS, OPTION_PREF_SYMNAME,
 				SymbolPreference.class, DEFAULT_SYMBOL_PREFERENCE),
 			new Option(OPTION_GROUP_RELOCATIONS, OPTION_GEN_REL, true),
@@ -327,6 +332,8 @@ public class ElfRelocatableObjectExporter extends Exporter {
 		generateSectionComment = OptionUtils.getOption(OPTION_GEN_COMMENT, options, false);
 		generateStringAndSymbolTables = OptionUtils.getOption(OPTION_GEN_STRTAB, options, false);
 		isDynamicSymbolLocal = OptionUtils.getOption(OPTION_VIS_DYNAMIC, options, true);
+		isSymbolInsideFunctionLocal =
+			OptionUtils.getOption(OPTION_VIS_INSIDE_FUNCTIONS, options, true);
 		symbolNamePreference =
 			OptionUtils.getOption(OPTION_PREF_SYMNAME, options, DEFAULT_SYMBOL_PREFERENCE);
 		generateRelocationTables = OptionUtils.getOption(OPTION_GEN_REL, options, false);
@@ -477,6 +484,11 @@ public class ElfRelocatableObjectExporter extends Exporter {
 
 		if (isDynamicSymbolLocal) {
 			Predicate<Symbol> predicate = new IsSymbolDynamic();
+			predicateVisibility = predicateVisibility.or(predicate);
+		}
+
+		if (isSymbolInsideFunctionLocal) {
+			Predicate<Symbol> predicate = new IsSymbolInsideFunction();
 			predicateVisibility = predicateVisibility.or(predicate);
 		}
 	}

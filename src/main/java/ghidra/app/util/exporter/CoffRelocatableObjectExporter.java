@@ -42,6 +42,7 @@ import ghidra.app.util.exporter.coff.CoffRelocatableStringTable;
 import ghidra.app.util.exporter.coff.CoffRelocatableSymbolTable;
 import ghidra.app.util.exporter.coff.mapper.CoffRelocationTypeMapper;
 import ghidra.app.util.importer.MessageLog;
+import ghidra.app.util.visibility.IsSymbolDynamic;
 import ghidra.framework.model.DomainObject;
 import ghidra.program.model.address.AddressSet;
 import ghidra.program.model.address.AddressSetView;
@@ -66,10 +67,11 @@ public class CoffRelocatableObjectExporter extends Exporter {
 	private AddressSetView fileSet;
 	private int machine;
 	private SymbolPreference symbolNamePreference;
-	private boolean externalDynamicSymbols;
+	private boolean isDynamicSymbolStatic;
 
 	private RelocationTable relocationTable;
 	private Predicate<Relocation> predicateRelocation;
+	private Predicate<Symbol> predicateVisibility;
 
 	private CoffRelocatableStringTable strtab;
 	private CoffRelocatableSymbolTable symtab;
@@ -78,11 +80,11 @@ public class CoffRelocatableObjectExporter extends Exporter {
 
 	private static final String OPTION_GROUP_COFF_HEADER = "COFF header";
 	private static final String OPTION_GROUP_SYMBOLS = "Symbols";
+	private static final String OPTION_GROUP_SYMBOL_VISIBILITY = "Symbol visibility";
 
 	private static final String OPTION_COFF_MACHINE = "COFF machine";
 	private static final String OPTION_PREF_SYMNAME = "Symbol name preference";
-	private static final String OPTION_DYN_SYMBOLS_EXTERNAL =
-		"Give dynamic symbols external visibility";
+	private static final String OPTION_VIS_DYNAMIC = "Give dynamic symbols static visibility";
 
 	private static final Map<Short, String> COFF_MACHINES = new TreeMap<>(Map.ofEntries(
 		Map.entry(CoffMachineType.IMAGE_FILE_MACHINE_UNKNOWN, "(none)"),
@@ -183,7 +185,7 @@ public class CoffRelocatableObjectExporter extends Exporter {
 				Short.class, autodetectCoffMachine(program)),
 			new EnumDropDownOption<>(OPTION_GROUP_SYMBOLS, OPTION_PREF_SYMNAME,
 				SymbolPreference.class, DEFAULT_SYMBOL_PREFERENCE),
-			new Option(OPTION_GROUP_SYMBOLS, OPTION_DYN_SYMBOLS_EXTERNAL, false),
+			new Option(OPTION_GROUP_SYMBOL_VISIBILITY, OPTION_VIS_DYNAMIC, true),
 		};
 
 		return Arrays.asList(options);
@@ -195,7 +197,7 @@ public class CoffRelocatableObjectExporter extends Exporter {
 			CoffMachineType.IMAGE_FILE_MACHINE_UNKNOWN);
 		symbolNamePreference =
 			OptionUtils.getOption(OPTION_PREF_SYMNAME, options, DEFAULT_SYMBOL_PREFERENCE);
-		externalDynamicSymbols = OptionUtils.getOption(OPTION_DYN_SYMBOLS_EXTERNAL, options, false);
+		isDynamicSymbolStatic = OptionUtils.getOption(OPTION_VIS_DYNAMIC, options, true);
 	}
 
 	private class Section {
@@ -248,9 +250,9 @@ public class CoffRelocatableObjectExporter extends Exporter {
 						if (obj instanceof Function) {
 							type |= 0x20;
 						}
-						byte storageClass = CoffSymbolStorageClass.C_STAT;
-						if (!symbol.isDynamic() || externalDynamicSymbols) {
-							storageClass = CoffSymbolStorageClass.C_EXT;
+						byte storageClass = CoffSymbolStorageClass.C_EXT;
+						if (predicateVisibility.test(symbol)) {
+							storageClass = CoffSymbolStorageClass.C_STAT;
 						}
 						symtab.addDefinedSymbol(entry.getKey(), symbolName, number, (int) offset,
 							type,
@@ -320,6 +322,15 @@ public class CoffRelocatableObjectExporter extends Exporter {
 				});
 	}
 
+	private void initializeSymbolVisibilityPredicate() {
+		predicateVisibility = s -> false;
+
+		if (isDynamicSymbolStatic) {
+			Predicate<Symbol> predicate = new IsSymbolDynamic();
+			predicateVisibility = predicateVisibility.or(predicate);
+		}
+	}
+
 	@Override
 	public boolean export(File file, DomainObject domainObj, AddressSetView fileSet,
 			TaskMonitor taskMonitor) throws ExporterException, IOException {
@@ -337,6 +348,7 @@ public class CoffRelocatableObjectExporter extends Exporter {
 		relocationTable = RelocationTable.get(program);
 		final AddressSetView predicateSet = fileSet;
 		predicateRelocation = (Relocation r) -> r.isNeeded(program, predicateSet);
+		initializeSymbolVisibilityPredicate();
 
 		taskMonitor.setIndeterminate(true);
 

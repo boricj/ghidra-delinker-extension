@@ -48,6 +48,7 @@ import ghidra.app.util.exporter.elf.ElfRelocatableSectionSymbolTable;
 import ghidra.app.util.exporter.elf.ElfRelocatableSymbol;
 import ghidra.app.util.exporter.elf.mapper.ElfRelocationTypeMapper;
 import ghidra.app.util.importer.MessageLog;
+import ghidra.app.util.visibility.IsSymbolDynamic;
 import ghidra.framework.model.DomainObject;
 import ghidra.program.model.address.AddressSet;
 import ghidra.program.model.address.AddressSetView;
@@ -76,8 +77,8 @@ public class ElfRelocatableObjectExporter extends Exporter {
 	private boolean generateSectionNamesStringTable;
 	private boolean generateSectionComment;
 	private boolean generateStringAndSymbolTables;
-	private boolean globalDynamicSymbols;
 	private SymbolPreference symbolNamePreference;
+	private boolean isDynamicSymbolLocal;
 	private boolean generateRelocationTables;
 	private int relocationTableFormat;
 
@@ -93,6 +94,7 @@ public class ElfRelocatableObjectExporter extends Exporter {
 
 	private RelocationTable relocationTable;
 	private Predicate<Relocation> predicateRelocation;
+	private Predicate<Symbol> predicateVisibility;
 	private Map<String, ElfRelocatableSymbol> symbolsByName;
 	private List<Section> sections;
 
@@ -100,6 +102,7 @@ public class ElfRelocatableObjectExporter extends Exporter {
 
 	private static final String OPTION_GROUP_ELF_HEADER = "ELF header";
 	private static final String OPTION_GROUP_SYMBOLS = "Symbols";
+	private static final String OPTION_GROUP_SYMBOL_VISIBILITY = "Symbol visibility";
 	private static final String OPTION_GROUP_RELOCATIONS = "Relocations";
 
 	private static final String OPTION_ELF_MACHINE = "ELF machine";
@@ -109,8 +112,7 @@ public class ElfRelocatableObjectExporter extends Exporter {
 	private static final String OPTION_GEN_STRTAB = "Generate string & symbol tables";
 	private static final String OPTION_PREF_SYMNAME = "Symbol name preference";
 	private static final String OPTION_GEN_COMMENT = "Generate .comment section";
-	private static final String OPTION_DYN_SYMBOLS_GLOBAL =
-		"Give dynamic symbols global visibility";
+	private static final String OPTION_VIS_DYNAMIC = "Give dynamic symbols local visibility";
 	private static final String OPTION_GEN_REL = "Generate relocation tables";
 	private static final String OPTION_REL_FMT = "Relocation table format";
 
@@ -302,7 +304,7 @@ public class ElfRelocatableObjectExporter extends Exporter {
 			new Option(OPTION_GROUP_ELF_HEADER, OPTION_GEN_SHSTRTAB, true),
 			new Option(OPTION_GROUP_ELF_HEADER, OPTION_GEN_COMMENT, true),
 			new Option(OPTION_GROUP_SYMBOLS, OPTION_GEN_STRTAB, true),
-			new Option(OPTION_GROUP_SYMBOLS, OPTION_DYN_SYMBOLS_GLOBAL, false),
+			new Option(OPTION_GROUP_SYMBOL_VISIBILITY, OPTION_VIS_DYNAMIC, true),
 			new EnumDropDownOption<>(OPTION_GROUP_SYMBOLS, OPTION_PREF_SYMNAME,
 				SymbolPreference.class, DEFAULT_SYMBOL_PREFERENCE),
 			new Option(OPTION_GROUP_RELOCATIONS, OPTION_GEN_REL, true),
@@ -324,7 +326,7 @@ public class ElfRelocatableObjectExporter extends Exporter {
 			OptionUtils.getOption(OPTION_GEN_SHSTRTAB, options, false);
 		generateSectionComment = OptionUtils.getOption(OPTION_GEN_COMMENT, options, false);
 		generateStringAndSymbolTables = OptionUtils.getOption(OPTION_GEN_STRTAB, options, false);
-		globalDynamicSymbols = OptionUtils.getOption(OPTION_DYN_SYMBOLS_GLOBAL, options, false);
+		isDynamicSymbolLocal = OptionUtils.getOption(OPTION_VIS_DYNAMIC, options, true);
 		symbolNamePreference =
 			OptionUtils.getOption(OPTION_PREF_SYMNAME, options, DEFAULT_SYMBOL_PREFERENCE);
 		generateRelocationTables = OptionUtils.getOption(OPTION_GEN_REL, options, false);
@@ -421,11 +423,11 @@ public class ElfRelocatableObjectExporter extends Exporter {
 		}
 
 		private byte determineSymbolVisibility(Symbol symbol) {
-			if (!symbol.isDynamic() || globalDynamicSymbols) {
-				return ElfSymbol.STB_GLOBAL;
+			if (predicateVisibility.test(symbol)) {
+				return ElfSymbol.STB_LOCAL;
 			}
 
-			return ElfSymbol.STB_LOCAL;
+			return ElfSymbol.STB_GLOBAL;
 		}
 
 		public void createElfRelocationTableSection()
@@ -470,6 +472,15 @@ public class ElfRelocatableObjectExporter extends Exporter {
 		}
 	}
 
+	private void initializeSymbolVisibilityPredicate() {
+		predicateVisibility = s -> false;
+
+		if (isDynamicSymbolLocal) {
+			Predicate<Symbol> predicate = new IsSymbolDynamic();
+			predicateVisibility = predicateVisibility.or(predicate);
+		}
+	}
+
 	@Override
 	public boolean export(File file, DomainObject domainObj, AddressSetView fileSet,
 			TaskMonitor taskMonitor) throws IOException, ExporterException {
@@ -487,6 +498,7 @@ public class ElfRelocatableObjectExporter extends Exporter {
 		relocationTable = RelocationTable.get(program);
 		final AddressSetView predicateSet = fileSet;
 		predicateRelocation = (Relocation r) -> r.isNeeded(program, predicateSet);
+		initializeSymbolVisibilityPredicate();
 
 		sections = new ArrayList<>();
 		for (MemoryBlock memoryBlock : program.getMemory().getBlocks()) {

@@ -44,6 +44,7 @@ import ghidra.app.util.exporter.coff.mapper.CoffRelocationTypeMapper;
 import ghidra.app.util.importer.MessageLog;
 import ghidra.app.util.visibility.IsSymbolDynamic;
 import ghidra.app.util.visibility.IsSymbolInsideFunction;
+import ghidra.app.util.visibility.IsSymbolNameMatchingRegex;
 import ghidra.framework.model.DomainObject;
 import ghidra.program.model.address.AddressSet;
 import ghidra.program.model.address.AddressSetView;
@@ -70,6 +71,7 @@ public class CoffRelocatableObjectExporter extends Exporter {
 	private SymbolPreference symbolNamePreference;
 	private boolean isDynamicSymbolStatic;
 	private boolean isSymbolInsideFunctionStatic;
+	private String patternSymbolNameStatic;
 
 	private RelocationTable relocationTable;
 	private Predicate<Relocation> predicateRelocation;
@@ -89,6 +91,7 @@ public class CoffRelocatableObjectExporter extends Exporter {
 	private static final String OPTION_VIS_DYNAMIC = "Give dynamic symbols static visibility";
 	private static final String OPTION_VIS_INSIDE_FUNCTIONS =
 		"Give symbols inside functions static visibility";
+	private static final String OPTION_VIS_PATTERN = "Regular expression for static symbol names";
 
 	private static final Map<Short, String> COFF_MACHINES = new TreeMap<>(Map.ofEntries(
 		Map.entry(CoffMachineType.IMAGE_FILE_MACHINE_UNKNOWN, "(none)"),
@@ -191,6 +194,8 @@ public class CoffRelocatableObjectExporter extends Exporter {
 				SymbolPreference.class, DEFAULT_SYMBOL_PREFERENCE),
 			new Option(OPTION_GROUP_SYMBOL_VISIBILITY, OPTION_VIS_DYNAMIC, true),
 			new Option(OPTION_GROUP_SYMBOL_VISIBILITY, OPTION_VIS_INSIDE_FUNCTIONS, true),
+			new Option(OPTION_GROUP_SYMBOL_VISIBILITY, OPTION_VIS_PATTERN,
+				IsSymbolNameMatchingRegex.DEFAULT_PATTERN),
 		};
 
 		return Arrays.asList(options);
@@ -205,6 +210,8 @@ public class CoffRelocatableObjectExporter extends Exporter {
 		isDynamicSymbolStatic = OptionUtils.getOption(OPTION_VIS_DYNAMIC, options, true);
 		isSymbolInsideFunctionStatic =
 			OptionUtils.getOption(OPTION_VIS_INSIDE_FUNCTIONS, options, true);
+		patternSymbolNameStatic = OptionUtils.getOption(OPTION_VIS_PATTERN, options,
+			IsSymbolNameMatchingRegex.DEFAULT_PATTERN);
 	}
 
 	private class Section {
@@ -339,6 +346,11 @@ public class CoffRelocatableObjectExporter extends Exporter {
 
 		if (isSymbolInsideFunctionStatic) {
 			Predicate<Symbol> predicate = new IsSymbolInsideFunction();
+			predicateVisibility = predicateVisibility.or(predicate);
+		}
+
+		if (!patternSymbolNameStatic.isBlank()) {
+			Predicate<Symbol> predicate = new IsSymbolNameMatchingRegex(patternSymbolNameStatic);
 			predicateVisibility = predicateVisibility.or(predicate);
 		}
 	}

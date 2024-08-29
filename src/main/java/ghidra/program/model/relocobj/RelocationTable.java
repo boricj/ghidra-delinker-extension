@@ -27,13 +27,8 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import ghidra.program.model.address.Address;
-import ghidra.program.model.address.AddressFactory;
-import ghidra.program.model.address.AddressRange;
 import ghidra.program.model.address.AddressSetView;
 import ghidra.program.model.listing.Program;
-import ghidra.program.model.mem.MemoryAccessException;
-import ghidra.program.model.mem.MemoryBlock;
-import ghidra.util.DataConverter;
 
 public class RelocationTable {
 	public Program currentProgram;
@@ -67,46 +62,6 @@ public class RelocationTable {
 		for (Relocation relocation : listRelocations) {
 			relocation.delete();
 		}
-	}
-
-	public byte[] getOriginalBytes(AddressSetView addressSet, DataConverter dc,
-			boolean encodeAddend, boolean adjustRelativeWithTargetSize)
-			throws MemoryAccessException {
-		return getOriginalBytes(addressSet, dc, encodeAddend, adjustRelativeWithTargetSize,
-			relocation -> true);
-	}
-
-	public byte[] getOriginalBytes(AddressSetView addressSet, DataConverter dc,
-			boolean encodeAddend, boolean adjustRelativeWithTargetSize,
-			Predicate<Relocation> predicate) throws MemoryAccessException {
-		AddressFactory addressFactory = currentProgram.getAddressFactory();
-		MemoryBlock memoryBlock = currentProgram.getMemory().getBlock(addressSet.getMinAddress());
-		if (memoryBlock == null ||
-			!addressFactory.getAddressSet(memoryBlock.getStart(), memoryBlock.getEnd())
-					.contains(addressSet)) {
-			throw new IllegalArgumentException(
-				"Address set doesn't match any specific memory block");
-		}
-
-		byte[] bytes = new byte[(int) addressSet.getNumAddresses()];
-		if (memoryBlock.isInitialized()) {
-			int offset = 0;
-			for (AddressRange range : addressSet.getAddressRanges()) {
-				int length = (int) range.getLength();
-				memoryBlock.getBytes(range.getMinAddress(), bytes, offset, length);
-				offset += length;
-			}
-
-			for (Relocation relocation : (Iterable<Relocation>) () -> getRelocations(addressSet,
-				predicate)) {
-				if (predicate.test(relocation)) {
-					relocation.unapply(bytes, addressSet, dc, encodeAddend,
-						adjustRelativeWithTargetSize);
-				}
-			}
-		}
-
-		return bytes;
 	}
 
 	public Iterator<Relocation> getRelocations() {

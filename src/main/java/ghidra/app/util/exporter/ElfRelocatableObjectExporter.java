@@ -13,6 +13,9 @@
  */
 package ghidra.app.util.exporter;
 
+import static ghidra.app.util.ProgramUtil.getBytes;
+import static ghidra.app.util.ProgramUtil.getProgram;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -41,13 +44,10 @@ import ghidra.app.util.exporter.elf.ElfRelocatableSection;
 import ghidra.app.util.exporter.elf.ElfRelocatableSectionComment;
 import ghidra.app.util.exporter.elf.ElfRelocatableSectionNoBits;
 import ghidra.app.util.exporter.elf.ElfRelocatableSectionProgBits;
-import ghidra.app.util.exporter.elf.ElfRelocatableSectionRelTable;
-import ghidra.app.util.exporter.elf.ElfRelocatableSectionRelaTable;
 import ghidra.app.util.exporter.elf.ElfRelocatableSectionStringTable;
 import ghidra.app.util.exporter.elf.ElfRelocatableSectionSymbolTable;
 import ghidra.app.util.exporter.elf.ElfRelocatableSymbol;
-import ghidra.app.util.exporter.elf.mapper.ElfRelocationTypeMapper;
-import ghidra.app.util.importer.MessageLog;
+import ghidra.app.util.exporter.elf.relocs.ElfRelocationTableBuilder;
 import ghidra.app.util.visibility.IsSymbolDynamic;
 import ghidra.app.util.visibility.IsSymbolInsideFunction;
 import ghidra.app.util.visibility.IsSymbolNameMatchingRegex;
@@ -265,38 +265,13 @@ public class ElfRelocatableObjectExporter extends Exporter {
 		return ElfSectionHeaderConstants.SHT_NULL;
 	}
 
-	private static ElfRelocationTypeMapper findRelocationTypeMapperFor(
-			ElfRelocatableSection section,
-			MessageLog log) {
-		List<ElfRelocationTypeMapper> mappers =
-			ClassSearcher.getInstances(ElfRelocationTypeMapper.class)
-					.stream()
-					.filter(s -> s.canProcess(section.getElfRelocatableObject()))
-					.collect(Collectors.toList());
-
-		if (mappers.isEmpty()) {
-			log.appendMsg(section.getName(), "No applicable ELF relocation type mappers found");
-			return null;
-		}
-
-		ElfRelocationTypeMapper mapper = mappers.get(0);
-		if (mappers.size() > 1) {
-			String msg =
-				String.format("Multiple applicable ELF relocation type mappers found, using %s",
-					mapper.getClass().getName());
-			log.appendMsg(section.getName(), msg);
-		}
-
-		return mapper;
-	}
-
 	public ElfRelocatableObjectExporter() {
 		super("ELF relocatable object", "o", null);
 	}
 
 	@Override
 	public List<Option> getOptions(DomainObjectService domainObjectService) {
-		Program program = ProgramUtil.getProgram(domainObjectService.getDomainObject());
+		Program program = getProgram(domainObjectService.getDomainObject());
 		if (program == null) {
 			return EMPTY_OPTIONS;
 		}
@@ -352,6 +327,7 @@ public class ElfRelocatableObjectExporter extends Exporter {
 		private final MemoryBlock memoryBlock;
 		private final String name;
 		private final AddressSetView sectionSet;
+		private byte[] bytes;
 
 		private ElfRelocatableSection section;
 		private ElfRelocatableSection relSection;
@@ -376,9 +352,7 @@ public class ElfRelocatableObjectExporter extends Exporter {
 			flags |= memoryBlock.isExecute() ? ElfSectionHeaderConstants.SHF_EXECINSTR : 0;
 
 			if (memoryBlock.isInitialized()) {
-				byte[] bytes =
-					relocationTable.getOriginalBytes(sectionSet, elf.getDataConverter(),
-						encodeAddend, false, predicateRelocation);
+				bytes = getBytes(program, sectionSet);
 				section = new ElfRelocatableSectionProgBits(elf, name, bytes, sectionSet, flags);
 			}
 			else {
@@ -458,31 +432,29 @@ public class ElfRelocatableObjectExporter extends Exporter {
 				return;
 			}
 
-			ElfRelocationTypeMapper relocationMapper = findRelocationTypeMapperFor(section, log);
-			if (relocationTableFormat == ElfSectionHeaderConstants.SHT_REL) {
-				String relName = String.format(".rel%s%s", (name.startsWith(".") ? "" : "."), name);
-				relSection = new ElfRelocatableSectionRelTable(elf, relName, symtab, section);
-			}
-			else if (relocationTableFormat == ElfSectionHeaderConstants.SHT_RELA) {
-				String relName =
-					String.format(".rela%s%s", (name.startsWith(".") ? "" : "."), name);
-				relSection = new ElfRelocatableSectionRelaTable(elf, relName, symtab, section);
-			}
-			else if (relocationTableFormat == ElfSectionHeaderConstants.SHT_NULL) {
-				log.appendMsg(name,
-					"Relocation table format not specified, skipping relocation table generation");
-				return;
-			}
-			else {
-				log.appendMsg(name, String.format(
-					"Unsupported relocation table format %d, skipping relocation table generation",
-					relocationTableFormat));
+			List<ElfRelocationTableBuilder> builders =
+				ClassSearcher.getInstances(ElfRelocationTableBuilder.class)
+						.stream()
+						.filter(s -> s.canBuild(section.getElfRelocatableObject(),
+							relocationTableFormat))
+						.collect(Collectors.toList());
+
+			if (builders.isEmpty()) {
+				log.appendMsg(section.getName(),
+					"No applicable ELF relocation table builder found");
 				return;
 			}
 
-			if (relocationMapper != null) {
-				relocationMapper.process(relSection, relocations, log);
+			ElfRelocationTableBuilder builder = builders.get(0);
+			if (builders.size() > 1) {
+				String msg =
+					String.format(
+						"Multiple applicable ELF relocation table builders found, using %s",
+						builder.getClass().getName());
+				log.appendMsg(section.getName(), msg);
 			}
+
+			relSection = builder.build(elf, symtab, section, bytes, sectionSet, relocations, log);
 		}
 	}
 

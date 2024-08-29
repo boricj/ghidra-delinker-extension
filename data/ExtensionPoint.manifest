@@ -1,4 +1,4 @@
 CodeRelocationSynthesizer
-CoffRelocationTypeMapper
+CoffRelocationTableBuilder
 DataRelocationSynthesizer
-ElfRelocationTypeMapper
+ElfRelocationTableBuilder

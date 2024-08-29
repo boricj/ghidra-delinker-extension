@@ -13,17 +13,14 @@
  */
 package ghidra.app.analyzers.relocations.emitters;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.Collection;
+import java.util.Optional;
 
-import org.apache.commons.lang3.ArrayUtils;
-
+import ghidra.app.analyzers.relocations.patterns.OperandMatch;
+import ghidra.app.analyzers.relocations.patterns.OperandMatcher;
 import ghidra.app.analyzers.relocations.utils.SymbolWithOffset;
 import ghidra.app.util.importer.MessageLog;
 import ghidra.program.model.address.Address;
-import ghidra.program.model.lang.InstructionPrototype;
-import ghidra.program.model.lang.Mask;
 import ghidra.program.model.listing.Function;
 import ghidra.program.model.listing.Instruction;
 import ghidra.program.model.listing.Program;
@@ -31,7 +28,6 @@ import ghidra.program.model.mem.MemoryAccessException;
 import ghidra.program.model.relocobj.RelocationTable;
 import ghidra.program.model.symbol.Reference;
 import ghidra.program.model.symbol.ReferenceManager;
-import ghidra.util.DataConverter;
 import ghidra.util.task.TaskMonitor;
 
 /**
@@ -44,40 +40,11 @@ import ghidra.util.task.TaskMonitor;
  * computation as well (false positives need to be discarded).
  */
 public abstract class InstructionRelocationEmitter implements FunctionInstructionSink {
-	public final static List<List<Byte>> MASKS_ALLONES = List.of(
-		Arrays.asList(new Byte[] { -1, -1, -1, -1, -1, -1, -1, -1 }),
-		Arrays.asList(new Byte[] { -1, -1, -1, -1, -1, -1, -1 }),
-		Arrays.asList(new Byte[] { -1, -1, -1, -1, -1, -1 }),
-		Arrays.asList(new Byte[] { -1, -1, -1, -1, -1 }),
-		Arrays.asList(new Byte[] { -1, -1, -1, -1 }),
-		Arrays.asList(new Byte[] { -1, -1, -1 }),
-		Arrays.asList(new Byte[] { -1, -1 }),
-		Arrays.asList(new Byte[] { -1 }));
-
 	private final Program program;
 	private final RelocationTable relocationTable;
 	private final Function function;
 	private final TaskMonitor monitor;
 	private final MessageLog log;
-
-	public static class OperandValueRaw {
-		public int offset;
-		public int length;
-		public long signedValue;
-		public long unsignedValue;
-
-		public OperandValueRaw(Instruction instruction, int offset, int length)
-				throws MemoryAccessException {
-			byte[] instructionBytes = instruction.getBytes();
-			DataConverter dc =
-				DataConverter.getInstance(instruction.getProgram().getLanguage().isBigEndian());
-
-			this.offset = offset;
-			this.length = length;
-			this.unsignedValue = dc.getValue(instructionBytes, offset, length);
-			this.signedValue = dc.getSignedValue(instructionBytes, offset, length);
-		}
-	}
 
 	public InstructionRelocationEmitter(Program program, RelocationTable relocationTable,
 			Function function, TaskMonitor monitor, MessageLog log) {
@@ -132,77 +99,33 @@ public abstract class InstructionRelocationEmitter implements FunctionInstructio
 		return foundRelocation;
 	}
 
-	public boolean processInstructionOperand(Instruction instruction, int operandIndex,
+	private boolean processInstructionOperand(Instruction instruction, int operandIndex,
 			SymbolWithOffset symbol, Reference reference) throws MemoryAccessException {
-		List<Byte> operandValueMask = getOperandValueMask(instruction, operandIndex);
+		boolean emitted = false;
 
-		for (List<Byte> mask : getMasks()) {
-			int offset = indexOfMask(operandValueMask, mask);
-			if (offset == -1) {
+		for (OperandMatcher matcher : getOperandMatchers()) {
+			Optional<OperandMatch> opMatch = matcher.match(instruction, operandIndex);
+
+			if (opMatch.isEmpty()) {
 				continue;
 			}
 
-			if (!matches(instruction, operandIndex, reference, offset, mask)) {
-				continue;
-			}
-
-			long addend = computeAddend(instruction, operandIndex, symbol, reference, offset, mask);
-			return emitRelocation(instruction, operandIndex, symbol, reference, offset, mask,
-				addend);
-		}
-
-		return false;
-	}
-
-	public int indexOfMask(List<Byte> instructionOperandMask, List<Byte> operandMask) {
-		int offset = Collections.indexOfSubList(instructionOperandMask, operandMask);
-
-		if (offset != -1) {
-			// Check that every byte before the mask are zeroes.
-			for (int index = 0; index < offset; index++) {
-				if (instructionOperandMask.get(index) != 0x00) {
-					return -1;
-				}
-			}
-
-			// Check that every byte after the mask are zeroes.
-			final int size = instructionOperandMask.size();
-			for (int index = offset + operandMask.size(); index < size; index++) {
-				if (instructionOperandMask.get(index) != 0x00) {
-					return -1;
-				}
+			OperandMatch operandMatch = opMatch.get();
+			if (evaluate(instruction, operandMatch, symbol, reference)) {
+				emit(instruction, operandMatch, symbol, reference);
+				emitted = true;
 			}
 		}
 
-		return offset;
+		return emitted;
 	}
 
-	public List<List<Byte>> getMasks() {
-		return MASKS_ALLONES;
-	}
+	public abstract Collection<OperandMatcher> getOperandMatchers();
 
-	public int getSizeFromMask(List<Byte> mask) {
-		return mask.size();
-	}
-
-	public abstract long computeValue(Instruction instruction, int operandIndex,
-			Reference reference,
-			int offset, List<Byte> mask) throws MemoryAccessException;
-
-	public abstract boolean matches(Instruction instruction, int operandIndex, Reference reference,
-			int offset, List<Byte> mask) throws MemoryAccessException;
-
-	public abstract long computeAddend(Instruction instruction, int operandIndex,
-			SymbolWithOffset symbol, Reference reference, int offset, List<Byte> mask)
+	public abstract boolean evaluate(Instruction instruction, OperandMatch match,
+			SymbolWithOffset symbol, Reference reference)
 			throws MemoryAccessException;
 
-	public abstract boolean emitRelocation(Instruction instruction, int operandIndex,
-			SymbolWithOffset symbol, Reference reference, int offset, List<Byte> mask, long addend)
-			throws MemoryAccessException;
-
-	private static List<Byte> getOperandValueMask(Instruction instruction, int operandIndex) {
-		InstructionPrototype prototype = instruction.getPrototype();
-		Mask valueMask = prototype.getOperandValueMask(operandIndex);
-		return Arrays.asList(ArrayUtils.toObject(valueMask.getBytes()));
-	}
+	protected abstract void emit(Instruction instruction, OperandMatch match,
+			SymbolWithOffset symbol, Reference reference);
 }

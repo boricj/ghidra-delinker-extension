@@ -14,8 +14,6 @@
 package ghidra.program.model.relocobj;
 
 import ghidra.program.model.address.Address;
-import ghidra.program.model.address.AddressSetView;
-import ghidra.util.DataConverter;
 
 public abstract class AbstractExpectRelocation implements Relocation {
 	@Override
@@ -26,6 +24,16 @@ public abstract class AbstractExpectRelocation implements Relocation {
 	@Override
 	public Address getAddress() {
 		throw new UnsupportedOperationException("Unimplemented method 'getAddress'");
+	}
+
+	@Override
+	public int getWidth() {
+		throw new UnsupportedOperationException("Unimplemented method 'getWidth'");
+	}
+
+	@Override
+	public long getBitmask() {
+		throw new UnsupportedOperationException("Unimplemented method 'getBitmask'");
 	}
 
 	@Override
@@ -41,11 +49,5 @@ public abstract class AbstractExpectRelocation implements Relocation {
 	@Override
 	public void delete() {
 		throw new UnsupportedOperationException("Unimplemented method 'delete'");
-	}
-
-	@Override
-	public void unapply(byte[] buffer, AddressSetView bufferAddressSet, DataConverter dc,
-			boolean encodeAddend, boolean adjustRelativeWithTargetSize) {
-		throw new UnsupportedOperationException("Unimplemented method 'unapply'");
 	}
 }

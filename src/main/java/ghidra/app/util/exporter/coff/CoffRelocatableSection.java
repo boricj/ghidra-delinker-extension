@@ -25,6 +25,7 @@ import ghidra.util.DataConverter;
 public class CoffRelocatableSection {
 	public final static int HEADER_SIZE = 40;
 
+	private final String fullName;
 	private final AddressSetView addressSet;
 	private final CoffRelocatableSymbolTable symtab;
 	private final CoffRelocatableRelocationTable relocationTable;
@@ -39,6 +40,7 @@ public class CoffRelocatableSection {
 	public CoffRelocatableSection(String name, AddressSetView addressSet, int characteristics,
 			byte[] data, CoffRelocatableSymbolTable symtab,
 			CoffRelocatableStringTable strtab) {
+		this.fullName = name;
 		this.addressSet = addressSet;
 		this.symtab = symtab;
 		this.relocationTable = new CoffRelocatableRelocationTable(this);
@@ -54,6 +56,10 @@ public class CoffRelocatableSection {
 		this.virtualAddress = 0;
 		this.characteristics = characteristics;
 		this.data = data;
+	}
+
+	public String getName() {
+		return fullName;
 	}
 
 	public CoffRelocatableSymbolTable getSymbolTable() {

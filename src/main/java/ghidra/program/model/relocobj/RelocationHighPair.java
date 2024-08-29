@@ -33,8 +33,6 @@ public class RelocationHighPair implements Relocation {
 
 	protected RelocationHighPair(RelocationTable relocationTable, Address address, int width,
 			long bitmask, String symbolName) {
-		Relocation.checkBitmask(width, bitmask, null);
-
 		this.relocationTable = relocationTable;
 		this.address = address;
 		this.width = width;
@@ -50,6 +48,16 @@ public class RelocationHighPair implements Relocation {
 	@Override
 	public Address getAddress() {
 		return address;
+	}
+
+	@Override
+	public int getWidth() {
+		return width;
+	}
+
+	@Override
+	public long getBitmask() {
+		return bitmask;
 	}
 
 	@Override
@@ -71,24 +79,6 @@ public class RelocationHighPair implements Relocation {
 				relocationTable.delete(relocation);
 			}
 		}
-	}
-
-	@Override
-	public void unapply(byte[] buffer, AddressSetView addressSet, DataConverter dc,
-			boolean encodeAddend, boolean adjustRelativeWithTargetSize) {
-		if (relocations.isEmpty()) {
-			throw new IllegalStateException("hi relocation has no lo relocations");
-		}
-
-		// Noop, done by RelocationLowPair.
-	}
-
-	public long getWidth() {
-		return width;
-	}
-
-	public long getBitmask() {
-		return bitmask;
 	}
 
 	protected void unapplyHi(byte[] buffer, AddressSetView addressSet, DataConverter dc) {

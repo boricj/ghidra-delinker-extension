@@ -23,15 +23,24 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+import org.apache.commons.lang3.ArrayUtils;
+
 import ghidra.framework.model.DomainObject;
 import ghidra.program.model.address.Address;
+import ghidra.program.model.address.AddressRange;
 import ghidra.program.model.address.AddressSetView;
+import ghidra.program.model.lang.InstructionPrototype;
+import ghidra.program.model.lang.Mask;
+import ghidra.program.model.listing.Instruction;
 import ghidra.program.model.listing.Program;
+import ghidra.program.model.mem.MemoryAccessException;
+import ghidra.program.model.mem.MemoryBlock;
 import ghidra.program.model.relocobj.Relocation;
 import ghidra.program.model.relocobj.RelocationTable;
 import ghidra.program.model.symbol.Symbol;
+import ghidra.util.DataConverter;
 
-public class ProgramUtil {
+public abstract class ProgramUtil {
 	public static Program getProgram(DomainObject domainObj) {
 		if (!(domainObj instanceof Program)) {
 			return null;
@@ -39,10 +48,98 @@ public class ProgramUtil {
 		return (Program) domainObj;
 	}
 
+	public static Byte[] getInstructionOperandMask(Instruction instruction, int operandIndex) {
+		InstructionPrototype prototype = instruction.getPrototype();
+		Mask valueMask = prototype.getOperandValueMask(operandIndex);
+		return ArrayUtils.toObject(valueMask.getBytes());
+	}
+
+	public static byte[] getBytes(Program program, AddressSetView addressSet)
+			throws MemoryAccessException {
+		MemoryBlock memoryBlock = program.getMemory().getBlock(addressSet.getMinAddress());
+		byte[] bytes = new byte[(int) addressSet.getNumAddresses()];
+		int offset = 0;
+
+		for (AddressRange range : addressSet.getAddressRanges()) {
+			int length = (int) range.getLength();
+			memoryBlock.getBytes(range.getMinAddress(), bytes, offset, length);
+			offset += length;
+		}
+
+		return bytes;
+	}
+
+	public static void patchBytes(byte[] buffer, AddressSetView addressSet, DataConverter dc,
+			Relocation relocation, long value) {
+		patchBytes(buffer, addressSet, relocation.getAddress(), dc, relocation.getWidth(),
+			relocation.getBitmask(), value);
+	}
+
+	public static void patchBytes(byte[] buffer, AddressSetView addressSet, Address address,
+			DataConverter dc, int width, long bitmask, long value) {
+		checkBitmaskContiguous(width, bitmask);
+		checkBitmaskValue(width, bitmask, value);
+
+		int shift = Long.numberOfTrailingZeros(bitmask);
+		int offset = (int) ProgramUtil.getOffsetWithinAddressSet(addressSet, address, width);
+
+		long data = dc.getValue(buffer, offset, width) & ~bitmask;
+		data = data | ((value << shift) & bitmask);
+		dc.putValue(data, width, buffer, offset);
+	}
+
+	public static void checkBitmaskContiguous(int width, long bitmask) {
+		long bitcount = Long.bitCount(bitmask);
+		long highestOneBit = Long.numberOfTrailingZeros(Long.highestOneBit(bitmask));
+		long lowestOneBit = Long.numberOfTrailingZeros(Long.lowestOneBit(bitmask));
+
+		if (bitcount == 0) {
+			throw new IllegalArgumentException("bitmask is empty");
+		}
+		if (bitcount != (1 + highestOneBit - lowestOneBit)) {
+			throw new IllegalArgumentException("bitmask isn't contiguous");
+		}
+		if (highestOneBit > width * 8) {
+			throw new IllegalArgumentException("bitmask wider than relocation width");
+		}
+	}
+
+	public static void checkBitmaskValue(int width, long bitmask, long value) {
+		long highestOneBit = Long.numberOfTrailingZeros(Long.highestOneBit(bitmask));
+
+		if (value >= 0 && (value >> highestOneBit) != 0) {
+			throw new IllegalArgumentException("value must fit inside bitmask");
+		}
+		else if (value < 0 && (value >> highestOneBit) != -1L) {
+			throw new IllegalArgumentException("value must fit inside bitmask");
+		}
+	}
+
+	public static long getBitmask(int width) {
+		if (width > 8) {
+			throw new IllegalArgumentException("width must fit within 64 bit value");
+		}
+		else if (width == 8) {
+			return 0xffffffffffffffffL;
+		}
+		else {
+			return (1L << (width * 8)) - 1;
+		}
+	}
+
 	public static long getOffsetWithinAddressSet(AddressSetView addressSet, Address address) {
 		Address minAddress = addressSet.getMinAddress();
 		AddressSetView intersectedRange = addressSet.intersectRange(minAddress, address);
 		return intersectedRange.getNumAddresses() - 1;
+	}
+
+	public static long getOffsetWithinAddressSet(AddressSetView addressSet, Address address,
+			int width) {
+		if (!addressSet.contains(address, address.add(width - 1))) {
+			throw new IllegalArgumentException("buffer does not contain relocation");
+		}
+
+		return getOffsetWithinAddressSet(addressSet, address);
 	}
 
 	public static Map<String, Symbol> getSectionSymbols(Program program,

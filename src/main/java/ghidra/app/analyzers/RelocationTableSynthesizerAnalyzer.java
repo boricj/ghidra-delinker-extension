@@ -16,8 +16,8 @@ package ghidra.app.analyzers;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import ghidra.app.analyzers.relocations.utils.CodeRelocationSynthesizer;
-import ghidra.app.analyzers.relocations.utils.DataRelocationSynthesizer;
+import ghidra.app.analyzers.relocations.synthesizers.CodeRelocationSynthesizer;
+import ghidra.app.analyzers.relocations.synthesizers.DataRelocationSynthesizer;
 import ghidra.app.services.AbstractAnalyzer;
 import ghidra.app.services.AnalysisPriority;
 import ghidra.app.services.AnalyzerType;

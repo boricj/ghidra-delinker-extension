@@ -74,6 +74,10 @@ public class CoffRelocatableObject implements Writeable {
 		this.characteristics = builder.characteristics;
 	}
 
+	public short getMachine() {
+		return machine;
+	}
+
 	public void addSection(CoffRelocatableSection section) {
 		sections.add(section);
 	}

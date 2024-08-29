@@ -13,8 +13,7 @@
  */
 package ghidra.app.analyzers.relocations.emitters;
 
-import java.util.List;
-
+import ghidra.app.analyzers.relocations.patterns.OperandMatch;
 import ghidra.app.analyzers.relocations.utils.SymbolWithOffset;
 import ghidra.app.util.importer.MessageLog;
 import ghidra.program.model.address.Address;
@@ -24,47 +23,30 @@ import ghidra.program.model.listing.Program;
 import ghidra.program.model.mem.MemoryAccessException;
 import ghidra.program.model.relocobj.RelocationTable;
 import ghidra.program.model.symbol.Reference;
-import ghidra.program.util.ProgramUtilities;
-import ghidra.util.DataConverter;
 import ghidra.util.task.TaskMonitor;
 
-public class AbsoluteInstructionRelocationEmitter extends InstructionRelocationEmitter {
+public abstract class AbsoluteInstructionRelocationEmitter extends InstructionRelocationEmitter {
 	public AbsoluteInstructionRelocationEmitter(Program program, RelocationTable relocationTable,
 			Function function, TaskMonitor monitor, MessageLog log) {
 		super(program, relocationTable, function, monitor, log);
 	}
 
 	@Override
-	public long computeValue(Instruction instruction, int operandIndex, Reference reference,
-			int offset, List<Byte> mask) throws MemoryAccessException {
-		DataConverter dc = ProgramUtilities.getDataConverter(instruction.getProgram());
-		return dc.getValue(instruction.getBytes(), offset, getSizeFromMask(mask));
-	}
-
-	@Override
-	public boolean matches(Instruction instruction, int operandIndex, Reference reference,
-			int offset, List<Byte> mask) throws MemoryAccessException {
-		long address = computeValue(instruction, operandIndex, reference, offset, mask);
+	public boolean evaluate(Instruction instruction, OperandMatch match, SymbolWithOffset symbol,
+			Reference reference) throws MemoryAccessException {
 		long target = reference.getToAddress().getUnsignedOffset();
 
-		return address == target;
+		return target == match.getValue();
 	}
 
 	@Override
-	public long computeAddend(Instruction instruction, int operandIndex, SymbolWithOffset symbol,
-			Reference reference, int offset, List<Byte> mask) {
-		return symbol.offset;
-	}
-
-	@Override
-	public boolean emitRelocation(Instruction instruction, int operandIndex,
-			SymbolWithOffset symbol, Reference reference, int offset, List<Byte> mask, long addend)
-			throws MemoryAccessException {
+	public void emit(Instruction instruction, OperandMatch match, SymbolWithOffset symbol,
+			Reference reference) {
 		RelocationTable relocationTable = getRelocationTable();
-		Address fromAddress = instruction.getAddress();
+		Address address = instruction.getAddress().add(match.getOffset());
+		long addend = match.getValue() - symbol.address;
 
-		relocationTable.addAbsolute(fromAddress.add(offset), getSizeFromMask(mask), symbol.name,
+		relocationTable.addAbsolute(address, match.getSize(), match.getBitmask(), symbol.name,
 			addend);
-		return true;
 	}
 }

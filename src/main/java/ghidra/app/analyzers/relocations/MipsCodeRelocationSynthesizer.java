@@ -15,10 +15,12 @@ package ghidra.app.analyzers.relocations;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import ghidra.app.analyzers.relocations.emitters.BundleRelocationEmitter;
@@ -26,10 +28,14 @@ import ghidra.app.analyzers.relocations.emitters.FunctionInstructionSink;
 import ghidra.app.analyzers.relocations.emitters.InstructionRelocationEmitter;
 import ghidra.app.analyzers.relocations.emitters.RelativeNextInstructionRelocationEmitter;
 import ghidra.app.analyzers.relocations.emitters.SymbolRelativeInstructionRelocationEmitter;
-import ghidra.app.analyzers.relocations.utils.FunctionInstructionSinkCodeRelocationSynthesizer;
+import ghidra.app.analyzers.relocations.patterns.FixedOperandMatcher;
+import ghidra.app.analyzers.relocations.patterns.OperandMatch;
+import ghidra.app.analyzers.relocations.patterns.OperandMatcher;
+import ghidra.app.analyzers.relocations.synthesizers.FunctionInstructionSinkCodeRelocationSynthesizer;
 import ghidra.app.analyzers.relocations.utils.SymbolWithOffset;
 import ghidra.app.util.importer.MessageLog;
 import ghidra.program.model.address.Address;
+import ghidra.program.model.address.AddressSet;
 import ghidra.program.model.block.BasicBlockModel;
 import ghidra.program.model.block.CodeBlock;
 import ghidra.program.model.block.CodeBlockIterator;
@@ -48,7 +54,6 @@ import ghidra.program.model.relocobj.RelocationTable;
 import ghidra.program.model.symbol.FlowType;
 import ghidra.program.model.symbol.Reference;
 import ghidra.program.model.symbol.Symbol;
-import ghidra.program.model.symbol.SymbolIterator;
 import ghidra.program.model.symbol.SymbolTable;
 import ghidra.program.util.ProgramUtilities;
 import ghidra.util.DataConverter;
@@ -57,8 +62,30 @@ import ghidra.util.task.TaskMonitor;
 
 public class MipsCodeRelocationSynthesizer
 		extends FunctionInstructionSinkCodeRelocationSynthesizer {
+	public static final Pattern GP_SYMBOLS_PATTERN = Pattern.compile("^_gp$");
+
 	private static class MIPS_26_InstructionRelocationEmitter extends InstructionRelocationEmitter {
-		private static final List<Byte> OPMASK_JTYPE = Arrays.asList(new Byte[] { -1, -1, -1, 3 });
+		private static final OperandMatcher MATCHER_LITTLE_ENDIAN =
+			new JtypeOperandMatcher(new Byte[] { -1, -1, -1, 3 }, 0x3ffffff);
+
+		private static class JtypeOperandMatcher extends FixedOperandMatcher {
+			private final long bitmask;
+
+			public JtypeOperandMatcher(Byte[] operandMask, long bitmask) {
+				super(operandMask);
+
+				this.bitmask = bitmask;
+			}
+
+			@Override
+			public OperandMatch createMatch(Instruction instruction, int operandIndex)
+					throws MemoryAccessException {
+				DataConverter dc = ProgramUtilities.getDataConverter(instruction.getProgram());
+				long value = (dc.getInt(instruction.getBytes()) & bitmask) << 2;
+
+				return new OperandMatch(operandIndex, 0, 4, bitmask, value);
+			}
+		}
 
 		private final Set<Instruction> branchesToShiftByOne;
 
@@ -71,53 +98,46 @@ public class MipsCodeRelocationSynthesizer
 		}
 
 		@Override
-		public List<List<Byte>> getMasks() {
-			return List.of(OPMASK_JTYPE);
-		}
-
-		@Override
-		public long computeValue(Instruction instruction, int operandIndex, Reference reference,
-				int offset, List<Byte> mask) throws MemoryAccessException {
-			DataConverter dc = ProgramUtilities.getDataConverter(instruction.getProgram());
-			long value = dc.getValue(instruction.getBytes(), offset, getSizeFromMask(mask));
-			return (value & 0x3ffffff) << 2;
-		}
-
-		@Override
-		public boolean matches(Instruction instruction, int operandIndex, Reference reference,
-				int offset, List<Byte> mask) throws MemoryAccessException {
-			long origin = instruction.getAddress().getUnsignedOffset() & 0xfffffffff0000000L;
-			long value = computeValue(instruction, operandIndex, reference, offset, mask);
+		public boolean evaluate(Instruction instruction, OperandMatch match,
+				SymbolWithOffset symbol, Reference reference) throws MemoryAccessException {
+			Address fromAddress = instruction.getAddress();
+			long origin = fromAddress.getUnsignedOffset() & 0xfffffffff0000000L;
 			long target = reference.getToAddress().getUnsignedOffset();
+			long addend = computeAddend(instruction, match, symbol, reference);
 
-			return (origin | value) == target;
-		}
-
-		@Override
-		public long computeAddend(Instruction instruction, int operandIndex,
-				SymbolWithOffset symbol, Reference reference, int offset, List<Byte> mask)
-				throws MemoryAccessException {
-			return symbol.offset >> 2;
-		}
-
-		@Override
-		public boolean emitRelocation(Instruction instruction, int operandIndex,
-				SymbolWithOffset symbol, Reference reference, int offset, List<Byte> mask,
-				long addend) throws MemoryAccessException {
-			if (branchesToShiftByOne.contains(instruction)) {
-				logBranchDelaySlotWithHI16(instruction.getAddress(), getMessageLog());
-				addend -= 1;
-			}
-
-			if (addend < -0x4000000 || addend > 0x3ffffff) {
+			if (addend < -0x4000000 || addend > 0x3ffffff || ((addend & 3) != 0)) {
 				return false;
 			}
 
-			RelocationTable relocationTable = getRelocationTable();
-			Address fromAddress = instruction.getAddress();
+			return (origin | match.getValue()) == target;
+		}
 
-			relocationTable.addMIPS26(fromAddress.add(offset), symbol.name, addend);
-			return true;
+		@Override
+		protected void emit(Instruction instruction, OperandMatch match, SymbolWithOffset symbol,
+				Reference reference) {
+			RelocationTable relocationTable = getRelocationTable();
+			Address address = instruction.getAddress();
+			long addend = computeAddend(instruction, match, symbol, reference);
+
+			if (branchesToShiftByOne.contains(instruction)) {
+				addend -= 4;
+				logBranchDelaySlotWithHI16(address, getMessageLog());
+			}
+
+			relocationTable.addMIPS26(address, symbol.name, addend);
+		}
+
+		private long computeAddend(Instruction instruction, OperandMatch match,
+				SymbolWithOffset symbol, Reference reference) {
+			long origin = instruction.getAddress().getUnsignedOffset() & 0xfffffffff0000000L;
+			long addend = (origin | match.getValue()) - symbol.address;
+
+			return addend;
+		}
+
+		@Override
+		public Collection<OperandMatcher> getOperandMatchers() {
+			return List.of(MATCHER_LITTLE_ENDIAN);
 		}
 	}
 
@@ -350,6 +370,27 @@ public class MipsCodeRelocationSynthesizer
 	 */
 	private static class MIPS_PC16_InstructionRelocationEmitter
 			extends RelativeNextInstructionRelocationEmitter {
+		private static final OperandMatcher MATCHER_LITTLE_ENDIAN =
+			new ItypeOperandMatcher(new Byte[] { -1, -1, 0, 0 }, 0x0000ffffL);
+
+		private static class ItypeOperandMatcher extends FixedOperandMatcher {
+			private final long bitmask;
+
+			public ItypeOperandMatcher(Byte[] operandMask, long bitmask) {
+				super(operandMask);
+
+				this.bitmask = bitmask;
+			}
+
+			@Override
+			public OperandMatch createMatch(Instruction instruction, int operandIndex)
+					throws MemoryAccessException {
+				DataConverter dc = ProgramUtilities.getDataConverter(instruction.getProgram());
+				long value = ((long) (short) (dc.getInt(instruction.getBytes()) & bitmask)) << 2;
+
+				return new OperandMatch(operandIndex, 0, 4, bitmask, value);
+			}
+		}
 
 		private final Set<Instruction> branchesToShiftByOne;
 
@@ -362,46 +403,60 @@ public class MipsCodeRelocationSynthesizer
 		}
 
 		@Override
-		public long computeAddend(Instruction instruction, int operandIndex,
-				SymbolWithOffset symbol, Reference reference, int offset, List<Byte> mask)
-				throws MemoryAccessException {
-			return super.computeAddend(instruction, operandIndex, symbol, reference, offset,
-				mask) >> 2;
+		public boolean evaluate(Instruction instruction, OperandMatch match,
+				SymbolWithOffset symbol, Reference reference) throws MemoryAccessException {
+			return ((match.getValue() & 3) == 0) &&
+				super.evaluate(instruction, match, symbol, reference);
 		}
 
 		@Override
-		public long computeValue(Instruction instruction, int operandIndex, Reference reference,
-				int offset, List<Byte> mask) throws MemoryAccessException {
-			return super.computeValue(instruction, operandIndex, reference, offset, mask) << 2;
-		}
+		public void emit(Instruction instruction, OperandMatch match, SymbolWithOffset symbol,
+				Reference reference) {
+			RelocationTable relocationTable = getRelocationTable();
+			Address address = instruction.getAddress().add(match.getOffset());
+			long addend = address.getUnsignedOffset() - symbol.address + match.getValue();
+			boolean isTransparent = true;
 
-		@Override
-		public boolean emitRelocation(Instruction instruction, int operandIndex,
-				SymbolWithOffset symbol, Reference reference, int offset, List<Byte> mask,
-				long addend) throws MemoryAccessException {
 			if (branchesToShiftByOne.contains(instruction)) {
-				// FIXME: clean up hack job for branch delay slots with HI16.
 				logBranchDelaySlotWithHI16(instruction.getAddress(), getMessageLog());
-				addend -= 1;
-
-				RelocationTable relocationTable = getRelocationTable();
-				Address fromAddress = instruction.getAddress();
-
-				relocationTable.addRelativePC(fromAddress.add(offset), getSizeFromMask(mask),
-					symbol.name, addend, false);
-				return true;
+				addend -= 4;
+				isTransparent = false;
 			}
-			else {
-				return super.emitRelocation(instruction, operandIndex, symbol, reference, offset,
-					mask, addend);
-			}
+
+			relocationTable.addRelativePC(address, match.getSize(), match.getBitmask(), symbol.name,
+				addend, isTransparent);
+		}
+
+		@Override
+		public Collection<OperandMatcher> getOperandMatchers() {
+			return List.of(MATCHER_LITTLE_ENDIAN);
 		}
 	}
 
 	private static class MIPS_GPREL16_InstructionRelocationEmitter
 			extends SymbolRelativeInstructionRelocationEmitter {
-		private static final List<Byte> OPMASK_LOAD_STORE =
-			Arrays.asList(new Byte[] { -1, -1, -32, 3 });
+		private static final OperandMatcher MATCHER_LITTLE_ENDIAN =
+			new LoadStoreOperandMatcher(new Byte[] { -1, -1, -32, 3 }, 0x0000ffffL);
+
+		private static class LoadStoreOperandMatcher extends FixedOperandMatcher {
+			private final long bitmask;
+
+			public LoadStoreOperandMatcher(Byte[] bytes, long bitmask) {
+				super(bytes);
+
+				this.bitmask = bitmask;
+			}
+
+			@Override
+			public OperandMatch createMatch(Instruction instruction, int operandIndex)
+					throws MemoryAccessException {
+				int size = getMaskLength();
+				DataConverter dc = ProgramUtilities.getDataConverter(instruction.getProgram());
+				long value = (short) (dc.getInt(instruction.getBytes()) & bitmask);
+
+				return new OperandMatch(operandIndex, 0, size, bitmask, value);
+			}
+		}
 
 		private final Register gp;
 
@@ -414,24 +469,19 @@ public class MipsCodeRelocationSynthesizer
 		}
 
 		@Override
-		public List<List<Byte>> getMasks() {
-			return List.of(OPMASK_LOAD_STORE);
-		}
-
-		@Override
-		public int getSizeFromMask(List<Byte> mask) {
-			return 2;
-		}
-
-		@Override
-		public boolean matches(Instruction instruction, int operandIndex, Reference reference,
-				int offset, List<Byte> mask) throws MemoryAccessException {
-			Object[] objects = instruction.getOpObjects(operandIndex);
+		public boolean evaluate(Instruction instruction, OperandMatch match,
+				SymbolWithOffset symbol, Reference reference) throws MemoryAccessException {
+			Object[] objects = instruction.getOpObjects(match.getOperandIndex());
 			if (!Arrays.asList(objects).contains(gp)) {
 				return false;
 			}
 
-			return super.matches(instruction, operandIndex, reference, offset, mask);
+			return super.evaluate(instruction, match, symbol, reference);
+		}
+
+		@Override
+		public Collection<OperandMatcher> getOperandMatchers() {
+			return List.of(MATCHER_LITTLE_ENDIAN);
 		}
 	}
 
@@ -449,11 +499,17 @@ public class MipsCodeRelocationSynthesizer
 		sinks.add(new MIPS_PC16_InstructionRelocationEmitter(program, relocationTable, function,
 			branchesToShiftByOne, monitor, log));
 
-		SymbolTable symtab = program.getSymbolTable();
-		SymbolIterator _gp = symtab.getSymbols("_gp");
-		if (_gp.hasNext()) {
-			sinks.add(new MIPS_GPREL16_InstructionRelocationEmitter(program, relocationTable,
-				function, _gp.next(), monitor, log));
+		SymbolTable symbolTable = program.getSymbolTable();
+		AddressSet addressSet = new AddressSet();
+		for (Symbol symbol : symbolTable.getSymbolIterator(true)) {
+			String name = symbol.getName(true);
+			Address address = symbol.getAddress();
+
+			if (GP_SYMBOLS_PATTERN.matcher(name).matches() && !addressSet.contains(address)) {
+				sinks.add(new MIPS_GPREL16_InstructionRelocationEmitter(program, relocationTable,
+					function, symbol, monitor, log));
+				addressSet.add(address);
+			}
 		}
 
 		return sinks;

@@ -13,6 +13,8 @@
  */
 package ghidra.program.model.relocobj;
 
+import ghidra.app.util.ProgramUtil;
+
 public abstract class AbstractExpectRelocationBitmask extends AbstractExpectRelocation {
 	private final long address;
 	private final int width;
@@ -22,7 +24,7 @@ public abstract class AbstractExpectRelocationBitmask extends AbstractExpectRelo
 
 	public AbstractExpectRelocationBitmask(long address, int width, String symbolName,
 			long addend) {
-		this(address, width, Relocation.getBitmask(width), symbolName, addend);
+		this(address, width, ProgramUtil.getBitmask(width), symbolName, addend);
 	}
 
 	public AbstractExpectRelocationBitmask(long address, int width, long bitmask, String symbolName,

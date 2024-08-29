@@ -15,8 +15,6 @@ package ghidra.program.model.relocobj;
 
 import ghidra.app.util.ProgramUtil;
 import ghidra.program.model.address.Address;
-import ghidra.program.model.address.AddressSetView;
-import ghidra.util.DataConverter;
 
 public abstract class AbstractRelocationBitmask implements Relocation {
 	private final RelocationTable relocationTable;
@@ -28,13 +26,11 @@ public abstract class AbstractRelocationBitmask implements Relocation {
 
 	protected AbstractRelocationBitmask(RelocationTable relocationTable, Address address,
 			int width, String symbolName, long addend) {
-		this(relocationTable, address, width, Relocation.getBitmask(width), symbolName, addend);
+		this(relocationTable, address, width, ProgramUtil.getBitmask(width), symbolName, addend);
 	}
 
 	protected AbstractRelocationBitmask(RelocationTable relocationTable, Address address,
 			int width, long bitmask, String symbolName, long addend) {
-		Relocation.checkBitmask(width, bitmask, addend);
-
 		this.relocationTable = relocationTable;
 		this.address = address;
 		this.width = width;
@@ -53,6 +49,7 @@ public abstract class AbstractRelocationBitmask implements Relocation {
 		return address;
 	}
 
+	@Override
 	public int getWidth() {
 		return width;
 	}
@@ -74,27 +71,6 @@ public abstract class AbstractRelocationBitmask implements Relocation {
 	@Override
 	public void delete() {
 		relocationTable.delete(this);
-	}
-
-	@Override
-	public void unapply(byte[] buffer, AddressSetView addressSet, DataConverter dc,
-			boolean encodeAddend, boolean adjustRelativeWithTargetSize) {
-		if (!addressSet.contains(address, address.add(width - 1))) {
-			throw new IllegalArgumentException("buffer does not contain relocation");
-		}
-
-		int offset = (int) ProgramUtil.getOffsetWithinAddressSet(addressSet, address);
-		long value = dc.getValue(buffer, offset, width) & ~bitmask;
-		if (encodeAddend) {
-			long realAddend = addend;
-			// FIXME: Kludge for COFF REL32 relocation type
-			if ((this instanceof RelocationRelativePC) && adjustRelativeWithTargetSize &&
-				width == 4) {
-				realAddend += 4;
-			}
-			value = value | (realAddend & bitmask);
-		}
-		dc.putValue(value, width, buffer, offset);
 	}
 
 	@Override

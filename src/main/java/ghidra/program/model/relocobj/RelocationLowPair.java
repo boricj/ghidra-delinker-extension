@@ -13,10 +13,7 @@
  */
 package ghidra.program.model.relocobj;
 
-import ghidra.app.util.ProgramUtil;
 import ghidra.program.model.address.Address;
-import ghidra.program.model.address.AddressSetView;
-import ghidra.util.DataConverter;
 
 public class RelocationLowPair implements Relocation {
 	private final RelocationTable relocationTable;
@@ -28,9 +25,6 @@ public class RelocationLowPair implements Relocation {
 
 	protected RelocationLowPair(RelocationTable relocationTable, Address address, int width,
 			long bitmask, RelocationHighPair relocationHi, long addend) {
-		// FIXME: Support large addends with carry and stuff.
-		Relocation.checkBitmask(width, bitmask, addend);
-
 		this.relocationTable = relocationTable;
 		this.address = address;
 		this.width = width;
@@ -52,6 +46,16 @@ public class RelocationLowPair implements Relocation {
 	}
 
 	@Override
+	public int getWidth() {
+		return width;
+	}
+
+	@Override
+	public long getBitmask() {
+		return bitmask;
+	}
+
+	@Override
 	public String getSymbolName() {
 		return relocationHi.getSymbolName();
 	}
@@ -65,33 +69,6 @@ public class RelocationLowPair implements Relocation {
 	public void delete() {
 		relocationHi.removeRelocationLo(this);
 		relocationTable.delete(this);
-	}
-
-	@Override
-	public void unapply(byte[] buffer, AddressSetView addressSet, DataConverter dc,
-			boolean encodeAddend, boolean adjustRelativeWithTargetSize) {
-		// Low relocation.
-		if (!addressSet.contains(address, address.add(width - 1))) {
-			throw new IllegalArgumentException("buffer does not contain low pair relocation");
-		}
-
-		int offset = (int) ProgramUtil.getOffsetWithinAddressSet(addressSet, address);
-		long value = dc.getValue(buffer, offset, width) & ~bitmask;
-		if (encodeAddend) {
-			value = value | (addend << Long.numberOfTrailingZeros(Long.lowestOneBit(bitmask)));
-		}
-		dc.putValue(value, width, buffer, offset);
-
-		// High relocation.
-		relocationHi.unapplyHi(buffer, addressSet, dc);
-	}
-
-	public int getWidth() {
-		return width;
-	}
-
-	public long getBitmask() {
-		return bitmask;
 	}
 
 	public Relocation getRelocationHi() {

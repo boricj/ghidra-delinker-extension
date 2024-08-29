@@ -11,18 +11,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package ghidra.app.util.exporter.coff.mapper;
+package ghidra.app.analyzers.relocations.patterns;
 
-import java.util.List;
+import java.util.Optional;
 
-import ghidra.app.util.exporter.coff.CoffRelocatableRelocationTable;
-import ghidra.app.util.importer.MessageLog;
-import ghidra.program.model.relocobj.Relocation;
-import ghidra.util.classfinder.ExtensionPoint;
+import ghidra.program.model.listing.Instruction;
+import ghidra.program.model.mem.MemoryAccessException;
 
-public interface CoffRelocationTypeMapper extends ExtensionPoint {
-	public void process(CoffRelocatableRelocationTable relTable, List<Relocation> relocations,
-			MessageLog log);
+public interface OperandMatcher {
+	public Optional<OperandMatch> match(Instruction instruction, int operandIndex)
+			throws MemoryAccessException;
 
-	public boolean canProcess(int machine);
+	public int getMaskLength();
 }

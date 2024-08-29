@@ -38,12 +38,12 @@ public class Mipsel_hi16_lo16_intertwined_code_flow_Test extends DelinkerIntegra
 
 	private static final List<Relocation> EXPECTED_RELOCATIONS = List.of(
 		// .rel.text
-		new ExpectRelocationRelativePC(0x00010000, 2, "LAB_00010014", -1),
+		new ExpectRelocationRelativePC(0x00010000, 4, 0xffff, "LAB_00010014", -4),
 		// 00000004  00000205 R_MIPS_HI16       00000000   .data
 		new ExpectRelocationHighPair(0x00010004, 4, 0xffff, "HELLO_WORLD"),
 		// 00000008  00000205 R_MIPS_HI16       00000000   .data
 		new ExpectRelocationHighPair(0x00010008, 4, 0xffff, "GOODBYE_WORLD"),
-		new ExpectRelocationRelativePC(0x0001000c, 2, "LAB_00010018", -1),
+		new ExpectRelocationRelativePC(0x0001000c, 4, 0xffff, "LAB_00010018", -4),
 		// 00000010  00000206 R_MIPS_LO16       00000000   .data
 		new ExpectRelocationLowPair(0x00010010, 4, 0xffff, "GOODBYE_WORLD", 0),
 		// 00000014  00000206 R_MIPS_LO16       00000000   .data

@@ -13,8 +13,7 @@
  */
 package ghidra.app.analyzers.relocations.emitters;
 
-import java.util.List;
-
+import ghidra.app.analyzers.relocations.patterns.OperandMatch;
 import ghidra.app.analyzers.relocations.utils.SymbolWithOffset;
 import ghidra.app.util.importer.MessageLog;
 import ghidra.program.model.address.Address;
@@ -24,50 +23,34 @@ import ghidra.program.model.listing.Program;
 import ghidra.program.model.mem.MemoryAccessException;
 import ghidra.program.model.relocobj.RelocationTable;
 import ghidra.program.model.symbol.Reference;
-import ghidra.program.util.ProgramUtilities;
-import ghidra.util.DataConverter;
 import ghidra.util.task.TaskMonitor;
 
-public class RelativeCurrentInstructionRelocationEmitter extends InstructionRelocationEmitter {
+public abstract class RelativeCurrentInstructionRelocationEmitter
+		extends InstructionRelocationEmitter {
 	public RelativeCurrentInstructionRelocationEmitter(Program program,
-			RelocationTable relocationTable, Function function, TaskMonitor monitor,
-			MessageLog log) {
+			RelocationTable relocationTable,
+			Function function, TaskMonitor monitor, MessageLog log) {
 		super(program, relocationTable, function, monitor, log);
 	}
 
 	@Override
-	public long computeValue(Instruction instruction, int operandIndex, Reference reference,
-			int offset, List<Byte> mask) throws MemoryAccessException {
-		DataConverter dc = ProgramUtilities.getDataConverter(instruction.getProgram());
-		return dc.getSignedValue(instruction.getBytes(), offset, getSizeFromMask(mask));
-	}
-
-	@Override
-	public boolean matches(Instruction instruction, int operandIndex, Reference reference,
-			int offset, List<Byte> mask) throws MemoryAccessException {
-
-		long origin = instruction.getAddress().getUnsignedOffset();
-		long relative = computeValue(instruction, operandIndex, reference, offset, mask);
+	public boolean evaluate(Instruction instruction, OperandMatch match,
+			SymbolWithOffset symbol, Reference reference)
+			throws MemoryAccessException {
+		Address fromAddress = instruction.getAddress();
 		long target = reference.getToAddress().getUnsignedOffset();
 
-		return origin + relative == target;
+		return target == fromAddress.getUnsignedOffset() + match.getValue();
 	}
 
 	@Override
-	public long computeAddend(Instruction instruction, int operandIndex, SymbolWithOffset symbol,
-			Reference reference, int offset, List<Byte> mask) throws MemoryAccessException {
-		return symbol.offset;
-	}
-
-	@Override
-	public boolean emitRelocation(Instruction instruction, int operandIndex,
-			SymbolWithOffset symbol, Reference reference, int offset, List<Byte> mask, long addend)
-			throws MemoryAccessException {
+	public void emit(Instruction instruction, OperandMatch match, SymbolWithOffset symbol,
+			Reference reference) {
 		RelocationTable relocationTable = getRelocationTable();
-		Address fromAddress = instruction.getAddress();
+		Address address = instruction.getAddress().add(match.getOffset());
+		long addend = address.getUnsignedOffset() - symbol.address + match.getValue();
 
-		relocationTable.addRelativePC(fromAddress.add(offset), getSizeFromMask(mask), symbol.name,
+		relocationTable.addRelativePC(address, match.getSize(), match.getBitmask(), symbol.name,
 			addend);
-		return true;
 	}
 }

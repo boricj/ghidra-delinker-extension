@@ -13,6 +13,7 @@
  */
 package ghidra.app.util.exporter;
 
+import static ghidra.app.util.ProgramUtil.getBytes;
 import static ghidra.app.util.ProgramUtil.getProgram;
 
 import java.io.File;
@@ -40,8 +41,7 @@ import ghidra.app.util.exporter.coff.CoffRelocatableObject;
 import ghidra.app.util.exporter.coff.CoffRelocatableSection;
 import ghidra.app.util.exporter.coff.CoffRelocatableStringTable;
 import ghidra.app.util.exporter.coff.CoffRelocatableSymbolTable;
-import ghidra.app.util.exporter.coff.mapper.CoffRelocationTypeMapper;
-import ghidra.app.util.importer.MessageLog;
+import ghidra.app.util.exporter.coff.relocs.CoffRelocationTableBuilder;
 import ghidra.app.util.visibility.IsSymbolDynamic;
 import ghidra.app.util.visibility.IsSymbolInsideFunction;
 import ghidra.app.util.visibility.IsSymbolNameMatchingRegex;
@@ -56,7 +56,6 @@ import ghidra.program.model.mem.MemoryBlock;
 import ghidra.program.model.relocobj.Relocation;
 import ghidra.program.model.relocobj.RelocationTable;
 import ghidra.program.model.symbol.Symbol;
-import ghidra.util.DataConverter;
 import ghidra.util.LittleEndianDataConverter;
 import ghidra.util.classfinder.ClassSearcher;
 import ghidra.util.task.TaskMonitor;
@@ -67,7 +66,7 @@ import ghidra.util.task.TaskMonitor;
 public class CoffRelocatableObjectExporter extends Exporter {
 	private Program program;
 	private AddressSetView fileSet;
-	private int machine;
+	private short machine;
 	private SymbolPreference symbolNamePreference;
 	private boolean isDynamicSymbolStatic;
 	private boolean isSymbolInsideFunctionStatic;
@@ -154,28 +153,6 @@ public class CoffRelocatableObjectExporter extends Exporter {
 		return CoffMachineType.IMAGE_FILE_MACHINE_UNKNOWN;
 	}
 
-	private static CoffRelocationTypeMapper findRelocationTypeMapperFor(
-			int machine, MessageLog log) {
-		List<CoffRelocationTypeMapper> mappers =
-			ClassSearcher.getInstances(CoffRelocationTypeMapper.class)
-					.stream()
-					.filter(s -> s.canProcess(machine))
-					.toList();
-
-		if (mappers.isEmpty()) {
-			log.appendMsg("No applicable COFF relocation type mappers found");
-			return null;
-		}
-
-		CoffRelocationTypeMapper mapper = mappers.get(0);
-		if (mappers.size() > 1) {
-			log.appendMsg("Multiple applicable COFF relocation type mappers found, using " +
-				mapper.getClass().getName());
-		}
-
-		return mapper;
-	}
-
 	public CoffRelocatableObjectExporter() {
 		super("COFF relocatable object", "obj", null);
 	}
@@ -233,9 +210,7 @@ public class CoffRelocatableObjectExporter extends Exporter {
 			relocationTable.getRelocations(sectionSet, predicateRelocation)
 					.forEachRemaining(relocations::add);
 			if (memoryBlock.isInitialized()) {
-				this.data =
-					relocationTable.getOriginalBytes(sectionSet, DataConverter.getInstance(false),
-						true, true, predicateRelocation);
+				this.data = getBytes(program, sectionSet);
 			}
 			else {
 				this.data = null;
@@ -274,8 +249,25 @@ public class CoffRelocatableObjectExporter extends Exporter {
 					});
 		}
 
-		public void buildCoffRelocationTable(CoffRelocationTypeMapper relocationTypeMapper) {
-			relocationTypeMapper.process(section.getRelocationTable(), relocations, log);
+		public void buildCoffRelocationTable(short machine) {
+			List<CoffRelocationTableBuilder> builders =
+				ClassSearcher.getInstances(CoffRelocationTableBuilder.class)
+						.stream()
+						.filter(s -> s.canBuild(machine))
+						.toList();
+
+			if (builders.isEmpty()) {
+				log.appendMsg("No applicable COFF relocation table builders found");
+				return;
+			}
+
+			CoffRelocationTableBuilder builder = builders.get(0);
+			if (builders.size() > 1) {
+				log.appendMsg("Multiple applicable COFF relocation table builders found, using " +
+					builder.getClass().getName());
+			}
+
+			builder.build(symtab, section, data, sectionSet, relocations, log);
 		}
 
 		public CoffRelocatableSection buildCoffSection() {
@@ -376,11 +368,6 @@ public class CoffRelocatableObjectExporter extends Exporter {
 
 		taskMonitor.setIndeterminate(true);
 
-		CoffRelocationTypeMapper relocationTypeMapper = findRelocationTypeMapperFor(machine, log);
-		if (relocationTypeMapper == null) {
-			throw new RuntimeException("No relocation type mapper found for machine");
-		}
-
 		strtab = new CoffRelocatableStringTable();
 		symtab = new CoffRelocatableSymbolTable(strtab);
 		symtab.addFileSymbol(file.getName());
@@ -393,14 +380,14 @@ public class CoffRelocatableObjectExporter extends Exporter {
 
 		taskMonitor.setMessage("Building COFF sections.");
 		final CoffRelocatableObject object =
-			new CoffRelocatableObject.Builder(symtab, strtab).setMachine((short) machine).build();
+			new CoffRelocatableObject.Builder(symtab, strtab).setMachine(machine).build();
 		for (Section section : sections) {
 			object.addSection(section.buildCoffSection());
 		}
 
 		taskMonitor.setMessage("Building COFF relocation tables.");
 		for (Section section : sections) {
-			section.buildCoffRelocationTable(relocationTypeMapper);
+			section.buildCoffRelocationTable(machine);
 		}
 
 		taskMonitor.setMessage("Writing COFF object to disk.");

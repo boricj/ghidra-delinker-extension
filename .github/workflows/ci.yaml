@@ -26,7 +26,7 @@ jobs:
           distribution: "temurin"
       -
         name: "Setup Ghidra"
-        uses: er28-0652/setup-ghidra@master
+        uses: antoniovazquezblanco/setup-ghidra@v2.0.5
         with:
           version: "11.0"
       -
@@ -57,7 +57,7 @@ jobs:
           distribution: "temurin"
       -
         name: "Setup Ghidra"
-        uses: er28-0652/setup-ghidra@master
+        uses: antoniovazquezblanco/setup-ghidra@v2.0.5
         with:
           version: ${{ matrix.ghidra }}
       -

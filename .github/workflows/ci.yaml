@@ -28,7 +28,7 @@ jobs:
         name: "Setup Ghidra"
         uses: antoniovazquezblanco/setup-ghidra@v2.0.5
         with:
-          version: "11.0"
+          version: "11.1"
       -
         name: "Run spotless"
         run: gradle spotlessCheck
@@ -42,6 +42,8 @@ jobs:
       matrix:
         ghidra:
           - "11.1"
+          - "11.1.1"
+          - "11.1.2"
     steps:
       -
         name: "Checkout"

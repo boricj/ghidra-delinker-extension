@@ -67,8 +67,9 @@ jobs:
         run: gradle buildExtension
       -
         name: "Upload artifacts"
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
+          name: "plugin (${{ matrix.ghidra }})"
           path: "dist/*"
           if-no-files-found: "error"
         if: ${{ !cancelled() }}
@@ -79,7 +80,7 @@ jobs:
           run: gradle test jacocoTestReport
       -
         name: "Upload test results"
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: "test-results (${{ matrix.ghidra }})"
           path: "build/test-results/test/*.xml"
@@ -87,7 +88,7 @@ jobs:
         if: ${{ !cancelled() }}
       -
         name: "Upload reports"
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: "reports (${{ matrix.ghidra }})"
           path: "build/reports/*"
@@ -101,6 +102,13 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: "write"
+    strategy:
+      fail-fast: false
+      matrix:
+        ghidra:
+          - "11.1"
+          - "11.1.1"
+          - "11.1.2"
     steps:
       -
         name: "Checkout"
@@ -117,9 +125,9 @@ jobs:
           java-package: "jre"
       -
         name: "Download artifacts"
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
-          name: "artifact"
+          name: "plugin (${{ matrix.ghidra }})"
           path: "dist/"
       -
         name: "Generate release notes"

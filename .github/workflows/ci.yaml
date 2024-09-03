@@ -26,9 +26,8 @@ jobs:
           distribution: "temurin"
       -
         name: "Setup Ghidra"
-        uses: er28-0652/setup-ghidra@master
-        with:
-          version: "11.0"
+        uses: antoniovazquezblanco/setup-ghidra@v2.0.5
+
       -
         name: "Run spotless"
         run: gradle spotlessCheck
@@ -41,7 +40,7 @@ jobs:
       fail-fast: false
       matrix:
         ghidra:
-          - "11.1"
+          - "11.1.2"
     steps:
       -
         name: "Checkout"
@@ -57,7 +56,7 @@ jobs:
           distribution: "temurin"
       -
         name: "Setup Ghidra"
-        uses: er28-0652/setup-ghidra@master
+        uses: antoniovazquezblanco/setup-ghidra@v2.0.5
         with:
           version: ${{ matrix.ghidra }}
       -

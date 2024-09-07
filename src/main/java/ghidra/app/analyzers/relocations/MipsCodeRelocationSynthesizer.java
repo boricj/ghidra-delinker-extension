@@ -65,6 +65,8 @@ public class MipsCodeRelocationSynthesizer
 	public static final Pattern GP_SYMBOLS_PATTERN = Pattern.compile("^_gp$");
 
 	private static class MIPS_26_InstructionRelocationEmitter extends InstructionRelocationEmitter {
+		private static final OperandMatcher MATCHER_BIG_ENDIAN =
+			new JtypeOperandMatcher(new Byte[] { 3, -1, -1, -1 }, 0x3ffffff);
 		private static final OperandMatcher MATCHER_LITTLE_ENDIAN =
 			new JtypeOperandMatcher(new Byte[] { -1, -1, -1, 3 }, 0x3ffffff);
 
@@ -137,7 +139,12 @@ public class MipsCodeRelocationSynthesizer
 
 		@Override
 		public Collection<OperandMatcher> getOperandMatchers() {
-			return List.of(MATCHER_LITTLE_ENDIAN);
+			if (getProgram().getMemory().isBigEndian()) {
+				return List.of(MATCHER_BIG_ENDIAN);
+			}
+			else {
+				return List.of(MATCHER_LITTLE_ENDIAN);
+			}
 		}
 	}
 
@@ -370,6 +377,8 @@ public class MipsCodeRelocationSynthesizer
 	 */
 	private static class MIPS_PC16_InstructionRelocationEmitter
 			extends RelativeNextInstructionRelocationEmitter {
+		private static final OperandMatcher MATCHER_BIG_ENDIAN =
+			new ItypeOperandMatcher(new Byte[] { 0, 0, -1, -1 }, 0x0000ffffL);
 		private static final OperandMatcher MATCHER_LITTLE_ENDIAN =
 			new ItypeOperandMatcher(new Byte[] { -1, -1, 0, 0 }, 0x0000ffffL);
 
@@ -429,12 +438,19 @@ public class MipsCodeRelocationSynthesizer
 
 		@Override
 		public Collection<OperandMatcher> getOperandMatchers() {
-			return List.of(MATCHER_LITTLE_ENDIAN);
+			if (getProgram().getMemory().isBigEndian()) {
+				return List.of(MATCHER_BIG_ENDIAN);
+			}
+			else {
+				return List.of(MATCHER_LITTLE_ENDIAN);
+			}
 		}
 	}
 
 	private static class MIPS_GPREL16_InstructionRelocationEmitter
 			extends SymbolRelativeInstructionRelocationEmitter {
+		private static final OperandMatcher MATCHER_BIG_ENDIAN =
+			new LoadStoreOperandMatcher(new Byte[] { 3, -32, -1, -1 }, 0x0000ffffL);
 		private static final OperandMatcher MATCHER_LITTLE_ENDIAN =
 			new LoadStoreOperandMatcher(new Byte[] { -1, -1, -32, 3 }, 0x0000ffffL);
 
@@ -481,7 +497,12 @@ public class MipsCodeRelocationSynthesizer
 
 		@Override
 		public Collection<OperandMatcher> getOperandMatchers() {
-			return List.of(MATCHER_LITTLE_ENDIAN);
+			if (getProgram().getMemory().isBigEndian()) {
+				return List.of(MATCHER_BIG_ENDIAN);
+			}
+			else {
+				return List.of(MATCHER_LITTLE_ENDIAN);
+			}
 		}
 	}
 

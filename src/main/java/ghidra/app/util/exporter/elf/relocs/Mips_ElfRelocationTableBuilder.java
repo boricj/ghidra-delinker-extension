@@ -93,6 +93,9 @@ public class Mips_ElfRelocationTableBuilder implements ElfRelocationTableBuilder
 		if (width == 4 && bitmask == 0xffffffffL) {
 			type = MIPS_ElfRelocationType.R_MIPS_32.typeId();
 		}
+		else if (width == 8 && bitmask == 0xffffffffffffffffL) {
+			type = MIPS_ElfRelocationType.R_MIPS_64.typeId();
+		}
 		else {
 			logUnknownRelocation(relTable, relocation, log);
 			return;

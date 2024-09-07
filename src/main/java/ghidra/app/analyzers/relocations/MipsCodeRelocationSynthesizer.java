@@ -62,7 +62,8 @@ import ghidra.util.task.TaskMonitor;
 
 public class MipsCodeRelocationSynthesizer
 		extends FunctionInstructionSinkCodeRelocationSynthesizer {
-	public static final Pattern GP_SYMBOLS_PATTERN = Pattern.compile("^_gp$");
+	public static final Pattern GP_SYMBOLS_PATTERN =
+		Pattern.compile("(^_gp$)|(^_gp_\\d+$)|(^_gp_rel$)|(^_mips_gp\\d+_value$)");
 
 	private static class MIPS_26_InstructionRelocationEmitter extends InstructionRelocationEmitter {
 		private static final OperandMatcher MATCHER_BIG_ENDIAN =

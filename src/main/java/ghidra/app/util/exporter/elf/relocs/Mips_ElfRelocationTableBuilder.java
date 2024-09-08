@@ -13,7 +13,6 @@
  */
 package ghidra.app.util.exporter.elf.relocs;
 
-import static ghidra.app.analyzers.relocations.MipsCodeRelocationSynthesizer.GP_SYMBOLS_PATTERN;
 import static ghidra.app.util.ProgramUtil.patchBytes;
 import static ghidra.app.util.exporter.elf.relocs.ElfRelocationTableBuilder.generateSectionName;
 import static ghidra.app.util.exporter.elf.relocs.ElfRelocationTableBuilder.logUnknownRelocation;
@@ -156,8 +155,11 @@ public class Mips_ElfRelocationTableBuilder implements ElfRelocationTableBuilder
 		String symbol = relocation.getRelativeSymbolName();
 
 		int type;
-		if (width == 4 && bitmask == 0xffff && GP_SYMBOLS_PATTERN.matcher(symbol).matches()) {
+		if (width == 4 && bitmask == 0xffff && symbol.equals("$gp")) {
 			type = MIPS_ElfRelocationType.R_MIPS_GPREL16.typeId();
+		}
+		else if (width == 4 && bitmask == 0xffff && symbol.equals("$got")) {
+			type = MIPS_ElfRelocationType.R_MIPS_GOT16.typeId();
 		}
 		else {
 			logUnknownRelocation(relTable, relocation, log);

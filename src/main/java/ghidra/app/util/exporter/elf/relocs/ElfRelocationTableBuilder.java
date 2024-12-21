@@ -14,28 +14,32 @@
 package ghidra.app.util.exporter.elf.relocs;
 
 import java.util.List;
+import java.util.Map;
 
-import ghidra.app.util.exporter.elf.ElfRelocatableObject;
-import ghidra.app.util.exporter.elf.ElfRelocatableSection;
-import ghidra.app.util.exporter.elf.ElfRelocatableSectionSymbolTable;
 import ghidra.app.util.importer.MessageLog;
 import ghidra.program.model.address.AddressSetView;
 import ghidra.program.model.relocobj.Relocation;
 import ghidra.util.classfinder.ExtensionPoint;
+import net.boricj.bft.elf.ElfFile;
+import net.boricj.bft.elf.ElfSection;
+import net.boricj.bft.elf.constants.ElfSectionType;
+import net.boricj.bft.elf.sections.ElfSymbolTable;
+import net.boricj.bft.elf.sections.ElfSymbolTable.ElfSymbol;
 
 public interface ElfRelocationTableBuilder extends ExtensionPoint {
-	public ElfRelocatableSection build(ElfRelocatableObject elf,
-			ElfRelocatableSectionSymbolTable symtab, ElfRelocatableSection section, byte[] bytes,
-			AddressSetView addressSet, List<Relocation> relocations, MessageLog log);
+	public ElfSection build(ElfFile elf,
+			ElfSymbolTable symtab, ElfSection section, byte[] bytes,
+			AddressSetView addressSet, List<Relocation> relocations,
+			Map<String, ElfSymbol> symbolsByName, MessageLog log);
 
-	public boolean canBuild(ElfRelocatableObject elf, int sectionType);
+	public boolean canBuild(ElfFile elf, ElfSectionType sectionType);
 
-	public static String generateSectionName(ElfRelocatableSection section, String prefix) {
+	public static String generateSectionName(ElfSection section, String prefix) {
 		String name = section.getName();
 		return String.format("%s%s%s", prefix, (name.startsWith(".") ? "" : "."), name);
 	}
 
-	public static void logUnknownRelocation(ElfRelocatableSection section, Relocation relocation,
+	public static void logUnknownRelocation(ElfSection section, Relocation relocation,
 			MessageLog log) {
 		String name = relocation.getClass().getSimpleName();
 		String msg = String.format("Unknown relocation %s width %d bitmask %d at %s", name,

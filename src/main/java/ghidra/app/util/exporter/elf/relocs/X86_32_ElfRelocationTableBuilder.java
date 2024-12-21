@@ -13,42 +13,53 @@
  */
 package ghidra.app.util.exporter.elf.relocs;
 
+import static ghidra.app.util.ProgramUtil.getOffsetWithinAddressSet;
 import static ghidra.app.util.ProgramUtil.patchBytes;
 import static ghidra.app.util.exporter.elf.relocs.ElfRelocationTableBuilder.generateSectionName;
 import static ghidra.app.util.exporter.elf.relocs.ElfRelocationTableBuilder.logUnknownRelocation;
 
 import java.util.List;
+import java.util.Map;
 
-import ghidra.app.util.bin.format.elf.ElfConstants;
-import ghidra.app.util.bin.format.elf.ElfSectionHeaderConstants;
-import ghidra.app.util.bin.format.elf.relocation.X86_32_ElfRelocationType;
-import ghidra.app.util.exporter.elf.ElfRelocatableObject;
-import ghidra.app.util.exporter.elf.ElfRelocatableSection;
-import ghidra.app.util.exporter.elf.ElfRelocatableSectionRelTable;
-import ghidra.app.util.exporter.elf.ElfRelocatableSectionSymbolTable;
 import ghidra.app.util.importer.MessageLog;
 import ghidra.program.model.address.AddressSetView;
 import ghidra.program.model.relocobj.Relocation;
 import ghidra.program.model.relocobj.RelocationAbsolute;
 import ghidra.program.model.relocobj.RelocationRelativePC;
 import ghidra.util.DataConverter;
+import net.boricj.bft.elf.ElfFile;
+import net.boricj.bft.elf.ElfHeader;
+import net.boricj.bft.elf.ElfSection;
+import net.boricj.bft.elf.constants.ElfClass;
+import net.boricj.bft.elf.constants.ElfData;
+import net.boricj.bft.elf.constants.ElfMachine;
+import net.boricj.bft.elf.constants.ElfRelocationType;
+import net.boricj.bft.elf.constants.ElfSectionNames;
+import net.boricj.bft.elf.constants.ElfSectionType;
+import net.boricj.bft.elf.machines.i386.ElfRelocationType_i386;
+import net.boricj.bft.elf.sections.ElfRelTable;
+import net.boricj.bft.elf.sections.ElfSymbolTable;
+import net.boricj.bft.elf.sections.ElfSymbolTable.ElfSymbol;
 
 public class X86_32_ElfRelocationTableBuilder implements ElfRelocationTableBuilder {
 	@Override
-	public ElfRelocatableSection build(ElfRelocatableObject elf,
-			ElfRelocatableSectionSymbolTable symtab, ElfRelocatableSection section, byte[] bytes,
-			AddressSetView addressSet,
-			List<Relocation> relocations, MessageLog log) {
-		String relName = generateSectionName(section, ".rel");
-		ElfRelocatableSectionRelTable relTable =
-			new ElfRelocatableSectionRelTable(elf, relName, symtab, section);
+	public ElfSection build(ElfFile elf, ElfSymbolTable symtab, ElfSection section, byte[] bytes,
+			AddressSetView addressSetView, List<Relocation> relocations,
+			Map<String, ElfSymbol> symbolsByName, MessageLog log) {
+		String relName = generateSectionName(section, ElfSectionNames._REL);
+		ElfRelTable relTable =
+			new ElfRelTable(elf, relName, symtab, section);
 
 		for (Relocation relocation : relocations) {
+			ElfSymbol symbol = symbolsByName.get(relocation.getSymbolName());
+
 			if (relocation instanceof RelocationAbsolute) {
-				process(relTable, bytes, addressSet, (RelocationAbsolute) relocation, log);
+				process(relTable, bytes, addressSetView, (RelocationAbsolute) relocation, symbol,
+					log);
 			}
 			else if (relocation instanceof RelocationRelativePC) {
-				process(relTable, bytes, addressSet, (RelocationRelativePC) relocation, log);
+				process(relTable, bytes, addressSetView, (RelocationRelativePC) relocation, symbol,
+					log);
 			}
 			else {
 				logUnknownRelocation(relTable, relocation, log);
@@ -58,62 +69,60 @@ public class X86_32_ElfRelocationTableBuilder implements ElfRelocationTableBuild
 		return relTable;
 	}
 
-	private void process(ElfRelocatableSectionRelTable relTable, byte[] bytes,
-			AddressSetView addressSet, RelocationAbsolute relocation,
-			MessageLog log) {
-		DataConverter dc = relTable.getElfRelocatableObject().getDataConverter();
+	private void process(ElfRelTable relTable, byte[] bytes, AddressSetView addressSetView,
+			RelocationAbsolute relocation, ElfSymbol symbol, MessageLog log) {
+		DataConverter dc = DataConverter.getInstance(
+			relTable.getElfFile().getHeader().getIdentData() == ElfData.ELFDATA2MSB);
 		int width = relocation.getWidth();
 		long bitmask = relocation.getBitmask();
 		long value = relocation.getAddend();
 
-		int type;
+		ElfRelocationType type;
 		if (width == 4 && bitmask == 0xffffffffL) {
-			type = X86_32_ElfRelocationType.R_386_32.typeId();
+			type = ElfRelocationType_i386.R_386_32;
 		}
 		else {
 			logUnknownRelocation(relTable, relocation, log);
 			return;
 		}
 
-		patchBytes(bytes, addressSet, dc, relocation, value);
-		emit(relTable, relocation, type);
+		patchBytes(bytes, addressSetView, dc, relocation, value);
+		emit(relTable, addressSetView, relocation, type, symbol);
 	}
 
-	private void process(ElfRelocatableSectionRelTable relTable, byte[] bytes,
-			AddressSetView addressSet, RelocationRelativePC relocation,
-			MessageLog log) {
-		DataConverter dc = relTable.getElfRelocatableObject().getDataConverter();
+	private void process(ElfRelTable relTable, byte[] bytes, AddressSetView addressSetView,
+			RelocationRelativePC relocation, ElfSymbol symbol, MessageLog log) {
+		DataConverter dc = DataConverter.getInstance(
+			relTable.getElfFile().getHeader().getIdentData() == ElfData.ELFDATA2MSB);
 		int width = relocation.getWidth();
 		long bitmask = relocation.getBitmask();
 		long value = relocation.getAddend();
 
-		int type;
+		ElfRelocationType type;
 		if (width == 4 && bitmask == 0xffffffffL) {
-			type = X86_32_ElfRelocationType.R_386_PC32.typeId();
+			type = ElfRelocationType_i386.R_386_PC32;
 		}
 		else {
 			logUnknownRelocation(relTable, relocation, log);
 			return;
 		}
 
-		patchBytes(bytes, addressSet, dc, relocation, value);
-		emit(relTable, relocation, type);
+		patchBytes(bytes, addressSetView, dc, relocation, value);
+		emit(relTable, addressSetView, relocation, type, symbol);
 	}
 
-	private void emit(ElfRelocatableSectionRelTable relTable, Relocation relocation, long type) {
-		ElfRelocatableSection section = relTable.getSection();
-		ElfRelocatableSectionSymbolTable symtab = relTable.getSymbolTable();
+	private void emit(ElfRelTable relTable, AddressSetView addressSetView, Relocation relocation,
+			ElfRelocationType type, ElfSymbol symbol) {
+		long offset = getOffsetWithinAddressSet(addressSetView, relocation.getAddress());
 
-		long offset = section.getOffset(relocation.getAddress());
-		long symindex = symtab.indexOf(symtab.get(relocation.getSymbolName()));
-
-		relTable.add(offset, type, symindex);
+		relTable.add(offset, symbol, type);
 	}
 
 	@Override
-	public boolean canBuild(ElfRelocatableObject object, int sectionType) {
-		return object.getElfMachine() == ElfConstants.EM_386 &&
-			object.getElfClass() == ElfConstants.ELF_CLASS_32 &&
-			sectionType == ElfSectionHeaderConstants.SHT_REL;
+	public boolean canBuild(ElfFile elf, ElfSectionType sectionType) {
+		ElfHeader header = elf.getHeader();
+		return header.getMachine() == ElfMachine.EM_386 &&
+			header.getIdentClass() == ElfClass.ELFCLASS32 &&
+			sectionType == ElfSectionType.SHT_REL;
 	}
 }

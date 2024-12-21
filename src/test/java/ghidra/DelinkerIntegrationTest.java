@@ -19,10 +19,10 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.AccessMode;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -41,14 +41,6 @@ import ghidra.app.util.bin.FileByteProvider;
 import ghidra.app.util.bin.format.coff.CoffFileHeader;
 import ghidra.app.util.bin.format.coff.CoffSectionHeader;
 import ghidra.app.util.bin.format.coff.CoffSymbolSectionNumber;
-import ghidra.app.util.bin.format.elf.ElfException;
-import ghidra.app.util.bin.format.elf.ElfHeader;
-import ghidra.app.util.bin.format.elf.ElfRelocation;
-import ghidra.app.util.bin.format.elf.ElfRelocationTable;
-import ghidra.app.util.bin.format.elf.ElfSectionHeader;
-import ghidra.app.util.bin.format.elf.ElfSectionHeaderConstants;
-import ghidra.app.util.bin.format.elf.ElfSymbol;
-import ghidra.app.util.bin.format.elf.ElfSymbolTable;
 import ghidra.app.util.exporter.Exporter;
 import ghidra.app.util.importer.MessageLog;
 import ghidra.framework.GModule;
@@ -67,6 +59,12 @@ import ghidra.test.TestProgramManager;
 import ghidra.util.NamingUtilities;
 import ghidra.util.exception.VersionException;
 import ghidra.util.task.TaskMonitor;
+import net.boricj.bft.elf.ElfFile;
+import net.boricj.bft.elf.ElfSection;
+import net.boricj.bft.elf.constants.ElfRelocationType;
+import net.boricj.bft.elf.sections.ElfProgBits;
+import net.boricj.bft.elf.sections.ElfRelTable;
+import net.boricj.bft.elf.sections.ElfSymbolTable;
 import utility.application.ApplicationLayout;
 
 public abstract class DelinkerIntegrationTest extends AbstractProgramBasedTest {
@@ -96,43 +94,36 @@ public abstract class DelinkerIntegrationTest extends AbstractProgramBasedTest {
 
 			assertArrayEquals(expectedBytes, actualBytes);
 		}
-
-		public default void compareSectionSizes(String referenceSectionName,
-				ObjectFile exportedFile, String exportedSectionName) throws Exception {
-			byte[] expectedBytes = getSectionBytes(referenceSectionName);
-			byte[] actualBytes = exportedFile.getSectionBytes(exportedSectionName);
-
-			assertEquals(expectedBytes.length, actualBytes.length);
-		}
 	}
 
 	public class ElfObjectFile implements ObjectFile {
-		private final ByteProvider byteProvider;
-		private final ElfHeader header;
+		private final ElfFile elf;
 
-		public ElfObjectFile(File file) throws ElfException, IOException {
-			this.byteProvider = new FileByteProvider(file, null, AccessMode.READ);
-			this.header = new ElfHeader(byteProvider, s -> {
-			});
-			this.header.parse();
+		public ElfObjectFile(File file) throws IOException {
+			this.elf = new ElfFile.Parser(new FileInputStream(file)).parse();
+		}
+
+		public ElfObjectFile(File file, boolean ignoreSectionErrors) throws IOException {
+			this.elf = new ElfFile.Parser(new FileInputStream(file))
+					.setIgnoreSectionErrors(ignoreSectionErrors)
+					.parse();
 		}
 
 		@Override
 		public byte[] getSectionBytes(String name) throws IOException {
-			return header.getSection(name).getRawInputStream().readAllBytes();
+			return ((ElfProgBits) getSection(name)).getBytes();
 		}
 
 		public void hasSymbolAtAddress(String symbolTable, String symbolName, String sectionName,
 				int offset) {
 			ElfSymbolTable symtab = getSymbolTable(symbolTable);
 
-			List<ElfSymbol> symbols = Arrays.asList(symtab.getSymbols());
-			assertTrue(symbols.stream()
-					.filter(symbol -> symbol.getNameAsString().equals(symbolName))
+			assertTrue(symtab.stream()
+					.filter(symbol -> symbol.getName().equals(symbolName))
 					.anyMatch(symbol -> {
-						ElfSectionHeader section =
-							header.getSections()[symbol.getSectionHeaderIndex()];
-						return section.getNameAsString().equals(sectionName) &&
+						ElfSection section =
+							elf.getSections().get(symbol.getIndex());
+						return section.getName().equals(sectionName) &&
 							symbol.getValue() == offset;
 					}));
 		}
@@ -140,45 +131,43 @@ public abstract class DelinkerIntegrationTest extends AbstractProgramBasedTest {
 		public void hasUndefinedSymbol(String symbolTable, String symbolName) {
 			ElfSymbolTable symtab = getSymbolTable(symbolTable);
 
-			List<ElfSymbol> symbols = Arrays.asList(symtab.getSymbols());
-			assertTrue(symbols.stream()
-					.filter(symbol -> symbol.getNameAsString().equals(symbolName))
-					.anyMatch(symbol -> symbol
-							.getSectionHeaderIndex() == ElfSectionHeaderConstants.SHN_UNDEF));
+			assertTrue(symtab.stream()
+					.filter(symbol -> symbol.getName().equals(symbolName))
+					.anyMatch(symbol -> symbol.getIndex() == ElfSection.SHN_UNDEF));
 		}
 
-		public void hasRelocationAtAddress(String relTable, long offset, int type,
-				String symbolName, long value) {
-			ElfRelocationTable rel = getRelocationTable(relTable);
-			ElfSymbolTable symtab = rel.getAssociatedSymbolTable();
+		public void hasRelocationAtAddress(String relTable, long offset, ElfRelocationType type,
+				String symbolName) {
+			ElfRelTable rel = getRelTable(relTable);
 
-			List<ElfRelocation> rels = Arrays.asList(rel.getRelocations());
-			assertTrue(rels.stream()
+			assertTrue(rel.stream()
 					.filter(r -> r.getOffset() == offset)
-					.anyMatch(r -> r.getType() == type && r.getAddend() == value &&
-						symtab.getSymbol(r.getSymbolIndex()).getNameAsString().equals(symbolName)));
+					.anyMatch(
+						r -> r.getType() == type && r.getSymbol().getName().equals(symbolName)));
+		}
+
+		public void compareSectionSizes(String referenceSectionName,
+				ElfObjectFile exportedFile, String exportedSectionName) throws Exception {
+			long expectedSize = getSection(referenceSectionName).getSize();
+			long actualSize = exportedFile.getSection(exportedSectionName).getSize();
+
+			assertEquals(expectedSize, actualSize);
+		}
+
+		private ElfSection getSection(String name) {
+			return elf.getSections()
+					.stream()
+					.filter(s -> s != null && s.getName().equals(name))
+					.findFirst()
+					.get();
 		}
 
 		private ElfSymbolTable getSymbolTable(String name) {
-			ElfSymbolTable symtab = Arrays.asList(header.getSymbolTables())
-					.stream()
-					.filter(t -> t.getTableSectionHeader().getNameAsString().equals(name))
-					.findFirst()
-					.orElse(null);
-			assertNotNull(symtab);
-
-			return symtab;
+			return (ElfSymbolTable) getSection(name);
 		}
 
-		private ElfRelocationTable getRelocationTable(String name) {
-			ElfRelocationTable relTable = Arrays.asList(header.getRelocationTables())
-					.stream()
-					.filter(t -> t.getTableSectionHeader().getNameAsString().equals(name))
-					.findFirst()
-					.orElse(null);
-			assertNotNull(relTable);
-
-			return relTable;
+		private ElfRelTable getRelTable(String name) {
+			return (ElfRelTable) getSection(name);
 		}
 	}
 

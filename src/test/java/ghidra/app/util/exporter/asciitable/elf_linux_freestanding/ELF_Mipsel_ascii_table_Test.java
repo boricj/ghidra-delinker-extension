@@ -19,10 +19,10 @@ import java.util.Map;
 import org.junit.Test;
 
 import ghidra.DelinkerIntegrationTest;
-import ghidra.app.util.bin.format.elf.relocation.MIPS_ElfRelocationType;
 import ghidra.app.util.exporter.ElfRelocatableObjectExporter;
 import ghidra.program.model.address.AddressFactory;
 import ghidra.program.model.address.AddressSetView;
+import net.boricj.bft.elf.machines.mips.ElfRelocationType_Mips;
 
 public class ELF_Mipsel_ascii_table_Test extends DelinkerIntegrationTest {
 	private static final File mainFile =
@@ -64,7 +64,7 @@ public class ELF_Mipsel_ascii_table_Test extends DelinkerIntegrationTest {
 			Map.entry(0x3ac, new byte[2]),
 			Map.entry(0x404, new byte[2]));
 
-		ObjectFile mainObjectFile = new ElfObjectFile(mainFile);
+		ElfObjectFile mainObjectFile = new ElfObjectFile(mainFile, true);
 		ElfObjectFile exported = new ElfObjectFile(exportedFile);
 
 		mainObjectFile.compareSectionBytes(".text", exported, ".text", text_patches);
@@ -72,7 +72,7 @@ public class ELF_Mipsel_ascii_table_Test extends DelinkerIntegrationTest {
 		mainObjectFile.compareSectionBytes(".sdata", exported, ".sdata");
 		mainObjectFile.compareSectionBytes(".rodata", exported, ".rodata");
 		mainObjectFile.compareSectionSizes(".rel.rodata", exported, ".rel.rodata");
-		mainObjectFile.compareSectionBytes(".sbss", exported, ".sbss");
+		mainObjectFile.compareSectionSizes(".sbss", exported, ".sbss");
 
 		exported.hasSymbolAtAddress(".symtab", "sys_getpid", ".text", 0x00000000);
 		exported.hasSymbolAtAddress(".symtab", "sys_kill", ".text", 0x00000024);
@@ -106,120 +106,120 @@ public class ELF_Mipsel_ascii_table_Test extends DelinkerIntegrationTest {
 		exported.hasUndefinedSymbol(".symtab", "isupper");
 
 		exported.hasRelocationAtAddress(".rel.text", 0x000000b8,
-			MIPS_ElfRelocationType.R_MIPS_HI16.typeId(), "errno", 0);
+			ElfRelocationType_Mips.R_MIPS_HI16, "errno");
 		exported.hasRelocationAtAddress(".rel.text", 0x000000c0,
-			MIPS_ElfRelocationType.R_MIPS_LO16.typeId(), "errno", 0);
+			ElfRelocationType_Mips.R_MIPS_LO16, "errno");
 		exported.hasRelocationAtAddress(".rel.text", 0x000000d0,
-			MIPS_ElfRelocationType.R_MIPS_HI16.typeId(), "_gp", 0);
+			ElfRelocationType_Mips.R_MIPS_HI16, "_gp");
 		exported.hasRelocationAtAddress(".rel.text", 0x000000d4,
-			MIPS_ElfRelocationType.R_MIPS_LO16.typeId(), "_gp", 0);
+			ElfRelocationType_Mips.R_MIPS_LO16, "_gp");
 		exported.hasRelocationAtAddress(".rel.text", 0x000000ec,
-			MIPS_ElfRelocationType.R_MIPS_HI16.typeId(), "environ", 0);
+			ElfRelocationType_Mips.R_MIPS_HI16, "environ");
 		exported.hasRelocationAtAddress(".rel.text", 0x000000f0,
-			MIPS_ElfRelocationType.R_MIPS_LO16.typeId(), "environ", 0);
+			ElfRelocationType_Mips.R_MIPS_LO16, "environ");
 		exported.hasRelocationAtAddress(".rel.text", 0x00000108,
-			MIPS_ElfRelocationType.R_MIPS_HI16.typeId(), "_auxv", 0);
+			ElfRelocationType_Mips.R_MIPS_HI16, "_auxv");
 		exported.hasRelocationAtAddress(".rel.text", 0x0000010c,
-			MIPS_ElfRelocationType.R_MIPS_LO16.typeId(), "_auxv", 0);
+			ElfRelocationType_Mips.R_MIPS_LO16, "_auxv");
 		exported.hasRelocationAtAddress(".rel.text", 0x00000120,
-			MIPS_ElfRelocationType.R_MIPS_26.typeId(), "main", 0);
+			ElfRelocationType_Mips.R_MIPS_26, "main");
 		exported.hasRelocationAtAddress(".rel.text", 0x0000013c,
-			MIPS_ElfRelocationType.R_MIPS_HI16.typeId(), "sys_write", 0);
+			ElfRelocationType_Mips.R_MIPS_HI16, "sys_write");
 		exported.hasRelocationAtAddress(".rel.text", 0x00000140,
-			MIPS_ElfRelocationType.R_MIPS_LO16.typeId(), "sys_write", 0);
+			ElfRelocationType_Mips.R_MIPS_LO16, "sys_write");
 		exported.hasRelocationAtAddress(".rel.text", 0x00000168,
-			MIPS_ElfRelocationType.R_MIPS_HI16.typeId(), "errno", 0);
+			ElfRelocationType_Mips.R_MIPS_HI16, "errno");
 		exported.hasRelocationAtAddress(".rel.text", 0x0000016c,
-			MIPS_ElfRelocationType.R_MIPS_LO16.typeId(), "errno", 0);
+			ElfRelocationType_Mips.R_MIPS_LO16, "errno");
 		exported.hasRelocationAtAddress(".rel.text", 0x0000018c,
-			MIPS_ElfRelocationType.R_MIPS_HI16.typeId(), "fileno", 0);
+			ElfRelocationType_Mips.R_MIPS_HI16, "fileno");
 		exported.hasRelocationAtAddress(".rel.text", 0x00000190,
-			MIPS_ElfRelocationType.R_MIPS_LO16.typeId(), "fileno", 0);
+			ElfRelocationType_Mips.R_MIPS_LO16, "fileno");
 		exported.hasRelocationAtAddress(".rel.text", 0x000001a8,
-			MIPS_ElfRelocationType.R_MIPS_HI16.typeId(), "write", 0);
+			ElfRelocationType_Mips.R_MIPS_HI16, "write");
 		exported.hasRelocationAtAddress(".rel.text", 0x000001ac,
-			MIPS_ElfRelocationType.R_MIPS_LO16.typeId(), "write", 0);
+			ElfRelocationType_Mips.R_MIPS_LO16, "write");
 		exported.hasRelocationAtAddress(".rel.text", 0x000001ec,
-			MIPS_ElfRelocationType.R_MIPS_HI16.typeId(), "fputc", 0);
+			ElfRelocationType_Mips.R_MIPS_HI16, "fputc");
 		exported.hasRelocationAtAddress(".rel.text", 0x000001f0,
-			MIPS_ElfRelocationType.R_MIPS_LO16.typeId(), "fputc", 0);
+			ElfRelocationType_Mips.R_MIPS_LO16, "fputc");
 		exported.hasRelocationAtAddress(".rel.text", 0x00000230,
-			MIPS_ElfRelocationType.R_MIPS_HI16.typeId(), "putchar", 0);
+			ElfRelocationType_Mips.R_MIPS_HI16, "putchar");
 		exported.hasRelocationAtAddress(".rel.text", 0x00000234,
-			MIPS_ElfRelocationType.R_MIPS_LO16.typeId(), "putchar", 0);
+			ElfRelocationType_Mips.R_MIPS_LO16, "putchar");
 		exported.hasRelocationAtAddress(".rel.text", 0x00000278,
-			MIPS_ElfRelocationType.R_MIPS_HI16.typeId(), "putchar", 0);
+			ElfRelocationType_Mips.R_MIPS_HI16, "putchar");
 		exported.hasRelocationAtAddress(".rel.text", 0x0000027c,
-			MIPS_ElfRelocationType.R_MIPS_LO16.typeId(), "putchar", 0);
+			ElfRelocationType_Mips.R_MIPS_LO16, "putchar");
 		exported.hasRelocationAtAddress(".rel.text", 0x000002d0,
-			MIPS_ElfRelocationType.R_MIPS_HI16.typeId(), "print_number", 0);
+			ElfRelocationType_Mips.R_MIPS_HI16, "print_number");
 		exported.hasRelocationAtAddress(".rel.text", 0x000002d4,
-			MIPS_ElfRelocationType.R_MIPS_LO16.typeId(), "print_number", 0);
+			ElfRelocationType_Mips.R_MIPS_LO16, "print_number");
 		exported.hasRelocationAtAddress(".rel.text", 0x000002e4,
-			MIPS_ElfRelocationType.R_MIPS_HI16.typeId(), "putchar", 0);
+			ElfRelocationType_Mips.R_MIPS_HI16, "putchar");
 		exported.hasRelocationAtAddress(".rel.text", 0x000002e8,
-			MIPS_ElfRelocationType.R_MIPS_LO16.typeId(), "putchar", 0);
+			ElfRelocationType_Mips.R_MIPS_LO16, "putchar");
 		exported.hasRelocationAtAddress(".rel.text", 0x000002f8,
-			MIPS_ElfRelocationType.R_MIPS_HI16.typeId(), "isgraph", 0);
+			ElfRelocationType_Mips.R_MIPS_HI16, "isgraph");
 		exported.hasRelocationAtAddress(".rel.text", 0x000002fc,
-			MIPS_ElfRelocationType.R_MIPS_LO16.typeId(), "isgraph", 0);
+			ElfRelocationType_Mips.R_MIPS_LO16, "isgraph");
 		exported.hasRelocationAtAddress(".rel.text", 0x00000314,
-			MIPS_ElfRelocationType.R_MIPS_HI16.typeId(), "putchar", 0);
+			ElfRelocationType_Mips.R_MIPS_HI16, "putchar");
 		exported.hasRelocationAtAddress(".rel.text", 0x00000318,
-			MIPS_ElfRelocationType.R_MIPS_LO16.typeId(), "putchar", 0);
+			ElfRelocationType_Mips.R_MIPS_LO16, "putchar");
 		exported.hasRelocationAtAddress(".rel.text", 0x00000328,
-			MIPS_ElfRelocationType.R_MIPS_HI16.typeId(), "putchar", 0);
+			ElfRelocationType_Mips.R_MIPS_HI16, "putchar");
 		exported.hasRelocationAtAddress(".rel.text", 0x0000032c,
-			MIPS_ElfRelocationType.R_MIPS_LO16.typeId(), "putchar", 0);
+			ElfRelocationType_Mips.R_MIPS_LO16, "putchar");
 		exported.hasRelocationAtAddress(".rel.text", 0x00000348,
-			MIPS_ElfRelocationType.R_MIPS_HI16.typeId(), "putchar", 0);
+			ElfRelocationType_Mips.R_MIPS_HI16, "putchar");
 		exported.hasRelocationAtAddress(".rel.text", 0x0000034c,
-			MIPS_ElfRelocationType.R_MIPS_LO16.typeId(), "putchar", 0);
+			ElfRelocationType_Mips.R_MIPS_LO16, "putchar");
 		exported.hasRelocationAtAddress(".rel.text", 0x00000364,
-			MIPS_ElfRelocationType.R_MIPS_HI16.typeId(), "putchar", 0);
+			ElfRelocationType_Mips.R_MIPS_HI16, "putchar");
 		exported.hasRelocationAtAddress(".rel.text", 0x00000368,
-			MIPS_ElfRelocationType.R_MIPS_LO16.typeId(), "putchar", 0);
+			ElfRelocationType_Mips.R_MIPS_LO16, "putchar");
 		exported.hasRelocationAtAddress(".rel.text", 0x000003a8,
-			MIPS_ElfRelocationType.R_MIPS_HI16.typeId(), "putchar", 0);
+			ElfRelocationType_Mips.R_MIPS_HI16, "putchar");
 		exported.hasRelocationAtAddress(".rel.text", 0x000003ac,
-			MIPS_ElfRelocationType.R_MIPS_LO16.typeId(), "putchar", 0);
+			ElfRelocationType_Mips.R_MIPS_LO16, "putchar");
 		exported.hasRelocationAtAddress(".rel.text", 0x00000400,
-			MIPS_ElfRelocationType.R_MIPS_HI16.typeId(), "putchar", 0);
+			ElfRelocationType_Mips.R_MIPS_HI16, "putchar");
 		exported.hasRelocationAtAddress(".rel.text", 0x00000404,
-			MIPS_ElfRelocationType.R_MIPS_LO16.typeId(), "putchar", 0);
+			ElfRelocationType_Mips.R_MIPS_LO16, "putchar");
 		exported.hasRelocationAtAddress(".rel.text", 0x00000420,
-			MIPS_ElfRelocationType.R_MIPS_GPREL16.typeId(), "COLUMNS", 0);
+			ElfRelocationType_Mips.R_MIPS_GPREL16, "COLUMNS");
 		exported.hasRelocationAtAddress(".rel.text", 0x00000448,
-			MIPS_ElfRelocationType.R_MIPS_HI16.typeId(), "s_ascii_properties", 0);
+			ElfRelocationType_Mips.R_MIPS_HI16, "s_ascii_properties");
 		exported.hasRelocationAtAddress(".rel.text", 0x0000044c,
-			MIPS_ElfRelocationType.R_MIPS_LO16.typeId(), "s_ascii_properties", 0);
+			ElfRelocationType_Mips.R_MIPS_LO16, "s_ascii_properties");
 		exported.hasRelocationAtAddress(".rel.text", 0x00000458,
-			MIPS_ElfRelocationType.R_MIPS_HI16.typeId(), "print_ascii_entry", 0);
+			ElfRelocationType_Mips.R_MIPS_HI16, "print_ascii_entry");
 		exported.hasRelocationAtAddress(".rel.text", 0x0000045c,
-			MIPS_ElfRelocationType.R_MIPS_LO16.typeId(), "print_ascii_entry", 0);
+			ElfRelocationType_Mips.R_MIPS_LO16, "print_ascii_entry");
 		exported.hasRelocationAtAddress(".rel.text", 0x00000468,
-			MIPS_ElfRelocationType.R_MIPS_GPREL16.typeId(), "COLUMNS", 0);
+			ElfRelocationType_Mips.R_MIPS_GPREL16, "COLUMNS");
 
 		exported.hasRelocationAtAddress(".rel.rodata", 0x00000000,
-			MIPS_ElfRelocationType.R_MIPS_32.typeId(), "isgraph", 0);
+			ElfRelocationType_Mips.R_MIPS_32, "isgraph");
 		exported.hasRelocationAtAddress(".rel.rodata", 0x00000008,
-			MIPS_ElfRelocationType.R_MIPS_32.typeId(), "isprint", 0);
+			ElfRelocationType_Mips.R_MIPS_32, "isprint");
 		exported.hasRelocationAtAddress(".rel.rodata", 0x00000010,
-			MIPS_ElfRelocationType.R_MIPS_32.typeId(), "iscntrl", 0);
+			ElfRelocationType_Mips.R_MIPS_32, "iscntrl");
 		exported.hasRelocationAtAddress(".rel.rodata", 0x00000018,
-			MIPS_ElfRelocationType.R_MIPS_32.typeId(), "isspace", 0);
+			ElfRelocationType_Mips.R_MIPS_32, "isspace");
 		exported.hasRelocationAtAddress(".rel.rodata", 0x00000020,
-			MIPS_ElfRelocationType.R_MIPS_32.typeId(), "ispunct", 0);
+			ElfRelocationType_Mips.R_MIPS_32, "ispunct");
 		exported.hasRelocationAtAddress(".rel.rodata", 0x00000028,
-			MIPS_ElfRelocationType.R_MIPS_32.typeId(), "isalnum", 0);
+			ElfRelocationType_Mips.R_MIPS_32, "isalnum");
 		exported.hasRelocationAtAddress(".rel.rodata", 0x00000030,
-			MIPS_ElfRelocationType.R_MIPS_32.typeId(), "isalpha", 0);
+			ElfRelocationType_Mips.R_MIPS_32, "isalpha");
 		exported.hasRelocationAtAddress(".rel.rodata", 0x00000038,
-			MIPS_ElfRelocationType.R_MIPS_32.typeId(), "isdigit", 0);
+			ElfRelocationType_Mips.R_MIPS_32, "isdigit");
 		exported.hasRelocationAtAddress(".rel.rodata", 0x00000040,
-			MIPS_ElfRelocationType.R_MIPS_32.typeId(), "isupper", 0);
+			ElfRelocationType_Mips.R_MIPS_32, "isupper");
 		exported.hasRelocationAtAddress(".rel.rodata", 0x00000048,
-			MIPS_ElfRelocationType.R_MIPS_32.typeId(), "islower", 0);
+			ElfRelocationType_Mips.R_MIPS_32, "islower");
 	}
 
 	@Test
@@ -229,7 +229,7 @@ public class ELF_Mipsel_ascii_table_Test extends DelinkerIntegrationTest {
 				.union(af.getAddressSet(af.getAddress("00400a00"), af.getAddress("00400b0f"))); 	// .rodata
 		File exportedFile = exportObjectFile(set, new ElfRelocatableObjectExporter(), null);
 
-		ObjectFile ctypeObjectFile = new ElfObjectFile(ctypeFile);
+		ElfObjectFile ctypeObjectFile = new ElfObjectFile(ctypeFile, true);
 		ElfObjectFile exported = new ElfObjectFile(exportedFile);
 
 		ctypeObjectFile.compareSectionBytes(".text", exported, ".text");
@@ -250,48 +250,48 @@ public class ELF_Mipsel_ascii_table_Test extends DelinkerIntegrationTest {
 		exported.hasSymbolAtAddress(".symtab", "_ctype_", ".rodata", 0x00000000);
 
 		exported.hasRelocationAtAddress(".rel.text", 0x00000010,
-			MIPS_ElfRelocationType.R_MIPS_HI16.typeId(), "_ctype_", 0);
+			ElfRelocationType_Mips.R_MIPS_HI16, "_ctype_");
 		exported.hasRelocationAtAddress(".rel.text", 0x00000014,
-			MIPS_ElfRelocationType.R_MIPS_LO16.typeId(), "_ctype_", 0);
+			ElfRelocationType_Mips.R_MIPS_LO16, "_ctype_");
 		exported.hasRelocationAtAddress(".rel.text", 0x00000048,
-			MIPS_ElfRelocationType.R_MIPS_HI16.typeId(), "_ctype_", 0);
+			ElfRelocationType_Mips.R_MIPS_HI16, "_ctype_");
 		exported.hasRelocationAtAddress(".rel.text", 0x0000004c,
-			MIPS_ElfRelocationType.R_MIPS_LO16.typeId(), "_ctype_", 0);
+			ElfRelocationType_Mips.R_MIPS_LO16, "_ctype_");
 		exported.hasRelocationAtAddress(".rel.text", 0x00000080,
-			MIPS_ElfRelocationType.R_MIPS_HI16.typeId(), "_ctype_", 0);
+			ElfRelocationType_Mips.R_MIPS_HI16, "_ctype_");
 		exported.hasRelocationAtAddress(".rel.text", 0x00000084,
-			MIPS_ElfRelocationType.R_MIPS_LO16.typeId(), "_ctype_", 0);
+			ElfRelocationType_Mips.R_MIPS_LO16, "_ctype_");
 		exported.hasRelocationAtAddress(".rel.text", 0x000000b8,
-			MIPS_ElfRelocationType.R_MIPS_HI16.typeId(), "_ctype_", 0);
+			ElfRelocationType_Mips.R_MIPS_HI16, "_ctype_");
 		exported.hasRelocationAtAddress(".rel.text", 0x000000bc,
-			MIPS_ElfRelocationType.R_MIPS_LO16.typeId(), "_ctype_", 0);
+			ElfRelocationType_Mips.R_MIPS_LO16, "_ctype_");
 		exported.hasRelocationAtAddress(".rel.text", 0x000000f0,
-			MIPS_ElfRelocationType.R_MIPS_HI16.typeId(), "_ctype_", 0);
+			ElfRelocationType_Mips.R_MIPS_HI16, "_ctype_");
 		exported.hasRelocationAtAddress(".rel.text", 0x000000f4,
-			MIPS_ElfRelocationType.R_MIPS_LO16.typeId(), "_ctype_", 0);
+			ElfRelocationType_Mips.R_MIPS_LO16, "_ctype_");
 		exported.hasRelocationAtAddress(".rel.text", 0x00000128,
-			MIPS_ElfRelocationType.R_MIPS_HI16.typeId(), "_ctype_", 0);
+			ElfRelocationType_Mips.R_MIPS_HI16, "_ctype_");
 		exported.hasRelocationAtAddress(".rel.text", 0x0000012c,
-			MIPS_ElfRelocationType.R_MIPS_LO16.typeId(), "_ctype_", 0);
+			ElfRelocationType_Mips.R_MIPS_LO16, "_ctype_");
 		exported.hasRelocationAtAddress(".rel.text", 0x00000160,
-			MIPS_ElfRelocationType.R_MIPS_HI16.typeId(), "_ctype_", 0);
+			ElfRelocationType_Mips.R_MIPS_HI16, "_ctype_");
 		exported.hasRelocationAtAddress(".rel.text", 0x00000164,
-			MIPS_ElfRelocationType.R_MIPS_LO16.typeId(), "_ctype_", 0);
+			ElfRelocationType_Mips.R_MIPS_LO16, "_ctype_");
 		exported.hasRelocationAtAddress(".rel.text", 0x00000198,
-			MIPS_ElfRelocationType.R_MIPS_HI16.typeId(), "_ctype_", 0);
+			ElfRelocationType_Mips.R_MIPS_HI16, "_ctype_");
 		exported.hasRelocationAtAddress(".rel.text", 0x0000019c,
-			MIPS_ElfRelocationType.R_MIPS_LO16.typeId(), "_ctype_", 0);
+			ElfRelocationType_Mips.R_MIPS_LO16, "_ctype_");
 		exported.hasRelocationAtAddress(".rel.text", 0x000001d0,
-			MIPS_ElfRelocationType.R_MIPS_HI16.typeId(), "_ctype_", 0);
+			ElfRelocationType_Mips.R_MIPS_HI16, "_ctype_");
 		exported.hasRelocationAtAddress(".rel.text", 0x000001d4,
-			MIPS_ElfRelocationType.R_MIPS_LO16.typeId(), "_ctype_", 0);
+			ElfRelocationType_Mips.R_MIPS_LO16, "_ctype_");
 		exported.hasRelocationAtAddress(".rel.text", 0x00000208,
-			MIPS_ElfRelocationType.R_MIPS_HI16.typeId(), "_ctype_", 0);
+			ElfRelocationType_Mips.R_MIPS_HI16, "_ctype_");
 		exported.hasRelocationAtAddress(".rel.text", 0x0000020c,
-			MIPS_ElfRelocationType.R_MIPS_LO16.typeId(), "_ctype_", 0);
+			ElfRelocationType_Mips.R_MIPS_LO16, "_ctype_");
 		exported.hasRelocationAtAddress(".rel.text", 0x00000240,
-			MIPS_ElfRelocationType.R_MIPS_HI16.typeId(), "_ctype_", 0);
+			ElfRelocationType_Mips.R_MIPS_HI16, "_ctype_");
 		exported.hasRelocationAtAddress(".rel.text", 0x00000244,
-			MIPS_ElfRelocationType.R_MIPS_LO16.typeId(), "_ctype_", 0);
+			ElfRelocationType_Mips.R_MIPS_LO16, "_ctype_");
 	}
 }

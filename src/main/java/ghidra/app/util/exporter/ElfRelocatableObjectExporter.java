@@ -15,12 +15,18 @@ package ghidra.app.util.exporter;
 
 import static ghidra.app.util.ProgramUtil.getBytes;
 import static ghidra.app.util.ProgramUtil.getProgram;
+import static net.boricj.bft.Utils.roundUp;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.RandomAccessFile;
+import java.nio.channels.Channels;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +34,7 @@ import java.util.Objects;
 import java.util.TreeMap;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import ghidra.app.util.DomainObjectService;
 import ghidra.app.util.DropDownOption;
@@ -36,17 +43,6 @@ import ghidra.app.util.Option;
 import ghidra.app.util.OptionUtils;
 import ghidra.app.util.ProgramUtil;
 import ghidra.app.util.SymbolPreference;
-import ghidra.app.util.bin.format.elf.ElfConstants;
-import ghidra.app.util.bin.format.elf.ElfSectionHeaderConstants;
-import ghidra.app.util.bin.format.elf.ElfSymbol;
-import ghidra.app.util.exporter.elf.ElfRelocatableObject;
-import ghidra.app.util.exporter.elf.ElfRelocatableSection;
-import ghidra.app.util.exporter.elf.ElfRelocatableSectionComment;
-import ghidra.app.util.exporter.elf.ElfRelocatableSectionNoBits;
-import ghidra.app.util.exporter.elf.ElfRelocatableSectionProgBits;
-import ghidra.app.util.exporter.elf.ElfRelocatableSectionStringTable;
-import ghidra.app.util.exporter.elf.ElfRelocatableSectionSymbolTable;
-import ghidra.app.util.exporter.elf.ElfRelocatableSymbol;
 import ghidra.app.util.exporter.elf.relocs.ElfRelocationTableBuilder;
 import ghidra.app.util.visibility.IsSymbolDynamic;
 import ghidra.app.util.visibility.IsSymbolInsideFunction;
@@ -67,15 +63,36 @@ import ghidra.program.model.symbol.Symbol;
 import ghidra.util.classfinder.ClassSearcher;
 import ghidra.util.task.TaskMonitor;
 import ghidra_delinker_extension.BuildConfig;
+import net.boricj.bft.Writable;
+import net.boricj.bft.elf.ElfFile;
+import net.boricj.bft.elf.ElfHeader;
+import net.boricj.bft.elf.ElfSection;
+import net.boricj.bft.elf.ElfSectionFlags;
+import net.boricj.bft.elf.ElfSectionTable;
+import net.boricj.bft.elf.constants.ElfClass;
+import net.boricj.bft.elf.constants.ElfData;
+import net.boricj.bft.elf.constants.ElfMachine;
+import net.boricj.bft.elf.constants.ElfOsAbi;
+import net.boricj.bft.elf.constants.ElfSectionNames;
+import net.boricj.bft.elf.constants.ElfSectionType;
+import net.boricj.bft.elf.constants.ElfSymbolBinding;
+import net.boricj.bft.elf.constants.ElfSymbolType;
+import net.boricj.bft.elf.constants.ElfType;
+import net.boricj.bft.elf.sections.ElfNoBits;
+import net.boricj.bft.elf.sections.ElfNullSection;
+import net.boricj.bft.elf.sections.ElfProgBits;
+import net.boricj.bft.elf.sections.ElfStringTable;
+import net.boricj.bft.elf.sections.ElfSymbolTable;
+import net.boricj.bft.elf.sections.ElfSymbolTable.ElfSymbol;
 
 /**
  * An implementation of exporter that creates an ELF relocatable object from the
  * program.
  */
 public class ElfRelocatableObjectExporter extends Exporter {
-	private short e_ident_machine;
-	private byte e_ident_class;
-	private byte e_ident_data;
+	private ElfMachine e_ident_machine;
+	private ElfClass e_ident_class;
+	private ElfData e_ident_data;
 	private boolean generateSectionNamesStringTable;
 	private boolean generateSectionComment;
 	private boolean generateStringAndSymbolTables;
@@ -84,14 +101,16 @@ public class ElfRelocatableObjectExporter extends Exporter {
 	private boolean isSymbolInsideFunctionLocal;
 	private String patternSymbolNameLocal;
 	private boolean generateRelocationTables;
-	private int relocationTableFormat;
+	private ElfSectionType relocationTableFormat;
 
-	private ElfRelocatableObject elf;
-	private ElfRelocatableSectionStringTable strtab;
-	private ElfRelocatableSectionSymbolTable symtab;
-	private ElfRelocatableSectionStringTable shstrtab;
+	private ElfFile elf;
+	private ElfHeader header;
+	private ElfSectionTable sectab;
+	private ElfStringTable strtab;
+	private ElfSymbolTable symtab;
+	private ElfStringTable shstrtab;
 	@SuppressWarnings("unused")
-	private ElfRelocatableSectionComment comment;
+	private ElfProgBits comment;
 
 	private Program program;
 	private AddressSetView fileSet;
@@ -99,7 +118,7 @@ public class ElfRelocatableObjectExporter extends Exporter {
 	private RelocationTable relocationTable;
 	private Predicate<Relocation> predicateRelocation;
 	private Predicate<Symbol> predicateVisibility;
-	private Map<String, ElfRelocatableSymbol> symbolsByName;
+	private Map<String, ElfSymbol> symbolsByName;
 	private List<Section> sections;
 
 	private static final SymbolPreference DEFAULT_SYMBOL_PREFERENCE = SymbolPreference.ITANIUM_ABI;
@@ -123,40 +142,26 @@ public class ElfRelocatableObjectExporter extends Exporter {
 	private static final String OPTION_GEN_REL = "Generate relocation tables";
 	private static final String OPTION_REL_FMT = "Relocation table format";
 
-	private static final Map<Byte, String> ELF_CLASSES = new TreeMap<>(Map.ofEntries(
-		Map.entry(ElfConstants.ELF_CLASS_NONE, "(none)"),
-		Map.entry(ElfConstants.ELF_CLASS_32, "32 bits"),
-		Map.entry(ElfConstants.ELF_CLASS_64, "64 bits")));
+	private static final Map<ElfClass, String> ELF_CLASSES = new TreeMap<>(Map.ofEntries(
+		Map.entry(ElfClass.ELFCLASSNONE, "(none)"),
+		Map.entry(ElfClass.ELFCLASS32, "32 bits"),
+		Map.entry(ElfClass.ELFCLASS64, "64 bits")));
 
-	private static final Map<Byte, String> ELF_DATAS = new TreeMap<>(Map.ofEntries(
-		Map.entry(ElfConstants.ELF_DATA_NONE, "(none)"),
-		Map.entry(ElfConstants.ELF_DATA_LE, "Little endian"),
-		Map.entry(ElfConstants.ELF_DATA_BE, "Big endian")));
+	private static final Map<ElfData, String> ELF_DATAS = new TreeMap<>(Map.ofEntries(
+		Map.entry(ElfData.ELFDATANONE, "(none)"),
+		Map.entry(ElfData.ELFDATA2LSB, "Little endian"),
+		Map.entry(ElfData.ELFDATA2MSB, "Big endian")));
 
-	private static final Map<Short, String> ELF_MACHINES = new TreeMap<>(Map.ofEntries(
-		Map.entry(ElfConstants.EM_NONE, "(none)"),
-		Map.entry(ElfConstants.EM_386, "i386"),
-		Map.entry(ElfConstants.EM_X86_64, "x86_64"),
-		Map.entry(ElfConstants.EM_ARM, "ARM"),
-		Map.entry(ElfConstants.EM_AARCH64, "AARCH64"),
-		Map.entry(ElfConstants.EM_PPC, "PowerPC"),
-		Map.entry(ElfConstants.EM_PPC64, "PowerPC64"),
-		Map.entry(ElfConstants.EM_SPARC, "SPARC"),
-		Map.entry(ElfConstants.EM_SPARCV9, "SPARC V9"),
-		Map.entry(ElfConstants.EM_RISCV, "RISC-V"),
-		Map.entry(ElfConstants.EM_MIPS, "MIPS"),
-		Map.entry(ElfConstants.EM_SH, "SuperH"),
-		Map.entry(ElfConstants.EM_68K, "68000")));
+	private static final Map<ElfMachine, String> ELF_MACHINES = new TreeMap<>(Map.ofEntries(
+		Map.entry(ElfMachine.EM_NONE, "(none)"),
+		Map.entry(ElfMachine.EM_386, "i386"),
+		Map.entry(ElfMachine.EM_MIPS, "MIPS")));
 
-	private static final Map<Integer, String> ELF_RELOCATION_TABLE_TYPES =
+	private static final Map<ElfSectionType, String> ELF_RELOCATION_TABLE_TYPES =
 		new TreeMap<>(Map.ofEntries(
-			Map.entry(ElfSectionHeaderConstants.SHT_NULL, "(none)"),
-			Map.entry(ElfSectionHeaderConstants.SHT_REL, "REL"),
-			Map.entry(ElfSectionHeaderConstants.SHT_RELA, "RELA"),
-			Map.entry(ElfSectionHeaderConstants.SHT_RELR, "RELR"),
-			Map.entry(ElfSectionHeaderConstants.SHT_ANDROID_REL, "ANDROID_REL"),
-			Map.entry(ElfSectionHeaderConstants.SHT_ANDROID_RELA, "ANDROID_RELA"),
-			Map.entry(ElfSectionHeaderConstants.SHT_ANDROID_RELR, "ANDROID_RELR")));
+			Map.entry(ElfSectionType.SHT_NULL, "(none)"),
+			Map.entry(ElfSectionType.SHT_REL, "REL"),
+			Map.entry(ElfSectionType.SHT_RELA, "RELA")));
 
 	private static final class ProcessorInfo {
 		String processor;
@@ -183,86 +188,69 @@ public class ElfRelocatableObjectExporter extends Exporter {
 		}
 	};
 
-	private static final Map<ProcessorInfo, Short> GHIDRA_TO_ELF_MACHINES = Map.ofEntries(
-		Map.entry(new ProcessorInfo("x86", 4), ElfConstants.EM_386),
-		Map.entry(new ProcessorInfo("x86", 8), ElfConstants.EM_X86_64),
-		Map.entry(new ProcessorInfo("ARM", 4), ElfConstants.EM_ARM),
-		Map.entry(new ProcessorInfo("AARCH64", 8), ElfConstants.EM_AARCH64),
-		Map.entry(new ProcessorInfo("PowerPC", 4), ElfConstants.EM_PPC),
-		Map.entry(new ProcessorInfo("PowerPC", 8), ElfConstants.EM_PPC64),
-		Map.entry(new ProcessorInfo("68000", 4), ElfConstants.EM_68K),
-		Map.entry(new ProcessorInfo("Sparc", 4), ElfConstants.EM_SPARC),
-		Map.entry(new ProcessorInfo("Sparc", 8), ElfConstants.EM_SPARCV9),
-		Map.entry(new ProcessorInfo("SuperH", 4), ElfConstants.EM_SH),
-		Map.entry(new ProcessorInfo("MIPS", 4), ElfConstants.EM_MIPS),
-		Map.entry(new ProcessorInfo("MIPS", 8), ElfConstants.EM_MIPS),
-		Map.entry(new ProcessorInfo("PSX", 4), ElfConstants.EM_MIPS),
-		Map.entry(new ProcessorInfo("RISCV", 4), ElfConstants.EM_RISCV));
+	private static final Map<ProcessorInfo, ElfMachine> GHIDRA_TO_ELF_MACHINES = Map.ofEntries(
+		Map.entry(new ProcessorInfo("x86", 4), ElfMachine.EM_386),
+		Map.entry(new ProcessorInfo("MIPS", 4), ElfMachine.EM_MIPS),
+		Map.entry(new ProcessorInfo("MIPS", 8), ElfMachine.EM_MIPS),
+		Map.entry(new ProcessorInfo("PSX", 4), ElfMachine.EM_MIPS));
 
-	private static final Map<ProcessorInfo, Integer> GHIDRA_TO_ELF_RELOCATION_TYPES = Map.ofEntries(
-		Map.entry(new ProcessorInfo("x86", 4), ElfSectionHeaderConstants.SHT_REL),
-		Map.entry(new ProcessorInfo("x86", 8), ElfSectionHeaderConstants.SHT_RELA),
-		Map.entry(new ProcessorInfo("ARM", 4), ElfSectionHeaderConstants.SHT_REL),
-		Map.entry(new ProcessorInfo("AARCH64", 8), ElfSectionHeaderConstants.SHT_RELA),
-		Map.entry(new ProcessorInfo("PowerPC", 4), ElfSectionHeaderConstants.SHT_RELA),
-		Map.entry(new ProcessorInfo("PowerPC", 8), ElfSectionHeaderConstants.SHT_RELA),
-		Map.entry(new ProcessorInfo("68000", 4), ElfSectionHeaderConstants.SHT_RELA),
-		Map.entry(new ProcessorInfo("Sparc", 4), ElfSectionHeaderConstants.SHT_RELA),
-		Map.entry(new ProcessorInfo("Sparc", 8), ElfSectionHeaderConstants.SHT_RELA),
-		Map.entry(new ProcessorInfo("SuperH", 4), ElfSectionHeaderConstants.SHT_RELA),
-		Map.entry(new ProcessorInfo("MIPS", 4), ElfSectionHeaderConstants.SHT_REL),
-		Map.entry(new ProcessorInfo("MIPS", 8), ElfSectionHeaderConstants.SHT_REL),
-		Map.entry(new ProcessorInfo("PSX", 4), ElfSectionHeaderConstants.SHT_REL),
-		Map.entry(new ProcessorInfo("RISCV", 4), ElfSectionHeaderConstants.SHT_RELA));
+	private static final Map<ProcessorInfo, ElfSectionType> GHIDRA_TO_ELF_RELOCATION_TYPES =
+		Map.ofEntries(
+			Map.entry(new ProcessorInfo("x86", 4), ElfSectionType.SHT_REL),
+			Map.entry(new ProcessorInfo("x86", 8), ElfSectionType.SHT_RELA),
+			Map.entry(new ProcessorInfo("MIPS", 4), ElfSectionType.SHT_REL),
+			Map.entry(new ProcessorInfo("MIPS", 8), ElfSectionType.SHT_REL),
+			Map.entry(new ProcessorInfo("PSX", 4), ElfSectionType.SHT_REL));
 
-	private static short autodetectElfMachine(Program program) {
+	private static ElfMachine autodetectElfMachine(Program program) {
 		String processor = program.getLanguage().getProcessor().toString();
 		int pointerSize = program.getDefaultPointerSize();
 		ProcessorInfo info = new ProcessorInfo(processor, pointerSize);
 
-		for (Map.Entry<ProcessorInfo, Short> entry : GHIDRA_TO_ELF_MACHINES.entrySet()) {
+		for (Map.Entry<ProcessorInfo, ElfMachine> entry : GHIDRA_TO_ELF_MACHINES.entrySet()) {
 			if (info.equals(entry.getKey())) {
 				return entry.getValue();
 			}
 		}
 
-		return ElfConstants.EM_NONE;
+		return ElfMachine.EM_NONE;
 	}
 
-	private static byte autodetectElfClass(Program program) {
+	private static ElfClass autodetectElfClass(Program program) {
 		if (program.getDefaultPointerSize() == 4) {
-			return ElfConstants.ELF_CLASS_32;
+			return ElfClass.ELFCLASS32;
 		}
 		else if (program.getDefaultPointerSize() == 8) {
-			return ElfConstants.ELF_CLASS_64;
+			return ElfClass.ELFCLASS64;
 		}
 
-		return ElfConstants.ELF_CLASS_NONE;
+		return ElfClass.ELFCLASSNONE;
 	}
 
-	private static byte autodetectElfData(Program program) {
+	private static ElfData autodetectElfData(Program program) {
 		if (program.getLanguage().getLanguageDescription().getEndian() == Endian.LITTLE) {
-			return ElfConstants.ELF_DATA_LE;
+			return ElfData.ELFDATA2LSB;
 		}
 		else if (program.getLanguage().getLanguageDescription().getEndian() == Endian.BIG) {
-			return ElfConstants.ELF_DATA_BE;
+			return ElfData.ELFDATA2MSB;
 		}
 
-		return ElfConstants.ELF_DATA_NONE;
+		return ElfData.ELFDATANONE;
 	}
 
-	private static int autodetectElfRelocationTableFormat(Program program) {
+	private static ElfSectionType autodetectElfRelocationTableFormat(Program program) {
 		String processor = program.getLanguage().getProcessor().toString();
 		int pointerSize = program.getDefaultPointerSize();
 		ProcessorInfo info = new ProcessorInfo(processor, pointerSize);
 
-		for (Map.Entry<ProcessorInfo, Integer> entry : GHIDRA_TO_ELF_RELOCATION_TYPES.entrySet()) {
+		for (Map.Entry<ProcessorInfo, ElfSectionType> entry : GHIDRA_TO_ELF_RELOCATION_TYPES
+				.entrySet()) {
 			if (info.equals(entry.getKey())) {
 				return entry.getValue();
 			}
 		}
 
-		return ElfSectionHeaderConstants.SHT_NULL;
+		return ElfSectionType.SHT_NULL;
 	}
 
 	public ElfRelocatableObjectExporter() {
@@ -277,12 +265,13 @@ public class ElfRelocatableObjectExporter extends Exporter {
 		}
 
 		Option[] options = new Option[] {
-			new DropDownOption<Short>(OPTION_GROUP_ELF_HEADER, OPTION_ELF_MACHINE, ELF_MACHINES,
-				Short.class, autodetectElfMachine(program)),
-			new DropDownOption<Byte>(OPTION_GROUP_ELF_HEADER, OPTION_ELF_CLASS, ELF_CLASSES,
-				Byte.class, autodetectElfClass(program)),
-			new DropDownOption<Byte>(OPTION_GROUP_ELF_HEADER, OPTION_ELF_DATA, ELF_DATAS,
-				Byte.class, autodetectElfData(program)),
+			new DropDownOption<ElfMachine>(OPTION_GROUP_ELF_HEADER, OPTION_ELF_MACHINE,
+				ELF_MACHINES,
+				ElfMachine.class, autodetectElfMachine(program)),
+			new DropDownOption<ElfClass>(OPTION_GROUP_ELF_HEADER, OPTION_ELF_CLASS, ELF_CLASSES,
+				ElfClass.class, autodetectElfClass(program)),
+			new DropDownOption<ElfData>(OPTION_GROUP_ELF_HEADER, OPTION_ELF_DATA, ELF_DATAS,
+				ElfData.class, autodetectElfData(program)),
 			new Option(OPTION_GROUP_ELF_HEADER, OPTION_GEN_SHSTRTAB, true),
 			new Option(OPTION_GROUP_ELF_HEADER, OPTION_GEN_COMMENT, true),
 			new Option(OPTION_GROUP_SYMBOLS, OPTION_GEN_STRTAB, true),
@@ -293,8 +282,8 @@ public class ElfRelocatableObjectExporter extends Exporter {
 			new EnumDropDownOption<>(OPTION_GROUP_SYMBOLS, OPTION_PREF_SYMNAME,
 				SymbolPreference.class, DEFAULT_SYMBOL_PREFERENCE),
 			new Option(OPTION_GROUP_RELOCATIONS, OPTION_GEN_REL, true),
-			new DropDownOption<Integer>(OPTION_GROUP_RELOCATIONS, OPTION_REL_FMT,
-				ELF_RELOCATION_TABLE_TYPES, Integer.class,
+			new DropDownOption<ElfSectionType>(OPTION_GROUP_RELOCATIONS, OPTION_REL_FMT,
+				ELF_RELOCATION_TABLE_TYPES, ElfSectionType.class,
 				autodetectElfRelocationTableFormat(program))
 		};
 
@@ -303,10 +292,10 @@ public class ElfRelocatableObjectExporter extends Exporter {
 
 	@Override
 	public void setOptions(List<Option> options) {
-		e_ident_machine = OptionUtils.getOption(OPTION_ELF_MACHINE, options, ElfConstants.EM_NONE);
+		e_ident_machine = OptionUtils.getOption(OPTION_ELF_MACHINE, options, ElfMachine.EM_NONE);
 		e_ident_class =
-			OptionUtils.getOption(OPTION_ELF_CLASS, options, ElfConstants.ELF_CLASS_NONE);
-		e_ident_data = OptionUtils.getOption(OPTION_ELF_DATA, options, ElfConstants.ELF_DATA_NONE);
+			OptionUtils.getOption(OPTION_ELF_CLASS, options, ElfClass.ELFCLASSNONE);
+		e_ident_data = OptionUtils.getOption(OPTION_ELF_DATA, options, ElfData.ELFDATANONE);
 		generateSectionNamesStringTable =
 			OptionUtils.getOption(OPTION_GEN_SHSTRTAB, options, false);
 		generateSectionComment = OptionUtils.getOption(OPTION_GEN_COMMENT, options, false);
@@ -320,7 +309,7 @@ public class ElfRelocatableObjectExporter extends Exporter {
 			OptionUtils.getOption(OPTION_PREF_SYMNAME, options, DEFAULT_SYMBOL_PREFERENCE);
 		generateRelocationTables = OptionUtils.getOption(OPTION_GEN_REL, options, false);
 		relocationTableFormat =
-			OptionUtils.getOption(OPTION_REL_FMT, options, ElfSectionHeaderConstants.SHT_NULL);
+			OptionUtils.getOption(OPTION_REL_FMT, options, ElfSectionType.SHT_NULL);
 	}
 
 	private class Section {
@@ -329,8 +318,8 @@ public class ElfRelocatableObjectExporter extends Exporter {
 		private final AddressSetView sectionSet;
 		private byte[] bytes;
 
-		private ElfRelocatableSection section;
-		private ElfRelocatableSection relSection;
+		private ElfSection section;
+		private ElfSection relSection;
 
 		public Section(MemoryBlock memoryBlock, AddressSetView sectionSet) {
 			this.memoryBlock = memoryBlock;
@@ -342,56 +331,61 @@ public class ElfRelocatableObjectExporter extends Exporter {
 			return name;
 		}
 
-		public void createElfSection(boolean encodeAddend) throws MemoryAccessException {
+		public void createSection(boolean encodeAddend) throws MemoryAccessException {
 			if (section != null) {
 				throw new IllegalStateException();
 			}
 
-			long flags = ElfSectionHeaderConstants.SHF_ALLOC;
-			flags |= memoryBlock.isWrite() ? ElfSectionHeaderConstants.SHF_WRITE : 0;
-			flags |= memoryBlock.isExecute() ? ElfSectionHeaderConstants.SHF_EXECINSTR : 0;
+			ElfSectionFlags flags = new ElfSectionFlags().alloc();
+			if (memoryBlock.isWrite()) {
+				flags.write();
+			}
+			if (memoryBlock.isExecute()) {
+				flags.execInstr();
+			}
 
 			if (memoryBlock.isInitialized()) {
 				bytes = getBytes(program, sectionSet);
-				section = new ElfRelocatableSectionProgBits(elf, name, bytes, sectionSet, flags);
+				section = new ElfProgBits(elf, name, flags, 4, bytes);
 			}
 			else {
 				long length = sectionSet.getNumAddresses();
-				section = new ElfRelocatableSectionNoBits(elf, name, length, sectionSet, flags);
+				section = new ElfNoBits(elf, name, flags, 4, length);
 			}
+
+			elf.getSections().add(section);
 		}
 
 		public void addSymbols() {
-			symtab.addSectionSymbol(section);
+			symtab.addSection(section);
 
 			ProgramUtil.getSectionSymbols(program, sectionSet, symbolNamePreference)
 					.entrySet()
 					.forEach(entry -> {
 						Symbol symbol = entry.getValue();
 						String symbolName = symbol.getName(true);
-						byte type = determineSymbolType(symbol);
-						byte visibility = determineSymbolVisibility(symbol);
+						ElfSymbolType type = determineSymbolType(symbol);
+						ElfSymbolBinding binding = determineSymbolBinding(symbol);
 						long offset =
 							ProgramUtil.getOffsetWithinAddressSet(sectionSet, symbol.getAddress());
 						long size = determineSymbolSize(symbol);
 
 						symbolsByName.put(entry.getKey(),
-							symtab.addDefinedSymbol(section, symbolName, visibility, type, size,
-								offset));
+							symtab.addDefined(symbolName, offset, size, type, binding, section));
 					});
 		}
 
-		private byte determineSymbolType(Symbol symbol) {
+		private ElfSymbolType determineSymbolType(Symbol symbol) {
 			Object obj = symbol.getObject();
 
 			if (obj instanceof CodeUnit) {
-				return ElfSymbol.STT_OBJECT;
+				return ElfSymbolType.STT_OBJECT;
 			}
 			else if (obj instanceof Function) {
-				return ElfSymbol.STT_FUNC;
+				return ElfSymbolType.STT_FUNC;
 			}
 
-			return ElfSymbol.STT_NOTYPE;
+			return ElfSymbolType.STT_NOTYPE;
 		}
 
 		private long determineSymbolSize(Symbol symbol) {
@@ -410,15 +404,15 @@ public class ElfRelocatableObjectExporter extends Exporter {
 			return 0;
 		}
 
-		private byte determineSymbolVisibility(Symbol symbol) {
+		private ElfSymbolBinding determineSymbolBinding(Symbol symbol) {
 			if (predicateVisibility.test(symbol)) {
-				return ElfSymbol.STB_LOCAL;
+				return ElfSymbolBinding.STB_LOCAL;
 			}
 
-			return ElfSymbol.STB_GLOBAL;
+			return ElfSymbolBinding.STB_GLOBAL;
 		}
 
-		public void createElfRelocationTableSection()
+		public void createRelocationTableSection()
 				throws MemoryAccessException {
 			if (relSection != null) {
 				throw new IllegalStateException();
@@ -432,17 +426,28 @@ public class ElfRelocatableObjectExporter extends Exporter {
 				return;
 			}
 
+			ElfRelocationTableBuilder builder = findRelocationTableBuilder();
+			if (builder == null) {
+				log.appendMsg(section.getName(),
+					"No applicable ELF relocation table builder found");
+				return;
+			}
+
+			relSection = builder.build(elf, symtab, section, bytes, sectionSet, relocations,
+				symbolsByName, log);
+			elf.getSections().add(relSection);
+		}
+
+		private ElfRelocationTableBuilder findRelocationTableBuilder() {
 			List<ElfRelocationTableBuilder> builders =
 				ClassSearcher.getInstances(ElfRelocationTableBuilder.class)
 						.stream()
-						.filter(s -> s.canBuild(section.getElfRelocatableObject(),
+						.filter(s -> s.canBuild(section.getElfFile(),
 							relocationTableFormat))
 						.collect(Collectors.toList());
 
 			if (builders.isEmpty()) {
-				log.appendMsg(section.getName(),
-					"No applicable ELF relocation table builder found");
-				return;
+				return null;
 			}
 
 			ElfRelocationTableBuilder builder = builders.get(0);
@@ -454,26 +459,7 @@ public class ElfRelocatableObjectExporter extends Exporter {
 				log.appendMsg(section.getName(), msg);
 			}
 
-			relSection = builder.build(elf, symtab, section, bytes, sectionSet, relocations, log);
-		}
-	}
-
-	private void initializeSymbolVisibilityPredicate() {
-		predicateVisibility = s -> false;
-
-		if (isDynamicSymbolLocal) {
-			Predicate<Symbol> predicate = new IsSymbolDynamic();
-			predicateVisibility = predicateVisibility.or(predicate);
-		}
-
-		if (isSymbolInsideFunctionLocal) {
-			Predicate<Symbol> predicate = new IsSymbolInsideFunction();
-			predicateVisibility = predicateVisibility.or(predicate);
-		}
-
-		if (!patternSymbolNameLocal.isBlank()) {
-			Predicate<Symbol> predicate = new IsSymbolNameMatchingRegex(patternSymbolNameLocal);
-			predicateVisibility = predicateVisibility.or(predicate);
+			return builder;
 		}
 	}
 
@@ -504,29 +490,22 @@ public class ElfRelocatableObjectExporter extends Exporter {
 		taskMonitor.setIndeterminate(true);
 
 		try (RandomAccessFile raf = new RandomAccessFile(file, "rw")) {
-			elf = new ElfRelocatableObject.Builder(file.getName())
-					.setType(ElfConstants.ET_REL)
-					.setMachine(e_ident_machine)
-					.setClass(e_ident_class)
-					.setData(e_ident_data)
-					.build();
-
-			if (generateSectionComment) {
-				addSectionComment();
-			}
-
-			if (generateStringAndSymbolTables) {
-				addStringAndSymbolTables();
-			}
+			elf = new ElfFile.Builder(e_ident_class, e_ident_data, ElfOsAbi.ELFOSABI_NONE,
+				ElfType.ET_REL, e_ident_machine).build();
+			header = elf.getHeader();
+			sectab = elf.addSectionTable();
+			sectab.add(new ElfNullSection(elf));
 
 			for (Section section : sections) {
 				taskMonitor.setMessage(String.format("Creating section %s...", section.getName()));
-				section.createElfSection(generateRelocationTables);
+				section.createSection(generateRelocationTables);
 			}
 
 			if (generateStringAndSymbolTables) {
-				taskMonitor.setMessage("Generating symbol table...");
+				taskMonitor.setMessage("Generating symbol and string tables...");
+				addStringAndSymbolTables(file);
 
+				symtab.addFile(file.getName());
 				for (Section section : sections) {
 					section.addSymbols();
 				}
@@ -538,9 +517,17 @@ public class ElfRelocatableObjectExporter extends Exporter {
 						String msg = String.format("Creating relocation table for section %s...",
 							section.getName());
 						taskMonitor.setMessage(msg);
-						section.createElfRelocationTableSection();
+						section.createRelocationTableSection();
 					}
 				}
+
+				for (ElfSymbol symbol : symtab) {
+					strtab.add(symbol.getName());
+				}
+			}
+
+			if (generateSectionComment) {
+				addSectionComment();
 			}
 
 			if (generateSectionNamesStringTable) {
@@ -549,7 +536,8 @@ public class ElfRelocatableObjectExporter extends Exporter {
 			}
 
 			taskMonitor.setMessage("Writing out ELF relocatable object file...");
-			writeOutFile(raf);
+			layoutFile();
+			writeFile(raf);
 		}
 		catch (MemoryAccessException e) {
 			throw new ExporterException(e);
@@ -558,18 +546,42 @@ public class ElfRelocatableObjectExporter extends Exporter {
 		return true;
 	}
 
-	private void addStringAndSymbolTables() {
-		strtab = new ElfRelocatableSectionStringTable(elf, ElfSectionHeaderConstants.dot_strtab);
-		symtab =
-			new ElfRelocatableSectionSymbolTable(elf, ElfSectionHeaderConstants.dot_symtab, strtab);
-		symtab.addFileSymbol(elf.getFileName());
+	private void initializeSymbolVisibilityPredicate() {
+		predicateVisibility = s -> false;
+
+		if (isDynamicSymbolLocal) {
+			Predicate<Symbol> predicate = new IsSymbolDynamic();
+			predicateVisibility = predicateVisibility.or(predicate);
+		}
+
+		if (isSymbolInsideFunctionLocal) {
+			Predicate<Symbol> predicate = new IsSymbolInsideFunction();
+			predicateVisibility = predicateVisibility.or(predicate);
+		}
+
+		if (!patternSymbolNameLocal.isBlank()) {
+			Predicate<Symbol> predicate = new IsSymbolNameMatchingRegex(patternSymbolNameLocal);
+			predicateVisibility = predicateVisibility.or(predicate);
+		}
+	}
+
+	private void addStringAndSymbolTables(File file) {
+		strtab = new ElfStringTable(elf, ElfSectionNames._STRTAB);
+		strtab.add("");
+		sectab.add(strtab);
+		symtab = new ElfSymbolTable(elf, ElfSectionNames._SYMTAB, strtab);
+		sectab.add(symtab);
+		symtab.addNull();
 
 		symbolsByName = new HashMap<>();
 	}
 
 	private void addSectionComment() {
-		String strComment = "ghidra-delinker-extension " + BuildConfig.GIT_VERSION;
-		comment = new ElfRelocatableSectionComment(elf, ".comment", strComment);
+		String strComment = "\0ghidra-delinker-extension " + BuildConfig.GIT_VERSION + "\0";
+		byte[] bytes = strComment.getBytes(StandardCharsets.US_ASCII);
+		ElfSectionFlags flags = new ElfSectionFlags().merge().strings();
+		comment = new ElfProgBits(elf, ElfSectionNames._COMMENT, flags, 1, 1, bytes);
+		sectab.add(comment);
 	}
 
 	private void addSectionForMemoryBlock(MemoryBlock memoryBlock) {
@@ -586,18 +598,44 @@ public class ElfRelocatableObjectExporter extends Exporter {
 				.entrySet()
 				.forEach(entry -> {
 					symbolsByName.put(entry.getKey(),
-						symtab.addExternalSymbol(entry.getValue().getName(true)));
+						symtab.addUndefined(entry.getValue().getName(true)));
 				});
 	}
 
 	private void addSectionNameStringTable() {
-		shstrtab =
-			new ElfRelocatableSectionStringTable(elf, ElfSectionHeaderConstants.dot_shstrtab);
-		elf.setShStrTab(shstrtab);
+		shstrtab = new ElfStringTable(elf, ElfSectionNames._SHSTRTAB);
+		sectab.add(shstrtab);
+		elf.getHeader().setShStr(shstrtab);
+
+		for (ElfSection section : sectab) {
+			shstrtab.add(section.getName());
+		}
 	}
 
-	private void writeOutFile(RandomAccessFile raf) throws IOException {
-		elf.layout();
-		elf.write(raf, elf.getDataConverter());
+	private void layoutFile() {
+		ElfHeader header = elf.getHeader();
+		ElfSectionTable sections = sectab;
+
+		long offset = header.getEhsize();
+		header.setShoff(offset);
+		offset += sections.getLength();
+
+		for (ElfSection section : sections) {
+			offset = roundUp(offset, section.getAddrAlign());
+
+			section.setOffset(offset);
+			offset += section.getLength();
+		}
+	}
+
+	private void writeFile(RandomAccessFile raf) throws IOException {
+		Collection<Writable> writables =
+			Stream.concat(List.of(header, sectab).stream(), sectab.stream())
+					.collect(Collectors.toList());
+
+		try (OutputStream outputStream = Channels.newOutputStream(raf.getChannel());
+				OutputStream bufferedOutputStream = new BufferedOutputStream(outputStream)) {
+			Writable.write(writables, bufferedOutputStream);
+		}
 	}
 }

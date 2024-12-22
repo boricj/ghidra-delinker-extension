@@ -22,7 +22,7 @@ jobs:
         name: "Setup JDK"
         uses: actions/setup-java@v4
         with:
-          java-version: "17"
+          java-version: "21"
           distribution: "temurin"
       -
         name: "Setup Ghidra"
@@ -55,7 +55,7 @@ jobs:
         name: "Setup JDK"
         uses: actions/setup-java@v4
         with:
-          java-version: "17"
+          java-version: "21"
           distribution: "temurin"
       -
         name: "Setup Ghidra"
@@ -120,7 +120,7 @@ jobs:
         name: "Setup JDK"
         uses: actions/setup-java@v4
         with:
-          java-version: "17"
+          java-version: "21"
           distribution: "temurin"
           java-package: "jre"
       -

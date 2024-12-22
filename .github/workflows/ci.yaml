@@ -129,7 +129,12 @@ jobs:
           path: "dist/"
       -
         name: "Generate release notes"
-        run: ./developer_scripts/generate-release-notes.sh | tee release-notes.md
+        uses: orhun/git-cliff-action@v4.4.2
+        with:
+          config: cliff.toml
+          args: --verbose --latest --no-exec
+        env:
+          OUTPUT: "release-notes.md"
       -
         name: "GitHub release"
         uses: ncipollo/release-action@v1.12.0

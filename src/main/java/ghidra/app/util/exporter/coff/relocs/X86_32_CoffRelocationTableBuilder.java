@@ -13,16 +13,13 @@
  */
 package ghidra.app.util.exporter.coff.relocs;
 
+import static ghidra.app.util.ProgramUtil.getOffsetWithinAddressSet;
 import static ghidra.app.util.ProgramUtil.patchBytes;
 import static ghidra.app.util.exporter.coff.relocs.CoffRelocationTableBuilder.logUnknownRelocation;
 
 import java.util.List;
+import java.util.Map;
 
-import ghidra.app.util.bin.format.coff.CoffMachineType;
-import ghidra.app.util.bin.format.coff.relocation.X86_32_CoffRelocationHandler;
-import ghidra.app.util.exporter.coff.CoffRelocatableRelocationTable;
-import ghidra.app.util.exporter.coff.CoffRelocatableSection;
-import ghidra.app.util.exporter.coff.CoffRelocatableSymbolTable;
 import ghidra.app.util.importer.MessageLog;
 import ghidra.program.model.address.AddressSetView;
 import ghidra.program.model.relocobj.Relocation;
@@ -30,19 +27,30 @@ import ghidra.program.model.relocobj.RelocationAbsolute;
 import ghidra.program.model.relocobj.RelocationRelativePC;
 import ghidra.util.DataConverter;
 import ghidra.util.LittleEndianDataConverter;
+import net.boricj.bft.coff.CoffRelocationTable;
+import net.boricj.bft.coff.CoffSection;
+import net.boricj.bft.coff.CoffSymbolTable;
+import net.boricj.bft.coff.CoffSymbolTable.CoffSymbol;
+import net.boricj.bft.coff.constants.CoffMachine;
+import net.boricj.bft.coff.constants.CoffRelocationType;
+import net.boricj.bft.coff.machines.i386.CoffRelocationType_i386;
 
 public class X86_32_CoffRelocationTableBuilder implements CoffRelocationTableBuilder {
 	@Override
-	public void build(CoffRelocatableSymbolTable symtab, CoffRelocatableSection section,
-			byte[] bytes, AddressSetView addressSet, List<Relocation> relocations, MessageLog log) {
-		CoffRelocatableRelocationTable relTable = section.getRelocationTable();
+	public void build(CoffSymbolTable symtab, CoffSection section, byte[] bytes,
+			AddressSetView addressSet, List<Relocation> relocations,
+			Map<String, CoffSymbol> symbolsByName, MessageLog log) {
+		CoffRelocationTable relTable = section.getRelocations();
 
 		for (Relocation relocation : relocations) {
+			CoffSymbol symbol = symbolsByName.get(relocation.getSymbolName());
+
 			if (relocation instanceof RelocationAbsolute) {
-				process(relTable, bytes, addressSet, (RelocationAbsolute) relocation, log);
+				process(relTable, bytes, addressSet, (RelocationAbsolute) relocation, symbol, log);
 			}
 			else if (relocation instanceof RelocationRelativePC) {
-				process(relTable, bytes, addressSet, (RelocationRelativePC) relocation, log);
+				process(relTable, bytes, addressSet, (RelocationRelativePC) relocation, symbol,
+					log);
 			}
 			else {
 				logUnknownRelocation(relTable.getSection(), relocation, log);
@@ -50,17 +58,17 @@ public class X86_32_CoffRelocationTableBuilder implements CoffRelocationTableBui
 		}
 	}
 
-	private void process(CoffRelocatableRelocationTable relTable, byte[] bytes,
+	private void process(CoffRelocationTable relTable, byte[] bytes,
 			AddressSetView addressSet, RelocationAbsolute relocation,
-			MessageLog log) {
+			CoffSymbol symbol, MessageLog log) {
 		DataConverter dc = LittleEndianDataConverter.INSTANCE;
 		int width = relocation.getWidth();
 		long bitmask = relocation.getBitmask();
 		long value = relocation.getAddend();
 
-		short type;
+		CoffRelocationType type;
 		if (width == 4 && bitmask == 0xffffffffL) {
-			type = X86_32_CoffRelocationHandler.IMAGE_REL_I386_DIR32;
+			type = CoffRelocationType_i386.IMAGE_REL_I386_DIR32;
 		}
 		else {
 			logUnknownRelocation(relTable.getSection(), relocation, log);
@@ -68,20 +76,20 @@ public class X86_32_CoffRelocationTableBuilder implements CoffRelocationTableBui
 		}
 
 		patchBytes(bytes, addressSet, dc, relocation, value);
-		emit(relTable, relocation, type);
+		emit(relTable, addressSet, relocation, type, symbol);
 	}
 
-	private void process(CoffRelocatableRelocationTable relTable, byte[] bytes,
+	private void process(CoffRelocationTable relTable, byte[] bytes,
 			AddressSetView addressSet, RelocationRelativePC relocation,
-			MessageLog log) {
+			CoffSymbol symbol, MessageLog log) {
 		DataConverter dc = LittleEndianDataConverter.INSTANCE;
 		int width = relocation.getWidth();
 		long bitmask = relocation.getBitmask();
 		long value = relocation.getAddend() + width;
 
-		short type;
+		CoffRelocationType type;
 		if (width == 4 && bitmask == 0xffffffffL) {
-			type = X86_32_CoffRelocationHandler.IMAGE_REL_I386_REL32;
+			type = CoffRelocationType_i386.IMAGE_REL_I386_REL32;
 		}
 		else {
 			logUnknownRelocation(relTable.getSection(), relocation, log);
@@ -89,21 +97,18 @@ public class X86_32_CoffRelocationTableBuilder implements CoffRelocationTableBui
 		}
 
 		patchBytes(bytes, addressSet, dc, relocation, value);
-		emit(relTable, relocation, type);
+		emit(relTable, addressSet, relocation, type, symbol);
 	}
 
-	private void emit(CoffRelocatableRelocationTable relTable, Relocation relocation, short type) {
-		CoffRelocatableSection section = relTable.getSection();
-		CoffRelocatableSymbolTable symtab = section.getSymbolTable();
+	private void emit(CoffRelocationTable relTable, AddressSetView addressSetView,
+			Relocation relocation, CoffRelocationType type, CoffSymbol symbol) {
+		int offset = (int) getOffsetWithinAddressSet(addressSetView, relocation.getAddress());
 
-		int offset = (int) section.getOffset(relocation.getAddress());
-		int symbolIndex = symtab.getSymbolNumber(relocation.getSymbolName());
-
-		relTable.addRelocation(offset, symbolIndex, type);
+		relTable.add(offset, symbol, type);
 	}
 
 	@Override
-	public boolean canBuild(short machine) {
-		return machine == CoffMachineType.IMAGE_FILE_MACHINE_I386;
+	public boolean canBuild(CoffMachine machine) {
+		return machine == CoffMachine.IMAGE_FILE_MACHINE_I386;
 	}
 }

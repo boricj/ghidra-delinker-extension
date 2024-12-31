@@ -14,22 +14,25 @@
 package ghidra.app.util.exporter.coff.relocs;
 
 import java.util.List;
+import java.util.Map;
 
-import ghidra.app.util.exporter.coff.CoffRelocatableSection;
-import ghidra.app.util.exporter.coff.CoffRelocatableSymbolTable;
 import ghidra.app.util.importer.MessageLog;
 import ghidra.program.model.address.AddressSetView;
 import ghidra.program.model.relocobj.Relocation;
 import ghidra.util.classfinder.ExtensionPoint;
+import net.boricj.bft.coff.CoffSection;
+import net.boricj.bft.coff.CoffSymbolTable;
+import net.boricj.bft.coff.CoffSymbolTable.CoffSymbol;
+import net.boricj.bft.coff.constants.CoffMachine;
 
 public interface CoffRelocationTableBuilder extends ExtensionPoint {
-	public void build(CoffRelocatableSymbolTable symtab,
-			CoffRelocatableSection section, byte[] bytes, AddressSetView addressSet,
-			List<Relocation> relocations, MessageLog log);
+	public void build(CoffSymbolTable symtab, CoffSection section, byte[] bytes,
+			AddressSetView addressSet, List<Relocation> relocations,
+			Map<String, CoffSymbol> symbolsByName, MessageLog log);
 
-	public boolean canBuild(short machine);
+	public boolean canBuild(CoffMachine machine);
 
-	public static void logUnknownRelocation(CoffRelocatableSection section, Relocation relocation,
+	public static void logUnknownRelocation(CoffSection section, Relocation relocation,
 			MessageLog log) {
 		String name = relocation.getClass().getSimpleName();
 		String msg = String.format("Unknown relocation %s width %d bitmask %d at %s", name,

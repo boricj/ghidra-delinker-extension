@@ -18,10 +18,10 @@ import java.io.File;
 import org.junit.Test;
 
 import ghidra.DelinkerIntegrationTest;
-import ghidra.app.util.bin.format.coff.relocation.X86_32_CoffRelocationHandler;
 import ghidra.app.util.exporter.CoffRelocatableObjectExporter;
 import ghidra.program.model.address.AddressFactory;
 import ghidra.program.model.address.AddressSetView;
+import net.boricj.bft.coff.machines.i386.CoffRelocationType_i386;
 
 public class COFF_I386_ascii_table_Test extends DelinkerIntegrationTest {
 	private static final File mainFile =
@@ -40,8 +40,8 @@ public class COFF_I386_ascii_table_Test extends DelinkerIntegrationTest {
 				.union(af.getAddressSet(af.getAddress("00469e50"), af.getAddress("00469ea7"))); 	// .rdata
 		File exportedFile = exportObjectFile(set, new CoffRelocatableObjectExporter(), null);
 
-		ObjectFile mainObjectFile = new CoffObjectFile(getProgram(), mainFile);
-		CoffObjectFile exported = new CoffObjectFile(getProgram(), exportedFile);
+		ObjectFile mainObjectFile = new CoffObjectFile(mainFile);
+		CoffObjectFile exported = new CoffObjectFile(exportedFile);
 
 		mainObjectFile.compareSectionBytes(".text$mn", exported, ".text");
 		mainObjectFile.compareSectionBytes(".data", exported, ".data");
@@ -67,63 +67,63 @@ public class COFF_I386_ascii_table_Test extends DelinkerIntegrationTest {
 		exported.hasUndefinedSymbol("_isupper");
 
 		exported.hasRelocationAtAddress(".text", 0x00000047,
-			X86_32_CoffRelocationHandler.IMAGE_REL_I386_REL32, "_putchar");
+			CoffRelocationType_i386.IMAGE_REL_I386_REL32, "_putchar");
 		exported.hasRelocationAtAddress(".text", 0x00000058,
-			X86_32_CoffRelocationHandler.IMAGE_REL_I386_REL32, "_putchar");
+			CoffRelocationType_i386.IMAGE_REL_I386_REL32, "_putchar");
 		exported.hasRelocationAtAddress(".text", 0x0000007C,
-			X86_32_CoffRelocationHandler.IMAGE_REL_I386_REL32, "_print_number");
+			CoffRelocationType_i386.IMAGE_REL_I386_REL32, "_print_number");
 		exported.hasRelocationAtAddress(".text", 0x00000086,
-			X86_32_CoffRelocationHandler.IMAGE_REL_I386_REL32, "_putchar");
+			CoffRelocationType_i386.IMAGE_REL_I386_REL32, "_putchar");
 		exported.hasRelocationAtAddress(".text", 0x00000093,
-			X86_32_CoffRelocationHandler.IMAGE_REL_I386_REL32, "_isgraph");
+			CoffRelocationType_i386.IMAGE_REL_I386_REL32, "_isgraph");
 		exported.hasRelocationAtAddress(".text", 0x000000A4,
-			X86_32_CoffRelocationHandler.IMAGE_REL_I386_REL32, "_putchar");
+			CoffRelocationType_i386.IMAGE_REL_I386_REL32, "_putchar");
 		exported.hasRelocationAtAddress(".text", 0x000000B0,
-			X86_32_CoffRelocationHandler.IMAGE_REL_I386_REL32, "_putchar");
+			CoffRelocationType_i386.IMAGE_REL_I386_REL32, "_putchar");
 		exported.hasRelocationAtAddress(".text", 0x000000BA,
-			X86_32_CoffRelocationHandler.IMAGE_REL_I386_REL32, "_putchar");
+			CoffRelocationType_i386.IMAGE_REL_I386_REL32, "_putchar");
 		exported.hasRelocationAtAddress(".text", 0x00000103,
-			X86_32_CoffRelocationHandler.IMAGE_REL_I386_REL32, "_putchar");
+			CoffRelocationType_i386.IMAGE_REL_I386_REL32, "_putchar");
 		exported.hasRelocationAtAddress(".text", 0x0000010F,
-			X86_32_CoffRelocationHandler.IMAGE_REL_I386_REL32, "_putchar");
+			CoffRelocationType_i386.IMAGE_REL_I386_REL32, "_putchar");
 		exported.hasRelocationAtAddress(".text", 0x00000147,
-			X86_32_CoffRelocationHandler.IMAGE_REL_I386_DIR32, "_COLUMNS");
+			CoffRelocationType_i386.IMAGE_REL_I386_DIR32, "_COLUMNS");
 		exported.hasRelocationAtAddress(".text", 0x00000154,
-			X86_32_CoffRelocationHandler.IMAGE_REL_I386_DIR32, "_COLUMNS");
+			CoffRelocationType_i386.IMAGE_REL_I386_DIR32, "_COLUMNS");
 		exported.hasRelocationAtAddress(".text", 0x00000164,
-			X86_32_CoffRelocationHandler.IMAGE_REL_I386_DIR32, "_COLUMNS");
+			CoffRelocationType_i386.IMAGE_REL_I386_DIR32, "_COLUMNS");
 		exported.hasRelocationAtAddress(".text", 0x00000170,
-			X86_32_CoffRelocationHandler.IMAGE_REL_I386_DIR32, "_NUM_ASCII_PROPERTIES");
+			CoffRelocationType_i386.IMAGE_REL_I386_DIR32, "_NUM_ASCII_PROPERTIES");
 		exported.hasRelocationAtAddress(".text", 0x00000176,
-			X86_32_CoffRelocationHandler.IMAGE_REL_I386_DIR32, "_s_ascii_properties");
+			CoffRelocationType_i386.IMAGE_REL_I386_DIR32, "_s_ascii_properties");
 		exported.hasRelocationAtAddress(".text", 0x00000180,
-			X86_32_CoffRelocationHandler.IMAGE_REL_I386_REL32, "_print_ascii_entry");
+			CoffRelocationType_i386.IMAGE_REL_I386_REL32, "_print_ascii_entry");
 		exported.hasRelocationAtAddress(".text", 0x0000018D,
-			X86_32_CoffRelocationHandler.IMAGE_REL_I386_DIR32, "_COLUMNS");
+			CoffRelocationType_i386.IMAGE_REL_I386_DIR32, "_COLUMNS");
 		exported.hasRelocationAtAddress(".text", 0x00000192,
-			X86_32_CoffRelocationHandler.IMAGE_REL_I386_DIR32, "_COLUMNS");
+			CoffRelocationType_i386.IMAGE_REL_I386_DIR32, "_COLUMNS");
 		exported.hasRelocationAtAddress(".text", 0x000001B2,
-			X86_32_CoffRelocationHandler.IMAGE_REL_I386_REL32, "_putchar");
+			CoffRelocationType_i386.IMAGE_REL_I386_REL32, "_putchar");
 
 		exported.hasRelocationAtAddress(".rdata", 0x00000008,
-			X86_32_CoffRelocationHandler.IMAGE_REL_I386_DIR32, "_isgraph");
+			CoffRelocationType_i386.IMAGE_REL_I386_DIR32, "_isgraph");
 		exported.hasRelocationAtAddress(".rdata", 0x00000010,
-			X86_32_CoffRelocationHandler.IMAGE_REL_I386_DIR32, "_isprint");
+			CoffRelocationType_i386.IMAGE_REL_I386_DIR32, "_isprint");
 		exported.hasRelocationAtAddress(".rdata", 0x00000018,
-			X86_32_CoffRelocationHandler.IMAGE_REL_I386_DIR32, "_iscntrl");
+			CoffRelocationType_i386.IMAGE_REL_I386_DIR32, "_iscntrl");
 		exported.hasRelocationAtAddress(".rdata", 0x00000020,
-			X86_32_CoffRelocationHandler.IMAGE_REL_I386_DIR32, "_isspace");
+			CoffRelocationType_i386.IMAGE_REL_I386_DIR32, "_isspace");
 		exported.hasRelocationAtAddress(".rdata", 0x00000028,
-			X86_32_CoffRelocationHandler.IMAGE_REL_I386_DIR32, "_ispunct");
+			CoffRelocationType_i386.IMAGE_REL_I386_DIR32, "_ispunct");
 		exported.hasRelocationAtAddress(".rdata", 0x00000030,
-			X86_32_CoffRelocationHandler.IMAGE_REL_I386_DIR32, "_isalnum");
+			CoffRelocationType_i386.IMAGE_REL_I386_DIR32, "_isalnum");
 		exported.hasRelocationAtAddress(".rdata", 0x00000038,
-			X86_32_CoffRelocationHandler.IMAGE_REL_I386_DIR32, "_isalpha");
+			CoffRelocationType_i386.IMAGE_REL_I386_DIR32, "_isalpha");
 		exported.hasRelocationAtAddress(".rdata", 0x00000040,
-			X86_32_CoffRelocationHandler.IMAGE_REL_I386_DIR32, "_isdigit");
+			CoffRelocationType_i386.IMAGE_REL_I386_DIR32, "_isdigit");
 		exported.hasRelocationAtAddress(".rdata", 0x00000048,
-			X86_32_CoffRelocationHandler.IMAGE_REL_I386_DIR32, "_isupper");
+			CoffRelocationType_i386.IMAGE_REL_I386_DIR32, "_isupper");
 		exported.hasRelocationAtAddress(".rdata", 0x00000050,
-			X86_32_CoffRelocationHandler.IMAGE_REL_I386_DIR32, "_islower");
+			CoffRelocationType_i386.IMAGE_REL_I386_DIR32, "_islower");
 	}
 }

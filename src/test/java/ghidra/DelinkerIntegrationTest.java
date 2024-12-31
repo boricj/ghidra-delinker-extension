@@ -22,7 +22,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.nio.file.AccessMode;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -36,10 +35,6 @@ import generic.jar.ResourceFile;
 import ghidra.app.analyzers.RelocationTableSynthesizerAnalyzer;
 import ghidra.app.util.DomainObjectService;
 import ghidra.app.util.Option;
-import ghidra.app.util.bin.ByteProvider;
-import ghidra.app.util.bin.FileByteProvider;
-import ghidra.app.util.bin.format.coff.CoffFileHeader;
-import ghidra.app.util.bin.format.coff.CoffSectionHeader;
 import ghidra.app.util.bin.format.coff.CoffSymbolSectionNumber;
 import ghidra.app.util.exporter.Exporter;
 import ghidra.app.util.importer.MessageLog;
@@ -59,6 +54,10 @@ import ghidra.test.TestProgramManager;
 import ghidra.util.NamingUtilities;
 import ghidra.util.exception.VersionException;
 import ghidra.util.task.TaskMonitor;
+import net.boricj.bft.coff.CoffFile;
+import net.boricj.bft.coff.CoffSection;
+import net.boricj.bft.coff.constants.CoffRelocationType;
+import net.boricj.bft.coff.sections.CoffBytes;
 import net.boricj.bft.elf.ElfFile;
 import net.boricj.bft.elf.ElfSection;
 import net.boricj.bft.elf.constants.ElfRelocationType;
@@ -172,22 +171,16 @@ public abstract class DelinkerIntegrationTest extends AbstractProgramBasedTest {
 	}
 
 	public class CoffObjectFile implements ObjectFile {
-		private final Program program;
-		private final ByteProvider byteProvider;
-		private final CoffFileHeader header;
+		private final CoffFile header;
 
-		public CoffObjectFile(Program program, File file) throws IOException {
-			this.program = program;
-			this.byteProvider = new FileByteProvider(file, null, AccessMode.READ);
-			this.header = new CoffFileHeader(byteProvider);
-			this.header.parse(byteProvider, TaskMonitor.DUMMY);
+		public CoffObjectFile(File file) throws IOException {
+			this.header = new CoffFile.Parser(new FileInputStream(file)).parse();
 		}
 
 		@Override
 		public byte[] getSectionBytes(String name) throws IOException {
-			CoffSectionHeader section = getSection(name);
-			return byteProvider.readBytes(section.getPointerToRawData(),
-				section.getSize(program.getLanguage()));
+			CoffBytes section = (CoffBytes) getSection(name);
+			return section.getBytes();
 		}
 
 		public void hasSymbolAtAddress(String symbolName, String sectionName, int offset) {
@@ -195,8 +188,8 @@ public abstract class DelinkerIntegrationTest extends AbstractProgramBasedTest {
 					.stream()
 					.filter(symbol -> symbol.getName().equals(symbolName))
 					.anyMatch(symbol -> {
-						CoffSectionHeader section =
-							header.getSections().get(symbol.getSectionNumber() - 1);
+						CoffSection section =
+							header.getSections().get(symbol.getSectionNumber());
 						return section.getName().equals(sectionName) && symbol.getValue() == offset;
 					}));
 		}
@@ -209,20 +202,21 @@ public abstract class DelinkerIntegrationTest extends AbstractProgramBasedTest {
 						symbol -> symbol.getSectionNumber() == CoffSymbolSectionNumber.N_UNDEF));
 		}
 
-		public void hasRelocationAtAddress(String sectionName, long offset, int type,
+		public void hasRelocationAtAddress(String sectionName, long offset, CoffRelocationType type,
 				String symbolName) {
-			CoffSectionHeader section = getSection(sectionName);
+			CoffSection section = getSection(sectionName);
 			assertTrue(section.getRelocations()
 					.stream()
-					.filter(r -> r.getAddress() == offset)
-					.anyMatch(r -> header.getSymbolAtIndex(r.getSymbolIndex())
+					.filter(r -> r.getVirtualAddress() == offset)
+					.anyMatch(r -> header.getSymbols()
+							.get(r.getSymbolTableIndex())
 							.getName()
 							.equals(symbolName) &&
 						r.getType() == type));
 		}
 
-		private CoffSectionHeader getSection(String name) {
-			CoffSectionHeader section = header.getSections()
+		private CoffSection getSection(String name) {
+			CoffSection section = header.getSections()
 					.stream()
 					.filter(s -> s.getName().equals(name))
 					.findFirst()

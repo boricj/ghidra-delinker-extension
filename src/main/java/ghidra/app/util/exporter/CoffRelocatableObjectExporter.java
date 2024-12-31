@@ -16,16 +16,25 @@ package ghidra.app.util.exporter;
 import static ghidra.app.util.ProgramUtil.getBytes;
 import static ghidra.app.util.ProgramUtil.getProgram;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.RandomAccessFile;
+import java.nio.channels.Channels;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.TreeMap;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import javax.help.UnsupportedOperationException;
 
 import ghidra.app.util.DomainObjectService;
 import ghidra.app.util.DropDownOption;
@@ -34,13 +43,6 @@ import ghidra.app.util.Option;
 import ghidra.app.util.OptionUtils;
 import ghidra.app.util.ProgramUtil;
 import ghidra.app.util.SymbolPreference;
-import ghidra.app.util.bin.format.coff.CoffMachineType;
-import ghidra.app.util.bin.format.coff.CoffSymbolStorageClass;
-import ghidra.app.util.bin.format.pe.SectionFlags;
-import ghidra.app.util.exporter.coff.CoffRelocatableObject;
-import ghidra.app.util.exporter.coff.CoffRelocatableSection;
-import ghidra.app.util.exporter.coff.CoffRelocatableStringTable;
-import ghidra.app.util.exporter.coff.CoffRelocatableSymbolTable;
 import ghidra.app.util.exporter.coff.relocs.CoffRelocationTableBuilder;
 import ghidra.app.util.visibility.IsSymbolDynamic;
 import ghidra.app.util.visibility.IsSymbolInsideFunction;
@@ -56,9 +58,21 @@ import ghidra.program.model.mem.MemoryBlock;
 import ghidra.program.model.relocobj.Relocation;
 import ghidra.program.model.relocobj.RelocationTable;
 import ghidra.program.model.symbol.Symbol;
-import ghidra.util.LittleEndianDataConverter;
 import ghidra.util.classfinder.ClassSearcher;
 import ghidra.util.task.TaskMonitor;
+import net.boricj.bft.Writable;
+import net.boricj.bft.coff.CoffFile;
+import net.boricj.bft.coff.CoffHeader;
+import net.boricj.bft.coff.CoffRelocationTable;
+import net.boricj.bft.coff.CoffSection;
+import net.boricj.bft.coff.CoffSectionTable;
+import net.boricj.bft.coff.CoffStringTable;
+import net.boricj.bft.coff.CoffSymbolTable;
+import net.boricj.bft.coff.CoffSymbolTable.CoffSymbol;
+import net.boricj.bft.coff.constants.CoffMachine;
+import net.boricj.bft.coff.constants.CoffSectionFlags;
+import net.boricj.bft.coff.constants.CoffStorageClass;
+import net.boricj.bft.coff.sections.CoffBytes;
 
 /**
  * An exporter implementation that exports COFF object files.
@@ -66,7 +80,7 @@ import ghidra.util.task.TaskMonitor;
 public class CoffRelocatableObjectExporter extends Exporter {
 	private Program program;
 	private AddressSetView fileSet;
-	private short machine;
+	private CoffMachine machine;
 	private SymbolPreference symbolNamePreference;
 	private boolean isDynamicSymbolStatic;
 	private boolean isSymbolInsideFunctionStatic;
@@ -75,9 +89,14 @@ public class CoffRelocatableObjectExporter extends Exporter {
 	private RelocationTable relocationTable;
 	private Predicate<Relocation> predicateRelocation;
 	private Predicate<Symbol> predicateVisibility;
+	private Map<String, CoffSymbol> symbolsByName;
+	private List<Section> sections;
 
-	private CoffRelocatableStringTable strtab;
-	private CoffRelocatableSymbolTable symtab;
+	private CoffFile coff;
+	private CoffHeader header;
+	private CoffSectionTable sectab;
+	private CoffStringTable strtab;
+	private CoffSymbolTable symtab;
 
 	private static final SymbolPreference DEFAULT_SYMBOL_PREFERENCE = SymbolPreference.MSVC;
 
@@ -92,17 +111,9 @@ public class CoffRelocatableObjectExporter extends Exporter {
 		"Give symbols inside functions static visibility";
 	private static final String OPTION_VIS_PATTERN = "Regular expression for static symbol names";
 
-	private static final Map<Short, String> COFF_MACHINES = new TreeMap<>(Map.ofEntries(
-		Map.entry(CoffMachineType.IMAGE_FILE_MACHINE_UNKNOWN, "(none)"),
-		Map.entry(CoffMachineType.IMAGE_FILE_MACHINE_I386, "i386"),
-		Map.entry(CoffMachineType.IMAGE_FILE_MACHINE_AMD64, "x86_64"),
-		Map.entry(CoffMachineType.IMAGE_FILE_MACHINE_ARM, "ARM"),
-		Map.entry(CoffMachineType.IMAGE_FILE_MACHINE_ARM64, "AARCH64"),
-		Map.entry(CoffMachineType.IMAGE_FILE_MACHINE_POWERPC, "PowerPC"),
-		Map.entry(CoffMachineType.IMAGE_FILE_MACHINE_RISCV32, "RISC-V"),
-		Map.entry(CoffMachineType.IMAGE_FILE_MACHINE_RISCV64, "RV64"),
-		Map.entry(CoffMachineType.IMAGE_FILE_MACHINE_R3000, "MIPS (R3000)"),
-		Map.entry(CoffMachineType.IMAGE_FILE_MACHINE_R4000, "MIPS (R4000)")));
+	private static final Map<CoffMachine, String> COFF_MACHINES = new TreeMap<>(Map.ofEntries(
+		Map.entry(CoffMachine.IMAGE_FILE_MACHINE_UNKNOWN, "(none)"),
+		Map.entry(CoffMachine.IMAGE_FILE_MACHINE_I386, "i386")));
 
 	private static final class ProcessorInfo {
 		String processor;
@@ -128,29 +139,21 @@ public class CoffRelocatableObjectExporter extends Exporter {
 		}
 	}
 
-	private static final Map<ProcessorInfo, Short> GHIDRA_TO_COFF_MACHINES = Map.ofEntries(
-		Map.entry(new ProcessorInfo("x86", 4), CoffMachineType.IMAGE_FILE_MACHINE_I386),
-		Map.entry(new ProcessorInfo("x86", 8), CoffMachineType.IMAGE_FILE_MACHINE_AMD64),
-		Map.entry(new ProcessorInfo("ARM", 4), CoffMachineType.IMAGE_FILE_MACHINE_ARM),
-		Map.entry(new ProcessorInfo("AARCH64", 8), CoffMachineType.IMAGE_FILE_MACHINE_ARM64),
-		Map.entry(new ProcessorInfo("PowerPC", 4), CoffMachineType.IMAGE_FILE_MACHINE_POWERPC),
-		Map.entry(new ProcessorInfo("RISCV", 4), CoffMachineType.IMAGE_FILE_MACHINE_RISCV32),
-		Map.entry(new ProcessorInfo("RISCV", 8), CoffMachineType.IMAGE_FILE_MACHINE_RISCV64),
-		Map.entry(new ProcessorInfo("MIPS", 4), CoffMachineType.IMAGE_FILE_MACHINE_R4000),
-		Map.entry(new ProcessorInfo("PSX", 4), CoffMachineType.IMAGE_FILE_MACHINE_R3000));
+	private static final Map<ProcessorInfo, CoffMachine> GHIDRA_TO_COFF_MACHINES = Map.ofEntries(
+		Map.entry(new ProcessorInfo("x86", 4), CoffMachine.IMAGE_FILE_MACHINE_I386));
 
-	private static short autodetectCoffMachine(Program program) {
+	private static CoffMachine autodetectCoffMachine(Program program) {
 		String processor = program.getLanguage().getProcessor().toString();
 		int pointerSize = program.getDefaultPointerSize();
 		ProcessorInfo info = new ProcessorInfo(processor, pointerSize);
 
-		for (Map.Entry<ProcessorInfo, Short> entry : GHIDRA_TO_COFF_MACHINES.entrySet()) {
+		for (Map.Entry<ProcessorInfo, CoffMachine> entry : GHIDRA_TO_COFF_MACHINES.entrySet()) {
 			if (info.equals(entry.getKey())) {
 				return entry.getValue();
 			}
 		}
 
-		return CoffMachineType.IMAGE_FILE_MACHINE_UNKNOWN;
+		return CoffMachine.IMAGE_FILE_MACHINE_UNKNOWN;
 	}
 
 	public CoffRelocatableObjectExporter() {
@@ -165,8 +168,9 @@ public class CoffRelocatableObjectExporter extends Exporter {
 		}
 
 		Option[] options = new Option[] {
-			new DropDownOption<>(OPTION_GROUP_COFF_HEADER, OPTION_COFF_MACHINE, COFF_MACHINES,
-				Short.class, autodetectCoffMachine(program)),
+			new DropDownOption<CoffMachine>(OPTION_GROUP_COFF_HEADER, OPTION_COFF_MACHINE,
+				COFF_MACHINES,
+				CoffMachine.class, autodetectCoffMachine(program)),
 			new EnumDropDownOption<>(OPTION_GROUP_SYMBOLS, OPTION_PREF_SYMNAME,
 				SymbolPreference.class, DEFAULT_SYMBOL_PREFERENCE),
 			new Option(OPTION_GROUP_SYMBOL_VISIBILITY, OPTION_VIS_DYNAMIC, true),
@@ -181,7 +185,7 @@ public class CoffRelocatableObjectExporter extends Exporter {
 	@Override
 	public void setOptions(List<Option> options) {
 		machine = OptionUtils.getOption(OPTION_COFF_MACHINE, options,
-			CoffMachineType.IMAGE_FILE_MACHINE_UNKNOWN);
+			CoffMachine.IMAGE_FILE_MACHINE_UNKNOWN);
 		symbolNamePreference =
 			OptionUtils.getOption(OPTION_PREF_SYMNAME, options, DEFAULT_SYMBOL_PREFERENCE);
 		isDynamicSymbolStatic = OptionUtils.getOption(OPTION_VIS_DYNAMIC, options, true);
@@ -192,41 +196,25 @@ public class CoffRelocatableObjectExporter extends Exporter {
 	}
 
 	private class Section {
-		private final short number;
 		private final MemoryBlock memoryBlock;
 		private final String name;
 		private final AddressSetView sectionSet;
-		private final List<Relocation> relocations;
-		private final byte[] data;
-		private CoffRelocatableSection section;
+		private byte[] bytes;
+		private CoffSection section;
 
-		public Section(short number, MemoryBlock memoryBlock, AddressSetView sectionSet)
-				throws MemoryAccessException {
-			this.number = number;
+		public Section(MemoryBlock memoryBlock, AddressSetView sectionSet) {
 			this.memoryBlock = memoryBlock;
 			this.name = memoryBlock.getName();
 			this.sectionSet = sectionSet;
-			this.relocations = new ArrayList<>();
-			relocationTable.getRelocations(sectionSet, predicateRelocation)
-					.forEachRemaining(relocations::add);
-			if (memoryBlock.isInitialized()) {
-				this.data = getBytes(program, sectionSet);
-			}
-			else {
-				this.data = null;
-			}
 		}
 
-		public short headerRelocationCount() {
-			if (relocations.size() > 65535) {
-				return (short) 65535;
-			}
-			else {
-				return (short) relocations.size();
-			}
+		public String getName() {
+			return name;
 		}
 
 		public void addSymbols() {
+			symtab.addSection(section);
+
 			ProgramUtil.getSectionSymbols(program, sectionSet, symbolNamePreference)
 					.entrySet()
 					.forEach(entry -> {
@@ -235,21 +223,25 @@ public class CoffRelocatableObjectExporter extends Exporter {
 						long offset =
 							ProgramUtil.getOffsetWithinAddressSet(sectionSet, symbol.getAddress());
 						var obj = symbol.getObject();
-						short type = 0x00;
+						byte type = 0x00;
 						if (obj instanceof Function) {
 							type |= 0x20;
 						}
-						byte storageClass = CoffSymbolStorageClass.C_EXT;
+						CoffStorageClass storageClass = CoffStorageClass.IMAGE_SYM_CLASS_EXTERNAL;
 						if (predicateVisibility.test(symbol)) {
-							storageClass = CoffSymbolStorageClass.C_STAT;
+							storageClass = CoffStorageClass.IMAGE_SYM_CLASS_STATIC;
 						}
-						symtab.addDefinedSymbol(entry.getKey(), symbolName, number, (int) offset,
-							type,
-							storageClass);
+						symbolsByName.put(entry.getKey(),
+							symtab.addSymbol(symbolName, (int) offset, section, type,
+								storageClass));
 					});
 		}
 
-		public void buildCoffRelocationTable(short machine) {
+		public void buildRelocationTable(CoffMachine machine) {
+			List<Relocation> relocations = new ArrayList<>();
+			relocationTable.getRelocations(sectionSet, predicateRelocation)
+					.forEachRemaining(relocations::add);
+
 			List<CoffRelocationTableBuilder> builders =
 				ClassSearcher.getInstances(CoffRelocationTableBuilder.class)
 						.stream()
@@ -267,83 +259,39 @@ public class CoffRelocatableObjectExporter extends Exporter {
 					builder.getClass().getName());
 			}
 
-			builder.build(symtab, section, data, sectionSet, relocations, log);
+			builder.build(symtab, section, bytes, sectionSet, relocations, symbolsByName, log);
 		}
 
-		public CoffRelocatableSection buildCoffSection() {
-			int characteristics = 0;
+		public void createSection() throws MemoryAccessException {
+			CoffSectionFlags characteristics = new CoffSectionFlags();
 			if (memoryBlock.isRead()) {
-				characteristics |= SectionFlags.IMAGE_SCN_MEM_READ.getMask();
+				characteristics.memRead();
 			}
 			if (memoryBlock.isWrite()) {
-				characteristics |= SectionFlags.IMAGE_SCN_MEM_WRITE.getMask();
+				characteristics.memWrite();
 			}
 			if (memoryBlock.isExecute()) {
-				characteristics |= SectionFlags.IMAGE_SCN_MEM_EXECUTE.getMask();
+				characteristics.memExecute();
 			}
+
 			if (memoryBlock.isInitialized()) {
-				characteristics |= SectionFlags.IMAGE_SCN_CNT_INITIALIZED_DATA.getMask();
+				if (memoryBlock.isExecute()) {
+					characteristics.cntCode();
+				}
+				else {
+					characteristics.cntInitializedData();
+				}
+
+				bytes = getBytes(program, sectionSet);
+				section = new CoffBytes(coff, memoryBlock.getName(), characteristics, bytes);
 			}
-			section = new CoffRelocatableSection(memoryBlock.getName(), sectionSet, characteristics,
-				data, symtab, strtab);
-			return section;
-		}
-	}
-
-	private List<Section> calculateSections()
-			throws ExporterException {
-		List<Section> sections = new ArrayList<>();
-		for (MemoryBlock memoryBlock : program.getMemory().getBlocks()) {
-			AddressSet sectionSet =
-				new AddressSet(memoryBlock.getStart(), memoryBlock.getEnd()).intersect(fileSet);
-			if (sectionSet.isEmpty()) {
-				continue;
+			else {
+				characteristics.cntUninitializedData();
+				throw new UnsupportedOperationException(
+					"COFF exporter doesn't know how to handle uninitialized sections yet");
 			}
-			Section section;
-			try {
-				section = new Section(
-					(short) (sections.size() + 1),
-					memoryBlock,
-					sectionSet);
-			}
-			catch (MemoryAccessException e) {
-				throw new ExporterException(e);
-			}
-			sections.add(section);
-			symtab.addSectionSymbol(
-				section.name,
-				section.number,
-				(int) memoryBlock.getSize(),
-				section.headerRelocationCount());
-			section.addSymbols();
-		}
-		return sections;
-	}
 
-	private void calculateExternalSymbols(Memory memory) {
-		ProgramUtil.getExternalSymbols(program, fileSet, symbolNamePreference)
-				.entrySet()
-				.forEach(entry -> {
-					symtab.addUndefinedSymbol(entry.getKey(), entry.getValue().getName(true));
-				});
-	}
-
-	private void initializeSymbolVisibilityPredicate() {
-		predicateVisibility = s -> false;
-
-		if (isDynamicSymbolStatic) {
-			Predicate<Symbol> predicate = new IsSymbolDynamic();
-			predicateVisibility = predicateVisibility.or(predicate);
-		}
-
-		if (isSymbolInsideFunctionStatic) {
-			Predicate<Symbol> predicate = new IsSymbolInsideFunction();
-			predicateVisibility = predicateVisibility.or(predicate);
-		}
-
-		if (!patternSymbolNameStatic.isBlank()) {
-			Predicate<Symbol> predicate = new IsSymbolNameMatchingRegex(patternSymbolNameStatic);
-			predicateVisibility = predicateVisibility.or(predicate);
+			sectab.add(section);
 		}
 	}
 
@@ -366,34 +314,127 @@ public class CoffRelocatableObjectExporter extends Exporter {
 		predicateRelocation = (Relocation r) -> r.isNeeded(program, predicateSet);
 		initializeSymbolVisibilityPredicate();
 
+		sections = new ArrayList<>();
+		for (MemoryBlock memoryBlock : program.getMemory().getBlocks()) {
+			addSectionForMemoryBlock(memoryBlock);
+		}
+
 		taskMonitor.setIndeterminate(true);
 
-		strtab = new CoffRelocatableStringTable();
-		symtab = new CoffRelocatableSymbolTable(strtab);
-		symtab.addFileSymbol(file.getName());
-
-		taskMonitor.setMessage("Calculating sections.");
-		List<Section> sections = calculateSections();
-
-		taskMonitor.setMessage("Calculating external symbols.");
-		calculateExternalSymbols(memory);
-
-		taskMonitor.setMessage("Building COFF sections.");
-		final CoffRelocatableObject object =
-			new CoffRelocatableObject.Builder(symtab, strtab).setMachine(machine).build();
-		for (Section section : sections) {
-			object.addSection(section.buildCoffSection());
-		}
-
-		taskMonitor.setMessage("Building COFF relocation tables.");
-		for (Section section : sections) {
-			section.buildCoffRelocationTable(machine);
-		}
-
-		taskMonitor.setMessage("Writing COFF object to disk.");
 		try (RandomAccessFile raf = new RandomAccessFile(file, "rw")) {
-			object.write(raf, new LittleEndianDataConverter());
+			coff = new CoffFile.Builder(machine).build();
+			header = coff.getHeader();
+			sectab = coff.getSections();
+			strtab = coff.getStrings();
+			symtab = coff.getSymbols();
+
+			for (Section section : sections) {
+				taskMonitor.setMessage(String.format("Creating section %s...", section.getName()));
+				section.createSection();
+			}
+
+			taskMonitor.setMessage("Generating symbol table...");
+			symbolsByName = new HashMap<>();
+			symtab.addFile(".file", file.getName());
+			for (Section section : sections) {
+				section.addSymbols();
+			}
+
+			computeExternalSymbols(memory);
+
+			for (Section section : sections) {
+				String msg =
+					String.format("Building relocation table for section %s...", section.getName());
+				taskMonitor.setMessage(msg);
+				section.buildRelocationTable(machine);
+			}
+
+			for (CoffSymbol symbol : symtab) {
+				strtab.add(symbol.getName());
+			}
+			for (CoffSection section : sectab) {
+				strtab.add(section.getName());
+			}
+
+			taskMonitor.setMessage("Writing COFF relocatable object file...");
+			layoutFile();
+			writeOutFile(raf);
 		}
+		catch (MemoryAccessException e) {
+			throw new ExporterException(e);
+		}
+
 		return true;
+	}
+
+	private void initializeSymbolVisibilityPredicate() {
+		predicateVisibility = s -> false;
+
+		if (isDynamicSymbolStatic) {
+			Predicate<Symbol> predicate = new IsSymbolDynamic();
+			predicateVisibility = predicateVisibility.or(predicate);
+		}
+
+		if (isSymbolInsideFunctionStatic) {
+			Predicate<Symbol> predicate = new IsSymbolInsideFunction();
+			predicateVisibility = predicateVisibility.or(predicate);
+		}
+
+		if (!patternSymbolNameStatic.isBlank()) {
+			Predicate<Symbol> predicate = new IsSymbolNameMatchingRegex(patternSymbolNameStatic);
+			predicateVisibility = predicateVisibility.or(predicate);
+		}
+	}
+
+	private void addSectionForMemoryBlock(MemoryBlock memoryBlock) {
+		AddressSet memoryBlockSet =
+			new AddressSet(memoryBlock.getStart(), memoryBlock.getEnd()).intersect(fileSet);
+
+		if (!memoryBlockSet.isEmpty()) {
+			sections.add(new Section(memoryBlock, memoryBlockSet));
+		}
+	}
+
+	private void computeExternalSymbols(Memory memory) {
+		ProgramUtil.getExternalSymbols(program, fileSet, symbolNamePreference)
+				.entrySet()
+				.forEach(entry -> {
+					symbolsByName.put(entry.getKey(),
+						symtab.addUndefined(entry.getValue().getName(true)));
+				});
+	}
+
+	private void layoutFile() {
+		long offset = sectab.getOffset() + sectab.getLength();
+
+		for (CoffSection section : sectab) {
+			CoffBytes coffBytes = (CoffBytes) section;
+			byte[] data = coffBytes.getBytes();
+			section.setOffset((int) offset);
+			offset += data.length;
+
+			CoffRelocationTable reltab = section.getRelocations();
+			if (!reltab.isEmpty()) {
+				reltab.setOffset((int) offset);
+				offset += reltab.getLength();
+			}
+		}
+
+		symtab.setOffset(offset);
+	}
+
+	private void writeOutFile(RandomAccessFile raf) throws IOException {
+		Stream<Writable> streamWritables = Stream.of(
+			List.of(header, sectab, symtab, strtab).stream(),
+			sectab.stream(),
+			sectab.stream().map(s -> s.getRelocations()))
+				.flatMap(java.util.function.Function.identity());
+		Collection<Writable> writables = streamWritables
+				.collect(Collectors.toList());
+
+		try (OutputStream outputStream = Channels.newOutputStream(raf.getChannel());
+				OutputStream bufferedOutputStream = new BufferedOutputStream(outputStream)) {
+			Writable.write(writables, bufferedOutputStream);
+		}
 	}
 }

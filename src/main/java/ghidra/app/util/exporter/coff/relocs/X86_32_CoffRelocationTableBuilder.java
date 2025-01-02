@@ -39,11 +39,11 @@ public class X86_32_CoffRelocationTableBuilder implements CoffRelocationTableBui
 	@Override
 	public void build(CoffSymbolTable symtab, CoffSection section, byte[] bytes,
 			AddressSetView addressSet, List<Relocation> relocations,
-			Map<String, CoffSymbol> symbolsByName, MessageLog log) {
+			Map<Relocation, CoffSymbol> relocationsToSymbols, MessageLog log) {
 		CoffRelocationTable relTable = section.getRelocations();
 
 		for (Relocation relocation : relocations) {
-			CoffSymbol symbol = symbolsByName.get(relocation.getSymbolName());
+			CoffSymbol symbol = relocationsToSymbols.get(relocation);
 
 			if (relocation instanceof RelocationAbsolute) {
 				process(relTable, bytes, addressSet, (RelocationAbsolute) relocation, symbol, log);

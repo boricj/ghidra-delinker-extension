@@ -433,8 +433,11 @@ public class ElfRelocatableObjectExporter extends Exporter {
 				return;
 			}
 
+			Map<Relocation, ElfSymbol> relocationsToSymbols = relocations.stream()
+					.collect(Collectors.toMap(r -> r, r -> symbolsByName.get(r.getSymbolName())));
+
 			relSection = builder.build(elf, symtab, section, bytes, sectionSet, relocations,
-				symbolsByName, log);
+				relocationsToSymbols, log);
 			elf.getSections().add(relSection);
 		}
 

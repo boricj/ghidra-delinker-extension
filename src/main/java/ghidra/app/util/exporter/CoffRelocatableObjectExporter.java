@@ -259,7 +259,11 @@ public class CoffRelocatableObjectExporter extends Exporter {
 					builder.getClass().getName());
 			}
 
-			builder.build(symtab, section, bytes, sectionSet, relocations, symbolsByName, log);
+			Map<Relocation, CoffSymbol> relocationsToSymbols = relocations.stream()
+					.collect(Collectors.toMap(r -> r, r -> symbolsByName.get(r.getSymbolName())));
+
+			builder.build(symtab, section, bytes, sectionSet, relocations, relocationsToSymbols,
+				log);
 		}
 
 		public void createSection() throws MemoryAccessException {

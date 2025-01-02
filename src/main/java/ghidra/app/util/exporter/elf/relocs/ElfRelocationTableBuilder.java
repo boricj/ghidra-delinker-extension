@@ -30,7 +30,7 @@ public interface ElfRelocationTableBuilder extends ExtensionPoint {
 	public ElfSection build(ElfFile elf,
 			ElfSymbolTable symtab, ElfSection section, byte[] bytes,
 			AddressSetView addressSet, List<Relocation> relocations,
-			Map<String, ElfSymbol> symbolsByName, MessageLog log);
+			Map<Relocation, ElfSymbol> relocationsToSymbols, MessageLog log);
 
 	public boolean canBuild(ElfFile elf, ElfSectionType sectionType);
 

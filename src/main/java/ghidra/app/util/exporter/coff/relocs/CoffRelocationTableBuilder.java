@@ -28,7 +28,7 @@ import net.boricj.bft.coff.constants.CoffMachine;
 public interface CoffRelocationTableBuilder extends ExtensionPoint {
 	public void build(CoffSymbolTable symtab, CoffSection section, byte[] bytes,
 			AddressSetView addressSet, List<Relocation> relocations,
-			Map<String, CoffSymbol> symbolsByName, MessageLog log);
+			Map<Relocation, CoffSymbol> relocationsToSymbols, MessageLog log);
 
 	public boolean canBuild(CoffMachine machine);
 

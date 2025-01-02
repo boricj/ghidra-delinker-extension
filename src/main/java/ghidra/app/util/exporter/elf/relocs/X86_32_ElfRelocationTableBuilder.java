@@ -45,13 +45,12 @@ public class X86_32_ElfRelocationTableBuilder implements ElfRelocationTableBuild
 	@Override
 	public ElfSection build(ElfFile elf, ElfSymbolTable symtab, ElfSection section, byte[] bytes,
 			AddressSetView addressSetView, List<Relocation> relocations,
-			Map<String, ElfSymbol> symbolsByName, MessageLog log) {
+			Map<Relocation, ElfSymbol> relocationsToSymbols, MessageLog log) {
 		String relName = generateSectionName(section, ElfSectionNames._REL);
-		ElfRelTable relTable =
-			new ElfRelTable(elf, relName, symtab, section);
+		ElfRelTable relTable = new ElfRelTable(elf, relName, symtab, section);
 
 		for (Relocation relocation : relocations) {
-			ElfSymbol symbol = symbolsByName.get(relocation.getSymbolName());
+			ElfSymbol symbol = relocationsToSymbols.get(relocation);
 
 			if (relocation instanceof RelocationAbsolute) {
 				process(relTable, bytes, addressSetView, (RelocationAbsolute) relocation, symbol,

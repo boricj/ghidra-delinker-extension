@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.RandomAccessFile;
 import java.nio.channels.Channels;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -60,6 +61,7 @@ import ghidra.program.model.relocobj.RelocationTable;
 import ghidra.program.model.symbol.Symbol;
 import ghidra.util.classfinder.ClassSearcher;
 import ghidra.util.task.TaskMonitor;
+import ghidra_delinker_extension.BuildConfig;
 import net.boricj.bft.Writable;
 import net.boricj.bft.coff.CoffFile;
 import net.boricj.bft.coff.CoffHeader;
@@ -81,6 +83,7 @@ public class CoffRelocatableObjectExporter extends Exporter {
 	private Program program;
 	private AddressSetView fileSet;
 	private CoffMachine machine;
+	private boolean generateSectionComment;
 	private SymbolPreference symbolNamePreference;
 	private boolean isDynamicSymbolStatic;
 	private boolean isSymbolInsideFunctionStatic;
@@ -97,6 +100,7 @@ public class CoffRelocatableObjectExporter extends Exporter {
 	private CoffSectionTable sectab;
 	private CoffStringTable strtab;
 	private CoffSymbolTable symtab;
+	private CoffSection comment;
 
 	private static final SymbolPreference DEFAULT_SYMBOL_PREFERENCE = SymbolPreference.MSVC;
 
@@ -105,6 +109,7 @@ public class CoffRelocatableObjectExporter extends Exporter {
 	private static final String OPTION_GROUP_SYMBOL_VISIBILITY = "Symbol visibility";
 
 	private static final String OPTION_COFF_MACHINE = "COFF machine";
+	private static final String OPTION_GEN_COMMENT = "Generate .comment section";
 	private static final String OPTION_PREF_SYMNAME = "Symbol name preference";
 	private static final String OPTION_VIS_DYNAMIC = "Give dynamic symbols static visibility";
 	private static final String OPTION_VIS_INSIDE_FUNCTIONS =
@@ -171,6 +176,7 @@ public class CoffRelocatableObjectExporter extends Exporter {
 			new DropDownOption<CoffMachine>(OPTION_GROUP_COFF_HEADER, OPTION_COFF_MACHINE,
 				COFF_MACHINES,
 				CoffMachine.class, autodetectCoffMachine(program)),
+			new Option(OPTION_GROUP_COFF_HEADER, OPTION_GEN_COMMENT, true),
 			new EnumDropDownOption<>(OPTION_GROUP_SYMBOLS, OPTION_PREF_SYMNAME,
 				SymbolPreference.class, DEFAULT_SYMBOL_PREFERENCE),
 			new Option(OPTION_GROUP_SYMBOL_VISIBILITY, OPTION_VIS_DYNAMIC, true),
@@ -186,6 +192,7 @@ public class CoffRelocatableObjectExporter extends Exporter {
 	public void setOptions(List<Option> options) {
 		machine = OptionUtils.getOption(OPTION_COFF_MACHINE, options,
 			CoffMachine.IMAGE_FILE_MACHINE_UNKNOWN);
+		generateSectionComment = OptionUtils.getOption(OPTION_GEN_COMMENT, options, true);
 		symbolNamePreference =
 			OptionUtils.getOption(OPTION_PREF_SYMNAME, options, DEFAULT_SYMBOL_PREFERENCE);
 		isDynamicSymbolStatic = OptionUtils.getOption(OPTION_VIS_DYNAMIC, options, true);
@@ -353,6 +360,10 @@ public class CoffRelocatableObjectExporter extends Exporter {
 				section.buildRelocationTable(machine);
 			}
 
+			if (generateSectionComment) {
+				addSectionComment();
+			}
+
 			for (CoffSymbol symbol : symtab) {
 				strtab.add(symbol.getName());
 			}
@@ -397,6 +408,14 @@ public class CoffRelocatableObjectExporter extends Exporter {
 		if (!memoryBlockSet.isEmpty()) {
 			sections.add(new Section(memoryBlock, memoryBlockSet));
 		}
+	}
+
+	private void addSectionComment() {
+		String strComment = "ghidra-delinker-extension " + BuildConfig.GIT_VERSION + "\0";
+		byte[] bytes = strComment.getBytes(StandardCharsets.US_ASCII);
+		CoffSectionFlags flags = new CoffSectionFlags().lnkInfo().lnkRemove();
+		comment = new CoffBytes(coff, ".comment", flags, bytes);
+		sectab.add(comment);
 	}
 
 	private void computeExternalSymbols(Memory memory) {

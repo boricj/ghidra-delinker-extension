@@ -11,15 +11,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package ghidra.app.util.visibility;
+package ghidra.app.util.predicates.visibility;
 
 import java.util.function.Predicate;
+import java.util.regex.Pattern;
 
 import ghidra.program.model.symbol.Symbol;
 
-public class IsSymbolDynamic implements Predicate<Symbol> {
+public class IsSymbolNameMatchingRegex implements Predicate<Symbol> {
+	public static final String DEFAULT_PATTERN = "^switchD_.+::switchdataD_.+$";;
+
+	private final Pattern pattern;
+
+	public IsSymbolNameMatchingRegex(String regex) {
+		this.pattern = Pattern.compile(regex);
+	}
+
 	@Override
-	public boolean test(Symbol s) {
-		return s.isDynamic();
+	public boolean test(Symbol symbol) {
+		return pattern.matcher(symbol.getName(true)).matches();
 	}
 }

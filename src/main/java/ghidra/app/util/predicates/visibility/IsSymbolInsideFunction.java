@@ -11,24 +11,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package ghidra.app.util.visibility;
+package ghidra.app.util.predicates.visibility;
 
 import java.util.function.Predicate;
-import java.util.regex.Pattern;
 
+import ghidra.program.model.address.Address;
+import ghidra.program.model.listing.Function;
+import ghidra.program.model.listing.FunctionManager;
+import ghidra.program.model.listing.Program;
 import ghidra.program.model.symbol.Symbol;
 
-public class IsSymbolNameMatchingRegex implements Predicate<Symbol> {
-	public static final String DEFAULT_PATTERN = "^switchD_.+::switchdataD_.+$";;
-
-	private final Pattern pattern;
-
-	public IsSymbolNameMatchingRegex(String regex) {
-		this.pattern = Pattern.compile(regex);
-	}
-
+public class IsSymbolInsideFunction implements Predicate<Symbol> {
 	@Override
 	public boolean test(Symbol symbol) {
-		return pattern.matcher(symbol.getName(true)).matches();
+		Address address = symbol.getAddress();
+		Program program = symbol.getProgram();
+		FunctionManager functionManager = program.getFunctionManager();
+		Function function = functionManager.getFunctionContaining(address);
+
+		return function != null && !function.getEntryPoint().equals(address);
 	}
 }

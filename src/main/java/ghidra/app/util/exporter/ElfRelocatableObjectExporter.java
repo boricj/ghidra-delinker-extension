@@ -297,9 +297,9 @@ public class ElfRelocatableObjectExporter extends Exporter {
 			OptionUtils.getOption(OPTION_ELF_CLASS, options, ElfClass.ELFCLASSNONE);
 		e_ident_data = OptionUtils.getOption(OPTION_ELF_DATA, options, ElfData.ELFDATANONE);
 		generateSectionNamesStringTable =
-			OptionUtils.getOption(OPTION_GEN_SHSTRTAB, options, false);
-		generateSectionComment = OptionUtils.getOption(OPTION_GEN_COMMENT, options, false);
-		generateStringAndSymbolTables = OptionUtils.getOption(OPTION_GEN_STRTAB, options, false);
+			OptionUtils.getOption(OPTION_GEN_SHSTRTAB, options, true);
+		generateSectionComment = OptionUtils.getOption(OPTION_GEN_COMMENT, options, true);
+		generateStringAndSymbolTables = OptionUtils.getOption(OPTION_GEN_STRTAB, options, true);
 		isDynamicSymbolLocal = OptionUtils.getOption(OPTION_VIS_DYNAMIC, options, true);
 		isSymbolInsideFunctionLocal =
 			OptionUtils.getOption(OPTION_VIS_INSIDE_FUNCTIONS, options, true);
@@ -307,7 +307,7 @@ public class ElfRelocatableObjectExporter extends Exporter {
 			IsSymbolNameMatchingRegex.DEFAULT_PATTERN);
 		symbolNamePreference =
 			OptionUtils.getOption(OPTION_PREF_SYMNAME, options, DEFAULT_SYMBOL_PREFERENCE);
-		generateRelocationTables = OptionUtils.getOption(OPTION_GEN_REL, options, false);
+		generateRelocationTables = OptionUtils.getOption(OPTION_GEN_REL, options, true);
 		relocationTableFormat =
 			OptionUtils.getOption(OPTION_REL_FMT, options, ElfSectionType.SHT_NULL);
 	}

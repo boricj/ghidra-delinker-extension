@@ -14,13 +14,6 @@
 package ghidra.program.model.relocobj;
 
 import ghidra.program.model.address.Address;
-import ghidra.program.model.address.AddressRange;
-import ghidra.program.model.address.AddressSetView;
-import ghidra.program.model.listing.CodeUnit;
-import ghidra.program.model.listing.Listing;
-import ghidra.program.model.listing.Program;
-import ghidra.program.model.symbol.Reference;
-import ghidra.program.model.symbol.ReferenceManager;
 
 public class RelocationRelativePC extends AbstractRelocationBitmask {
 	private final boolean isTransparent;
@@ -50,29 +43,7 @@ public class RelocationRelativePC extends AbstractRelocationBitmask {
 	}
 
 	@Override
-	public boolean isNeeded(Program program, AddressSetView addressSet) {
-		if (!isTransparent) {
-			return true;
-		}
-
-		ReferenceManager referenceManager = program.getReferenceManager();
-		Listing listing = program.getListing();
-		CodeUnit codeUnit = listing.getCodeUnitContaining(getAddress());
-
-		Address fromAddress = codeUnit.getAddress();
-		AddressRange fromRange = addressSet.getRangeContaining(fromAddress);
-
-		for (Reference reference : referenceManager.getReferencesFrom(fromAddress)) {
-			if (!reference.isPrimary()) {
-				continue;
-			}
-
-			Address toAddress = reference.getToAddress();
-			if (!fromRange.contains(toAddress)) {
-				return true;
-			}
-		}
-
-		return false;
+	public boolean isTransparent() {
+		return isTransparent;
 	}
 }

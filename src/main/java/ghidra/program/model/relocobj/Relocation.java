@@ -14,8 +14,6 @@
 package ghidra.program.model.relocobj;
 
 import ghidra.program.model.address.Address;
-import ghidra.program.model.address.AddressSetView;
-import ghidra.program.model.listing.Program;
 
 public interface Relocation {
 	public RelocationTable getRelocationTable();
@@ -32,7 +30,7 @@ public interface Relocation {
 
 	public void delete();
 
-	default public boolean isNeeded(Program program, AddressSetView addressSet) {
-		return true;
+	default public boolean isTransparent() {
+		return false;
 	}
 }

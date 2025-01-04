@@ -44,6 +44,7 @@ import ghidra.app.util.OptionUtils;
 import ghidra.app.util.ProgramUtil;
 import ghidra.app.util.SymbolPreference;
 import ghidra.app.util.exporter.elf.relocs.ElfRelocationTableBuilder;
+import ghidra.app.util.predicates.relocations.TrimSuperfluousRelativePC;
 import ghidra.app.util.visibility.IsSymbolDynamic;
 import ghidra.app.util.visibility.IsSymbolInsideFunction;
 import ghidra.app.util.visibility.IsSymbolNameMatchingRegex;
@@ -482,7 +483,7 @@ public class ElfRelocatableObjectExporter extends Exporter {
 
 		relocationTable = RelocationTable.get(program);
 		final AddressSetView predicateSet = fileSet;
-		predicateRelocation = (Relocation r) -> r.isNeeded(program, predicateSet);
+		predicateRelocation = new TrimSuperfluousRelativePC(program, predicateSet);
 		initializeSymbolVisibilityPredicate();
 
 		sections = new ArrayList<>();

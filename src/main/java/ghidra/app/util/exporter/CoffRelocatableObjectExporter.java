@@ -89,6 +89,7 @@ public class CoffRelocatableObjectExporter extends Exporter {
 	private boolean isDynamicSymbolStatic;
 	private boolean isSymbolInsideFunctionStatic;
 	private String patternSymbolNameStatic;
+	private boolean trimSuperfluousRelativePC;
 
 	private RelocationTable relocationTable;
 	private Predicate<Relocation> predicateRelocation;
@@ -108,6 +109,7 @@ public class CoffRelocatableObjectExporter extends Exporter {
 	private static final String OPTION_GROUP_COFF_HEADER = "COFF header";
 	private static final String OPTION_GROUP_SYMBOLS = "Symbols";
 	private static final String OPTION_GROUP_SYMBOL_VISIBILITY = "Symbol visibility";
+	private static final String OPTION_GROUP_RELOCATIONS = "Relocations";
 
 	private static final String OPTION_COFF_MACHINE = "COFF machine";
 	private static final String OPTION_GEN_COMMENT = "Generate .comment section";
@@ -116,6 +118,8 @@ public class CoffRelocatableObjectExporter extends Exporter {
 	private static final String OPTION_VIS_INSIDE_FUNCTIONS =
 		"Give symbols inside functions static visibility";
 	private static final String OPTION_VIS_PATTERN = "Regular expression for static symbol names";
+	private static final String OPTION_TRIM_SUPERFLUOUS_RELATIVEPC =
+		"Trim superfluous PC-relative relocations";
 
 	private static final Map<CoffMachine, String> COFF_MACHINES = new TreeMap<>(Map.ofEntries(
 		Map.entry(CoffMachine.IMAGE_FILE_MACHINE_UNKNOWN, "(none)"),
@@ -184,6 +188,7 @@ public class CoffRelocatableObjectExporter extends Exporter {
 			new Option(OPTION_GROUP_SYMBOL_VISIBILITY, OPTION_VIS_INSIDE_FUNCTIONS, true),
 			new Option(OPTION_GROUP_SYMBOL_VISIBILITY, OPTION_VIS_PATTERN,
 				IsSymbolNameMatchingRegex.DEFAULT_PATTERN),
+			new Option(OPTION_GROUP_RELOCATIONS, OPTION_TRIM_SUPERFLUOUS_RELATIVEPC, true),
 		};
 
 		return Arrays.asList(options);
@@ -201,6 +206,8 @@ public class CoffRelocatableObjectExporter extends Exporter {
 			OptionUtils.getOption(OPTION_VIS_INSIDE_FUNCTIONS, options, true);
 		patternSymbolNameStatic = OptionUtils.getOption(OPTION_VIS_PATTERN, options,
 			IsSymbolNameMatchingRegex.DEFAULT_PATTERN);
+		trimSuperfluousRelativePC =
+			OptionUtils.getOption(OPTION_TRIM_SUPERFLUOUS_RELATIVEPC, options, true);
 	}
 
 	private class Section {
@@ -320,10 +327,9 @@ public class CoffRelocatableObjectExporter extends Exporter {
 		}
 
 		this.fileSet = fileSet;
-
 		relocationTable = RelocationTable.get(program);
-		final AddressSetView predicateSet = fileSet;
-		predicateRelocation = new TrimSuperfluousRelativePC(program, predicateSet);
+
+		initializeRelocationPredicate();
 		initializeSymbolVisibilityPredicate();
 
 		sections = new ArrayList<>();
@@ -381,6 +387,15 @@ public class CoffRelocatableObjectExporter extends Exporter {
 		}
 
 		return true;
+	}
+
+	private void initializeRelocationPredicate() {
+		predicateRelocation = r -> true;
+
+		if (trimSuperfluousRelativePC) {
+			Predicate<Relocation> predicate = new TrimSuperfluousRelativePC(program, fileSet);
+			predicateRelocation = predicateRelocation.and(predicate);
+		}
 	}
 
 	private void initializeSymbolVisibilityPredicate() {

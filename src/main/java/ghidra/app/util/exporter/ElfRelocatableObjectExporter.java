@@ -103,6 +103,7 @@ public class ElfRelocatableObjectExporter extends Exporter {
 	private String patternSymbolNameLocal;
 	private boolean generateRelocationTables;
 	private ElfSectionType relocationTableFormat;
+	private boolean trimSuperfluousRelativePC;
 
 	private ElfFile elf;
 	private ElfHeader header;
@@ -110,7 +111,6 @@ public class ElfRelocatableObjectExporter extends Exporter {
 	private ElfStringTable strtab;
 	private ElfSymbolTable symtab;
 	private ElfStringTable shstrtab;
-	@SuppressWarnings("unused")
 	private ElfProgBits comment;
 
 	private Program program;
@@ -142,6 +142,8 @@ public class ElfRelocatableObjectExporter extends Exporter {
 	private static final String OPTION_VIS_PATTERN = "Regular expression for local symbol names";
 	private static final String OPTION_GEN_REL = "Generate relocation tables";
 	private static final String OPTION_REL_FMT = "Relocation table format";
+	private static final String OPTION_TRIM_SUPERFLUOUS_RELATIVEPC =
+		"Trim superfluous PC-relative relocations";
 
 	private static final Map<ElfClass, String> ELF_CLASSES = new TreeMap<>(Map.ofEntries(
 		Map.entry(ElfClass.ELFCLASSNONE, "(none)"),
@@ -285,7 +287,8 @@ public class ElfRelocatableObjectExporter extends Exporter {
 			new Option(OPTION_GROUP_RELOCATIONS, OPTION_GEN_REL, true),
 			new DropDownOption<ElfSectionType>(OPTION_GROUP_RELOCATIONS, OPTION_REL_FMT,
 				ELF_RELOCATION_TABLE_TYPES, ElfSectionType.class,
-				autodetectElfRelocationTableFormat(program))
+				autodetectElfRelocationTableFormat(program)),
+			new Option(OPTION_GROUP_RELOCATIONS, OPTION_TRIM_SUPERFLUOUS_RELATIVEPC, true),
 		};
 
 		return Arrays.asList(options);
@@ -311,6 +314,8 @@ public class ElfRelocatableObjectExporter extends Exporter {
 		generateRelocationTables = OptionUtils.getOption(OPTION_GEN_REL, options, true);
 		relocationTableFormat =
 			OptionUtils.getOption(OPTION_REL_FMT, options, ElfSectionType.SHT_NULL);
+		trimSuperfluousRelativePC =
+			OptionUtils.getOption(OPTION_TRIM_SUPERFLUOUS_RELATIVEPC, options, false);
 	}
 
 	private class Section {
@@ -480,10 +485,9 @@ public class ElfRelocatableObjectExporter extends Exporter {
 		}
 
 		this.fileSet = fileSet;
-
 		relocationTable = RelocationTable.get(program);
-		final AddressSetView predicateSet = fileSet;
-		predicateRelocation = new TrimSuperfluousRelativePC(program, predicateSet);
+
+		initializeRelocationPredicate();
 		initializeSymbolVisibilityPredicate();
 
 		sections = new ArrayList<>();
@@ -548,6 +552,15 @@ public class ElfRelocatableObjectExporter extends Exporter {
 		}
 
 		return true;
+	}
+
+	private void initializeRelocationPredicate() {
+		predicateRelocation = r -> true;
+
+		if (trimSuperfluousRelativePC) {
+			Predicate<Relocation> predicate = new TrimSuperfluousRelativePC(program, fileSet);
+			predicateRelocation = predicateRelocation.and(predicate);
+		}
 	}
 
 	private void initializeSymbolVisibilityPredicate() {

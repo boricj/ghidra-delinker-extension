@@ -21,6 +21,7 @@ import ghidra.app.analyzers.relocations.patterns.OperandMatcher;
 import ghidra.app.analyzers.relocations.utils.SymbolWithOffset;
 import ghidra.app.util.importer.MessageLog;
 import ghidra.program.model.address.Address;
+import ghidra.program.model.address.AddressSetView;
 import ghidra.program.model.listing.Function;
 import ghidra.program.model.listing.Instruction;
 import ghidra.program.model.listing.Program;
@@ -76,13 +77,14 @@ public abstract class InstructionRelocationEmitter implements FunctionInstructio
 	}
 
 	@Override
-	public boolean process(Instruction instruction) throws MemoryAccessException {
+	public boolean process(Instruction instruction, AddressSetView relocatable)
+			throws MemoryAccessException {
 		ReferenceManager referenceManager = program.getReferenceManager();
 		Address fromAddress = instruction.getAddress();
 		boolean foundRelocation = false;
 
 		for (Reference reference : referenceManager.getReferencesFrom(fromAddress)) {
-			if (!isReferenceInteresting(reference)) {
+			if (!isReferenceInteresting(reference, relocatable)) {
 				continue;
 			}
 			SymbolWithOffset symbol = SymbolWithOffset.get(program, reference);

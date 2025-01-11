@@ -23,6 +23,7 @@ import java.util.Set;
 import ghidra.app.analyzers.relocations.utils.SymbolWithOffset;
 import ghidra.app.util.importer.MessageLog;
 import ghidra.program.model.address.Address;
+import ghidra.program.model.address.AddressSetView;
 import ghidra.program.model.block.BasicBlockModel;
 import ghidra.program.model.block.CodeBlock;
 import ghidra.program.model.block.CodeBlockModel;
@@ -137,7 +138,7 @@ public abstract class BundleRelocationEmitter implements FunctionInstructionSink
 	}
 
 	@Override
-	public boolean process(Instruction instruction)
+	public boolean process(Instruction instruction, AddressSetView relocatable)
 			throws MemoryAccessException, CancelledException {
 		Map<Register, Node> registerNodes = getRegisterNodesForInstruction(instruction);
 		ReferenceManager referenceManager = program.getReferenceManager();
@@ -145,7 +146,7 @@ public abstract class BundleRelocationEmitter implements FunctionInstructionSink
 		boolean foundRelocation = false;
 
 		for (Reference reference : referenceManager.getReferencesFrom(fromAddress)) {
-			if (!isReferenceInteresting(reference)) {
+			if (!isReferenceInteresting(reference, relocatable)) {
 				continue;
 			}
 			SymbolWithOffset symbol = SymbolWithOffset.get(program, reference);

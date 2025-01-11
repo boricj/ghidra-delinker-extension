@@ -37,7 +37,7 @@ import ghidra.util.task.TaskMonitor;
 public abstract class FunctionInstructionSinkCodeRelocationSynthesizer
 		implements CodeRelocationSynthesizer {
 	@Override
-	public void processFunction(Program program, AddressSetView set, Function function,
+	public void process(Program program, AddressSetView relocatable, Function function,
 			RelocationTable relocationTable, TaskMonitor monitor, MessageLog log)
 			throws MemoryAccessException, CancelledException {
 		ReferenceManager referenceManager = program.getReferenceManager();
@@ -50,10 +50,11 @@ public abstract class FunctionInstructionSinkCodeRelocationSynthesizer
 			Reference references[] = referenceManager.getReferencesFrom(fromAddress);
 
 			boolean interestingReference = Arrays.stream(references)
-					.anyMatch(r -> sinks.stream().anyMatch(s -> s.isReferenceInteresting(r)));
+					.anyMatch(r -> sinks.stream()
+							.anyMatch(s -> s.isReferenceInteresting(r, relocatable)));
 			boolean foundRelocation = false;
 			for (FunctionInstructionSink sink : sinks) {
-				foundRelocation |= sink.process(instruction);
+				foundRelocation |= sink.process(instruction, relocatable);
 			}
 
 			if (interestingReference && !foundRelocation) {

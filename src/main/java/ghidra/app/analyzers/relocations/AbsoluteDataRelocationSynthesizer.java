@@ -29,7 +29,7 @@ public class AbsoluteDataRelocationSynthesizer implements DataRelocationSynthesi
 	}
 
 	@Override
-	public void processPointer(Program program, AddressSetView addressSet, Data pointer,
+	public void process(Program program, AddressSetView relocatable, Data pointer,
 			RelocationTable relocationTable, TaskMonitor monitor, MessageLog log)
 			throws MemoryAccessException {
 		if (!pointer.isInitializedMemory()) {

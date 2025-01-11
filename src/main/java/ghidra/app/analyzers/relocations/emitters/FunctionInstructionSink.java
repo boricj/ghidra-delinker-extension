@@ -13,6 +13,7 @@
  */
 package ghidra.app.analyzers.relocations.emitters;
 
+import ghidra.program.model.address.AddressSetView;
 import ghidra.program.model.listing.Instruction;
 import ghidra.program.model.mem.MemoryAccessException;
 import ghidra.program.model.symbol.Reference;
@@ -23,12 +24,15 @@ import ghidra.util.exception.CancelledException;
  * ascending address order.
  */
 public interface FunctionInstructionSink {
-	public abstract boolean process(Instruction instruction)
+	public abstract boolean process(Instruction instruction, AddressSetView relocatable)
 			throws MemoryAccessException, CancelledException;
 
-	public default boolean isReferenceInteresting(Reference reference) {
+	public default boolean isReferenceInteresting(Reference reference, AddressSetView relocatable) {
 		boolean interesting = reference.isPrimary();
 		interesting &= !reference.isStackReference() && !reference.isRegisterReference();
+		if (!relocatable.isEmpty()) {
+			interesting &= relocatable.contains(reference.getToAddress());
+		}
 		return interesting;
 	}
 }

@@ -1,22 +1,22 @@
 {
 	"configurations": [
 		{
-			"args": "ghidra.GhidraRun",
-			"console": "internalConsole",
-			"mainClass": "ghidra.GhidraLauncher",
-			"name": "Ghidra (Debug)",
-			"projectName": "ghidra-delinker-extension",
-			"request": "launch",
-			"shortenCommandLine": "argfile",
 			"type": "java",
+			"name": "Ghidra (Debug)",
+			"request": "launch",
+			"mainClass": "ghidra.Ghidra",
+			"args": "ghidra.GhidraRun",
 			"classPaths": [
-				"${env:GHIDRA_INSTALL_DIR}/Ghidra/Framework/Utility/lib/Utility.jar",
-				"${workspaceFolder}/build"
+				"${env:GHIDRA_INSTALL_DIR}/Ghidra/Framework/Utility/lib/Utility.jar"
 			],
+			"console": "internalConsole",
+			"projectName": "ghidra-delinker-extension",
+			"shortenCommandLine": "argfile",
 			"vmArgs": [
 				"-Dawt.useSystemAAFontSettings=on",
 				"-Declipse.project.dir=${workspaceFolder}",
 				"-Dfile.encoding=UTF8",
+				"-Dghidra.external.modules=${workspaceFolder}",
 				"-Djava.system.class.loader=ghidra.GhidraClassLoader",
 				"-Dlog4j.configurationFile=${env:GHIDRA_INSTALL_DIR}/support/debug.log4j.xml",
 				"-Dpython.console.encoding=UTF-8",
@@ -26,6 +26,13 @@
 				"-showversion",
 				"-Xshare:off"
 			]
+		},
+		{
+		  "type": "java",
+		  "name": "Ghidra (Attach)",
+		  "request": "attach",
+		  "hostName": "localhost",
+		  "port": 18001
 		}
 	],
 	"version": "0.2.0"

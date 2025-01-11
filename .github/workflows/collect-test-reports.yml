@@ -18,9 +18,8 @@ jobs:
       fail-fast: false
       matrix:
         ghidra:
-          - "11.1"
-          - "11.1.1"
-          - "11.1.2"
+          - "11.2"
+          - "11.2.1"
     steps:
       -
         name: "Collect test reports"

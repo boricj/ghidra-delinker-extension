@@ -14,11 +14,14 @@
 package ghidra.app.util;
 
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Spliterators;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -27,7 +30,9 @@ import org.apache.commons.lang3.ArrayUtils;
 
 import ghidra.framework.model.DomainObject;
 import ghidra.program.model.address.Address;
+import ghidra.program.model.address.AddressFactory;
 import ghidra.program.model.address.AddressRange;
+import ghidra.program.model.address.AddressSet;
 import ghidra.program.model.address.AddressSetView;
 import ghidra.program.model.lang.InstructionPrototype;
 import ghidra.program.model.lang.Mask;
@@ -39,8 +44,12 @@ import ghidra.program.model.relocobj.Relocation;
 import ghidra.program.model.relocobj.RelocationTable;
 import ghidra.program.model.symbol.Symbol;
 import ghidra.util.DataConverter;
+import ghidra.util.bean.opteditor.OptionsVetoException;
 
 public abstract class ProgramUtil {
+	private final static Pattern PATTERN_ADDRESS_SET = Pattern.compile(
+		"^\\s*\\[(\\s*\\[\\s*([\\w:]+)\\s*,\\s*([\\w:]+)\\s*\\]\\s*,?)?(?:\\s*\\[\\s*[\\w:]+\\s*,\\s*[\\w:]+\\s*\\]\\s*)?(?:,\\s*\\[\\s*[\\w:]+\\s*,\\s*[\\w:]+\\s*\\]\\s*)*\\s*\\]\\s*$");
+
 	public static Program getProgram(DomainObject domainObj) {
 		if (!(domainObj instanceof Program)) {
 			return null;
@@ -193,5 +202,46 @@ public abstract class ProgramUtil {
 			return intermediate
 					.collect(Collectors.toMap(l -> l.get(0).getName(true), l -> l.get(1)));
 		}
+	}
+
+	public static AddressSet parseAddressSet(String str, AddressFactory addressFactory) {
+		Matcher matcher = PATTERN_ADDRESS_SET.matcher(str);
+		if (!matcher.matches()) {
+			throw new OptionsVetoException("Invalid address set format");
+		}
+
+		AddressSet addressSet = new AddressSet();
+		while (matcher.group(1) != null) {
+			Address start = addressFactory.getAddress(matcher.group(2));
+			Address end = addressFactory.getAddress(matcher.group(3));
+			addressSet.add(start, end);
+
+			str = str.substring(0, matcher.start(1)) + str.substring(matcher.end(1));
+			matcher.reset(str);
+			matcher.matches();
+		}
+
+		return addressSet;
+	}
+
+	public static String serializeAddressSet(AddressSetView addressSet) {
+		StringBuilder sb = new StringBuilder();
+		Iterator<AddressRange> iterator = addressSet.iterator();
+
+		sb.append("[");
+		while (iterator.hasNext()) {
+			AddressRange range = iterator.next();
+			sb.append("[")
+					.append(range.getMinAddress())
+					.append(", ")
+					.append(range.getMaxAddress())
+					.append("]");
+			if (iterator.hasNext()) {
+				sb.append(", ");
+			}
+		}
+		sb.append("]");
+
+		return sb.toString();
 	}
 }

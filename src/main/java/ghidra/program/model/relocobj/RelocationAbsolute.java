@@ -17,12 +17,12 @@ import ghidra.program.model.address.Address;
 
 public class RelocationAbsolute extends AbstractRelocationBitmask {
 	protected RelocationAbsolute(RelocationTable relocationTable, Address address, int width,
-			String symbolName, long addend) {
-		super(relocationTable, address, width, symbolName, addend);
+			Address target, long addend) {
+		super(relocationTable, address, width, target, addend);
 	}
 
 	protected RelocationAbsolute(RelocationTable relocationTable, Address address, int width,
-			long bitmask, String symbolName, long addend) {
-		super(relocationTable, address, width, bitmask, symbolName, addend);
+			long bitmask, Address target, long addend) {
+		super(relocationTable, address, width, bitmask, target, addend);
 	}
 }

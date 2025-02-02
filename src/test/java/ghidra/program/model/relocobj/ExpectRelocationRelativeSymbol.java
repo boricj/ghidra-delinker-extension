@@ -14,20 +14,20 @@
 package ghidra.program.model.relocobj;
 
 public class ExpectRelocationRelativeSymbol extends AbstractExpectRelocationBitmask {
-	private final String relativeSymbolName;
+	private final String relativeSymbol;
 
-	public ExpectRelocationRelativeSymbol(long address, int width, String symbolName, long addend,
-			String relativeSymbolName) {
-		super(address, width, symbolName, addend);
+	public ExpectRelocationRelativeSymbol(long address, int width, long target, long addend,
+			String relativeSymbol) {
+		super(address, width, target, addend);
 
-		this.relativeSymbolName = relativeSymbolName;
+		this.relativeSymbol = relativeSymbol;
 	}
 
-	public ExpectRelocationRelativeSymbol(long address, int width, long bitmask, String symbolName,
-			long addend, String relativeSymbolName) {
-		super(address, width, bitmask, symbolName, addend);
+	public ExpectRelocationRelativeSymbol(long address, int width, long bitmask, long target,
+			long addend, String relativeSymbol) {
+		super(address, width, bitmask, target, addend);
 
-		this.relativeSymbolName = relativeSymbolName;
+		this.relativeSymbol = relativeSymbol;
 	}
 
 	// This equals() method is intentionally not implementing an equivalence relation.
@@ -37,7 +37,7 @@ public class ExpectRelocationRelativeSymbol extends AbstractExpectRelocationBitm
 			return false;
 		}
 		RelocationRelativeSymbol rel = (RelocationRelativeSymbol) obj;
-		if (!relativeSymbolName.equals(rel.getRelativeSymbolName())) {
+		if (!relativeSymbol.equals(rel.getRelativeSymbolName())) {
 			return false;
 		}
 

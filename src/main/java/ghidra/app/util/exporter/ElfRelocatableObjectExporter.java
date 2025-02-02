@@ -61,6 +61,7 @@ import ghidra.program.model.mem.MemoryBlock;
 import ghidra.program.model.relocobj.Relocation;
 import ghidra.program.model.relocobj.RelocationTable;
 import ghidra.program.model.symbol.Symbol;
+import ghidra.program.model.symbol.SymbolTable;
 import ghidra.util.classfinder.ClassSearcher;
 import ghidra.util.task.TaskMonitor;
 import ghidra_delinker_extension.BuildConfig;
@@ -439,8 +440,10 @@ public class ElfRelocatableObjectExporter extends Exporter {
 				return;
 			}
 
+			SymbolTable symbolTable = program.getSymbolTable();
 			Map<Relocation, ElfSymbol> relocationsToSymbols = relocations.stream()
-					.collect(Collectors.toMap(r -> r, r -> symbolsByName.get(r.getSymbolName())));
+					.collect(Collectors.toMap(r -> r, r -> symbolsByName
+							.get(symbolTable.getPrimarySymbol(r.getTarget()).getName(true))));
 
 			relSection = builder.build(elf, symtab, section, bytes, sectionSet, relocations,
 				relocationsToSymbols, log);

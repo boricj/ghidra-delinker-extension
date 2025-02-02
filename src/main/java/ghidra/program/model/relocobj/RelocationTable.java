@@ -130,7 +130,7 @@ public class RelocationTable {
 			if (!relocation.equals(newRelocation)) {
 				String msg = String.format(
 					"Non-equivalent relocation already exists at address %s for symbol %s", address,
-					relocation.getSymbolName());
+					relocation.getTarget());
 				throw new IllegalArgumentException(msg);
 			}
 
@@ -159,22 +159,23 @@ public class RelocationTable {
 		}
 	}
 
-	public RelocationAbsolute addAbsolute(Address address, int length, String name, long offset) {
+	public RelocationAbsolute addAbsolute(Address address, int length, Address target,
+			long offset) {
 		RelocationAbsolute rel =
-			new RelocationAbsolute(this, address, length, name, offset);
+			new RelocationAbsolute(this, address, length, target, offset);
 		return (RelocationAbsolute) add(rel);
 	}
 
 	public RelocationAbsolute addAbsolute(Address address, int width, long bitmask,
-			String symbolName, long addend) {
+			Address target, long addend) {
 		RelocationAbsolute rel =
-			new RelocationAbsolute(this, address, width, bitmask, symbolName, addend);
+			new RelocationAbsolute(this, address, width, bitmask, target, addend);
 		return (RelocationAbsolute) add(rel);
 	}
 
 	public RelocationHighPair addHighPair(Address address, int width, long bitmask,
-			String symbolName) {
-		RelocationHighPair rel = new RelocationHighPair(this, address, width, bitmask, symbolName);
+			Address target) {
+		RelocationHighPair rel = new RelocationHighPair(this, address, width, bitmask, target);
 		return (RelocationHighPair) add(rel);
 	}
 
@@ -187,52 +188,52 @@ public class RelocationTable {
 		return rel;
 	}
 
-	public RelocationMIPS26 addMIPS26(Address address, String symbolName, long addend) {
+	public RelocationMIPS26 addMIPS26(Address address, Address target, long addend) {
 		RelocationMIPS26 rel =
-			new RelocationMIPS26(this, address, symbolName, addend);
+			new RelocationMIPS26(this, address, target, addend);
 		return (RelocationMIPS26) add(rel);
 	}
 
-	public RelocationRelativePC addRelativePC(Address address, int width, String symbolName,
+	public RelocationRelativePC addRelativePC(Address address, int width, Address target,
 			long addend) {
 		RelocationRelativePC rel =
-			new RelocationRelativePC(this, address, width, symbolName, addend);
+			new RelocationRelativePC(this, address, width, target, addend);
 		return (RelocationRelativePC) add(rel);
 	}
 
-	public RelocationRelativePC addRelativePC(Address address, int width, String symbolName,
+	public RelocationRelativePC addRelativePC(Address address, int width, Address target,
 			long addend, boolean isTransparent) {
 		RelocationRelativePC rel =
-			new RelocationRelativePC(this, address, width, symbolName, addend, isTransparent);
+			new RelocationRelativePC(this, address, width, target, addend, isTransparent);
 		return (RelocationRelativePC) add(rel);
 	}
 
 	public RelocationRelativePC addRelativePC(Address address, int width, long bitmask,
-			String symbolName, long addend) {
+			Address target, long addend) {
 		RelocationRelativePC rel =
-			new RelocationRelativePC(this, address, width, bitmask, symbolName, addend);
+			new RelocationRelativePC(this, address, width, bitmask, target, addend);
 		return (RelocationRelativePC) add(rel);
 	}
 
 	public RelocationRelativePC addRelativePC(Address address, int width, long bitmask,
-			String symbolName, long addend, boolean isTransparent) {
+			Address target, long addend, boolean isTransparent) {
 		RelocationRelativePC rel =
-			new RelocationRelativePC(this, address, width, bitmask, symbolName, addend,
+			new RelocationRelativePC(this, address, width, bitmask, target, addend,
 				isTransparent);
 		return (RelocationRelativePC) add(rel);
 	}
 
-	public RelocationRelativeSymbol addRelativeSymbol(Address address, int width, String symbolName,
-			long addend, String relativeSymbolName) {
+	public RelocationRelativeSymbol addRelativeSymbol(Address address, int width, Address target,
+			long addend, String relativetarget) {
 		RelocationRelativeSymbol rel = new RelocationRelativeSymbol(this, address, width,
-			symbolName, addend, relativeSymbolName);
+			target, addend, relativetarget);
 		return (RelocationRelativeSymbol) add(rel);
 	}
 
 	public RelocationRelativeSymbol addRelativeSymbol(Address address, int width, long bitmask,
-			String symbolName, long addend, String relativeSymbolName) {
+			Address target, long addend, String relativetarget) {
 		RelocationRelativeSymbol rel = new RelocationRelativeSymbol(this, address, width, bitmask,
-			symbolName, addend, relativeSymbolName);
+			target, addend, relativetarget);
 		return (RelocationRelativeSymbol) add(rel);
 	}
 }

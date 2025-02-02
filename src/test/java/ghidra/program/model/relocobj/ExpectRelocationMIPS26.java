@@ -14,8 +14,8 @@
 package ghidra.program.model.relocobj;
 
 public class ExpectRelocationMIPS26 extends AbstractExpectRelocationBitmask {
-	public ExpectRelocationMIPS26(long address, String symbolName, long addend) {
-		super(address, 4, 0x3ffffff, symbolName, addend);
+	public ExpectRelocationMIPS26(long address, long target, long addend) {
+		super(address, 4, 0x3ffffff, target, addend);
 	}
 
 	// This equals() method is intentionally not implementing an equivalence relation.

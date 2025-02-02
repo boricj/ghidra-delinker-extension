@@ -26,6 +26,7 @@ import ghidra.program.model.listing.Program;
 import ghidra.program.model.mem.MemoryBlock;
 import ghidra.program.model.relocobj.Relocation;
 import ghidra.program.model.relocobj.RelocationTable;
+import ghidra.program.model.symbol.Symbol;
 import ghidra.util.datastruct.Accumulator;
 import ghidra.util.exception.CancelledException;
 import ghidra.util.table.AddressBasedTableModel;
@@ -58,6 +59,7 @@ class RelocationTableModel extends AddressBasedTableModel<RelocationRowObject> {
 	static final String RELOCATION_TYPE = "Type";
 	static final String RELOCATION_NAME = "Symbol name";
 	static final String RELOCATION_ADDEND = "Addend";
+	static final String TARGET_ADDRESS = "Target address";
 
 	public RelocationTableModel(ServiceProvider serviceProvider, Program program,
 			TaskMonitor monitor) {
@@ -73,6 +75,7 @@ class RelocationTableModel extends AddressBasedTableModel<RelocationRowObject> {
 			DiscoverableTableUtils.adaptColumForModel(this, new AddressTableColumn()), 1, true);
 		descriptor.addVisibleColumn(new RelocationTypeColumn());
 		descriptor.addVisibleColumn(new RelocationNameColumn());
+		descriptor.addHiddenColumn(new RelocationTargetColumn());
 		descriptor.addVisibleColumn(new RelocationAddendColumn());
 
 		return descriptor;
@@ -169,7 +172,9 @@ class RelocationTableModel extends AddressBasedTableModel<RelocationRowObject> {
 		@Override
 		public String getValue(RelocationRowObject rowObject, Settings settings, Program program,
 				ServiceProvider serviceProvider) throws IllegalArgumentException {
-			return rowObject.relocation.getSymbolName();
+			Address target = rowObject.relocation.getTarget();
+			Symbol symbol = program.getSymbolTable().getPrimarySymbol(target);
+			return symbol != null ? symbol.getName(true) : "(none)";
 		}
 	}
 
@@ -185,6 +190,20 @@ class RelocationTableModel extends AddressBasedTableModel<RelocationRowObject> {
 				ServiceProvider serviceProvider) throws IllegalArgumentException {
 			long addend = rowObject.relocation.getAddend();
 			return Long.toString(addend);
+		}
+	}
+
+	private static class RelocationTargetColumn extends
+			AbstractProgramBasedDynamicTableColumn<RelocationRowObject, Address> {
+		@Override
+		public String getColumnName() {
+			return TARGET_ADDRESS;
+		}
+
+		@Override
+		public Address getValue(RelocationRowObject rowObject, Settings settings, Program program,
+				ServiceProvider serviceProvider) throws IllegalArgumentException {
+			return rowObject.relocation.getTarget();
 		}
 	}
 }

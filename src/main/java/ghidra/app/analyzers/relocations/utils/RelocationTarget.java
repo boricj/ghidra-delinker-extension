@@ -19,18 +19,24 @@ import ghidra.program.model.listing.Program;
 import ghidra.program.model.symbol.Reference;
 import ghidra.program.model.symbol.Symbol;
 
-public class SymbolWithOffset {
-	public String name;
-	public long address;
-	public long offset;
+public class RelocationTarget {
+	private Address address;
+	private long offset;
 
-	public SymbolWithOffset(String name, long address, long offset) {
-		this.name = name;
+	public RelocationTarget(Address address, long offset) {
 		this.address = address;
 		this.offset = offset;
 	}
 
-	public static SymbolWithOffset get(Program program, Address fromAddress, Address toAddress) {
+	public Address getAddress() {
+		return address;
+	}
+
+	public long getOffset() {
+		return offset;
+	}
+
+	public static RelocationTarget find(Program program, Address fromAddress, Address toAddress) {
 		for (Reference reference : program.getReferenceManager().getReferencesFrom(fromAddress)) {
 			if (reference.getToAddress().equals(toAddress)) {
 				return get(program, reference);
@@ -40,7 +46,7 @@ public class SymbolWithOffset {
 		return null;
 	}
 
-	public static SymbolWithOffset get(Program program, Reference reference) {
+	public static RelocationTarget get(Program program, Reference reference) {
 		Address address = reference.getToAddress();
 		long offset = 0;
 		Symbol symbol = program.getSymbolTable().getSymbol(reference);
@@ -57,6 +63,6 @@ public class SymbolWithOffset {
 			return null;
 		}
 
-		return new SymbolWithOffset(symbol.getName(true), address.getOffset(), offset);
+		return new RelocationTarget(address, offset);
 	}
 }

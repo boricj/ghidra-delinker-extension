@@ -14,7 +14,7 @@
 package ghidra.app.analyzers.relocations.emitters;
 
 import ghidra.app.analyzers.relocations.patterns.OperandMatch;
-import ghidra.app.analyzers.relocations.utils.SymbolWithOffset;
+import ghidra.app.analyzers.relocations.utils.RelocationTarget;
 import ghidra.app.util.importer.MessageLog;
 import ghidra.program.model.address.Address;
 import ghidra.program.model.listing.Function;
@@ -39,24 +39,25 @@ public abstract class SymbolRelativeInstructionRelocationEmitter
 	}
 
 	@Override
-	public boolean evaluate(Instruction instruction, OperandMatch match,
-			SymbolWithOffset symbol, Reference reference)
-			throws MemoryAccessException {
+	public boolean evaluate(Instruction instruction, OperandMatch match, RelocationTarget target,
+			Reference reference) throws MemoryAccessException {
 		long origin = fromSymbol.getAddress().getUnsignedOffset();
 		long relative = match.getValue();
-		long target = reference.getToAddress().getUnsignedOffset();
+		long destination = reference.getToAddress().getUnsignedOffset();
 
-		return target == origin + relative;
+		return destination == origin + relative;
 	}
 
 	@Override
-	public void emit(Instruction instruction, OperandMatch match, SymbolWithOffset symbol,
+	public void emit(Instruction instruction, OperandMatch match, RelocationTarget target,
 			Reference reference) {
 		RelocationTable relocationTable = getRelocationTable();
 		Address address = instruction.getAddress().add(match.getOffset());
-		long addend = reference.getToAddress().getUnsignedOffset() - symbol.address;
+		long addend =
+			reference.getToAddress().getUnsignedOffset() - target.getAddress().getUnsignedOffset();
 
-		relocationTable.addRelativeSymbol(address, match.getSize(), match.getBitmask(), symbol.name,
+		relocationTable.addRelativeSymbol(address, match.getSize(), match.getBitmask(),
+			target.getAddress(),
 			addend, fromSymbol.getName());
 	}
 }

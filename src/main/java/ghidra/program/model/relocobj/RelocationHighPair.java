@@ -27,17 +27,17 @@ public class RelocationHighPair implements Relocation {
 	private final Address address;
 	private final int width;
 	private final long bitmask;
-	private final String symbolName;
+	private final Address target;
 
 	private final List<RelocationLowPair> relocations = new ArrayList<>();
 
 	protected RelocationHighPair(RelocationTable relocationTable, Address address, int width,
-			long bitmask, String symbolName) {
+			long bitmask, Address target) {
 		this.relocationTable = relocationTable;
 		this.address = address;
 		this.width = width;
 		this.bitmask = bitmask;
-		this.symbolName = symbolName;
+		this.target = target;
 	}
 
 	@Override
@@ -61,8 +61,8 @@ public class RelocationHighPair implements Relocation {
 	}
 
 	@Override
-	public String getSymbolName() {
-		return symbolName;
+	public Address getTarget() {
+		return target;
 	}
 
 	@Override
@@ -117,6 +117,6 @@ public class RelocationHighPair implements Relocation {
 
 		RelocationHighPair rel = (RelocationHighPair) obj;
 		return address.equals(rel.getAddress()) && width == rel.getWidth() &&
-			bitmask == rel.getBitmask() && symbolName.equals(rel.getSymbolName());
+			bitmask == rel.getBitmask() && target.equals(rel.getTarget());
 	}
 }

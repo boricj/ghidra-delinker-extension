@@ -19,13 +19,13 @@ public class ExpectRelocationHighPair implements Relocation {
 	private final long address;
 	private final int width;
 	private final long bitmask;
-	private final String symbolName;
+	private final long target;
 
-	public ExpectRelocationHighPair(long address, int width, long bitmask, String symbolName) {
+	public ExpectRelocationHighPair(long address, int width, long bitmask, long target) {
 		this.address = address;
 		this.width = width;
 		this.bitmask = bitmask;
-		this.symbolName = symbolName;
+		this.target = target;
 	}
 
 	// This equals() method is intentionally not implementing an equivalence relation.
@@ -37,7 +37,7 @@ public class ExpectRelocationHighPair implements Relocation {
 
 		RelocationHighPair relocation = (RelocationHighPair) obj;
 		return address == relocation.getAddress().getOffset() && width == relocation.getWidth() &&
-			bitmask == relocation.getBitmask() && symbolName.equals(relocation.getSymbolName());
+			bitmask == relocation.getBitmask() && target == relocation.getTarget().getOffset();
 	}
 
 	@Override
@@ -61,8 +61,8 @@ public class ExpectRelocationHighPair implements Relocation {
 	}
 
 	@Override
-	public String getSymbolName() {
-		throw new UnsupportedOperationException("Unimplemented method 'getSymbolName'");
+	public Address getTarget() {
+		throw new UnsupportedOperationException("Unimplemented method 'getTarget'");
 	}
 
 	@Override

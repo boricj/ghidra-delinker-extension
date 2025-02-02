@@ -56,8 +56,8 @@ public class RelocationLowPair implements Relocation {
 	}
 
 	@Override
-	public String getSymbolName() {
-		return relocationHi.getSymbolName();
+	public Address getTarget() {
+		return relocationHi.getTarget();
 	}
 
 	@Override

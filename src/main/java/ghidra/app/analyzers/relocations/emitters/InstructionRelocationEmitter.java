@@ -18,7 +18,7 @@ import java.util.Optional;
 
 import ghidra.app.analyzers.relocations.patterns.OperandMatch;
 import ghidra.app.analyzers.relocations.patterns.OperandMatcher;
-import ghidra.app.analyzers.relocations.utils.SymbolWithOffset;
+import ghidra.app.analyzers.relocations.utils.RelocationTarget;
 import ghidra.app.util.importer.MessageLog;
 import ghidra.program.model.address.Address;
 import ghidra.program.model.address.AddressSetView;
@@ -87,14 +87,14 @@ public abstract class InstructionRelocationEmitter implements FunctionInstructio
 			if (!isReferenceInteresting(reference, relocatable)) {
 				continue;
 			}
-			SymbolWithOffset symbol = SymbolWithOffset.get(program, reference);
-			if (symbol == null) {
+			RelocationTarget target = RelocationTarget.get(program, reference);
+			if (target == null) {
 				continue;
 			}
 
 			for (int opIndex = 0; opIndex < instruction.getNumOperands(); opIndex++) {
 				foundRelocation |=
-					processInstructionOperand(instruction, opIndex, symbol, reference);
+					processInstructionOperand(instruction, opIndex, target, reference);
 			}
 		}
 
@@ -102,7 +102,7 @@ public abstract class InstructionRelocationEmitter implements FunctionInstructio
 	}
 
 	private boolean processInstructionOperand(Instruction instruction, int operandIndex,
-			SymbolWithOffset symbol, Reference reference) throws MemoryAccessException {
+			RelocationTarget target, Reference reference) throws MemoryAccessException {
 		boolean emitted = false;
 
 		for (OperandMatcher matcher : getOperandMatchers()) {
@@ -113,8 +113,8 @@ public abstract class InstructionRelocationEmitter implements FunctionInstructio
 			}
 
 			OperandMatch operandMatch = opMatch.get();
-			if (evaluate(instruction, operandMatch, symbol, reference)) {
-				emit(instruction, operandMatch, symbol, reference);
+			if (evaluate(instruction, operandMatch, target, reference)) {
+				emit(instruction, operandMatch, target, reference);
 				emitted = true;
 			}
 		}
@@ -125,9 +125,9 @@ public abstract class InstructionRelocationEmitter implements FunctionInstructio
 	public abstract Collection<OperandMatcher> getOperandMatchers();
 
 	public abstract boolean evaluate(Instruction instruction, OperandMatch match,
-			SymbolWithOffset symbol, Reference reference)
+			RelocationTarget target, Reference reference)
 			throws MemoryAccessException;
 
 	protected abstract void emit(Instruction instruction, OperandMatch match,
-			SymbolWithOffset symbol, Reference reference);
+			RelocationTarget target, Reference reference);
 }

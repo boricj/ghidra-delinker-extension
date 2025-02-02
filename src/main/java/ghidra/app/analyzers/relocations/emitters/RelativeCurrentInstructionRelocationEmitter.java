@@ -14,7 +14,7 @@
 package ghidra.app.analyzers.relocations.emitters;
 
 import ghidra.app.analyzers.relocations.patterns.OperandMatch;
-import ghidra.app.analyzers.relocations.utils.SymbolWithOffset;
+import ghidra.app.analyzers.relocations.utils.RelocationTarget;
 import ghidra.app.util.importer.MessageLog;
 import ghidra.program.model.address.Address;
 import ghidra.program.model.listing.Function;
@@ -28,29 +28,31 @@ import ghidra.util.task.TaskMonitor;
 public abstract class RelativeCurrentInstructionRelocationEmitter
 		extends InstructionRelocationEmitter {
 	public RelativeCurrentInstructionRelocationEmitter(Program program,
-			RelocationTable relocationTable,
-			Function function, TaskMonitor monitor, MessageLog log) {
+			RelocationTable relocationTable, Function function, TaskMonitor monitor,
+			MessageLog log) {
 		super(program, relocationTable, function, monitor, log);
 	}
 
 	@Override
 	public boolean evaluate(Instruction instruction, OperandMatch match,
-			SymbolWithOffset symbol, Reference reference)
+			RelocationTarget target, Reference reference)
 			throws MemoryAccessException {
 		Address fromAddress = instruction.getAddress();
-		long target = reference.getToAddress().getUnsignedOffset();
+		long destination = reference.getToAddress().getUnsignedOffset();
 
-		return target == fromAddress.getUnsignedOffset() + match.getValue();
+		return destination == fromAddress.getUnsignedOffset() + match.getValue();
 	}
 
 	@Override
-	public void emit(Instruction instruction, OperandMatch match, SymbolWithOffset symbol,
+	public void emit(Instruction instruction, OperandMatch match, RelocationTarget target,
 			Reference reference) {
 		RelocationTable relocationTable = getRelocationTable();
 		Address address = instruction.getAddress().add(match.getOffset());
-		long addend = address.getUnsignedOffset() - symbol.address + match.getValue();
+		long addend = address.getUnsignedOffset() - target.getAddress().getUnsignedOffset() +
+			match.getValue();
 
-		relocationTable.addRelativePC(address, match.getSize(), match.getBitmask(), symbol.name,
+		relocationTable.addRelativePC(address, match.getSize(), match.getBitmask(),
+			target.getAddress(),
 			addend);
 	}
 }

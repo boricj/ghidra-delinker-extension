@@ -14,7 +14,7 @@
 package ghidra.app.analyzers.relocations;
 
 import ghidra.app.analyzers.relocations.synthesizers.DataRelocationSynthesizer;
-import ghidra.app.analyzers.relocations.utils.SymbolWithOffset;
+import ghidra.app.analyzers.relocations.utils.RelocationTarget;
 import ghidra.app.util.importer.MessageLog;
 import ghidra.program.model.address.Address;
 import ghidra.program.model.address.AddressSetView;
@@ -39,11 +39,11 @@ public class AbsoluteDataRelocationSynthesizer implements DataRelocationSynthesi
 		Address fromAddress = pointer.getAddress();
 		Address toAddress = (Address) pointer.getValue();
 
-		SymbolWithOffset symbolWithOffset =
-			SymbolWithOffset.get(pointer.getProgram(), fromAddress, toAddress);
-		if (symbolWithOffset != null) {
-			relocationTable.addAbsolute(fromAddress, pointer.getLength(), symbolWithOffset.name,
-				symbolWithOffset.offset);
+		RelocationTarget target =
+			RelocationTarget.find(pointer.getProgram(), fromAddress, toAddress);
+		if (target != null) {
+			relocationTable.addAbsolute(fromAddress, pointer.getLength(), target.getAddress(),
+				target.getOffset());
 		}
 	}
 

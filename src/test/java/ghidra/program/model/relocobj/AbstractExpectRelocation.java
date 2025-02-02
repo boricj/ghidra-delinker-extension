@@ -37,8 +37,8 @@ public abstract class AbstractExpectRelocation implements Relocation {
 	}
 
 	@Override
-	public String getSymbolName() {
-		throw new UnsupportedOperationException("Unimplemented method 'getSymbolName'");
+	public Address getTarget() {
+		throw new UnsupportedOperationException("Unimplemented method 'getTarget'");
 	}
 
 	@Override

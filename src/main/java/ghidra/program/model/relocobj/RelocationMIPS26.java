@@ -23,8 +23,8 @@ import ghidra.program.model.address.Address;
  * hybrid between an absolute and relative jump and therefore require its own relocation type for proper modelization.
  */
 public class RelocationMIPS26 extends AbstractRelocationBitmask {
-	protected RelocationMIPS26(RelocationTable relocationTable, Address address, String symbolName,
+	protected RelocationMIPS26(RelocationTable relocationTable, Address address, Address target,
 			long addend) {
-		super(relocationTable, address, 4, 0x3ffffff, symbolName, addend);
+		super(relocationTable, address, 4, 0x3ffffff, target, addend);
 	}
 }

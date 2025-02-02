@@ -14,13 +14,13 @@
 package ghidra.program.model.relocobj;
 
 public class ExpectRelocationAbsolute extends AbstractExpectRelocationBitmask {
-	public ExpectRelocationAbsolute(long address, int width, String symbolName, long addend) {
-		super(address, width, symbolName, addend);
+	public ExpectRelocationAbsolute(long address, int width, long target, long addend) {
+		super(address, width, target, addend);
 	}
 
-	public ExpectRelocationAbsolute(long address, int width, long bitmask, String symbolName,
+	public ExpectRelocationAbsolute(long address, int width, long bitmask, long target,
 			long addend) {
-		super(address, width, bitmask, symbolName, addend);
+		super(address, width, bitmask, target, addend);
 	}
 
 	// This equals() method is intentionally not implementing an equivalence relation.

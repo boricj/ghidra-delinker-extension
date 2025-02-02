@@ -19,25 +19,25 @@ public class RelocationRelativePC extends AbstractRelocationBitmask {
 	private final boolean isTransparent;
 
 	protected RelocationRelativePC(RelocationTable relocationTable, Address address, int width,
-			String symbolName, long addend) {
-		this(relocationTable, address, width, symbolName, addend, true);
+			Address target, long addend) {
+		this(relocationTable, address, width, target, addend, true);
 	}
 
 	protected RelocationRelativePC(RelocationTable relocationTable, Address address, int width,
-			long bitmask, String symbolName, long addend) {
-		this(relocationTable, address, width, bitmask, symbolName, addend, true);
+			long bitmask, Address target, long addend) {
+		this(relocationTable, address, width, bitmask, target, addend, true);
 	}
 
 	protected RelocationRelativePC(RelocationTable relocationTable, Address address, int width,
-			String symbolName, long addend, boolean isTransparent) {
-		super(relocationTable, address, width, symbolName, addend);
+			Address target, long addend, boolean isTransparent) {
+		super(relocationTable, address, width, target, addend);
 
 		this.isTransparent = isTransparent;
 	}
 
 	protected RelocationRelativePC(RelocationTable relocationTable, Address address, int width,
-			long bitmask, String symbolName, long addend, boolean isTransparent) {
-		super(relocationTable, address, width, bitmask, symbolName, addend);
+			long bitmask, Address target, long addend, boolean isTransparent) {
+		super(relocationTable, address, width, bitmask, target, addend);
 
 		this.isTransparent = isTransparent;
 	}

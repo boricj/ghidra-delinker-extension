@@ -24,7 +24,7 @@ public interface Relocation {
 
 	public long getBitmask();
 
-	public String getSymbolName();
+	public Address getTarget();
 
 	public long getAddend();
 

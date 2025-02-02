@@ -19,15 +19,15 @@ public class ExpectRelocationLowPair implements Relocation {
 	private final long address;
 	private final int width;
 	private final long bitmask;
-	private final String symbolName;
+	private final long target;
 	private final long addend;
 
 	public ExpectRelocationLowPair(long address, int width, long bitmask,
-			String symbolName, long addend) {
+			long target, long addend) {
 		this.address = address;
 		this.width = width;
 		this.bitmask = bitmask;
-		this.symbolName = symbolName;
+		this.target = target;
 		this.addend = addend;
 	}
 
@@ -41,7 +41,7 @@ public class ExpectRelocationLowPair implements Relocation {
 		RelocationLowPair relocation = (RelocationLowPair) obj;
 		return address == relocation.getAddress().getOffset() && width == relocation.getWidth() &&
 			bitmask == relocation.getBitmask() && addend == relocation.getAddend() &&
-			symbolName.equals(relocation.getRelocationHi().getSymbolName());
+			target == relocation.getRelocationHi().getTarget().getOffset();
 	}
 
 	@Override
@@ -65,8 +65,8 @@ public class ExpectRelocationLowPair implements Relocation {
 	}
 
 	@Override
-	public String getSymbolName() {
-		throw new UnsupportedOperationException("Unimplemented method 'getSymbolName'");
+	public Address getTarget() {
+		throw new UnsupportedOperationException("Unimplemented method 'getTarget'");
 	}
 
 	@Override

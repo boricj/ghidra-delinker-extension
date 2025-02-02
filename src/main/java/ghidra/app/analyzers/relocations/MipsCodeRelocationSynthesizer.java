@@ -32,7 +32,7 @@ import ghidra.app.analyzers.relocations.patterns.FixedOperandMatcher;
 import ghidra.app.analyzers.relocations.patterns.OperandMatch;
 import ghidra.app.analyzers.relocations.patterns.OperandMatcher;
 import ghidra.app.analyzers.relocations.synthesizers.FunctionInstructionSinkCodeRelocationSynthesizer;
-import ghidra.app.analyzers.relocations.utils.SymbolWithOffset;
+import ghidra.app.analyzers.relocations.utils.RelocationTarget;
 import ghidra.app.util.importer.MessageLog;
 import ghidra.program.model.address.Address;
 import ghidra.program.model.address.AddressSet;
@@ -102,38 +102,38 @@ public class MipsCodeRelocationSynthesizer
 
 		@Override
 		public boolean evaluate(Instruction instruction, OperandMatch match,
-				SymbolWithOffset symbol, Reference reference) throws MemoryAccessException {
+				RelocationTarget target, Reference reference) throws MemoryAccessException {
 			Address fromAddress = instruction.getAddress();
 			long origin = fromAddress.getUnsignedOffset() & 0xfffffffff0000000L;
-			long target = reference.getToAddress().getUnsignedOffset();
-			long addend = computeAddend(instruction, match, symbol, reference);
+			long destination = reference.getToAddress().getUnsignedOffset();
+			long addend = computeAddend(instruction, match, target, reference);
 
 			if (addend < -0x4000000 || addend > 0x3ffffff || ((addend & 3) != 0)) {
 				return false;
 			}
 
-			return (origin | match.getValue()) == target;
+			return (origin | match.getValue()) == destination;
 		}
 
 		@Override
-		protected void emit(Instruction instruction, OperandMatch match, SymbolWithOffset symbol,
+		protected void emit(Instruction instruction, OperandMatch match, RelocationTarget target,
 				Reference reference) {
 			RelocationTable relocationTable = getRelocationTable();
 			Address address = instruction.getAddress();
-			long addend = computeAddend(instruction, match, symbol, reference);
+			long addend = computeAddend(instruction, match, target, reference);
 
 			if (branchesToShiftByOne.contains(instruction)) {
 				addend -= 4;
 				logBranchDelaySlotWithHI16(address, getMessageLog());
 			}
 
-			relocationTable.addMIPS26(address, symbol.name, addend);
+			relocationTable.addMIPS26(address, target.getAddress(), addend);
 		}
 
 		private long computeAddend(Instruction instruction, OperandMatch match,
-				SymbolWithOffset symbol, Reference reference) {
+				RelocationTarget target, Reference reference) {
 			long origin = instruction.getAddress().getUnsignedOffset() & 0xfffffffff0000000L;
-			long addend = (origin | match.getValue()) - symbol.address;
+			long addend = (origin | match.getValue()) - target.getAddress().getUnsignedOffset();
 
 			return addend;
 		}
@@ -170,18 +170,18 @@ public class MipsCodeRelocationSynthesizer
 		}
 
 		@Override
-		public boolean evaluateRoot(Reference reference, SymbolWithOffset symbol, Node node)
+		public boolean evaluateRoot(Reference reference, RelocationTarget target, Node node)
 				throws MemoryAccessException {
 			boolean foundRelocation = false;
 
 			Instruction instruction = node.getInstruction();
 			if (isLo16Candidate(instruction) &&
 				!isReferenceOnOutputRegister(instruction, reference)) {
-				foundRelocation |= evaluateLo16(reference, symbol, node, node, null, 0);
+				foundRelocation |= evaluateLo16(reference, target, node, node, null, 0);
 			}
 			else {
 				for (Node child : node.getChildren()) {
-					foundRelocation |= evaluateRoot(reference, symbol, child);
+					foundRelocation |= evaluateRoot(reference, target, child);
 				}
 			}
 
@@ -213,7 +213,7 @@ public class MipsCodeRelocationSynthesizer
 			return result;
 		}
 
-		public boolean evaluateLo16(Reference reference, SymbolWithOffset symbol, Node node,
+		public boolean evaluateLo16(Reference reference, RelocationTarget target, Node node,
 				Node nodeLo16, Node extraNodeLo16, int extraAddend) throws MemoryAccessException {
 			boolean foundRelocation = false;
 
@@ -231,15 +231,15 @@ public class MipsCodeRelocationSynthesizer
 				Instruction instruction = child.getInstruction();
 
 				if (isHi16Candidate(instruction)) {
-					foundRelocation |= evaluateHi16(reference, symbol, child, nodeLo16,
+					foundRelocation |= evaluateHi16(reference, target, child, nodeLo16,
 						extraAddend + extraNodeLo16Addend);
 				}
 				else if (isLo16Candidate(instruction)) {
-					foundRelocation |= evaluateLo16(reference, symbol, child, child, nodeLo16,
+					foundRelocation |= evaluateLo16(reference, target, child, child, nodeLo16,
 						extraAddend + extraNodeLo16Addend);
 				}
 				else {
-					foundRelocation |= evaluateLo16(reference, symbol, child, nodeLo16,
+					foundRelocation |= evaluateLo16(reference, target, child, nodeLo16,
 						extraNodeLo16, extraAddend);
 				}
 			}
@@ -247,7 +247,7 @@ public class MipsCodeRelocationSynthesizer
 			return foundRelocation;
 		}
 
-		public boolean evaluateHi16(Reference reference, SymbolWithOffset symbol, Node node,
+		public boolean evaluateHi16(Reference reference, RelocationTarget target, Node node,
 				Node nodeLo16, int extraAddend) throws MemoryAccessException {
 			Instruction hi16 = node.getInstruction();
 			Instruction lo16 = nodeLo16.getInstruction();
@@ -255,7 +255,7 @@ public class MipsCodeRelocationSynthesizer
 			long toAddress = reference.getToAddress().getOffset();
 			long targetAddress = computeTargetAddress(hi16, lo16) + extraAddend;
 			if (toAddress == targetAddress) {
-				return emitRelocation(hi16, lo16, symbol, extraAddend);
+				return emitRelocation(hi16, lo16, target, extraAddend);
 			}
 
 			return false;
@@ -267,18 +267,17 @@ public class MipsCodeRelocationSynthesizer
 			return target + (short) dc.getInt(lo16.getBytes());
 		}
 
-		private boolean emitRelocation(Instruction hi16, Instruction lo16, SymbolWithOffset symbol,
-				int extraAddend)
-				throws MemoryAccessException {
+		private boolean emitRelocation(Instruction hi16, Instruction lo16, RelocationTarget target,
+				int extraAddend) throws MemoryAccessException {
 			// FIXME: handle HI16/LO16 addends greater than 15 bits.
-			long lo16addend = symbol.offset - extraAddend;
+			long lo16addend = target.getOffset() - extraAddend;
 			if (lo16addend > 0x7fff) {
 				return false;
 			}
 
 			RelocationTable relocationTable = getRelocationTable();
 			RelocationHighPair hiRel =
-				relocationTable.addHighPair(hi16.getAddress(), 4, 0xFFFF, symbol.name);
+				relocationTable.addHighPair(hi16.getAddress(), 4, 0xFFFF, target.getAddress());
 			relocationTable.addLowPair(lo16.getAddress(), 4, 0xFFFF, hiRel, lo16addend);
 			return true;
 		}
@@ -414,17 +413,18 @@ public class MipsCodeRelocationSynthesizer
 
 		@Override
 		public boolean evaluate(Instruction instruction, OperandMatch match,
-				SymbolWithOffset symbol, Reference reference) throws MemoryAccessException {
+				RelocationTarget target, Reference reference) throws MemoryAccessException {
 			return ((match.getValue() & 3) == 0) &&
-				super.evaluate(instruction, match, symbol, reference);
+				super.evaluate(instruction, match, target, reference);
 		}
 
 		@Override
-		public void emit(Instruction instruction, OperandMatch match, SymbolWithOffset symbol,
+		public void emit(Instruction instruction, OperandMatch match, RelocationTarget target,
 				Reference reference) {
 			RelocationTable relocationTable = getRelocationTable();
 			Address address = instruction.getAddress().add(match.getOffset());
-			long addend = address.getUnsignedOffset() - symbol.address + match.getValue();
+			long addend = address.getUnsignedOffset() - target.getAddress().getUnsignedOffset() +
+				match.getValue();
 			boolean isTransparent = true;
 
 			if (branchesToShiftByOne.contains(instruction)) {
@@ -433,7 +433,8 @@ public class MipsCodeRelocationSynthesizer
 				isTransparent = false;
 			}
 
-			relocationTable.addRelativePC(address, match.getSize(), match.getBitmask(), symbol.name,
+			relocationTable.addRelativePC(address, match.getSize(), match.getBitmask(),
+				target.getAddress(),
 				addend, isTransparent);
 		}
 
@@ -487,13 +488,13 @@ public class MipsCodeRelocationSynthesizer
 
 		@Override
 		public boolean evaluate(Instruction instruction, OperandMatch match,
-				SymbolWithOffset symbol, Reference reference) throws MemoryAccessException {
+				RelocationTarget target, Reference reference) throws MemoryAccessException {
 			Object[] objects = instruction.getOpObjects(match.getOperandIndex());
 			if (!Arrays.asList(objects).contains(gp)) {
 				return false;
 			}
 
-			return super.evaluate(instruction, match, symbol, reference);
+			return super.evaluate(instruction, match, target, reference);
 		}
 
 		@Override

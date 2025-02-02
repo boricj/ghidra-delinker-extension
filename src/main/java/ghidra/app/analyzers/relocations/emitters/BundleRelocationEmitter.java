@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import ghidra.app.analyzers.relocations.utils.SymbolWithOffset;
+import ghidra.app.analyzers.relocations.utils.RelocationTarget;
 import ghidra.app.util.importer.MessageLog;
 import ghidra.program.model.address.Address;
 import ghidra.program.model.address.AddressSetView;
@@ -149,8 +149,8 @@ public abstract class BundleRelocationEmitter implements FunctionInstructionSink
 			if (!isReferenceInteresting(reference, relocatable)) {
 				continue;
 			}
-			SymbolWithOffset symbol = SymbolWithOffset.get(program, reference);
-			if (symbol == null) {
+			RelocationTarget target = RelocationTarget.get(program, reference);
+			if (target == null) {
 				continue;
 			}
 
@@ -165,7 +165,7 @@ public abstract class BundleRelocationEmitter implements FunctionInstructionSink
 
 			Node node = new Node(instruction, null, children);
 			try {
-				foundRelocation |= evaluateRoot(reference, symbol, node);
+				foundRelocation |= evaluateRoot(reference, target, node);
 			}
 			catch (RuntimeException ex) {
 				String msg = String.format(
@@ -257,6 +257,6 @@ public abstract class BundleRelocationEmitter implements FunctionInstructionSink
 		return bestCodeBlockCandidate;
 	}
 
-	public abstract boolean evaluateRoot(Reference reference, SymbolWithOffset symbol, Node node)
+	public abstract boolean evaluateRoot(Reference reference, RelocationTarget target, Node node)
 			throws MemoryAccessException;
 }

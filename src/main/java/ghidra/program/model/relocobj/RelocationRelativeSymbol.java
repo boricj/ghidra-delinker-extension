@@ -19,15 +19,15 @@ public class RelocationRelativeSymbol extends AbstractRelocationBitmask {
 	private final String relativeSymbolName;
 
 	protected RelocationRelativeSymbol(RelocationTable relocationTable, Address address, int width,
-			String symbolName, long addend, String relativeSymbolName) {
-		super(relocationTable, address, width, symbolName, addend);
+			Address target, long addend, String relativeSymbolName) {
+		super(relocationTable, address, width, target, addend);
 
 		this.relativeSymbolName = relativeSymbolName;
 	}
 
 	protected RelocationRelativeSymbol(RelocationTable relocationTable, Address address, int width,
-			long bitmask, String symbolName, long addend, String relativeSymbolName) {
-		super(relocationTable, address, width, bitmask, symbolName, addend);
+			long bitmask, Address target, long addend, String relativeSymbolName) {
+		super(relocationTable, address, width, bitmask, target, addend);
 
 		this.relativeSymbolName = relativeSymbolName;
 	}

@@ -14,7 +14,7 @@
 package ghidra.app.analyzers.relocations.emitters;
 
 import ghidra.app.analyzers.relocations.patterns.OperandMatch;
-import ghidra.app.analyzers.relocations.utils.SymbolWithOffset;
+import ghidra.app.analyzers.relocations.utils.RelocationTarget;
 import ghidra.app.util.importer.MessageLog;
 import ghidra.program.model.address.Address;
 import ghidra.program.model.listing.Function;
@@ -32,21 +32,22 @@ public abstract class AbsoluteInstructionRelocationEmitter extends InstructionRe
 	}
 
 	@Override
-	public boolean evaluate(Instruction instruction, OperandMatch match, SymbolWithOffset symbol,
+	public boolean evaluate(Instruction instruction, OperandMatch match, RelocationTarget target,
 			Reference reference) throws MemoryAccessException {
-		long target = reference.getToAddress().getUnsignedOffset();
+		long destination = reference.getToAddress().getUnsignedOffset();
 
-		return target == match.getValue();
+		return destination == match.getValue();
 	}
 
 	@Override
-	public void emit(Instruction instruction, OperandMatch match, SymbolWithOffset symbol,
+	public void emit(Instruction instruction, OperandMatch match, RelocationTarget target,
 			Reference reference) {
 		RelocationTable relocationTable = getRelocationTable();
 		Address address = instruction.getAddress().add(match.getOffset());
-		long addend = match.getValue() - symbol.address;
+		long addend = match.getValue() - target.getAddress().getUnsignedOffset();
 
-		relocationTable.addAbsolute(address, match.getSize(), match.getBitmask(), symbol.name,
+		relocationTable.addAbsolute(address, match.getSize(), match.getBitmask(),
+			target.getAddress(),
 			addend);
 	}
 }

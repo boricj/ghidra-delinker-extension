@@ -18,6 +18,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Test;
 
@@ -36,18 +37,26 @@ import ghidra.util.task.TaskMonitor;
 public class Mipsel_hi16_lo16_intertwined_code_flow_Test extends DelinkerIntegrationTest {
 	private static final List<String> MEMORY_BLOCK_NAMES = List.of(".text");
 
+	private static final Map<String, Integer> TARGET_SYMBOLS = Map.ofEntries(
+		Map.entry("LAB_00010014", 0x10014),
+		Map.entry("LAB_00010018", 0x10018),
+		Map.entry("HELLO_WORLD", 0x10020),
+		Map.entry("GOODBYE_WORLD", 0x1002e));
+
 	private static final List<Relocation> EXPECTED_RELOCATIONS = List.of(
 		// .rel.text
-		new ExpectRelocationRelativePC(0x00010000, 4, 0xffff, "LAB_00010014", -4),
+		new ExpectRelocationRelativePC(0x00010000, 4, 0xffff, TARGET_SYMBOLS.get("LAB_00010014"),
+			-4),
 		// 00000004  00000205 R_MIPS_HI16       00000000   .data
-		new ExpectRelocationHighPair(0x00010004, 4, 0xffff, "HELLO_WORLD"),
+		new ExpectRelocationHighPair(0x00010004, 4, 0xffff, TARGET_SYMBOLS.get("HELLO_WORLD")),
 		// 00000008  00000205 R_MIPS_HI16       00000000   .data
-		new ExpectRelocationHighPair(0x00010008, 4, 0xffff, "GOODBYE_WORLD"),
-		new ExpectRelocationRelativePC(0x0001000c, 4, 0xffff, "LAB_00010018", -4),
+		new ExpectRelocationHighPair(0x00010008, 4, 0xffff, TARGET_SYMBOLS.get("GOODBYE_WORLD")),
+		new ExpectRelocationRelativePC(0x0001000c, 4, 0xffff, TARGET_SYMBOLS.get("LAB_00010018"),
+			-4),
 		// 00000010  00000206 R_MIPS_LO16       00000000   .data
-		new ExpectRelocationLowPair(0x00010010, 4, 0xffff, "GOODBYE_WORLD", 0),
+		new ExpectRelocationLowPair(0x00010010, 4, 0xffff, TARGET_SYMBOLS.get("GOODBYE_WORLD"), 0),
 		// 00000014  00000206 R_MIPS_LO16       00000000   .data
-		new ExpectRelocationLowPair(0x00010014, 4, 0xffff, "HELLO_WORLD", 0));
+		new ExpectRelocationLowPair(0x00010014, 4, 0xffff, TARGET_SYMBOLS.get("HELLO_WORLD"), 0));
 
 	@Override
 	protected String getProgramName() {

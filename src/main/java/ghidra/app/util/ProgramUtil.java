@@ -43,6 +43,7 @@ import ghidra.program.model.mem.MemoryBlock;
 import ghidra.program.model.relocobj.Relocation;
 import ghidra.program.model.relocobj.RelocationTable;
 import ghidra.program.model.symbol.Symbol;
+import ghidra.program.model.symbol.SymbolTable;
 import ghidra.util.DataConverter;
 import ghidra.util.bean.opteditor.OptionsVetoException;
 
@@ -165,10 +166,11 @@ public abstract class ProgramUtil {
 		Map<String, Symbol> internalSymbols =
 			getSymbols(program, s -> fileSet.contains(s.getAddress()), symbolNamePreference, false);
 
+		SymbolTable symbolTable = program.getSymbolTable();
 		RelocationTable relocationTable = RelocationTable.get(program);
 		Stream<Relocation> relocations = StreamSupport.stream(
 			Spliterators.spliteratorUnknownSize(relocationTable.getRelocations(fileSet), 0), false);
-		return relocations.map(r -> r.getSymbolName())
+		return relocations.map(r -> symbolTable.getPrimarySymbol(r.getTarget()).getName(true))
 				.filter(s -> s != null && externalSymbols.containsKey(s) &&
 					!internalSymbols.containsKey(s))
 				.distinct()

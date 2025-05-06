@@ -13,17 +13,13 @@
  */
 package ghidra.app.util;
 
-import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Spliterators;
-import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import org.apache.commons.lang3.ArrayUtils;
@@ -42,7 +38,6 @@ import ghidra.program.model.mem.MemoryAccessException;
 import ghidra.program.model.mem.MemoryBlock;
 import ghidra.program.model.relocobj.Relocation;
 import ghidra.program.model.relocobj.RelocationTable;
-import ghidra.program.model.symbol.Symbol;
 import ghidra.program.model.symbol.SymbolTable;
 import ghidra.util.DataConverter;
 import ghidra.util.bean.opteditor.OptionsVetoException;
@@ -152,58 +147,29 @@ public abstract class ProgramUtil {
 		return getOffsetWithinAddressSet(addressSet, address);
 	}
 
-	public static Map<String, Symbol> getSectionSymbols(Program program,
+	public static Map<Address, SymbolInformation> getSectionSymbols(Program program,
 			AddressSetView sectionSet, SymbolPreference symbolNamePreference) {
-		return getSymbols(program, s -> sectionSet.contains(s.getAddress()), symbolNamePreference,
-			false);
+		return StreamSupport
+				.stream(program.getSymbolTable().getAllSymbols(true).spliterator(), false)
+				.filter(symbol -> sectionSet.contains(symbol.getAddress()))
+				.collect(new SymbolInformationCollector(symbolNamePreference));
 	}
 
-	public static Map<String, Symbol> getExternalSymbols(Program program, AddressSetView fileSet,
-			SymbolPreference symbolNamePreference) {
-		Map<String, Symbol> externalSymbols =
-			getSymbols(program, s -> !fileSet.contains(s.getAddress()), symbolNamePreference, true);
-		// Filtering out internal symbols with identical names is required for dealing with thunks.
-		Map<String, Symbol> internalSymbols =
-			getSymbols(program, s -> fileSet.contains(s.getAddress()), symbolNamePreference, false);
-
+	public static Map<Address, SymbolInformation> getExternalSymbols(Program program,
+			AddressSetView fileSet, SymbolPreference symbolNamePreference) {
 		SymbolTable symbolTable = program.getSymbolTable();
 		RelocationTable relocationTable = RelocationTable.get(program);
-		Stream<Relocation> relocations = StreamSupport.stream(
-			Spliterators.spliteratorUnknownSize(relocationTable.getRelocations(fileSet), 0), false);
-		return relocations.map(r -> symbolTable.getPrimarySymbol(r.getTarget()).getName(true))
-				.filter(s -> s != null && externalSymbols.containsKey(s) &&
-					!internalSymbols.containsKey(s))
-				.distinct()
-				.collect(Collectors.toMap(Function.identity(), s -> externalSymbols.get(s)));
-	}
 
-	private static Map<String, Symbol> getSymbols(Program program, Predicate<Symbol> predicate,
-			SymbolPreference symbolNamePreference, boolean allowDuplicates) {
-		Stream<Symbol> symbols =
-			StreamSupport.stream(program.getSymbolTable().getAllSymbols(true).spliterator(), false);
-		Collection<List<Symbol>> symbolsPerAddress =
-			symbols.filter(predicate)
-					.collect(Collectors.groupingBy(Symbol::getAddress, Collectors.toList()))
-					.values();
-		Stream<List<Symbol>> intermediate = symbolsPerAddress.stream()
-				.map(candidates -> List.of(SymbolPreference.PRIMARY.pick(candidates),
-					symbolNamePreference.pick(candidates)));
+		Set<Address> externalRelocationTargets = StreamSupport.stream(
+			Spliterators.spliteratorUnknownSize(relocationTable.getRelocations(), 0), false)
+				.filter(r -> fileSet.contains(r.getAddress()) && !fileSet.contains(r.getTarget()))
+				.map(r -> r.getTarget())
+				.collect(Collectors.toSet());
 
-		if (allowDuplicates) {
-			return intermediate.collect(
-				Collectors.toMap(l -> l.get(0).getName(true), l -> l.get(1), (a, b) -> {
-					if (!a.isPrimary()) {
-						return a;
-					}
-					else {
-						return b;
-					}
-				}));
-		}
-		else {
-			return intermediate
-					.collect(Collectors.toMap(l -> l.get(0).getName(true), l -> l.get(1)));
-		}
+		return StreamSupport
+				.stream(symbolTable.getAllSymbols(true).spliterator(), false)
+				.filter(symbol -> externalRelocationTargets.contains(symbol.getAddress()))
+				.collect(new SymbolInformationCollector(symbolNamePreference));
 	}
 
 	public static AddressSet parseAddressSet(String str, AddressFactory addressFactory) {

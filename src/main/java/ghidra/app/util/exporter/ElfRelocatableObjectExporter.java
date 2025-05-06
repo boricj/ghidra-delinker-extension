@@ -49,6 +49,7 @@ import ghidra.app.util.predicates.visibility.IsSymbolDynamic;
 import ghidra.app.util.predicates.visibility.IsSymbolInsideFunction;
 import ghidra.app.util.predicates.visibility.IsSymbolNameMatchingRegex;
 import ghidra.framework.model.DomainObject;
+import ghidra.program.model.address.Address;
 import ghidra.program.model.address.AddressSet;
 import ghidra.program.model.address.AddressSetView;
 import ghidra.program.model.lang.Endian;
@@ -61,7 +62,6 @@ import ghidra.program.model.mem.MemoryBlock;
 import ghidra.program.model.relocobj.Relocation;
 import ghidra.program.model.relocobj.RelocationTable;
 import ghidra.program.model.symbol.Symbol;
-import ghidra.program.model.symbol.SymbolTable;
 import ghidra.util.classfinder.ClassSearcher;
 import ghidra.util.task.TaskMonitor;
 import ghidra_delinker_extension.BuildConfig;
@@ -120,7 +120,7 @@ public class ElfRelocatableObjectExporter extends Exporter {
 	private RelocationTable relocationTable;
 	private Predicate<Relocation> predicateRelocation;
 	private Predicate<Symbol> predicateVisibility;
-	private Map<String, ElfSymbol> symbolsByName;
+	private Map<Address, ElfSymbol> symbolsByAddress;
 	private List<Section> sections;
 
 	private static final SymbolPreference DEFAULT_SYMBOL_PREFERENCE = SymbolPreference.ITANIUM_ABI;
@@ -366,19 +366,23 @@ public class ElfRelocatableObjectExporter extends Exporter {
 		public void addSymbols() {
 			symtab.addSection(section);
 
-			ProgramUtil.getSectionSymbols(program, sectionSet, symbolNamePreference)
+			ProgramUtil
+					.getSectionSymbols(program, sectionSet, symbolNamePreference)
 					.entrySet()
 					.forEach(entry -> {
-						Symbol symbol = entry.getValue();
-						String symbolName = symbol.getName(true);
+						Address address = entry.getKey();
+						Symbol symbol = entry.getValue().getSymbol();
+						String name = entry.getValue().getName();
+
 						ElfSymbolType type = determineSymbolType(symbol);
 						ElfSymbolBinding binding = determineSymbolBinding(symbol);
 						long offset =
 							ProgramUtil.getOffsetWithinAddressSet(sectionSet, symbol.getAddress());
 						long size = determineSymbolSize(symbol);
 
-						symbolsByName.put(entry.getKey(),
-							symtab.addDefined(symbolName, offset, size, type, binding, section));
+						ElfSymbol sym =
+							symtab.addDefined(name, offset, size, type, binding, section);
+						symbolsByAddress.put(address, sym);
 					});
 		}
 
@@ -440,10 +444,8 @@ public class ElfRelocatableObjectExporter extends Exporter {
 				return;
 			}
 
-			SymbolTable symbolTable = program.getSymbolTable();
 			Map<Relocation, ElfSymbol> relocationsToSymbols = relocations.stream()
-					.collect(Collectors.toMap(r -> r, r -> symbolsByName
-							.get(symbolTable.getPrimarySymbol(r.getTarget()).getName(true))));
+					.collect(Collectors.toMap(r -> r, r -> symbolsByAddress.get(r.getTarget())));
 
 			relSection = builder.build(elf, symtab, section, bytes, sectionSet, relocations,
 				relocationsToSymbols, log);
@@ -522,6 +524,7 @@ public class ElfRelocatableObjectExporter extends Exporter {
 				}
 
 				computeExternalSymbols();
+				symtab.sort((a, b) -> a.compareTo(b));
 
 				if (generateRelocationTables) {
 					for (Section section : sections) {
@@ -593,7 +596,7 @@ public class ElfRelocatableObjectExporter extends Exporter {
 		sectab.add(symtab);
 		symtab.addNull();
 
-		symbolsByName = new HashMap<>();
+		symbolsByAddress = new HashMap<>();
 	}
 
 	private void addSectionComment() {
@@ -617,8 +620,11 @@ public class ElfRelocatableObjectExporter extends Exporter {
 		ProgramUtil.getExternalSymbols(program, fileSet, symbolNamePreference)
 				.entrySet()
 				.forEach(entry -> {
-					symbolsByName.put(entry.getKey(),
-						symtab.addUndefined(entry.getValue().getName(true)));
+					Address address = entry.getKey();
+					String name = entry.getValue().getName();
+
+					ElfSymbol sym = symtab.addUndefined(name);
+					symbolsByAddress.put(address, sym);
 				});
 	}
 

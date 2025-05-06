@@ -50,6 +50,7 @@ import ghidra.app.util.predicates.visibility.IsSymbolDynamic;
 import ghidra.app.util.predicates.visibility.IsSymbolInsideFunction;
 import ghidra.app.util.predicates.visibility.IsSymbolNameMatchingRegex;
 import ghidra.framework.model.DomainObject;
+import ghidra.program.model.address.Address;
 import ghidra.program.model.address.AddressSet;
 import ghidra.program.model.address.AddressSetView;
 import ghidra.program.model.listing.Function;
@@ -60,7 +61,6 @@ import ghidra.program.model.mem.MemoryBlock;
 import ghidra.program.model.relocobj.Relocation;
 import ghidra.program.model.relocobj.RelocationTable;
 import ghidra.program.model.symbol.Symbol;
-import ghidra.program.model.symbol.SymbolTable;
 import ghidra.util.classfinder.ClassSearcher;
 import ghidra.util.task.TaskMonitor;
 import ghidra_delinker_extension.BuildConfig;
@@ -95,7 +95,7 @@ public class CoffRelocatableObjectExporter extends Exporter {
 	private RelocationTable relocationTable;
 	private Predicate<Relocation> predicateRelocation;
 	private Predicate<Symbol> predicateVisibility;
-	private Map<String, CoffSymbol> symbolsByName;
+	private Map<Address, CoffSymbol> symbolsByAddress;
 	private List<Section> sections;
 
 	private CoffFile coff;
@@ -231,11 +231,14 @@ public class CoffRelocatableObjectExporter extends Exporter {
 		public void addSymbols() {
 			symtab.addSection(section);
 
-			ProgramUtil.getSectionSymbols(program, sectionSet, symbolNamePreference)
+			ProgramUtil
+					.getSectionSymbols(program, sectionSet, symbolNamePreference)
 					.entrySet()
 					.forEach(entry -> {
-						Symbol symbol = entry.getValue();
-						String symbolName = symbol.getName(true);
+						Address address = entry.getKey();
+						Symbol symbol = entry.getValue().getSymbol();
+						String name = entry.getValue().getName();
+
 						long offset =
 							ProgramUtil.getOffsetWithinAddressSet(sectionSet, symbol.getAddress());
 						var obj = symbol.getObject();
@@ -247,9 +250,9 @@ public class CoffRelocatableObjectExporter extends Exporter {
 						if (predicateVisibility.test(symbol)) {
 							storageClass = CoffStorageClass.IMAGE_SYM_CLASS_STATIC;
 						}
-						symbolsByName.put(entry.getKey(),
-							symtab.addSymbol(symbolName, (int) offset, section, type,
-								storageClass));
+						CoffSymbol sym =
+							symtab.addSymbol(name, (int) offset, section, type, storageClass);
+						symbolsByAddress.put(address, sym);
 					});
 		}
 
@@ -275,10 +278,8 @@ public class CoffRelocatableObjectExporter extends Exporter {
 					builder.getClass().getName());
 			}
 
-			SymbolTable symbolTable = program.getSymbolTable();
 			Map<Relocation, CoffSymbol> relocationsToSymbols = relocations.stream()
-					.collect(Collectors.toMap(r -> r, r -> symbolsByName
-							.get(symbolTable.getPrimarySymbol(r.getTarget()).getName(true))));
+					.collect(Collectors.toMap(r -> r, r -> symbolsByAddress.get(r.getTarget())));
 
 			builder.build(symtab, section, bytes, sectionSet, relocations, relocationsToSymbols,
 				log);
@@ -355,13 +356,14 @@ public class CoffRelocatableObjectExporter extends Exporter {
 			}
 
 			taskMonitor.setMessage("Generating symbol table...");
-			symbolsByName = new HashMap<>();
+			symbolsByAddress = new HashMap<>();
 			symtab.addFile(".file", file.getName());
 			for (Section section : sections) {
 				section.addSymbols();
 			}
 
 			computeExternalSymbols(memory);
+			symtab.sort((a, b) -> a.compareTo(b));
 
 			for (Section section : sections) {
 				String msg =
@@ -441,8 +443,11 @@ public class CoffRelocatableObjectExporter extends Exporter {
 		ProgramUtil.getExternalSymbols(program, fileSet, symbolNamePreference)
 				.entrySet()
 				.forEach(entry -> {
-					symbolsByName.put(entry.getKey(),
-						symtab.addUndefined(entry.getValue().getName(true)));
+					Address address = entry.getKey();
+					String name = entry.getValue().getName();
+
+					CoffSymbol sym = symtab.addUndefined(name);
+					symbolsByAddress.put(address, sym);
 				});
 	}
 

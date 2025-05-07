@@ -72,9 +72,9 @@ apply plugin: "jacoco"
 apply plugin: "com.diffplug.spotless"
 
 dependencies {
-	implementation "net.boricj:bft-base:0.3.0"
-	implementation "net.boricj:bft-coff:0.3.0"
-	implementation "net.boricj:bft-elf:0.3.0"
+	implementation "net.boricj:bft-base:0.4.0"
+	implementation "net.boricj:bft-coff:0.4.0"
+	implementation "net.boricj:bft-elf:0.4.0"
 	testImplementation "junit:junit:4.12"
   	testRuntimeOnly "junit:junit:4.12"
 	testImplementation "org.mockito:mockito-core:5.4.0"

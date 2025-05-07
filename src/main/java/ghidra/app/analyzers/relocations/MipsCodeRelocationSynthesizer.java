@@ -23,6 +23,7 @@ import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import ghidra.app.analyzers.RelocationTableSynthesizerAnalyzer;
 import ghidra.app.analyzers.relocations.emitters.BundleRelocationEmitter;
 import ghidra.app.analyzers.relocations.emitters.FunctionInstructionSink;
 import ghidra.app.analyzers.relocations.emitters.InstructionRelocationEmitter;
@@ -92,10 +93,10 @@ public class MipsCodeRelocationSynthesizer
 
 		private final Set<Instruction> branchesToShiftByOne;
 
-		public MIPS_26_InstructionRelocationEmitter(Program program,
-				RelocationTable relocationTable, Function function,
-				Set<Instruction> branchesToShiftByOne, TaskMonitor monitor, MessageLog log) {
-			super(program, relocationTable, function, monitor, log);
+		public MIPS_26_InstructionRelocationEmitter(RelocationTableSynthesizerAnalyzer analyzer,
+				Function function, Set<Instruction> branchesToShiftByOne, TaskMonitor monitor,
+				MessageLog log) {
+			super(analyzer, function, monitor, log);
 
 			this.branchesToShiftByOne = branchesToShiftByOne;
 		}
@@ -161,11 +162,11 @@ public class MipsCodeRelocationSynthesizer
 
 		private final DataConverter dc;
 
-		public MIPS_HI16LO16_BundleRelocationEmitter(Program program,
-				RelocationTable relocationTable, Function function, TaskMonitor monitor,
-				MessageLog log) {
-			super(program, relocationTable, function, monitor, log);
+		public MIPS_HI16LO16_BundleRelocationEmitter(RelocationTableSynthesizerAnalyzer analyzer,
+				Function function, TaskMonitor monitor, MessageLog log) {
+			super(analyzer, function, monitor, log);
 
+			Program program = analyzer.getProgram();
 			this.dc = DataConverter.getInstance(program.getLanguage().isBigEndian());
 		}
 
@@ -403,10 +404,10 @@ public class MipsCodeRelocationSynthesizer
 
 		private final Set<Instruction> branchesToShiftByOne;
 
-		public MIPS_PC16_InstructionRelocationEmitter(Program program,
-				RelocationTable relocationTable, Function function,
-				Set<Instruction> branchesToShiftByOne, TaskMonitor monitor, MessageLog log) {
-			super(program, relocationTable, function, monitor, log);
+		public MIPS_PC16_InstructionRelocationEmitter(RelocationTableSynthesizerAnalyzer analyzer,
+				Function function, Set<Instruction> branchesToShiftByOne, TaskMonitor monitor,
+				MessageLog log) {
+			super(analyzer, function, monitor, log);
 
 			this.branchesToShiftByOne = branchesToShiftByOne;
 		}
@@ -478,11 +479,12 @@ public class MipsCodeRelocationSynthesizer
 
 		private final Register gp;
 
-		public MIPS_GPREL16_InstructionRelocationEmitter(Program program,
-				RelocationTable relocationTable, Function function, Symbol fromSymbol,
+		public MIPS_GPREL16_InstructionRelocationEmitter(
+				RelocationTableSynthesizerAnalyzer analyzer, Function function, Symbol fromSymbol,
 				TaskMonitor monitor, MessageLog log) {
-			super(program, relocationTable, function, fromSymbol, monitor, log);
+			super(analyzer, function, fromSymbol, monitor, log);
 
+			Program program = analyzer.getProgram();
 			gp = program.getRegister("gp");
 		}
 
@@ -509,17 +511,17 @@ public class MipsCodeRelocationSynthesizer
 	}
 
 	@Override
-	public List<FunctionInstructionSink> getFunctionInstructionSinks(Program program,
-			RelocationTable relocationTable, Function function, TaskMonitor monitor,
+	public List<FunctionInstructionSink> getFunctionInstructionSinks(
+			RelocationTableSynthesizerAnalyzer analyzer, Function function, TaskMonitor monitor,
 			MessageLog log) throws CancelledException {
+		Program program = analyzer.getProgram();
 		Set<Instruction> branchesToShiftByOne =
 			detectBranchDelaySlotsWithHI16(program, function, monitor);
 		List<FunctionInstructionSink> sinks = new ArrayList<>();
-		sinks.add(new MIPS_26_InstructionRelocationEmitter(program, relocationTable, function,
-			branchesToShiftByOne, monitor, log));
-		sinks.add(new MIPS_HI16LO16_BundleRelocationEmitter(program, relocationTable, function,
+		sinks.add(new MIPS_26_InstructionRelocationEmitter(analyzer, function, branchesToShiftByOne,
 			monitor, log));
-		sinks.add(new MIPS_PC16_InstructionRelocationEmitter(program, relocationTable, function,
+		sinks.add(new MIPS_HI16LO16_BundleRelocationEmitter(analyzer, function, monitor, log));
+		sinks.add(new MIPS_PC16_InstructionRelocationEmitter(analyzer, function,
 			branchesToShiftByOne, monitor, log));
 
 		SymbolTable symbolTable = program.getSymbolTable();
@@ -529,8 +531,8 @@ public class MipsCodeRelocationSynthesizer
 			Address address = symbol.getAddress();
 
 			if (GP_SYMBOLS_PATTERN.matcher(name).matches() && !addressSet.contains(address)) {
-				sinks.add(new MIPS_GPREL16_InstructionRelocationEmitter(program, relocationTable,
-					function, symbol, monitor, log));
+				sinks.add(new MIPS_GPREL16_InstructionRelocationEmitter(analyzer, function, symbol,
+					monitor, log));
 				addressSet.add(address);
 			}
 		}

@@ -18,9 +18,9 @@ import static ghidra.app.util.ProgramUtil.getBitmask;
 import java.util.Collection;
 import java.util.List;
 
+import ghidra.app.analyzers.RelocationTableSynthesizerAnalyzer;
 import ghidra.app.analyzers.relocations.emitters.AbsoluteInstructionRelocationEmitter;
 import ghidra.app.analyzers.relocations.emitters.FunctionInstructionSink;
-import ghidra.app.analyzers.relocations.emitters.InstructionRelocationEmitter;
 import ghidra.app.analyzers.relocations.emitters.RelativeNextInstructionRelocationEmitter;
 import ghidra.app.analyzers.relocations.patterns.OperandMatch;
 import ghidra.app.analyzers.relocations.patterns.OperandMatcher;
@@ -32,7 +32,6 @@ import ghidra.program.model.listing.Function;
 import ghidra.program.model.listing.Instruction;
 import ghidra.program.model.listing.Program;
 import ghidra.program.model.mem.MemoryAccessException;
-import ghidra.program.model.relocobj.RelocationTable;
 import ghidra.program.util.ProgramUtilities;
 import ghidra.util.DataConverter;
 import ghidra.util.exception.CancelledException;
@@ -76,10 +75,9 @@ public class X86CodeRelocationSynthesizer extends FunctionInstructionSinkCodeRel
 			OPERANDMATCHER_SIB_4BYTES,
 			SlidingOperandMatcher.UNSIGNED_4BYTES);
 
-		public X86InstructionAbsoluteRelocationEmitter(Program program,
-				RelocationTable relocationTable, Function function, TaskMonitor monitor,
-				MessageLog log) {
-			super(program, relocationTable, function, monitor, log);
+		public X86InstructionAbsoluteRelocationEmitter(RelocationTableSynthesizerAnalyzer analyzer,
+				Function function, TaskMonitor monitor, MessageLog log) {
+			super(analyzer, function, monitor, log);
 		}
 
 		@Override
@@ -96,10 +94,9 @@ public class X86CodeRelocationSynthesizer extends FunctionInstructionSinkCodeRel
 			SlidingOperandMatcher.SIGNED_2BYTES,
 			SlidingOperandMatcher.SIGNED_4BYTES);
 
-		public X86InstructionRelativeRelocationEmitter(Program program,
-				RelocationTable relocationTable, Function function, TaskMonitor monitor,
-				MessageLog log) {
-			super(program, relocationTable, function, monitor, log);
+		public X86InstructionRelativeRelocationEmitter(RelocationTableSynthesizerAnalyzer analyzer,
+				Function function, TaskMonitor monitor, MessageLog log) {
+			super(analyzer, function, monitor, log);
 		}
 
 		@Override
@@ -109,13 +106,13 @@ public class X86CodeRelocationSynthesizer extends FunctionInstructionSinkCodeRel
 	}
 
 	@Override
-	public List<FunctionInstructionSink> getFunctionInstructionSinks(Program program,
-			RelocationTable relocationTable, Function function, TaskMonitor monitor,
+	public List<FunctionInstructionSink> getFunctionInstructionSinks(
+			RelocationTableSynthesizerAnalyzer analyzer, Function function, TaskMonitor monitor,
 			MessageLog log) throws CancelledException {
-		InstructionRelocationEmitter absolute = new X86InstructionAbsoluteRelocationEmitter(program,
-			relocationTable, function, monitor, log);
-		InstructionRelocationEmitter relative = new X86InstructionRelativeRelocationEmitter(program,
-			relocationTable, function, monitor, log);
+		var absolute =
+			new X86InstructionAbsoluteRelocationEmitter(analyzer, function, monitor, log);
+		var relative =
+			new X86InstructionRelativeRelocationEmitter(analyzer, function, monitor, log);
 
 		return List.of(absolute, relative);
 	}

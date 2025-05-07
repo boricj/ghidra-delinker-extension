@@ -16,12 +16,12 @@ package ghidra.app.analyzers.relocations.emitters;
 import java.util.Collection;
 import java.util.Optional;
 
+import ghidra.app.analyzers.RelocationTableSynthesizerAnalyzer;
 import ghidra.app.analyzers.relocations.patterns.OperandMatch;
 import ghidra.app.analyzers.relocations.patterns.OperandMatcher;
 import ghidra.app.analyzers.relocations.utils.RelocationTarget;
 import ghidra.app.util.importer.MessageLog;
 import ghidra.program.model.address.Address;
-import ghidra.program.model.address.AddressSetView;
 import ghidra.program.model.listing.Function;
 import ghidra.program.model.listing.Instruction;
 import ghidra.program.model.listing.Program;
@@ -41,16 +41,18 @@ import ghidra.util.task.TaskMonitor;
  * computation as well (false positives need to be discarded).
  */
 public abstract class InstructionRelocationEmitter implements FunctionInstructionSink {
+	private final RelocationTableSynthesizerAnalyzer analyzer;
 	private final Program program;
 	private final RelocationTable relocationTable;
 	private final Function function;
 	private final TaskMonitor monitor;
 	private final MessageLog log;
 
-	public InstructionRelocationEmitter(Program program, RelocationTable relocationTable,
+	public InstructionRelocationEmitter(RelocationTableSynthesizerAnalyzer analyzer,
 			Function function, TaskMonitor monitor, MessageLog log) {
-		this.program = program;
-		this.relocationTable = relocationTable;
+		this.analyzer = analyzer;
+		this.program = analyzer.getProgram();
+		this.relocationTable = analyzer.getRelocationTable();
 		this.function = function;
 		this.monitor = monitor;
 		this.log = log;
@@ -77,14 +79,13 @@ public abstract class InstructionRelocationEmitter implements FunctionInstructio
 	}
 
 	@Override
-	public boolean process(Instruction instruction, AddressSetView relocatable)
-			throws MemoryAccessException {
+	public boolean process(Instruction instruction) throws MemoryAccessException {
 		ReferenceManager referenceManager = program.getReferenceManager();
 		Address fromAddress = instruction.getAddress();
 		boolean foundRelocation = false;
 
 		for (Reference reference : referenceManager.getReferencesFrom(fromAddress)) {
-			if (!isReferenceInteresting(reference, relocatable)) {
+			if (!isReferenceInteresting(reference, analyzer)) {
 				continue;
 			}
 			RelocationTarget target = RelocationTarget.get(program, reference);

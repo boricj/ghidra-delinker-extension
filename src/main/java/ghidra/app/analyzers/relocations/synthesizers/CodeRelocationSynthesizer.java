@@ -13,12 +13,11 @@
  */
 package ghidra.app.analyzers.relocations.synthesizers;
 
+import ghidra.app.analyzers.RelocationTableSynthesizerAnalyzer;
 import ghidra.app.util.importer.MessageLog;
-import ghidra.program.model.address.AddressSetView;
 import ghidra.program.model.listing.Function;
 import ghidra.program.model.listing.Program;
 import ghidra.program.model.mem.MemoryAccessException;
-import ghidra.program.model.relocobj.RelocationTable;
 import ghidra.util.classfinder.ExtensionPoint;
 import ghidra.util.exception.CancelledException;
 import ghidra.util.task.TaskMonitor;
@@ -27,9 +26,8 @@ import ghidra.util.task.TaskMonitor;
  * This interface is for analyzing relocation spots within functions.
  */
 public interface CodeRelocationSynthesizer extends ExtensionPoint {
-	public void process(Program program, AddressSetView relocatable, Function function,
-			RelocationTable relocationTable, TaskMonitor monitor, MessageLog log)
-			throws MemoryAccessException, CancelledException;
+	public void process(RelocationTableSynthesizerAnalyzer analyzer, Function function,
+			TaskMonitor monitor, MessageLog log) throws MemoryAccessException, CancelledException;
 
 	public boolean canAnalyze(Program program);
 }

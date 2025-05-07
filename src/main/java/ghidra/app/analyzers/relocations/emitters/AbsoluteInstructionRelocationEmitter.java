@@ -13,22 +13,22 @@
  */
 package ghidra.app.analyzers.relocations.emitters;
 
+import ghidra.app.analyzers.RelocationTableSynthesizerAnalyzer;
 import ghidra.app.analyzers.relocations.patterns.OperandMatch;
 import ghidra.app.analyzers.relocations.utils.RelocationTarget;
 import ghidra.app.util.importer.MessageLog;
 import ghidra.program.model.address.Address;
 import ghidra.program.model.listing.Function;
 import ghidra.program.model.listing.Instruction;
-import ghidra.program.model.listing.Program;
 import ghidra.program.model.mem.MemoryAccessException;
 import ghidra.program.model.relocobj.RelocationTable;
 import ghidra.program.model.symbol.Reference;
 import ghidra.util.task.TaskMonitor;
 
 public abstract class AbsoluteInstructionRelocationEmitter extends InstructionRelocationEmitter {
-	public AbsoluteInstructionRelocationEmitter(Program program, RelocationTable relocationTable,
+	public AbsoluteInstructionRelocationEmitter(RelocationTableSynthesizerAnalyzer analyzer,
 			Function function, TaskMonitor monitor, MessageLog log) {
-		super(program, relocationTable, function, monitor, log);
+		super(analyzer, function, monitor, log);
 	}
 
 	@Override
@@ -47,7 +47,6 @@ public abstract class AbsoluteInstructionRelocationEmitter extends InstructionRe
 		long addend = match.getValue() - target.getAddress().getUnsignedOffset();
 
 		relocationTable.addAbsolute(address, match.getSize(), match.getBitmask(),
-			target.getAddress(),
-			addend);
+			target.getAddress(), addend);
 	}
 }

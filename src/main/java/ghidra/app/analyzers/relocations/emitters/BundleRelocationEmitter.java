@@ -20,10 +20,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import ghidra.app.analyzers.RelocationTableSynthesizerAnalyzer;
 import ghidra.app.analyzers.relocations.utils.RelocationTarget;
 import ghidra.app.util.importer.MessageLog;
 import ghidra.program.model.address.Address;
-import ghidra.program.model.address.AddressSetView;
 import ghidra.program.model.block.BasicBlockModel;
 import ghidra.program.model.block.CodeBlock;
 import ghidra.program.model.block.CodeBlockModel;
@@ -96,6 +96,7 @@ public abstract class BundleRelocationEmitter implements FunctionInstructionSink
 		}
 	}
 
+	private final RelocationTableSynthesizerAnalyzer analyzer;
 	private final Program program;
 	private final RelocationTable relocationTable;
 	private final Function function;
@@ -106,10 +107,11 @@ public abstract class BundleRelocationEmitter implements FunctionInstructionSink
 	private final Map<CodeBlock, Map<Register, Node>> codeBlockRegisterNodes = new HashMap<>();
 	private CodeBlock currentCodeBlock;
 
-	public BundleRelocationEmitter(Program program, RelocationTable relocationTable,
-			Function function, TaskMonitor monitor, MessageLog log) {
-		this.program = program;
-		this.relocationTable = relocationTable;
+	public BundleRelocationEmitter(RelocationTableSynthesizerAnalyzer analyzer, Function function,
+			TaskMonitor monitor, MessageLog log) {
+		this.analyzer = analyzer;
+		this.program = analyzer.getProgram();
+		this.relocationTable = analyzer.getRelocationTable();
 		this.function = function;
 		this.monitor = monitor;
 		this.log = log;
@@ -138,7 +140,7 @@ public abstract class BundleRelocationEmitter implements FunctionInstructionSink
 	}
 
 	@Override
-	public boolean process(Instruction instruction, AddressSetView relocatable)
+	public boolean process(Instruction instruction)
 			throws MemoryAccessException, CancelledException {
 		Map<Register, Node> registerNodes = getRegisterNodesForInstruction(instruction);
 		ReferenceManager referenceManager = program.getReferenceManager();
@@ -146,7 +148,7 @@ public abstract class BundleRelocationEmitter implements FunctionInstructionSink
 		boolean foundRelocation = false;
 
 		for (Reference reference : referenceManager.getReferencesFrom(fromAddress)) {
-			if (!isReferenceInteresting(reference, relocatable)) {
+			if (!isReferenceInteresting(reference, analyzer)) {
 				continue;
 			}
 			RelocationTarget target = RelocationTarget.get(program, reference);

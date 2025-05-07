@@ -13,13 +13,13 @@
  */
 package ghidra.app.analyzers.relocations.emitters;
 
+import ghidra.app.analyzers.RelocationTableSynthesizerAnalyzer;
 import ghidra.app.analyzers.relocations.patterns.OperandMatch;
 import ghidra.app.analyzers.relocations.utils.RelocationTarget;
 import ghidra.app.util.importer.MessageLog;
 import ghidra.program.model.address.Address;
 import ghidra.program.model.listing.Function;
 import ghidra.program.model.listing.Instruction;
-import ghidra.program.model.listing.Program;
 import ghidra.program.model.mem.MemoryAccessException;
 import ghidra.program.model.relocobj.RelocationTable;
 import ghidra.program.model.symbol.Reference;
@@ -30,10 +30,9 @@ public abstract class SymbolRelativeInstructionRelocationEmitter
 		extends InstructionRelocationEmitter {
 	protected final Symbol fromSymbol;
 
-	public SymbolRelativeInstructionRelocationEmitter(Program program,
-			RelocationTable relocationTable, Function function, Symbol fromSymbol,
-			TaskMonitor monitor, MessageLog log) {
-		super(program, relocationTable, function, monitor, log);
+	public SymbolRelativeInstructionRelocationEmitter(RelocationTableSynthesizerAnalyzer analyzer,
+			Function function, Symbol fromSymbol, TaskMonitor monitor, MessageLog log) {
+		super(analyzer, function, monitor, log);
 
 		this.fromSymbol = fromSymbol;
 	}

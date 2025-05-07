@@ -13,13 +13,13 @@
  */
 package ghidra.app.analyzers.relocations.emitters;
 
+import ghidra.app.analyzers.RelocationTableSynthesizerAnalyzer;
 import ghidra.app.analyzers.relocations.patterns.OperandMatch;
 import ghidra.app.analyzers.relocations.utils.RelocationTarget;
 import ghidra.app.util.importer.MessageLog;
 import ghidra.program.model.address.Address;
 import ghidra.program.model.listing.Function;
 import ghidra.program.model.listing.Instruction;
-import ghidra.program.model.listing.Program;
 import ghidra.program.model.mem.MemoryAccessException;
 import ghidra.program.model.relocobj.RelocationTable;
 import ghidra.program.model.symbol.Reference;
@@ -27,10 +27,9 @@ import ghidra.util.task.TaskMonitor;
 
 public abstract class RelativeCurrentInstructionRelocationEmitter
 		extends InstructionRelocationEmitter {
-	public RelativeCurrentInstructionRelocationEmitter(Program program,
-			RelocationTable relocationTable, Function function, TaskMonitor monitor,
-			MessageLog log) {
-		super(program, relocationTable, function, monitor, log);
+	public RelativeCurrentInstructionRelocationEmitter(RelocationTableSynthesizerAnalyzer analyzer,
+			Function function, TaskMonitor monitor, MessageLog log) {
+		super(analyzer, function, monitor, log);
 	}
 
 	@Override
@@ -52,7 +51,6 @@ public abstract class RelativeCurrentInstructionRelocationEmitter
 			match.getValue();
 
 		relocationTable.addRelativePC(address, match.getSize(), match.getBitmask(),
-			target.getAddress(),
-			addend);
+			target.getAddress(), addend);
 	}
 }

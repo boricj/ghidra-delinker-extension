@@ -88,6 +88,7 @@ public class RelocationTableSynthesizerAnalyzer extends AbstractAnalyzer {
 	private final static String OPTION_DESCRIPTION_RELOCATABLE_ADDRESS_RANGES =
 		"Set of address ranges that are eligible as targets for relocations. If empty, the entire program is considered relocatable.";
 
+	private Program program;
 	private AddressSetView relocatableTargets;
 
 	public RelocationTableSynthesizerAnalyzer() {
@@ -121,9 +122,9 @@ public class RelocationTableSynthesizerAnalyzer extends AbstractAnalyzer {
 		Listing listing = program.getListing();
 		FunctionManager functionManager = program.getFunctionManager();
 
-		AddressSetView relocatable = relocatableTargets;
-		if (relocatable == null) {
-			relocatable = program.getAddressFactory().getAddressSet();
+		this.program = program;
+		if (relocatableTargets == null) {
+			relocatableTargets = program.getAddressFactory().getAddressSet();
 		}
 
 		List<CodeRelocationSynthesizer> codeSynthesizers = getCodeSynthesizers(program);
@@ -146,7 +147,7 @@ public class RelocationTableSynthesizerAnalyzer extends AbstractAnalyzer {
 		for (Function function : functionManager.getFunctions(set, true)) {
 			monitor.setMessage("Relocation table synthesizer: " + function.getName(true));
 
-			processFunction(codeSynthesizers, relocatable, function, relocationTable, monitor, log);
+			processFunction(codeSynthesizers, function, monitor, log);
 
 			monitor.incrementProgress(function.getBody().getNumAddresses());
 			monitor.checkCancelled();
@@ -156,7 +157,7 @@ public class RelocationTableSynthesizerAnalyzer extends AbstractAnalyzer {
 			monitor.setMessage(
 				"Relocation table synthesizer: " + data.getAddressString(true, true));
 
-			processData(dataSynthesizers, relocatable, data, relocationTable, monitor, log);
+			processData(dataSynthesizers, data, monitor, log);
 
 			monitor.incrementProgress(data.getLength());
 			monitor.checkCancelled();
@@ -165,13 +166,11 @@ public class RelocationTableSynthesizerAnalyzer extends AbstractAnalyzer {
 		return true;
 	}
 
-	private static void processFunction(List<CodeRelocationSynthesizer> synthesizers,
-			AddressSetView relocatable, Function function, RelocationTable relocationTable,
+	private void processFunction(List<CodeRelocationSynthesizer> synthesizers, Function function,
 			TaskMonitor monitor, MessageLog log) throws CancelledException {
 		for (CodeRelocationSynthesizer synthesizer : synthesizers) {
 			try {
-				synthesizer.process(function.getProgram(), relocatable, function, relocationTable,
-					monitor, log);
+				synthesizer.process(this, function, monitor, log);
 			}
 			catch (MemoryAccessException e) {
 				log.appendException(e);
@@ -179,14 +178,12 @@ public class RelocationTableSynthesizerAnalyzer extends AbstractAnalyzer {
 		}
 	}
 
-	private static void processData(List<DataRelocationSynthesizer> synthesizers,
-			AddressSetView relocatable, Data parent, RelocationTable relocationTable,
+	private void processData(List<DataRelocationSynthesizer> synthesizers, Data parent,
 			TaskMonitor monitor, MessageLog log) {
 		if (parent.isPointer()) {
 			for (DataRelocationSynthesizer synthesizer : synthesizers) {
 				try {
-					synthesizer.process(parent.getProgram(), relocatable, parent, relocationTable,
-						monitor, log);
+					synthesizer.process(this, parent, monitor, log);
 				}
 				catch (MemoryAccessException e) {
 					log.appendException(e);
@@ -198,15 +195,13 @@ public class RelocationTableSynthesizerAnalyzer extends AbstractAnalyzer {
 
 			if (data.isPointer() || data.isArray() || data.isStructure()) {
 				for (int i = 0; i < parent.getNumComponents(); i++) {
-					processData(synthesizers, relocatable, parent.getComponent(i), relocationTable,
-						monitor, log);
+					processData(synthesizers, parent.getComponent(i), monitor, log);
 				}
 			}
 		}
 		else if (parent.isStructure()) {
 			for (int i = 0; i < parent.getNumComponents(); i++) {
-				processData(synthesizers, relocatable, parent.getComponent(i), relocationTable,
-					monitor, log);
+				processData(synthesizers, parent.getComponent(i), monitor, log);
 			}
 		}
 	}
@@ -246,5 +241,17 @@ public class RelocationTableSynthesizerAnalyzer extends AbstractAnalyzer {
 	@Override
 	public boolean canAnalyze(Program program) {
 		return !getCodeSynthesizers(program).isEmpty() || !getDataSynthesizers(program).isEmpty();
+	}
+
+	public Program getProgram() {
+		return program;
+	}
+
+	public RelocationTable getRelocationTable() {
+		return RelocationTable.get(program);
+	}
+
+	public AddressSetView getRelocatableTargets() {
+		return relocatableTargets;
 	}
 }

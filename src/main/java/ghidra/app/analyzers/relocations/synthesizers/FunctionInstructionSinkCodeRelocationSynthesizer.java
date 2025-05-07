@@ -16,16 +16,15 @@ package ghidra.app.analyzers.relocations.synthesizers;
 import java.util.Arrays;
 import java.util.List;
 
+import ghidra.app.analyzers.RelocationTableSynthesizerAnalyzer;
 import ghidra.app.analyzers.relocations.emitters.FunctionInstructionSink;
 import ghidra.app.util.importer.MessageLog;
 import ghidra.program.model.address.Address;
-import ghidra.program.model.address.AddressSetView;
 import ghidra.program.model.listing.Function;
 import ghidra.program.model.listing.Instruction;
 import ghidra.program.model.listing.Listing;
 import ghidra.program.model.listing.Program;
 import ghidra.program.model.mem.MemoryAccessException;
-import ghidra.program.model.relocobj.RelocationTable;
 import ghidra.program.model.symbol.Reference;
 import ghidra.program.model.symbol.ReferenceManager;
 import ghidra.util.exception.CancelledException;
@@ -37,13 +36,13 @@ import ghidra.util.task.TaskMonitor;
 public abstract class FunctionInstructionSinkCodeRelocationSynthesizer
 		implements CodeRelocationSynthesizer {
 	@Override
-	public void process(Program program, AddressSetView relocatable, Function function,
-			RelocationTable relocationTable, TaskMonitor monitor, MessageLog log)
-			throws MemoryAccessException, CancelledException {
+	public void process(RelocationTableSynthesizerAnalyzer analyzer, Function function,
+			TaskMonitor monitor, MessageLog log) throws MemoryAccessException, CancelledException {
+		Program program = function.getProgram();
 		ReferenceManager referenceManager = program.getReferenceManager();
 		Listing listing = program.getListing();
 		List<FunctionInstructionSink> sinks =
-			getFunctionInstructionSinks(program, relocationTable, function, monitor, log);
+			getFunctionInstructionSinks(analyzer, function, monitor, log);
 
 		for (Instruction instruction : listing.getInstructions(function.getBody(), true)) {
 			Address fromAddress = instruction.getAddress();
@@ -51,10 +50,10 @@ public abstract class FunctionInstructionSinkCodeRelocationSynthesizer
 
 			boolean interestingReference = Arrays.stream(references)
 					.anyMatch(r -> sinks.stream()
-							.anyMatch(s -> s.isReferenceInteresting(r, relocatable)));
+							.anyMatch(s -> s.isReferenceInteresting(r, analyzer)));
 			boolean foundRelocation = false;
 			for (FunctionInstructionSink sink : sinks) {
-				foundRelocation |= sink.process(instruction, relocatable);
+				foundRelocation |= sink.process(instruction);
 			}
 
 			if (interestingReference && !foundRelocation) {
@@ -64,7 +63,7 @@ public abstract class FunctionInstructionSinkCodeRelocationSynthesizer
 		}
 	}
 
-	public abstract List<FunctionInstructionSink> getFunctionInstructionSinks(Program program,
-			RelocationTable relocationTable, Function function, TaskMonitor monitor,
+	public abstract List<FunctionInstructionSink> getFunctionInstructionSinks(
+			RelocationTableSynthesizerAnalyzer analyzer, Function function, TaskMonitor monitor,
 			MessageLog log) throws CancelledException;
 }

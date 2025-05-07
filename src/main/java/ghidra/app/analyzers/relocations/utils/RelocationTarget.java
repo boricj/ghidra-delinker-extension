@@ -22,10 +22,18 @@ import ghidra.program.model.symbol.Symbol;
 public class RelocationTarget {
 	private Address address;
 	private long offset;
+	private Address destination;
 
 	public RelocationTarget(Address address, long offset) {
 		this.address = address;
 		this.offset = offset;
+		this.destination = address;
+	}
+
+	public RelocationTarget(Address address, long offset, Address destination) {
+		this.address = address;
+		this.offset = offset;
+		this.destination = destination;
 	}
 
 	public Address getAddress() {
@@ -34,6 +42,14 @@ public class RelocationTarget {
 
 	public long getOffset() {
 		return offset;
+	}
+
+	public Address getDestination() {
+		return destination;
+	}
+
+	public RelocationTarget withDestination(Address newDestination) {
+		return new RelocationTarget(address, offset, newDestination);
 	}
 
 	public static RelocationTarget find(Program program, Address fromAddress, Address toAddress) {

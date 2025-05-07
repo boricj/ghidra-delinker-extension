@@ -26,6 +26,7 @@ import javax.swing.event.ChangeListener;
 
 import ghidra.app.analyzers.relocations.synthesizers.CodeRelocationSynthesizer;
 import ghidra.app.analyzers.relocations.synthesizers.DataRelocationSynthesizer;
+import ghidra.app.analyzers.relocations.utils.RelocationTarget;
 import ghidra.app.services.AbstractAnalyzer;
 import ghidra.app.services.AnalysisPriority;
 import ghidra.app.services.AnalyzerType;
@@ -33,6 +34,7 @@ import ghidra.app.util.AddressSetEditorPanel;
 import ghidra.app.util.importer.MessageLog;
 import ghidra.framework.options.OptionType;
 import ghidra.framework.options.Options;
+import ghidra.program.model.address.Address;
 import ghidra.program.model.address.AddressFactory;
 import ghidra.program.model.address.AddressSetView;
 import ghidra.program.model.listing.Data;
@@ -42,6 +44,8 @@ import ghidra.program.model.listing.Listing;
 import ghidra.program.model.listing.Program;
 import ghidra.program.model.mem.MemoryAccessException;
 import ghidra.program.model.relocobj.RelocationTable;
+import ghidra.program.model.symbol.Symbol;
+import ghidra.program.model.symbol.SymbolTable;
 import ghidra.util.classfinder.ClassSearcher;
 import ghidra.util.exception.CancelledException;
 import ghidra.util.task.TaskMonitor;
@@ -88,8 +92,15 @@ public class RelocationTableSynthesizerAnalyzer extends AbstractAnalyzer {
 	private final static String OPTION_DESCRIPTION_RELOCATABLE_ADDRESS_RANGES =
 		"Set of address ranges that are eligible as targets for relocations. If empty, the entire program is considered relocatable.";
 
+	private final static String OPTION_NAME_REDIRECT_THUNKS_TO_TARGETS =
+		"Redirect thunks to targets";
+
+	private final static String OPTION_DESCRIPTION_REDIRECT_THUNKS_TO_TARGETS =
+		"If checked, the analyzer will redirect relocations targeting function thunks to their targets.";
+
 	private Program program;
 	private AddressSetView relocatableTargets;
+	private boolean redirectThunksToTargets = true;
 
 	public RelocationTableSynthesizerAnalyzer() {
 		super(NAME, DESCRIPTION, AnalyzerType.BYTE_ANALYZER);
@@ -228,6 +239,9 @@ public class RelocationTableSynthesizerAnalyzer extends AbstractAnalyzer {
 		options.registerOption(OPTION_NAME_RELOCATABLE_ADDRESS_RANGES, OptionType.STRING_TYPE, "[]",
 			null, OPTION_DESCRIPTION_RELOCATABLE_ADDRESS_RANGES,
 			() -> new AddressSetPropertyEditor(program, relocatableTargets));
+		options.registerOption(OPTION_NAME_REDIRECT_THUNKS_TO_TARGETS, OptionType.BOOLEAN_TYPE,
+			true,
+			null, OPTION_DESCRIPTION_REDIRECT_THUNKS_TO_TARGETS);
 	}
 
 	@Override
@@ -236,6 +250,7 @@ public class RelocationTableSynthesizerAnalyzer extends AbstractAnalyzer {
 
 		relocatableTargets = parseAddressSet(
 			options.getString(OPTION_NAME_RELOCATABLE_ADDRESS_RANGES, "[]"), addressFactory);
+		redirectThunksToTargets = options.getBoolean(OPTION_NAME_REDIRECT_THUNKS_TO_TARGETS, true);
 	}
 
 	@Override
@@ -251,7 +266,31 @@ public class RelocationTableSynthesizerAnalyzer extends AbstractAnalyzer {
 		return RelocationTable.get(program);
 	}
 
+	public RelocationTarget getFinalRelocationTarget(RelocationTarget target) {
+		if (shouldRedirectThunksToTargets()) {
+			SymbolTable symbolTable = program.getSymbolTable();
+			FunctionManager functionManager = program.getFunctionManager();
+
+			for (Symbol symbol : symbolTable.getSymbols(target.getAddress())) {
+				Function thunk = functionManager.getFunctionAt(symbol.getAddress());
+
+				if (thunk != null && thunk.isThunk()) {
+					Function thunkedFunction = thunk.getThunkedFunction(true);
+					Address thunkedAddress = thunkedFunction.getSymbol().getAddress();
+
+					return target.withDestination(thunkedAddress);
+				}
+			}
+		}
+
+		return target;
+	}
+
 	public AddressSetView getRelocatableTargets() {
 		return relocatableTargets;
+	}
+
+	public boolean shouldRedirectThunksToTargets() {
+		return redirectThunksToTargets;
 	}
 }

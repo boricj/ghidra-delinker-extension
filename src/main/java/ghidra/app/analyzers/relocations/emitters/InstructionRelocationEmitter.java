@@ -115,7 +115,9 @@ public abstract class InstructionRelocationEmitter implements FunctionInstructio
 
 			OperandMatch operandMatch = opMatch.get();
 			if (evaluate(instruction, operandMatch, target, reference)) {
-				emit(instruction, operandMatch, target, reference);
+				RelocationTarget finalTarget = analyzer.getFinalRelocationTarget(target);
+
+				emit(instruction, operandMatch, finalTarget, reference);
 				emitted = true;
 			}
 		}

@@ -51,7 +51,6 @@ public abstract class RelativeNextInstructionRelocationEmitter
 			match.getValue();
 
 		relocationTable.addRelativePC(address, match.getSize(), match.getBitmask(),
-			target.getAddress(),
-			addend);
+			target.getDestination(), addend);
 	}
 }

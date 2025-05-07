@@ -47,6 +47,6 @@ public abstract class AbsoluteInstructionRelocationEmitter extends InstructionRe
 		long addend = match.getValue() - target.getAddress().getUnsignedOffset();
 
 		relocationTable.addAbsolute(address, match.getSize(), match.getBitmask(),
-			target.getAddress(), addend);
+			target.getDestination(), addend);
 	}
 }

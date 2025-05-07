@@ -42,8 +42,10 @@ public class AbsoluteDataRelocationSynthesizer implements DataRelocationSynthesi
 		RelocationTarget target =
 			RelocationTarget.find(pointer.getProgram(), fromAddress, toAddress);
 		if (target != null) {
-			relocationTable.addAbsolute(fromAddress, pointer.getLength(), target.getAddress(),
-				target.getOffset());
+			RelocationTarget finalTarget = analyzer.getFinalRelocationTarget(target);
+
+			relocationTable.addAbsolute(fromAddress, pointer.getLength(),
+				finalTarget.getDestination(), finalTarget.getOffset());
 		}
 	}
 

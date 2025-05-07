@@ -56,7 +56,6 @@ public abstract class SymbolRelativeInstructionRelocationEmitter
 			reference.getToAddress().getUnsignedOffset() - target.getAddress().getUnsignedOffset();
 
 		relocationTable.addRelativeSymbol(address, match.getSize(), match.getBitmask(),
-			target.getAddress(),
-			addend, fromSymbol.getName());
+			target.getDestination(), addend, fromSymbol.getName());
 	}
 }

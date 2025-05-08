@@ -343,52 +343,63 @@ public class CoffRelocatableObjectExporter extends Exporter {
 
 		taskMonitor.setIndeterminate(true);
 
-		try (RandomAccessFile raf = new RandomAccessFile(file, "rw")) {
-			coff = new CoffFile.Builder(machine).build();
-			header = coff.getHeader();
-			sectab = coff.getSections();
-			strtab = coff.getStrings();
-			symtab = coff.getSymbols();
+		coff = new CoffFile.Builder(machine).build();
+		header = coff.getHeader();
+		sectab = coff.getSections();
+		strtab = coff.getStrings();
+		symtab = coff.getSymbols();
 
-			for (Section section : sections) {
-				taskMonitor.setMessage(String.format("Creating section %s...", section.getName()));
+		for (Section section : sections) {
+			taskMonitor.setMessage(String.format("Creating section %s...", section.getName()));
+			try {
 				section.createSection();
 			}
-
-			taskMonitor.setMessage("Generating symbol table...");
-			symbolsByAddress = new HashMap<>();
-			symtab.addFile(".file", file.getName());
-			for (Section section : sections) {
-				section.addSymbols();
+			catch (MemoryAccessException e) {
+				log.appendMsg(section.getName(), "Memory access exception: " + e.getMessage());
+				return false;
 			}
-
-			computeExternalSymbols(memory);
-			symtab.sort((a, b) -> a.compareTo(b));
-
-			for (Section section : sections) {
-				String msg =
-					String.format("Building relocation table for section %s...", section.getName());
-				taskMonitor.setMessage(msg);
-				section.buildRelocationTable(machine);
-			}
-
-			if (generateSectionComment) {
-				addSectionComment();
-			}
-
-			for (CoffSymbol symbol : symtab) {
-				strtab.add(symbol.getName());
-			}
-			for (CoffSection section : sectab) {
-				strtab.add(section.getName());
-			}
-
-			taskMonitor.setMessage("Writing COFF relocatable object file...");
-			layoutFile();
-			writeOutFile(raf);
 		}
-		catch (MemoryAccessException e) {
-			throw new ExporterException(e);
+
+		taskMonitor.setMessage("Generating symbol table...");
+		symbolsByAddress = new HashMap<>();
+		symtab.addFile(".file", file.getName());
+		for (Section section : sections) {
+			section.addSymbols();
+		}
+
+		computeExternalSymbols(memory);
+		symtab.sort((a, b) -> a.compareTo(b));
+
+		boolean noDuplicates = ProgramUtil.checkDuplicateSymbols(symtab.stream()
+				.filter(s -> s.getStorageClass() == CoffStorageClass.IMAGE_SYM_CLASS_EXTERNAL),
+			s -> s.getName(), log);
+		if (!noDuplicates) {
+			return false;
+		}
+
+		for (Section section : sections) {
+			String msg =
+				String.format("Building relocation table for section %s...", section.getName());
+			taskMonitor.setMessage(msg);
+			section.buildRelocationTable(machine);
+		}
+
+		if (generateSectionComment) {
+			addSectionComment();
+		}
+
+		for (CoffSymbol symbol : symtab) {
+			strtab.add(symbol.getName());
+		}
+		for (CoffSection section : sectab) {
+			strtab.add(section.getName());
+		}
+
+		taskMonitor.setMessage("Writing COFF relocatable object file...");
+		layoutFile();
+
+		try (RandomAccessFile raf = new RandomAccessFile(file, "rw")) {
+			writeOutFile(raf);
 		}
 
 		return true;

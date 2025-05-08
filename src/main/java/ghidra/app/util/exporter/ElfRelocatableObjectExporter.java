@@ -502,59 +502,77 @@ public class ElfRelocatableObjectExporter extends Exporter {
 
 		taskMonitor.setIndeterminate(true);
 
-		try (RandomAccessFile raf = new RandomAccessFile(file, "rw")) {
-			elf = new ElfFile.Builder(e_ident_class, e_ident_data, ElfOsAbi.ELFOSABI_NONE,
-				ElfType.ET_REL, e_ident_machine).build();
-			header = elf.getHeader();
-			sectab = elf.addSectionTable();
-			sectab.add(new ElfNullSection(elf));
+		elf = new ElfFile.Builder(e_ident_class, e_ident_data, ElfOsAbi.ELFOSABI_NONE,
+			ElfType.ET_REL, e_ident_machine).build();
+		header = elf.getHeader();
+		sectab = elf.addSectionTable();
+		sectab.add(new ElfNullSection(elf));
 
-			for (Section section : sections) {
-				taskMonitor.setMessage(String.format("Creating section %s...", section.getName()));
+		for (Section section : sections) {
+			taskMonitor.setMessage(String.format("Creating section %s...", section.getName()));
+			try {
 				section.createSection(generateRelocationTables);
 			}
+			catch (MemoryAccessException e) {
+				log.appendMsg(section.getName(), "Memory access exception: " + e.getMessage());
+				return false;
+			}
+		}
 
-			if (generateStringAndSymbolTables) {
-				taskMonitor.setMessage("Generating symbol and string tables...");
-				addStringAndSymbolTables(file);
+		if (generateStringAndSymbolTables) {
+			taskMonitor.setMessage("Generating symbol and string tables...");
+			addStringAndSymbolTables(file);
 
-				symtab.addFile(file.getName());
+			symtab.addFile(file.getName());
+			for (Section section : sections) {
+				section.addSymbols();
+			}
+
+			computeExternalSymbols();
+			symtab.sort((a, b) -> a.compareTo(b));
+
+			boolean noDuplicates = ProgramUtil.checkDuplicateSymbols(
+				symtab.stream().filter(s -> s.getBinding() != ElfSymbolBinding.STB_LOCAL),
+				s -> s.getName(), log);
+			if (!noDuplicates) {
+				return false;
+			}
+
+			if (generateRelocationTables) {
 				for (Section section : sections) {
-					section.addSymbols();
-				}
-
-				computeExternalSymbols();
-				symtab.sort((a, b) -> a.compareTo(b));
-
-				if (generateRelocationTables) {
-					for (Section section : sections) {
-						String msg = String.format("Creating relocation table for section %s...",
-							section.getName());
-						taskMonitor.setMessage(msg);
+					String msg = String.format("Creating relocation table for section %s...",
+						section.getName());
+					taskMonitor.setMessage(msg);
+					try {
 						section.createRelocationTableSection();
 					}
+					catch (MemoryAccessException e) {
+						log.appendMsg(section.getName(),
+							"Memory access exception: " + e.getMessage());
+						return false;
+					}
 				}
-
-				for (ElfSymbol symbol : symtab) {
-					strtab.add(symbol.getName());
-				}
 			}
 
-			if (generateSectionComment) {
-				addSectionComment();
+			for (ElfSymbol symbol : symtab) {
+				strtab.add(symbol.getName());
 			}
-
-			if (generateSectionNamesStringTable) {
-				taskMonitor.setMessage("Generating section names string table...");
-				addSectionNameStringTable();
-			}
-
-			taskMonitor.setMessage("Writing out ELF relocatable object file...");
-			layoutFile();
-			writeFile(raf);
 		}
-		catch (MemoryAccessException e) {
-			throw new ExporterException(e);
+
+		if (generateSectionComment) {
+			addSectionComment();
+		}
+
+		if (generateSectionNamesStringTable) {
+			taskMonitor.setMessage("Generating section names string table...");
+			addSectionNameStringTable();
+		}
+
+		taskMonitor.setMessage("Writing out ELF relocatable object file...");
+		layoutFile();
+
+		try (RandomAccessFile raf = new RandomAccessFile(file, "rw")) {
+			writeFile(raf);
 		}
 
 		return true;

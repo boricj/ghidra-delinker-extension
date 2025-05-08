@@ -20,10 +20,12 @@ import java.util.Spliterators;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import org.apache.commons.lang3.ArrayUtils;
 
+import ghidra.app.util.importer.MessageLog;
 import ghidra.framework.model.DomainObject;
 import ghidra.program.model.address.Address;
 import ghidra.program.model.address.AddressFactory;
@@ -170,6 +172,22 @@ public abstract class ProgramUtil {
 				.stream(symbolTable.getAllSymbols(true).spliterator(), false)
 				.filter(symbol -> externalRelocationTargets.contains(symbol.getAddress()))
 				.collect(new SymbolInformationCollector(symbolNamePreference));
+	}
+
+	public static <T> boolean checkDuplicateSymbols(Stream<T> symbols,
+			java.util.function.Function<T, String> asString, MessageLog log) {
+		Map<String, Long> duplicates =
+			symbols.collect(Collectors.groupingBy(asString, Collectors.counting()))
+					.entrySet()
+					.stream()
+					.filter(entry -> entry.getValue() > 1)
+					.collect(Collectors.toMap(entry -> entry.getKey(), entry -> entry.getValue()));
+
+		duplicates.forEach((key, count) -> {
+			log.appendMsg(String.format("Duplicate symbol name '%s' (%d instances)", key, count));
+		});
+
+		return duplicates.isEmpty();
 	}
 
 	public static AddressSet parseAddressSet(String str, AddressFactory addressFactory) {

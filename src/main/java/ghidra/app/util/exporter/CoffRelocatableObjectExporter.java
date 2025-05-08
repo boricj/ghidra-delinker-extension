@@ -323,8 +323,10 @@ public class CoffRelocatableObjectExporter extends Exporter {
 			TaskMonitor taskMonitor) throws ExporterException, IOException {
 		program = getProgram(domainObj);
 		if (program == null) {
+			log.appendMsg("Domain object is not a program");
 			return false;
 		}
+
 		Memory memory = program.getMemory();
 		if (fileSet == null) {
 			fileSet = memory;

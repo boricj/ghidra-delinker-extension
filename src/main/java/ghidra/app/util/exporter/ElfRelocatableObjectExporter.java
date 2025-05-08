@@ -482,8 +482,10 @@ public class ElfRelocatableObjectExporter extends Exporter {
 			TaskMonitor taskMonitor) throws IOException, ExporterException {
 		program = ProgramUtil.getProgram(domainObj);
 		if (program == null) {
+			log.appendMsg("Domain object is not a program");
 			return false;
 		}
+
 		Memory memory = program.getMemory();
 		if (fileSet == null) {
 			fileSet = memory;

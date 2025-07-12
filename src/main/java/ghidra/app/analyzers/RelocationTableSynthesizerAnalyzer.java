@@ -51,6 +51,23 @@ import ghidra.util.exception.CancelledException;
 import ghidra.util.task.TaskMonitor;
 
 public class RelocationTableSynthesizerAnalyzer extends AbstractAnalyzer {
+	public static enum EvaluationReportPolicy {
+		NEVER("Never report evaluations"),
+		ON_FAILURE("Report evaluations on relocation synthetization failure"),
+		ALWAYS("Always report evaluations");
+
+		private final String value;
+
+		EvaluationReportPolicy(String value) {
+			this.value = value;
+		}
+
+		@Override
+		public String toString() {
+			return value;
+		}
+	};
+
 	public class AddressSetPropertyEditor extends PropertyEditorSupport {
 		private final Program program;
 		private final AddressSetEditorPanel panel;
@@ -98,9 +115,16 @@ public class RelocationTableSynthesizerAnalyzer extends AbstractAnalyzer {
 	private final static String OPTION_DESCRIPTION_REDIRECT_THUNKS_TO_TARGETS =
 		"If checked, the analyzer will redirect relocations targeting function thunks to their targets.";
 
+	private final static String OPTION_NAME_EVALUATION_REPORT_POLICY =
+		"Evaluation report policy";
+
+	private final static String OPTION_DESCRIPTION_EVALUATION_REPORT_POLICY =
+		"Specify under which conditions relocation synthesizer analyzers will dump their evaluation reports into the logs.";
+
 	private Program program;
 	private AddressSetView relocatableTargets;
 	private boolean redirectThunksToTargets = true;
+	private EvaluationReportPolicy evaluationReportPolicy = EvaluationReportPolicy.NEVER;
 
 	public RelocationTableSynthesizerAnalyzer() {
 		super(NAME, DESCRIPTION, AnalyzerType.BYTE_ANALYZER);
@@ -155,10 +179,12 @@ public class RelocationTableSynthesizerAnalyzer extends AbstractAnalyzer {
 		monitor.setProgress(0);
 		monitor.setIndeterminate(false);
 
+		boolean ok = true;
+
 		for (Function function : functionManager.getFunctions(set, true)) {
 			monitor.setMessage("Relocation table synthesizer: " + function.getName(true));
 
-			processFunction(codeSynthesizers, function, monitor, log);
+			ok &= processFunction(codeSynthesizers, function, monitor, log);
 
 			monitor.incrementProgress(function.getBody().getNumAddresses());
 			monitor.checkCancelled();
@@ -168,36 +194,49 @@ public class RelocationTableSynthesizerAnalyzer extends AbstractAnalyzer {
 			monitor.setMessage(
 				"Relocation table synthesizer: " + data.getAddressString(true, true));
 
-			processData(dataSynthesizers, data, monitor, log);
+			ok &= processData(dataSynthesizers, data, monitor, log);
 
 			monitor.incrementProgress(data.getLength());
 			monitor.checkCancelled();
 		}
 
+		if (!ok && evaluationReportPolicy == EvaluationReportPolicy.NEVER) {
+			log.appendMsg(
+				"Problems detected during relocation synthesizer analysis, rerun with evaluation reports enabled in the analyzer options for more details.");
+		}
+
 		return true;
 	}
 
-	private void processFunction(List<CodeRelocationSynthesizer> synthesizers, Function function,
+	private boolean processFunction(List<CodeRelocationSynthesizer> synthesizers, Function function,
 			TaskMonitor monitor, MessageLog log) throws CancelledException {
+		boolean ok = true;
+
 		for (CodeRelocationSynthesizer synthesizer : synthesizers) {
 			try {
-				synthesizer.process(this, function, monitor, log);
+				ok &= synthesizer.process(this, function, monitor, log);
 			}
 			catch (MemoryAccessException e) {
 				log.appendException(e);
+				ok = false;
 			}
 		}
+
+		return ok;
 	}
 
-	private void processData(List<DataRelocationSynthesizer> synthesizers, Data parent,
+	private boolean processData(List<DataRelocationSynthesizer> synthesizers, Data parent,
 			TaskMonitor monitor, MessageLog log) {
+		boolean ok = true;
+
 		if (parent.isPointer()) {
 			for (DataRelocationSynthesizer synthesizer : synthesizers) {
 				try {
-					synthesizer.process(this, parent, monitor, log);
+					ok &= synthesizer.process(this, parent, monitor, log);
 				}
 				catch (MemoryAccessException e) {
 					log.appendException(e);
+					ok = false;
 				}
 			}
 		}
@@ -206,15 +245,17 @@ public class RelocationTableSynthesizerAnalyzer extends AbstractAnalyzer {
 
 			if (data.isPointer() || data.isArray() || data.isStructure()) {
 				for (int i = 0; i < parent.getNumComponents(); i++) {
-					processData(synthesizers, parent.getComponent(i), monitor, log);
+					ok &= processData(synthesizers, parent.getComponent(i), monitor, log);
 				}
 			}
 		}
 		else if (parent.isStructure()) {
 			for (int i = 0; i < parent.getNumComponents(); i++) {
-				processData(synthesizers, parent.getComponent(i), monitor, log);
+				ok &= processData(synthesizers, parent.getComponent(i), monitor, log);
 			}
 		}
+
+		return ok;
 	}
 
 	private static long calculateMaximumProgress(Program program, AddressSetView set) {
@@ -242,6 +283,9 @@ public class RelocationTableSynthesizerAnalyzer extends AbstractAnalyzer {
 		options.registerOption(OPTION_NAME_REDIRECT_THUNKS_TO_TARGETS, OptionType.BOOLEAN_TYPE,
 			true,
 			null, OPTION_DESCRIPTION_REDIRECT_THUNKS_TO_TARGETS);
+		options.registerOption(OPTION_NAME_EVALUATION_REPORT_POLICY, OptionType.ENUM_TYPE,
+			EvaluationReportPolicy.NEVER,
+			null, OPTION_DESCRIPTION_EVALUATION_REPORT_POLICY);
 	}
 
 	@Override
@@ -251,6 +295,8 @@ public class RelocationTableSynthesizerAnalyzer extends AbstractAnalyzer {
 		relocatableTargets = parseAddressSet(
 			options.getString(OPTION_NAME_RELOCATABLE_ADDRESS_RANGES, "[]"), addressFactory);
 		redirectThunksToTargets = options.getBoolean(OPTION_NAME_REDIRECT_THUNKS_TO_TARGETS, true);
+		evaluationReportPolicy =
+			options.getEnum(OPTION_NAME_EVALUATION_REPORT_POLICY, EvaluationReportPolicy.NEVER);
 	}
 
 	@Override
@@ -292,5 +338,9 @@ public class RelocationTableSynthesizerAnalyzer extends AbstractAnalyzer {
 
 	public boolean shouldRedirectThunksToTargets() {
 		return redirectThunksToTargets;
+	}
+
+	public EvaluationReportPolicy getEvaluationReportPolicy() {
+		return evaluationReportPolicy;
 	}
 }

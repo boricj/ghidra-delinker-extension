@@ -26,6 +26,7 @@ import ghidra.app.analyzers.relocations.patterns.OperandMatch;
 import ghidra.app.analyzers.relocations.patterns.OperandMatcher;
 import ghidra.app.analyzers.relocations.patterns.SlidingOperandMatcher;
 import ghidra.app.analyzers.relocations.synthesizers.FunctionInstructionSinkCodeRelocationSynthesizer;
+import ghidra.app.analyzers.relocations.utils.EvaluationReporter;
 import ghidra.app.util.importer.MessageLog;
 import ghidra.program.model.lang.Processor;
 import ghidra.program.model.listing.Function;
@@ -76,8 +77,9 @@ public class X86CodeRelocationSynthesizer extends FunctionInstructionSinkCodeRel
 			SlidingOperandMatcher.UNSIGNED_4BYTES);
 
 		public X86InstructionAbsoluteRelocationEmitter(RelocationTableSynthesizerAnalyzer analyzer,
-				Function function, TaskMonitor monitor, MessageLog log) {
-			super(analyzer, function, monitor, log);
+				Function function, EvaluationReporter evaluationReporter, TaskMonitor monitor,
+				MessageLog log) {
+			super(analyzer, function, evaluationReporter, monitor, log);
 		}
 
 		@Override
@@ -95,8 +97,9 @@ public class X86CodeRelocationSynthesizer extends FunctionInstructionSinkCodeRel
 			SlidingOperandMatcher.SIGNED_4BYTES);
 
 		public X86InstructionRelativeRelocationEmitter(RelocationTableSynthesizerAnalyzer analyzer,
-				Function function, TaskMonitor monitor, MessageLog log) {
-			super(analyzer, function, monitor, log);
+				Function function, EvaluationReporter evaluationReporter, TaskMonitor monitor,
+				MessageLog log) {
+			super(analyzer, function, evaluationReporter, monitor, log);
 		}
 
 		@Override
@@ -107,12 +110,13 @@ public class X86CodeRelocationSynthesizer extends FunctionInstructionSinkCodeRel
 
 	@Override
 	public List<FunctionInstructionSink> getFunctionInstructionSinks(
-			RelocationTableSynthesizerAnalyzer analyzer, Function function, TaskMonitor monitor,
-			MessageLog log) throws CancelledException {
-		var absolute =
-			new X86InstructionAbsoluteRelocationEmitter(analyzer, function, monitor, log);
-		var relative =
-			new X86InstructionRelativeRelocationEmitter(analyzer, function, monitor, log);
+			RelocationTableSynthesizerAnalyzer analyzer, Function function,
+			EvaluationReporter evaluationReporter, TaskMonitor monitor, MessageLog log)
+			throws CancelledException {
+		var absolute = new X86InstructionAbsoluteRelocationEmitter(analyzer, function,
+			evaluationReporter, monitor, log);
+		var relative = new X86InstructionRelativeRelocationEmitter(analyzer, function,
+			evaluationReporter, monitor, log);
 
 		return List.of(absolute, relative);
 	}

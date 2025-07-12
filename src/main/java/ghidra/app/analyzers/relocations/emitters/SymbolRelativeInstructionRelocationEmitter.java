@@ -15,6 +15,7 @@ package ghidra.app.analyzers.relocations.emitters;
 
 import ghidra.app.analyzers.RelocationTableSynthesizerAnalyzer;
 import ghidra.app.analyzers.relocations.patterns.OperandMatch;
+import ghidra.app.analyzers.relocations.utils.EvaluationReporter;
 import ghidra.app.analyzers.relocations.utils.RelocationTarget;
 import ghidra.app.util.importer.MessageLog;
 import ghidra.program.model.address.Address;
@@ -31,8 +32,9 @@ public abstract class SymbolRelativeInstructionRelocationEmitter
 	protected final Symbol fromSymbol;
 
 	public SymbolRelativeInstructionRelocationEmitter(RelocationTableSynthesizerAnalyzer analyzer,
-			Function function, Symbol fromSymbol, TaskMonitor monitor, MessageLog log) {
-		super(analyzer, function, monitor, log);
+			Function function, Symbol fromSymbol, EvaluationReporter evaluationReporter,
+			TaskMonitor monitor, MessageLog log) {
+		super(analyzer, function, evaluationReporter, monitor, log);
 
 		this.fromSymbol = fromSymbol;
 	}
@@ -44,7 +46,11 @@ public abstract class SymbolRelativeInstructionRelocationEmitter
 		long relative = match.getValue();
 		long destination = reference.getToAddress().getUnsignedOffset();
 
-		return destination == origin + relative;
+		boolean result = destination == origin + relative;
+
+		reportEvaluation("Symbol relative", result, destination, "0x%08x + %d", origin, relative);
+
+		return result;
 	}
 
 	@Override

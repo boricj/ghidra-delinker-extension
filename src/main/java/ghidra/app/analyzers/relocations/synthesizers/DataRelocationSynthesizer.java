@@ -25,7 +25,7 @@ import ghidra.util.task.TaskMonitor;
  * This interface is for analyzing relocation spots within data.
  */
 public interface DataRelocationSynthesizer extends ExtensionPoint {
-	public void process(RelocationTableSynthesizerAnalyzer analyzer, Data pointer,
+	public boolean process(RelocationTableSynthesizerAnalyzer analyzer, Data pointer,
 			TaskMonitor monitor, MessageLog log) throws MemoryAccessException;
 
 	public boolean canAnalyze(Program program);

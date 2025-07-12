@@ -19,6 +19,7 @@ import java.util.Optional;
 import ghidra.app.analyzers.RelocationTableSynthesizerAnalyzer;
 import ghidra.app.analyzers.relocations.patterns.OperandMatch;
 import ghidra.app.analyzers.relocations.patterns.OperandMatcher;
+import ghidra.app.analyzers.relocations.utils.EvaluationReporter;
 import ghidra.app.analyzers.relocations.utils.RelocationTarget;
 import ghidra.app.util.importer.MessageLog;
 import ghidra.program.model.address.Address;
@@ -45,17 +46,24 @@ public abstract class InstructionRelocationEmitter implements FunctionInstructio
 	private final Program program;
 	private final RelocationTable relocationTable;
 	private final Function function;
+	private final EvaluationReporter evaluationReporter;
 	private final TaskMonitor monitor;
 	private final MessageLog log;
 
 	public InstructionRelocationEmitter(RelocationTableSynthesizerAnalyzer analyzer,
-			Function function, TaskMonitor monitor, MessageLog log) {
+			Function function, EvaluationReporter evaluationRepoter, TaskMonitor monitor,
+			MessageLog log) {
 		this.analyzer = analyzer;
 		this.program = analyzer.getProgram();
 		this.relocationTable = analyzer.getRelocationTable();
 		this.function = function;
+		this.evaluationReporter = evaluationRepoter;
 		this.monitor = monitor;
 		this.log = log;
+	}
+
+	public RelocationTableSynthesizerAnalyzer getAnalyzer() {
+		return analyzer;
 	}
 
 	public Program getProgram() {
@@ -123,6 +131,11 @@ public abstract class InstructionRelocationEmitter implements FunctionInstructio
 		}
 
 		return emitted;
+	}
+
+	protected void reportEvaluation(String type, boolean result, long destination, String format,
+			Object... args) {
+		evaluationReporter.add(type, result, destination, format, args);
 	}
 
 	public abstract Collection<OperandMatcher> getOperandMatchers();

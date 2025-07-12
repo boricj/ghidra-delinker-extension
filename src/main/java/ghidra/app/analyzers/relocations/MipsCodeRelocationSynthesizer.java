@@ -33,6 +33,7 @@ import ghidra.app.analyzers.relocations.patterns.FixedOperandMatcher;
 import ghidra.app.analyzers.relocations.patterns.OperandMatch;
 import ghidra.app.analyzers.relocations.patterns.OperandMatcher;
 import ghidra.app.analyzers.relocations.synthesizers.FunctionInstructionSinkCodeRelocationSynthesizer;
+import ghidra.app.analyzers.relocations.utils.EvaluationReporter;
 import ghidra.app.analyzers.relocations.utils.RelocationTarget;
 import ghidra.app.util.importer.MessageLog;
 import ghidra.program.model.address.Address;
@@ -94,9 +95,9 @@ public class MipsCodeRelocationSynthesizer
 		private final Set<Instruction> branchesToShiftByOne;
 
 		public MIPS_26_InstructionRelocationEmitter(RelocationTableSynthesizerAnalyzer analyzer,
-				Function function, Set<Instruction> branchesToShiftByOne, TaskMonitor monitor,
-				MessageLog log) {
-			super(analyzer, function, monitor, log);
+				Function function, Set<Instruction> branchesToShiftByOne,
+				EvaluationReporter evaluationReporter, TaskMonitor monitor, MessageLog log) {
+			super(analyzer, function, evaluationReporter, monitor, log);
 
 			this.branchesToShiftByOne = branchesToShiftByOne;
 		}
@@ -405,9 +406,9 @@ public class MipsCodeRelocationSynthesizer
 		private final Set<Instruction> branchesToShiftByOne;
 
 		public MIPS_PC16_InstructionRelocationEmitter(RelocationTableSynthesizerAnalyzer analyzer,
-				Function function, Set<Instruction> branchesToShiftByOne, TaskMonitor monitor,
-				MessageLog log) {
-			super(analyzer, function, monitor, log);
+				Function function, Set<Instruction> branchesToShiftByOne,
+				EvaluationReporter evaluationReporter, TaskMonitor monitor, MessageLog log) {
+			super(analyzer, function, evaluationReporter, monitor, log);
 
 			this.branchesToShiftByOne = branchesToShiftByOne;
 		}
@@ -481,8 +482,8 @@ public class MipsCodeRelocationSynthesizer
 
 		public MIPS_GPREL16_InstructionRelocationEmitter(
 				RelocationTableSynthesizerAnalyzer analyzer, Function function, Symbol fromSymbol,
-				TaskMonitor monitor, MessageLog log) {
-			super(analyzer, function, fromSymbol, monitor, log);
+				EvaluationReporter evaluationReporter, TaskMonitor monitor, MessageLog log) {
+			super(analyzer, function, fromSymbol, evaluationReporter, monitor, log);
 
 			Program program = analyzer.getProgram();
 			gp = program.getRegister("gp");
@@ -512,17 +513,18 @@ public class MipsCodeRelocationSynthesizer
 
 	@Override
 	public List<FunctionInstructionSink> getFunctionInstructionSinks(
-			RelocationTableSynthesizerAnalyzer analyzer, Function function, TaskMonitor monitor,
-			MessageLog log) throws CancelledException {
+			RelocationTableSynthesizerAnalyzer analyzer, Function function,
+			EvaluationReporter evaluationReporter, TaskMonitor monitor, MessageLog log)
+			throws CancelledException {
 		Program program = analyzer.getProgram();
 		Set<Instruction> branchesToShiftByOne =
 			detectBranchDelaySlotsWithHI16(program, function, monitor);
 		List<FunctionInstructionSink> sinks = new ArrayList<>();
 		sinks.add(new MIPS_26_InstructionRelocationEmitter(analyzer, function, branchesToShiftByOne,
-			monitor, log));
+			evaluationReporter, monitor, log));
 		sinks.add(new MIPS_HI16LO16_BundleRelocationEmitter(analyzer, function, monitor, log));
 		sinks.add(new MIPS_PC16_InstructionRelocationEmitter(analyzer, function,
-			branchesToShiftByOne, monitor, log));
+			branchesToShiftByOne, evaluationReporter, monitor, log));
 
 		SymbolTable symbolTable = program.getSymbolTable();
 		AddressSet addressSet = new AddressSet();
@@ -532,7 +534,7 @@ public class MipsCodeRelocationSynthesizer
 
 			if (GP_SYMBOLS_PATTERN.matcher(name).matches() && !addressSet.contains(address)) {
 				sinks.add(new MIPS_GPREL16_InstructionRelocationEmitter(analyzer, function, symbol,
-					monitor, log));
+					evaluationReporter, monitor, log));
 				addressSet.add(address);
 			}
 		}

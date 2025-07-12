@@ -17,7 +17,9 @@ import java.util.Arrays;
 import java.util.List;
 
 import ghidra.app.analyzers.RelocationTableSynthesizerAnalyzer;
+import ghidra.app.analyzers.RelocationTableSynthesizerAnalyzer.EvaluationReportPolicy;
 import ghidra.app.analyzers.relocations.emitters.FunctionInstructionSink;
+import ghidra.app.analyzers.relocations.utils.EvaluationReporter;
 import ghidra.app.util.importer.MessageLog;
 import ghidra.program.model.address.Address;
 import ghidra.program.model.listing.Function;
@@ -36,13 +38,17 @@ import ghidra.util.task.TaskMonitor;
 public abstract class FunctionInstructionSinkCodeRelocationSynthesizer
 		implements CodeRelocationSynthesizer {
 	@Override
-	public void process(RelocationTableSynthesizerAnalyzer analyzer, Function function,
+	public boolean process(RelocationTableSynthesizerAnalyzer analyzer, Function function,
 			TaskMonitor monitor, MessageLog log) throws MemoryAccessException, CancelledException {
+		boolean ok = true;
+
 		Program program = function.getProgram();
 		ReferenceManager referenceManager = program.getReferenceManager();
 		Listing listing = program.getListing();
+		EvaluationReporter evaluationReporter = new EvaluationReporter();
 		List<FunctionInstructionSink> sinks =
-			getFunctionInstructionSinks(analyzer, function, monitor, log);
+			getFunctionInstructionSinks(analyzer, function, evaluationReporter, monitor, log);
+		EvaluationReportPolicy evaluationReportPolicy = analyzer.getEvaluationReportPolicy();
 
 		for (Instruction instruction : listing.getInstructions(function.getBody(), true)) {
 			Address fromAddress = instruction.getAddress();
@@ -56,14 +62,31 @@ public abstract class FunctionInstructionSinkCodeRelocationSynthesizer
 				foundRelocation |= sink.process(instruction);
 			}
 
-			if (interestingReference && !foundRelocation) {
-				log.appendMsg(fromAddress.toString(),
-					"No relocation emitted for instruction with interesting primary reference.");
+			if (interestingReference) {
+				if (!foundRelocation) {
+					ok = false;
+
+					log.appendMsg(fromAddress.toString(),
+						"No relocation emitted for instruction with interesting primary reference.");
+				}
+				else if (evaluationReportPolicy == EvaluationReportPolicy.ALWAYS) {
+					log.appendMsg(fromAddress.toString(), "Relocation emitted.");
+				}
 			}
+
+			if (evaluationReportPolicy == EvaluationReportPolicy.ALWAYS ||
+				(evaluationReportPolicy == EvaluationReportPolicy.ON_FAILURE && !foundRelocation)) {
+				evaluationReporter.dump(log);
+			}
+
+			evaluationReporter.clear();
 		}
+
+		return ok;
 	}
 
 	public abstract List<FunctionInstructionSink> getFunctionInstructionSinks(
-			RelocationTableSynthesizerAnalyzer analyzer, Function function, TaskMonitor monitor,
-			MessageLog log) throws CancelledException;
+			RelocationTableSynthesizerAnalyzer analyzer, Function function,
+			EvaluationReporter evaluationReporter, TaskMonitor monitor, MessageLog log)
+			throws CancelledException;
 }

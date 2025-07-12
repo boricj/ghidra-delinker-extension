@@ -15,6 +15,7 @@ package ghidra.app.analyzers.relocations.emitters;
 
 import ghidra.app.analyzers.RelocationTableSynthesizerAnalyzer;
 import ghidra.app.analyzers.relocations.patterns.OperandMatch;
+import ghidra.app.analyzers.relocations.utils.EvaluationReporter;
 import ghidra.app.analyzers.relocations.utils.RelocationTarget;
 import ghidra.app.util.importer.MessageLog;
 import ghidra.program.model.address.Address;
@@ -27,8 +28,9 @@ import ghidra.util.task.TaskMonitor;
 
 public abstract class AbsoluteInstructionRelocationEmitter extends InstructionRelocationEmitter {
 	public AbsoluteInstructionRelocationEmitter(RelocationTableSynthesizerAnalyzer analyzer,
-			Function function, TaskMonitor monitor, MessageLog log) {
-		super(analyzer, function, monitor, log);
+			Function function, EvaluationReporter evaluationReporter, TaskMonitor monitor,
+			MessageLog log) {
+		super(analyzer, function, evaluationReporter, monitor, log);
 	}
 
 	@Override
@@ -36,7 +38,11 @@ public abstract class AbsoluteInstructionRelocationEmitter extends InstructionRe
 			Reference reference) throws MemoryAccessException {
 		long destination = reference.getToAddress().getUnsignedOffset();
 
-		return destination == match.getValue();
+		boolean result = destination == match.getValue();
+
+		reportEvaluation("Absolute", result, destination, "0x%08x", match.getValue());
+
+		return result;
 	}
 
 	@Override

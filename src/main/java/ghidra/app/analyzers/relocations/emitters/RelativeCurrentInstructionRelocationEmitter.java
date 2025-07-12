@@ -15,6 +15,7 @@ package ghidra.app.analyzers.relocations.emitters;
 
 import ghidra.app.analyzers.RelocationTableSynthesizerAnalyzer;
 import ghidra.app.analyzers.relocations.patterns.OperandMatch;
+import ghidra.app.analyzers.relocations.utils.EvaluationReporter;
 import ghidra.app.analyzers.relocations.utils.RelocationTarget;
 import ghidra.app.util.importer.MessageLog;
 import ghidra.program.model.address.Address;
@@ -28,8 +29,9 @@ import ghidra.util.task.TaskMonitor;
 public abstract class RelativeCurrentInstructionRelocationEmitter
 		extends InstructionRelocationEmitter {
 	public RelativeCurrentInstructionRelocationEmitter(RelocationTableSynthesizerAnalyzer analyzer,
-			Function function, TaskMonitor monitor, MessageLog log) {
-		super(analyzer, function, monitor, log);
+			Function function, EvaluationReporter evaluationReporter, TaskMonitor monitor,
+			MessageLog log) {
+		super(analyzer, function, evaluationReporter, monitor, log);
 	}
 
 	@Override
@@ -39,7 +41,12 @@ public abstract class RelativeCurrentInstructionRelocationEmitter
 		Address fromAddress = instruction.getAddress();
 		long destination = reference.getToAddress().getUnsignedOffset();
 
-		return destination == fromAddress.getUnsignedOffset() + match.getValue();
+		boolean result = destination == fromAddress.getUnsignedOffset() + match.getValue();
+
+		reportEvaluation("PC relative", result, destination, "0x%08x + %d",
+			fromAddress.getUnsignedOffset(), match.getValue());
+
+		return result;
 	}
 
 	@Override

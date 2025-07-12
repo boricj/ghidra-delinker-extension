@@ -29,10 +29,10 @@ public class AbsoluteDataRelocationSynthesizer implements DataRelocationSynthesi
 	}
 
 	@Override
-	public void process(RelocationTableSynthesizerAnalyzer analyzer, Data pointer,
+	public boolean process(RelocationTableSynthesizerAnalyzer analyzer, Data pointer,
 			TaskMonitor monitor, MessageLog log) throws MemoryAccessException {
 		if (!pointer.isInitializedMemory()) {
-			return;
+			return true;
 		}
 
 		RelocationTable relocationTable = analyzer.getRelocationTable();
@@ -46,7 +46,11 @@ public class AbsoluteDataRelocationSynthesizer implements DataRelocationSynthesi
 
 			relocationTable.addAbsolute(fromAddress, pointer.getLength(),
 				finalTarget.getDestination(), finalTarget.getOffset());
+
+			return true;
 		}
+
+		return false;
 	}
 
 	@Override

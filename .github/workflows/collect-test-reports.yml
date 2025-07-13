@@ -3,7 +3,7 @@ name: "Collect test reports"
 on:
   workflow_run:
     workflows:
-      - "ci"
+      - "Build, Test & Release"
     types:
       - completed
 

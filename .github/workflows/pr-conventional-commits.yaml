@@ -1,0 +1,15 @@
+name: "Conventional commits"
+
+on:
+  pull_request:
+
+jobs:
+  conventional-commits:
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: "Checkout"
+        uses: actions/checkout@v4
+      -
+        name: "Check conventional commit messages"
+        uses: webiny/action-conventional-commits@v1.3.0

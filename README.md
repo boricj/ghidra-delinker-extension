@@ -30,7 +30,7 @@ The Ghidra extension archive will be created inside the `dist/` directory.
 
  * Download the extension from the [releases page](https://github.com/boricj/ghidra-delinker-extension/releases) or build it locally ;
  * Install the extension in your Ghidra instance with `File > Install Extensions…` ;
- * Enable the `RelocationTableSynthesizedPlugin` plugin with `File > Configure` inside a CodeBrowser window.
+ * Enable the `RelocationTableSynthesizedPlugin` plugin with `File > Configure > Experimental` inside a CodeBrowser window.
 
 ## Usage 
 

@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.Set;
 
 import ghidra.app.analyzers.RelocationTableSynthesizerAnalyzer;
+import ghidra.app.analyzers.relocations.utils.EvaluationReporter;
 import ghidra.app.analyzers.relocations.utils.RelocationTarget;
 import ghidra.app.util.importer.MessageLog;
 import ghidra.program.model.address.Address;
@@ -78,21 +79,24 @@ public abstract class BundleRelocationEmitter implements FunctionInstructionSink
 			return children;
 		}
 
-		@Override
-		public String toString() {
-			return String.format("%s> %s", instruction.getAddress(), instruction);
-		}
-
 		public String dumpGraph(int indentLevel) {
 			String nodeString = "";
 			for (int i = 0; i < indentLevel; i++) {
-				nodeString += "    ";
+				nodeString += "  ";
 			}
-			nodeString += this + "\n";
+
+			String inputs = Arrays.stream(instruction.getInputObjects())
+					.map(o -> o.toString())
+					.reduce((a, b) -> a + ", " + b)
+					.orElse("none");
+
+			String node = String.format("%-60s (output: %-5s, inputs: %s)\n",
+				String.format("%s%s> %s", nodeString, instruction.getAddress(), instruction),
+				output, inputs);
 
 			List<String> childrenStrings =
 				children.stream().map(n -> n.dumpGraph(indentLevel + 1)).toList();
-			return nodeString + String.join("", childrenStrings);
+			return node + String.join("", childrenStrings);
 		}
 	}
 
@@ -100,6 +104,7 @@ public abstract class BundleRelocationEmitter implements FunctionInstructionSink
 	private final Program program;
 	private final RelocationTable relocationTable;
 	private final Function function;
+	private final EvaluationReporter evaluationReporter;
 	private final TaskMonitor monitor;
 	private final MessageLog log;
 
@@ -108,11 +113,12 @@ public abstract class BundleRelocationEmitter implements FunctionInstructionSink
 	private CodeBlock currentCodeBlock;
 
 	public BundleRelocationEmitter(RelocationTableSynthesizerAnalyzer analyzer, Function function,
-			TaskMonitor monitor, MessageLog log) {
+			EvaluationReporter evaluationReporter, TaskMonitor monitor, MessageLog log) {
 		this.analyzer = analyzer;
 		this.program = analyzer.getProgram();
 		this.relocationTable = analyzer.getRelocationTable();
 		this.function = function;
+		this.evaluationReporter = evaluationReporter;
 		this.monitor = monitor;
 		this.log = log;
 
@@ -166,14 +172,12 @@ public abstract class BundleRelocationEmitter implements FunctionInstructionSink
 					.toList();
 
 			Node node = new Node(instruction, null, children);
-			try {
-				foundRelocation |= evaluateRoot(reference, target, node);
-			}
-			catch (RuntimeException ex) {
-				String msg = String.format(
-					"Caught exception while processing instruction graph:\n%s", node.dumpGraph(0));
-				throw new RuntimeException(msg, ex);
-			}
+			boolean evaluationResult = evaluateRoot(reference, target, node);
+			evaluationReporter.add(getClass().getSimpleName(), evaluationResult,
+				target.getDestination().getUnsignedOffset(), "register dependency graph\n%s",
+				node.dumpGraph(1).stripTrailing());
+
+			foundRelocation |= evaluationResult;
 		}
 
 		updateRegisterNodes(instruction, registerNodes);

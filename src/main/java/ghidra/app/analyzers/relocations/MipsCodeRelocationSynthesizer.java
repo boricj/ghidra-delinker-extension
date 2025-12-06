@@ -163,8 +163,9 @@ public class MipsCodeRelocationSynthesizer
 		private final DataConverter dc;
 
 		public MIPS_HI16LO16_BundleRelocationEmitter(RelocationTableSynthesizerAnalyzer analyzer,
-				Function function, TaskMonitor monitor, MessageLog log) {
-			super(analyzer, function, monitor, log);
+				Function function, EvaluationReporter evaluationReporter, TaskMonitor monitor,
+				MessageLog log) {
+			super(analyzer, function, evaluationReporter, monitor, log);
 
 			Program program = analyzer.getProgram();
 			this.dc = DataConverter.getInstance(program.getLanguage().isBigEndian());
@@ -517,7 +518,8 @@ public class MipsCodeRelocationSynthesizer
 		List<FunctionInstructionSink> sinks = new ArrayList<>();
 		sinks.add(new MIPS_26_InstructionRelocationEmitter(analyzer, function, branchesToShiftByOne,
 			evaluationReporter, monitor, log));
-		sinks.add(new MIPS_HI16LO16_BundleRelocationEmitter(analyzer, function, monitor, log));
+		sinks.add(new MIPS_HI16LO16_BundleRelocationEmitter(analyzer, function, evaluationReporter,
+			monitor, log));
 		sinks.add(new MIPS_PC16_InstructionRelocationEmitter(analyzer, function,
 			branchesToShiftByOne, evaluationReporter, monitor, log));
 

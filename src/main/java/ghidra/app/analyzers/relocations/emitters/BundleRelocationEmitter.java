@@ -166,6 +166,12 @@ public abstract class BundleRelocationEmitter implements FunctionInstructionSink
 			operands.addAll(Arrays.asList(instruction.getInputObjects()));
 			operands.addAll(Arrays.asList(instruction.getResultObjects()));
 			List<Node> children = operands.stream()
+					.map(operand -> {
+						if (operand instanceof Register) {
+							return ((Register) operand).getBaseRegister();
+						}
+						return operand;
+					})
 					.map(operand -> registerNodes.getOrDefault(operand, null))
 					.filter(node -> node != null &&
 						isInstructionReferenceRelatedToNode(instruction, reference, node))
@@ -192,13 +198,19 @@ public abstract class BundleRelocationEmitter implements FunctionInstructionSink
 
 	private void updateRegisterNodes(Instruction instruction, Map<Register, Node> registerNodes) {
 		List<Node> children = Arrays.stream(instruction.getInputObjects())
+				.map(operand -> {
+					if (operand instanceof Register) {
+						return ((Register) operand).getBaseRegister();
+					}
+					return operand;
+				})
 				.map(o -> registerNodes.getOrDefault(o, null))
 				.filter(o -> o != null)
 				.toList();
 		Map<Register, Node> newOutputRegisterNodes = new HashMap<>();
 		for (Object operand : instruction.getResultObjects()) {
 			if (operand instanceof Register) {
-				Register output = (Register) operand;
+				Register output = ((Register) operand).getBaseRegister();
 				Node node = new Node(instruction, output, children);
 
 				newOutputRegisterNodes.put(output, node);

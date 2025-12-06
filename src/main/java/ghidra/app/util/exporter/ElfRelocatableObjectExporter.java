@@ -196,6 +196,7 @@ public class ElfRelocatableObjectExporter extends Exporter {
 		Map.entry(new ProcessorInfo("x86", 4), ElfMachine.EM_386),
 		Map.entry(new ProcessorInfo("MIPS", 4), ElfMachine.EM_MIPS),
 		Map.entry(new ProcessorInfo("MIPS", 8), ElfMachine.EM_MIPS),
+		Map.entry(new ProcessorInfo("MIPS-R5900", 4), ElfMachine.EM_MIPS),
 		Map.entry(new ProcessorInfo("PSX", 4), ElfMachine.EM_MIPS));
 
 	private static final Map<ProcessorInfo, ElfSectionType> GHIDRA_TO_ELF_RELOCATION_TYPES =
@@ -204,6 +205,7 @@ public class ElfRelocatableObjectExporter extends Exporter {
 			Map.entry(new ProcessorInfo("x86", 8), ElfSectionType.SHT_RELA),
 			Map.entry(new ProcessorInfo("MIPS", 4), ElfSectionType.SHT_REL),
 			Map.entry(new ProcessorInfo("MIPS", 8), ElfSectionType.SHT_REL),
+			Map.entry(new ProcessorInfo("MIPS-R5900", 4), ElfSectionType.SHT_REL),
 			Map.entry(new ProcessorInfo("PSX", 4), ElfSectionType.SHT_REL));
 
 	private static ElfMachine autodetectElfMachine(Program program) {

@@ -157,11 +157,8 @@ public class MipsCodeRelocationSynthesizer
 		private final static String LUI = "lui";
 		private final static String ADDIU = "addiu";
 		private final static String ADDU = "addu";
-		private final static String LWL = "lwl";
-		private final static String SWL = "swl";
-		private final static List<String> LOADS =
-			List.of("lb", "lbu", "lh", "lhu", "lw", LWL, "lwr");
-		private final static List<String> STORES = List.of("sb", "sh", "sw", SWL, "swr");
+		private final static List<Character> ACCESS_SIZES =
+			List.of('b', 'h', 'w', 'd', 'q');
 
 		private final DataConverter dc;
 
@@ -227,8 +224,9 @@ public class MipsCodeRelocationSynthesizer
 			}
 
 			Instruction lo16Instruction = node.getInstruction();
-			if (isLWL(lo16Instruction) || isSWL(lo16Instruction)) {
-				extraAddend -= ((short) dc.getInt(lo16Instruction.getBytes())) % 4;
+			if (isLoadOrStoreLeft(lo16Instruction)) {
+				extraAddend -= ((short) dc.getInt(lo16Instruction.getBytes())) %
+					(1 << ACCESS_SIZES.indexOf(getNormalizedMnemonic(lo16Instruction).charAt(1)));
 			}
 
 			for (Node child : node.getChildren()) {
@@ -294,16 +292,19 @@ public class MipsCodeRelocationSynthesizer
 			return mnemonic;
 		}
 
-		private boolean isLOAD(Instruction instruction) {
-			return LOADS.contains(getNormalizedMnemonic(instruction));
+		private boolean isLoadOrStore(Instruction instruction) {
+			CharSequence mnemonic = getNormalizedMnemonic(instruction);
+			return mnemonic.length() >= 2 &&
+				(mnemonic.charAt(0) == 'l' || mnemonic.charAt(0) == 's') &&
+				ACCESS_SIZES.contains(mnemonic.charAt(1));
 		}
 
-		private boolean isSTORE(Instruction instruction) {
-			return STORES.contains(getNormalizedMnemonic(instruction));
-		}
-
-		private boolean isLOADSTORE(Instruction instruction) {
-			return isLOAD(instruction) || isSTORE(instruction);
+		private boolean isLoadOrStoreLeft(Instruction instruction) {
+			CharSequence mnemonic = getNormalizedMnemonic(instruction);
+			return mnemonic.length() >= 3 &&
+				(mnemonic.charAt(0) == 'l' || mnemonic.charAt(0) == 's') &&
+				ACCESS_SIZES.contains(mnemonic.charAt(1)) &&
+				mnemonic.charAt(2) == 'l';
 		}
 
 		private boolean isLUI(Instruction instruction) {
@@ -318,28 +319,20 @@ public class MipsCodeRelocationSynthesizer
 			return ADDU.equals(getNormalizedMnemonic(instruction));
 		}
 
-		private boolean isLWL(Instruction instruction) {
-			return LWL.equals(getNormalizedMnemonic(instruction));
-		}
-
-		private boolean isSWL(Instruction instruction) {
-			return SWL.equals(getNormalizedMnemonic(instruction));
-		}
-
 		private boolean isHi16Candidate(Instruction instruction) {
 			return isLUI(instruction);
 		}
 
 		private boolean isLo16Candidate(Instruction instruction) {
-			return isLOADSTORE(instruction) || isADDIU(instruction);
+			return isLoadOrStore(instruction) || isADDIU(instruction);
 		}
 
 		private boolean isReferenceOnOutputRegister(Instruction instruction, Reference reference) {
-			return isLOADSTORE(instruction) && reference.getOperandIndex() == 0;
+			return isLoadOrStore(instruction) && reference.getOperandIndex() == 0;
 		}
 
 		private List<Register> getInputRegisters(Instruction instruction) {
-			if (isLOADSTORE(instruction)) {
+			if (isLoadOrStore(instruction)) {
 				return List.of((Register) instruction.getOpObjects(1)[1]);
 			}
 			else if (isADDIU(instruction)) {
@@ -354,7 +347,7 @@ public class MipsCodeRelocationSynthesizer
 		}
 
 		private Register getOutputRegister(Instruction instruction) {
-			if (isLOADSTORE(instruction) || isADDIU(instruction) || isADDU(instruction) ||
+			if (isLoadOrStore(instruction) || isADDIU(instruction) || isADDU(instruction) ||
 				isLUI(instruction)) {
 				return (Register) instruction.getOpObjects(0)[0];
 			}

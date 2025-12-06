@@ -67,6 +67,8 @@ public class MipsCodeRelocationSynthesizer
 	public static final Pattern GP_SYMBOLS_PATTERN =
 		Pattern.compile("(^_gp$)|(^_gp_\\d+$)|(^_gp_rel$)|(^_mips_gp\\d+_value$)");
 
+	private static final List<String> PROCESSORS = Arrays.asList("MIPS", "PSX", "MIPS-R5900");
+
 	private static class MIPS_26_InstructionRelocationEmitter extends InstructionRelocationEmitter {
 		private static final OperandMatcher MATCHER_BIG_ENDIAN =
 			new JtypeOperandMatcher(new Byte[] { 3, -1, -1, -1 }, 0x3ffffff);
@@ -637,7 +639,7 @@ public class MipsCodeRelocationSynthesizer
 	public boolean canAnalyze(Program program) {
 		// Check language
 		Processor processor = program.getLanguage().getProcessor();
-		return processor.equals(Processor.findOrPossiblyCreateProcessor("MIPS")) ||
-			processor.equals(Processor.findOrPossiblyCreateProcessor("PSX"));
+		return PROCESSORS.stream()
+				.anyMatch(n -> processor.equals(Processor.findOrPossiblyCreateProcessor(n)));
 	}
 }

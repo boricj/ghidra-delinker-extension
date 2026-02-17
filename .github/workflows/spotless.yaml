@@ -30,4 +30,4 @@ jobs:
           auth_token: ${{ secrets.GITHUB_TOKEN }}
       -
         name: "Run spotless"
-        run: gradle spotlessCheck -PgithubToken=${{ secrets.GRADLE_GITHUB_TOKEN }}
+        run: gradle spotlessCheck

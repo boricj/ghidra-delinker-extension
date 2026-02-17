@@ -26,6 +26,12 @@ Matrix of supported instruction set architectures and object files:
 
 The Ghidra extension archive will be created inside the `dist/` directory.
 
+> [!NOTE]
+> GitHub Maven repositories require	authentication to download packages, you must either:
+>
+> * Create a GitHub classic token with the `read:packages` right, then add `githubToken=ghp_xxx` to `${GRADLE_USER_HOME}/gradle.properties` (usually defaults to `~/.gradle/gradle.properties`).
+> * Run `gradle installStandaloneDeps` to build and install vendored dependencies from submodules.
+
 ## Installation
 
  * Download the extension from the [releases page](https://github.com/boricj/ghidra-delinker-extension/releases) or build it locally ;

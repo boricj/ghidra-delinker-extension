@@ -30,8 +30,8 @@
 // for the correction version of Gradle to use for the Ghidra installation you specify.
 
 plugins {
-  id("com.diffplug.spotless") version "6.20.0"
-  id("com.github.gmazzo.buildconfig") version "5.3.5"
+	id("com.diffplug.spotless") version "6.20.0"
+	id("com.github.gmazzo.buildconfig") version "5.3.5"
 }
 
 //----------------------START "DO NOT MODIFY" SECTION------------------------------
@@ -52,6 +52,35 @@ else {
 }
 //----------------------END "DO NOT MODIFY" SECTION-------------------------------
 
+// GitHub Maven Repositories require authentication for downloading artifacts.
+// This requires a GitHub token with the read:packages right, but GitHub actions
+// won't let workflows access a repository secret from a pull request. Therefore,
+// we add vendored dependencies through submodules to build and install locally.
+
+def bftSubmodulePath = file("${projectDir}/standalone/binary-file-toolkit")
+
+tasks.register("installBinaryFileToolkit", Exec) {
+	group = "setup"
+	description = "Builds and installs the binary-file-toolkit submodule."
+
+	doFirst {
+		if (!bftSubmodulePath.exists()) {
+			throw new GradleException("Could not find standalone dependency binary-file-toolkit, run 'git submodule update --init'.")
+		}
+		println ">>> Installing standalone dependency binary-file-toolkit..."
+	}
+
+	workingDir = file(bftSubmodulePath)
+	commandLine = ["mvn", "install", "-DskipTests"]
+}
+
+tasks.register("installStandaloneDeps") {
+	group = "setup"
+	description = "Builds and installs all external submodules."
+
+	dependsOn "installBinaryFileToolkit"
+}
+
 repositories {
 	mavenLocal()
 	mavenCentral()
@@ -59,12 +88,12 @@ repositories {
 		name = "boricj's binary-file-toolkit"
 		url = uri("https://maven.pkg.github.com/boricj/binary-file-toolkit")
 		credentials(HttpHeaderCredentials) {
-            name = "Authorization"
-            value = "Bearer " + project.findProperty("githubToken") as String ?: System.getenv("GITHUB_TOKEN")
+			name = "Authorization"
+			value = "Bearer " + project.findProperty("githubToken") as String ?: System.getenv("GITHUB_TOKEN")
 		}
-        authentication {
-            header(HttpHeaderAuthentication)
-        }
+		authentication {
+			header(HttpHeaderAuthentication)
+		}
 	}
 }
 
@@ -76,7 +105,7 @@ dependencies {
 	implementation "net.boricj:bft-coff:0.4.0"
 	implementation "net.boricj:bft-elf:0.4.0"
 	testImplementation "junit:junit:4.12"
-  	testRuntimeOnly "junit:junit:4.12"
+	testRuntimeOnly "junit:junit:4.12"
 	testImplementation "org.mockito:mockito-core:5.4.0"
 }
 

@@ -33,6 +33,7 @@ jobs:
         with:
           fetch-depth: 0
           fetch-tags: true
+          submodules: true
       -
         name: "Setup JDK"
         uses: actions/setup-java@v4
@@ -46,8 +47,11 @@ jobs:
           version: ${{ matrix.ghidra }}
           auth_token: ${{ secrets.GITHUB_TOKEN }}
       -
+        name: "Install standalone dependencies"
+        run: gradle installStandaloneDeps
+      -
         name: "Build extension"
-        run: gradle buildExtension -PgithubToken=${{ secrets.GRADLE_GITHUB_TOKEN }}
+        run: gradle buildExtension -Pstandalone
       -
         name: "Upload artifacts"
         uses: actions/upload-artifact@v4

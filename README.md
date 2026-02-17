@@ -13,10 +13,10 @@ Use-cases include:
 
 Matrix of supported instruction set architectures and object files:
 
-|               | x86  | MIPS |
-| ------------- | ---- | ---- |
-| COFF          | ✅ | ❌ |
-| ELF           | ✅ | ✅ |
+|               | x86  | x86_64 | MIPS |
+| ------------- | ---- | ------ | ---- |
+| COFF          | ✅ | ✅ | ❌ |
+| ELF           | ✅ | ❌ | ✅ |
 
 ## Building (CLI)
 

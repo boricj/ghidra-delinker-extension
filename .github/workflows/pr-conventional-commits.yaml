@@ -9,7 +9,7 @@ jobs:
     steps:
       -
         name: "Checkout"
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       -
         name: "Check conventional commit messages"
         uses: webiny/action-conventional-commits@v1.3.0

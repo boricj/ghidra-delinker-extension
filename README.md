@@ -35,24 +35,35 @@ The Ghidra extension archive will be created inside the `dist/` directory.
 ## Installation
 
  * Download the extension from the [releases page](https://github.com/boricj/ghidra-delinker-extension/releases) or build it locally ;
- * Install the extension in your Ghidra instance with `File > Install Extensions…` ;
- * Enable the `RelocationTableSynthesizedPlugin` plugin with `File > Configure > Experimental` inside a CodeBrowser window.
+ * Install the extension in your Ghidra instance with **File > Install Extensions…** ;
+ * Enable the **RelocationTableSynthesizedPlugin** plugin with **File > Configure > Experimental** inside a CodeBrowser window.
 
 ## Usage 
 
- 1. Select a set of addresses in the Listing view ;
- 2. Run the `Relocation table synthesizer` analyzer (available in one-shot mode) ;
- 3. Invoke a relocatable object file exporter with `File > Export Program…`
+ 1. Select a set of addresses in the Listing view to extract ;
+ 2. Run the **Relocation table synthesizer** analyzer (available in one-shot mode) ;
+ 3. Invoke a relocatable object file exporter with **File > Export Program…**
 
-The reconstructed relocations can be viewed with `Window > Relocation table (synthesized)`.
+The reconstructed relocations can be viewed with **Window > Relocation table (synthesized)**.
+Detailed evaluation reports can be enabled by setting the **Evaluation report policy** option for the **Relocation table synthesizer** analyzer in the **Analysis > Auto Analyze...** dialog.
 
- * ⚠️ The _relocation table synthesizer_ analyzer relies on a fully populated Ghidra database (with correctly declared symbols, data types and references) in order to work. **Incorrect or missing information may lead to broken or undiscovered relocations** during the analysis.
- * ⚠️ The object file exporters rely on the results of the _relocation table synthesizer_ analyzer in order to work. When in doubt, **run this analyzer right before exporting an object file** to make sure the relocation table contents are up-to-date with the current state of the program.
+> [!TIP]
+> You do not need to reverse-engineer the entire program upfront before using this extension.
+> In general, successful delinking mostly depends on the following metadata inside of the subset you're exporting (and its external references):
+> * functions/pointers as relocation locations ;
+> * symbol footprints as relocation targets ;
+> * references between the two.
+
+> [!WARNING]
+> The relocation table synthesizer analyzer relies on the accuracy of the Ghidra database. Incorrect or missing information may lead to broken or missed relocations during the analysis.
+
+> [!CAUTION]
+> The object file exporters rely on the results of the relocation table synthesizer analyzer.
+> When in doubt, run this analyzer right before exporting an object file to make sure the relocation table contents are up-to-date.
 
 ## How does it work?
 
 Object files are made of three parts:
-
  * Relocatable section bytes ;
  * A symbol table ;
  * A relocation table.
@@ -62,5 +73,5 @@ When a linker is invoked to generate an executable from a bunch of object files,
  * Compute the addresses of the symbols in the virtual address space ;
  * Apply the relocations based on the final addresses of the symbols onto the section bytes.
 
-Normally the relocation table is discarded after this process, as well as the symbol table if debugging symbols aren't kept, leaving only the un-relocatable section bytes.
+Normally, the relocation table is discarded after this process, as well as the symbol table if debugging symbols aren't kept, leaving only the un-relocatable section bytes.
 However, through careful analysis this data can be recreated, which allows us to then effectively _delink_ the program back into object files.

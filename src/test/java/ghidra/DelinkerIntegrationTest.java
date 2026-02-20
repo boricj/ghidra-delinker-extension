@@ -63,6 +63,7 @@ import net.boricj.bft.elf.ElfSection;
 import net.boricj.bft.elf.constants.ElfRelocationType;
 import net.boricj.bft.elf.sections.ElfProgBits;
 import net.boricj.bft.elf.sections.ElfRelTable;
+import net.boricj.bft.elf.sections.ElfRelaTable;
 import net.boricj.bft.elf.sections.ElfSymbolTable;
 import utility.application.ApplicationLayout;
 
@@ -145,6 +146,17 @@ public abstract class DelinkerIntegrationTest extends AbstractProgramBasedTest {
 						r -> r.getType() == type && r.getSymbol().getName().equals(symbolName)));
 		}
 
+		public void hasRelocationAtAddress(String relaTable, long offset, ElfRelocationType type,
+				String symbolName, long addend) {
+			ElfRelaTable rela = getRelaTable(relaTable);
+
+			assertTrue(rela.stream()
+					.filter(r -> r.getOffset() == offset)
+					.anyMatch(
+						r -> r.getType() == type && r.getSymbol().getName().equals(symbolName) &&
+							r.getAddend() == addend));
+		}
+
 		public void compareSectionSizes(String referenceSectionName,
 				ElfObjectFile exportedFile, String exportedSectionName) throws Exception {
 			long expectedSize = getSection(referenceSectionName).getSize();
@@ -167,6 +179,10 @@ public abstract class DelinkerIntegrationTest extends AbstractProgramBasedTest {
 
 		private ElfRelTable getRelTable(String name) {
 			return (ElfRelTable) getSection(name);
+		}
+
+		private ElfRelaTable getRelaTable(String name) {
+			return (ElfRelaTable) getSection(name);
 		}
 	}
 

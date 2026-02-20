@@ -159,6 +159,7 @@ public class ElfRelocatableObjectExporter extends Exporter {
 	private static final Map<ElfMachine, String> ELF_MACHINES = new TreeMap<>(Map.ofEntries(
 		Map.entry(ElfMachine.EM_NONE, "(none)"),
 		Map.entry(ElfMachine.EM_386, "i386"),
+		Map.entry(ElfMachine.EM_X86_64, "x86_64"),
 		Map.entry(ElfMachine.EM_MIPS, "MIPS")));
 
 	private static final Map<ElfSectionType, String> ELF_RELOCATION_TABLE_TYPES =
@@ -194,6 +195,7 @@ public class ElfRelocatableObjectExporter extends Exporter {
 
 	private static final Map<ProcessorInfo, ElfMachine> GHIDRA_TO_ELF_MACHINES = Map.ofEntries(
 		Map.entry(new ProcessorInfo("x86", 4), ElfMachine.EM_386),
+		Map.entry(new ProcessorInfo("x86", 8), ElfMachine.EM_X86_64),
 		Map.entry(new ProcessorInfo("MIPS", 4), ElfMachine.EM_MIPS),
 		Map.entry(new ProcessorInfo("MIPS", 8), ElfMachine.EM_MIPS),
 		Map.entry(new ProcessorInfo("MIPS-R5900", 4), ElfMachine.EM_MIPS),

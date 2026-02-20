@@ -16,7 +16,7 @@ Matrix of supported instruction set architectures and object files:
 |               | x86  | x86_64 | MIPS |
 | ------------- | ---- | ------ | ---- |
 | COFF          | ✅ | ✅ | ❌ |
-| ELF           | ✅ | ❌ | ✅ |
+| ELF           | ✅ | ✅ | ✅ |
 
 ## Building (CLI)
 

@@ -63,7 +63,7 @@ $ (cd reference/elf_linux_freestanding && CFLAGS="-Og -gdwarf-4 -ffreestanding -
 	riscv64_CFLAGS='-msmall-data-limit=8' \
 	LDFLAGS='-static -no-pie -nostdlib -lgcc' \
 	../../configure.py --with-ctype ../..)
-$ ninja -C reference/elf_linux_freestanding aarch64 arm i386 mips mipsel riscv64 s390x x86_64
+$ ninja -C reference/elf_linux_freestanding aarch64 amd64 arm i386 mips mipsel riscv64 s390x
 ```
 
 Freestanding artifacts are expected to not have position-independent code.

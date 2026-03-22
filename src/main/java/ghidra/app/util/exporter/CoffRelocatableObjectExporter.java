@@ -313,7 +313,7 @@ public class CoffRelocatableObjectExporter extends Exporter {
 			else {
 				characteristics.cntUninitializedData();
 				throw new UnsupportedOperationException(
-					"COFF exporter doesn't know how to handle uninitialized sections yet");
+					"COFF exporter does not support uninitialized memory blocks yet");
 			}
 
 			sectab.add(section);

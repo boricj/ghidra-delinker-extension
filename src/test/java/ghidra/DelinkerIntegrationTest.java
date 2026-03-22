@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -65,6 +66,18 @@ import net.boricj.bft.elf.sections.ElfProgBits;
 import net.boricj.bft.elf.sections.ElfRelTable;
 import net.boricj.bft.elf.sections.ElfRelaTable;
 import net.boricj.bft.elf.sections.ElfSymbolTable;
+import net.boricj.bft.omf.OmfFile;
+import net.boricj.bft.omf.OmfRecord;
+import net.boricj.bft.omf.logical.OmfExtdefData;
+import net.boricj.bft.omf.logical.OmfLnamesData;
+import net.boricj.bft.omf.logical.OmfPubdefData;
+import net.boricj.bft.omf.logical.OmfSegmentData;
+import net.boricj.bft.omf.records.OmfRecordExtdef;
+import net.boricj.bft.omf.records.OmfRecordFixupp;
+import net.boricj.bft.omf.records.OmfRecordLedata;
+import net.boricj.bft.omf.records.OmfRecordPubdef;
+import net.boricj.bft.omf.records.OmfRecordSegdef;
+import net.boricj.bft.omf.records.OmfSubrecordExtdef;
 import utility.application.ApplicationLayout;
 
 public abstract class DelinkerIntegrationTest extends AbstractProgramBasedTest {
@@ -239,6 +252,472 @@ public abstract class DelinkerIntegrationTest extends AbstractProgramBasedTest {
 					.orElse(null);
 			assertNotNull(section);
 			return section;
+		}
+	}
+
+	public class OmfObjectFile implements ObjectFile {
+		private final OmfFile omf;
+
+		public OmfObjectFile(File file) throws IOException {
+			this.omf = new OmfFile.Parser(new FileInputStream(file)).parse();
+		}
+
+		@Override
+		public byte[] getSectionBytes(String name) throws IOException {
+			List<OmfRecordLedata> ledatas = getLedataRecordsForSegment(name);
+			if (ledatas.isEmpty()) {
+				return new byte[0];
+			}
+
+			long maxEnd = 0;
+			for (OmfRecordLedata ledata : ledatas) {
+				long end = ledata.getDataOffset() + ledata.getData().length;
+				if (end > maxEnd) {
+					maxEnd = end;
+				}
+			}
+
+			byte[] bytes = new byte[(int) maxEnd];
+			for (OmfRecordLedata ledata : ledatas) {
+				System.arraycopy(ledata.getData(), 0, bytes, (int) ledata.getDataOffset(),
+					ledata.getData().length);
+			}
+			return bytes;
+		}
+
+		public OmfFile getOmfFile() {
+			return omf;
+		}
+
+		public OmfLnamesData getLnamesData() {
+			return OmfLnamesData.parse(omf);
+		}
+
+		public OmfExtdefData getExtdefData() {
+			return OmfExtdefData.parse(omf);
+		}
+
+		public List<OmfPubdefData> getPubdefData() {
+			return OmfPubdefData.parse(omf);
+		}
+
+		public List<OmfPubdefData> getPubdefDataForSegment(String segmentName) {
+			List<OmfPubdefData> result = new ArrayList<>();
+			for (OmfPubdefData pubdefData : getPubdefData()) {
+				if (pubdefData.getSegment() != null &&
+					pubdefData.getSegment().getSegmentName().equals(segmentName)) {
+					result.add(pubdefData);
+				}
+			}
+			return result;
+		}
+
+		/**
+		 * Reconstructs logical segment data and absolute fixups from LEDATA/FIXUPP records.
+		 */
+		public OmfSegmentData getSegmentData(String segmentName) {
+			OmfRecordSegdef segdef = getSegdefByName(segmentName);
+			if (segdef == null) {
+				return null;
+			}
+			return OmfSegmentData.parse(omf, segdef);
+		}
+
+		/**
+		 * Gets the LEDATA record for a segment by name.
+		 * Returns the first LEDATA found for the segment.
+		 */
+		public OmfRecordLedata getLedataForSegment(String segmentName) {
+			List<OmfRecordLedata> ledatas = getLedataRecordsForSegment(segmentName);
+			if (ledatas.isEmpty()) {
+				return null;
+			}
+			return ledatas.get(0);
+		}
+
+		/**
+		 * Gets all LEDATA records for a segment, ordered by data offset.
+		 */
+		public List<OmfRecordLedata> getLedataRecordsForSegment(String segmentName) {
+			OmfRecordSegdef segdef = getSegdefByName(segmentName);
+			if (segdef == null) {
+				return Collections.emptyList();
+			}
+
+			List<OmfRecordLedata> ledatas = new ArrayList<>();
+			for (OmfRecord record : omf.getElements()) {
+				if (record instanceof OmfRecordLedata ledata) {
+					if (ledata.getSegment() == segdef) {
+						ledatas.add(ledata);
+					}
+				}
+			}
+			ledatas.sort((a, b) -> Long.compare(a.getDataOffset(), b.getDataOffset()));
+			return ledatas;
+		}
+
+		/**
+		 * Gets the FIXUPP record that follows a given LEDATA record.
+		 */
+		public OmfRecordFixupp getFixuppAfterLedata(OmfRecordLedata ledata) {
+			List<OmfRecordFixupp> fixupps = getFixuppRecordsAfterLedata(ledata);
+			if (fixupps.isEmpty()) {
+				return null;
+			}
+			return fixupps.get(0);
+		}
+
+		/**
+		 * Gets all FIXUPP records immediately following a given LEDATA record.
+		 */
+		public List<OmfRecordFixupp> getFixuppRecordsAfterLedata(OmfRecordLedata ledata) {
+			List<OmfRecordFixupp> result = new ArrayList<>();
+			List<OmfRecord> records = omf.getElements();
+			int ledataIndex = records.indexOf(ledata);
+			if (ledataIndex < 0) {
+				return result;
+			}
+
+			for (int i = ledataIndex + 1; i < records.size(); i++) {
+				OmfRecord nextRecord = records.get(i);
+				if (nextRecord instanceof OmfRecordFixupp fixupp) {
+					result.add(fixupp);
+					continue;
+				}
+				break;
+			}
+
+			return result;
+		}
+
+		/**
+		 * Gets all FIXUPP records for a segment by collecting FIXUPP records immediately
+		 * following each LEDATA record in that segment.
+		 */
+		public List<OmfRecordFixupp> getFixuppRecordsForSegment(String segmentName) {
+			List<OmfRecordFixupp> result = new ArrayList<>();
+			for (OmfRecordLedata ledata : getLedataRecordsForSegment(segmentName)) {
+				result.addAll(getFixuppRecordsAfterLedata(ledata));
+			}
+			return result;
+		}
+
+		/**
+		 * Gets a SEGDEF record by segment name.
+		 */
+		public OmfRecordSegdef getSegdefByName(String name) {
+			for (OmfRecord record : omf.getElements()) {
+				if (record instanceof OmfRecordSegdef segdef) {
+					if (segdef.getSegmentName().equals(name)) {
+						return segdef;
+					}
+				}
+			}
+			return null;
+		}
+
+		/**
+		 * Gets all EXTDEF records in the file.
+		 */
+		public List<OmfRecordExtdef> getExtdefRecords() {
+			return omf.getElements()
+					.stream()
+					.filter(r -> r instanceof OmfRecordExtdef)
+					.map(r -> (OmfRecordExtdef) r)
+					.toList();
+		}
+
+		/**
+		 * Gets all PUBDEF records in the file.
+		 */
+		public List<OmfRecordPubdef> getPubdefRecords() {
+			return omf.getElements()
+					.stream()
+					.filter(r -> r instanceof OmfRecordPubdef)
+					.map(r -> (OmfRecordPubdef) r)
+					.toList();
+		}
+
+		/**
+		 * Gets all external symbol names in order.
+		 */
+		public List<String> getExtdefNames() {
+			return getExtdefData().getEntries().stream().map(OmfSubrecordExtdef::name).toList();
+		}
+
+		public int assertTargetExtdefIndicesMatchLogicalOrder(String segmentName) {
+			List<OmfSubrecordExtdef> logicalExtdefEntries = getExtdefData().getEntries();
+			int checked = 0;
+			for (OmfRecordFixupp.FixupEntry fixupEntry : getFixupEntriesForSegment(segmentName)) {
+				switch (fixupEntry.getTargetMethodEnum()) {
+					case EXTDEF_INDEX:
+						break;
+					default:
+						continue;
+				}
+
+				Integer extdefIndex = fixupEntry.getTargetDatum();
+				assertNotNull("Expected EXTDEF target index in fixup", extdefIndex);
+				assertTrue("EXTDEF target index must be positive", extdefIndex > 0);
+				assertTrue("EXTDEF target index out of logical EXTDEF range",
+					extdefIndex <= logicalExtdefEntries.size());
+
+				String expectedName = logicalExtdefEntries.get(extdefIndex - 1).name();
+				String resolvedName = getExtdefNameByIndex(extdefIndex);
+				assertEquals("EXTDEF index-to-name mapping mismatch", expectedName, resolvedName);
+				checked++;
+			}
+			return checked;
+		}
+
+		/**
+		 * Checks if a public symbol exists in a segment at a given offset.
+		 */
+		public void hasPublicSymbol(String symbolName, String segmentName, long offset) {
+			for (OmfRecordPubdef pubdef : getPubdefRecords()) {
+				if (pubdef.getSegment() != null &&
+					pubdef.getSegment().getSegmentName().equals(segmentName)) {
+					for (OmfRecordPubdef.PublicSymbol sym : pubdef.getSymbols()) {
+						if (sym.name().equals(symbolName) && sym.offset() == offset) {
+							return; // Found it
+						}
+					}
+				}
+			}
+			throw new AssertionError("Public symbol not found: " + symbolName +
+				" in segment " + segmentName + " at offset " + offset);
+		}
+
+		/**
+		 * Checks if an external symbol is defined.
+		 */
+		public void hasExternalSymbol(String symbolName) {
+			List<String> extdefNames = getExtdefNames();
+			assertTrue("External symbol not found: " + symbolName,
+				extdefNames.contains(symbolName));
+		}
+
+		/**
+		 * Checks if a fixup exists at a given offset within a segment.
+		 */
+		public void hasFixupAtOffset(String segmentName, int dataOffset) {
+			List<OmfRecordLedata> ledatas = getLedataRecordsForSegment(segmentName);
+			assertTrue("LEDATA not found for segment: " + segmentName, !ledatas.isEmpty());
+
+			for (OmfRecordLedata ledata : ledatas) {
+				long chunkStart = ledata.getDataOffset();
+				long chunkEnd = chunkStart + ledata.getData().length;
+				if (dataOffset < chunkStart || dataOffset >= chunkEnd) {
+					continue;
+				}
+
+				for (OmfRecordFixupp fixupp : getFixuppRecordsAfterLedata(ledata)) {
+					for (OmfRecordFixupp.FixupEntry entry : fixupp.getFixupEntries()) {
+						long absolute = chunkStart + entry.getDataRecordOffset();
+						if (absolute == dataOffset) {
+							return; // Found it
+						}
+					}
+				}
+			}
+			throw new AssertionError("Fixup not found at offset " + dataOffset +
+				" in segment " + segmentName);
+		}
+
+		/**
+		 * Gets all fixup data offsets for a segment in FIXUPP record order.
+		 */
+		public List<Integer> getFixupOffsetsForSegment(String segmentName) {
+			List<Integer> offsets = new ArrayList<>();
+			for (FixupContext ctx : getFixupContextsForSegment(segmentName)) {
+				offsets.add(ctx.absoluteOffset);
+			}
+			assertTrue("No fixups found for segment: " + segmentName, !offsets.isEmpty());
+			return offsets;
+		}
+
+		/**
+		 * Gets all fixup entries for a segment in FIXUPP record order.
+		 */
+		public List<OmfRecordFixupp.FixupEntry> getFixupEntriesForSegment(String segmentName) {
+			List<OmfRecordFixupp.FixupEntry> entries = new ArrayList<>();
+			for (FixupContext ctx : getFixupContextsForSegment(segmentName)) {
+				entries.add(ctx.entry);
+			}
+			assertTrue("No fixups found for segment: " + segmentName, !entries.isEmpty());
+			return entries;
+		}
+
+		/**
+		 * Compares all fixup offsets between reference and exported segments.
+		 */
+		public void compareFixupOffsets(String referenceSegmentName,
+				OmfObjectFile exportedFile, String exportedSegmentName) {
+			List<Integer> expectedOffsets = getFixupOffsetsForSegment(referenceSegmentName);
+			List<Integer> actualOffsets =
+				exportedFile.getFixupOffsetsForSegment(exportedSegmentName);
+			assertEquals("Fixup offsets mismatch for segment " + exportedSegmentName,
+				expectedOffsets, actualOffsets);
+		}
+
+		/**
+		 * Compares complete fixup entries (all semantic fields) between reference and exported
+		 * segments.
+		 */
+		public void compareFixupEntries(String referenceSegmentName,
+				OmfObjectFile exportedFile, String exportedSegmentName) {
+			List<FixupContext> expectedEntries =
+				getFixupContextsForSegment(referenceSegmentName);
+			List<FixupContext> remainingEntries =
+				exportedFile.getFixupContextsForSegment(exportedSegmentName);
+
+			assertEquals("Fixup entry count mismatch for segment " + exportedSegmentName,
+				expectedEntries.size(), remainingEntries.size());
+
+			for (int i = 0; i < expectedEntries.size(); i++) {
+				FixupContext expected = expectedEntries.get(i);
+				int matchIndex = -1;
+
+				for (int j = 0; j < remainingEntries.size(); j++) {
+					FixupContext actual = remainingEntries.get(j);
+					if (fixupEntriesMatch(expected, actual, exportedFile)) {
+						matchIndex = j;
+						break;
+					}
+				}
+
+				if (matchIndex < 0) {
+					throw new AssertionError("No matching fixup found for segment " +
+						exportedSegmentName + ": " + describeFixupEntry(expected, this));
+				}
+
+				remainingEntries.remove(matchIndex);
+			}
+		}
+
+		private boolean fixupEntriesMatch(FixupContext expected,
+				FixupContext actual, OmfObjectFile actualFile) {
+			OmfRecordFixupp.FixupEntry expectedEntry = expected.entry;
+			OmfRecordFixupp.FixupEntry actualEntry = actual.entry;
+
+			return expected.absoluteOffset == actual.absoluteOffset &&
+				expectedEntry.getLocationType() == actualEntry.getLocationType() &&
+				expectedEntry.isSegmentRelative() == actualEntry.isSegmentRelative() &&
+				expectedEntry.isFrameFromThread() == actualEntry.isFrameFromThread() &&
+				expectedEntry.getFrameMethodEnum() == actualEntry.getFrameMethodEnum() &&
+				expectedEntry.isTargetFromThread() == actualEntry.isTargetFromThread() &&
+				expectedEntry.getTargetMethodEnum() == actualEntry.getTargetMethodEnum() &&
+				java.util.Objects.equals(resolveFrameDatumForComparison(expectedEntry),
+					actualFile.resolveFrameDatumForComparison(actualEntry)) &&
+				java.util.Objects.equals(resolveTargetDatumForComparison(expectedEntry),
+					actualFile.resolveTargetDatumForComparison(actualEntry)) &&
+				java.util.Objects.equals(expectedEntry.getTargetDisplacement(),
+					actualEntry.getTargetDisplacement());
+		}
+
+		private String describeFixupEntry(FixupContext context, OmfObjectFile file) {
+			OmfRecordFixupp.FixupEntry entry = context.entry;
+			return "offset=" + context.absoluteOffset +
+				", localOffset=" + entry.getDataRecordOffset() +
+				", locType=" + entry.getLocationType() +
+				", segmentRelative=" + entry.isSegmentRelative() +
+				", frameFromThread=" + entry.isFrameFromThread() +
+				", frameMethod=" + entry.getFrameMethodEnum() +
+				", frameDatum=" + file.resolveFrameDatumForComparison(entry) +
+				", targetFromThread=" + entry.isTargetFromThread() +
+				", targetMethod=" + entry.getTargetMethodEnum() +
+				", targetDatum=" + file.resolveTargetDatumForComparison(entry) +
+				", targetDisplacement=" + entry.getTargetDisplacement();
+		}
+
+		public List<Integer> getLedataChunkSizesForSegment(String segmentName) {
+			List<Integer> sizes = new ArrayList<>();
+			for (OmfRecordLedata ledata : getLedataRecordsForSegment(segmentName)) {
+				sizes.add(ledata.getData().length);
+			}
+			return sizes;
+		}
+
+		private List<FixupContext> getFixupContextsForSegment(String segmentName) {
+			List<FixupContext> contexts = new ArrayList<>();
+			for (OmfRecordLedata ledata : getLedataRecordsForSegment(segmentName)) {
+				long baseOffset = ledata.getDataOffset();
+				for (OmfRecordFixupp fixupp : getFixuppRecordsAfterLedata(ledata)) {
+					for (OmfRecordFixupp.FixupEntry entry : fixupp.getFixupEntries()) {
+						int absoluteOffset = (int) (baseOffset + entry.getDataRecordOffset());
+						contexts.add(new FixupContext(absoluteOffset, entry));
+					}
+				}
+			}
+			return contexts;
+		}
+
+		private static class FixupContext {
+			final int absoluteOffset;
+			final OmfRecordFixupp.FixupEntry entry;
+
+			FixupContext(int absoluteOffset, OmfRecordFixupp.FixupEntry entry) {
+				this.absoluteOffset = absoluteOffset;
+				this.entry = entry;
+			}
+		}
+
+		private Object resolveFrameDatumForComparison(OmfRecordFixupp.FixupEntry entry) {
+			Integer datum = entry.getFrameDatum();
+			if (datum == null) {
+				return null;
+			}
+
+			switch (entry.getFrameMethodEnum()) {
+				case SEGDEF_INDEX:
+					return "SEG:" +
+						normalizeSegmentName(omf.getSegmentByIndex(datum).getSegmentName());
+				case GRPDEF_INDEX:
+					return omf.getGroupByIndex(datum).getGroupName();
+				case EXTDEF_INDEX:
+					return getExtdefNameByIndex(datum);
+				default:
+					return datum;
+			}
+		}
+
+		private Object resolveTargetDatumForComparison(OmfRecordFixupp.FixupEntry entry) {
+			Integer datum = entry.getTargetDatum();
+			if (datum == null) {
+				return null;
+			}
+
+			switch (entry.getTargetMethodEnum()) {
+				case SEGDEF_INDEX:
+					return "SEG:" +
+						normalizeSegmentName(omf.getSegmentByIndex(datum).getSegmentName());
+				case GRPDEF_INDEX:
+					return omf.getGroupByIndex(datum).getGroupName();
+				case EXTDEF_INDEX:
+					return getExtdefNameByIndex(datum);
+				default:
+					return datum;
+			}
+		}
+
+		private String getExtdefNameByIndex(int index) {
+			if (index <= 0) {
+				throw new IndexOutOfBoundsException(index);
+			}
+
+			List<OmfSubrecordExtdef> extdefEntries = getExtdefData().getEntries();
+			if (index > extdefEntries.size()) {
+				throw new IndexOutOfBoundsException(index);
+			}
+			return extdefEntries.get(index - 1).name();
+		}
+
+		private String normalizeSegmentName(String segmentName) {
+			String normalized = segmentName;
+			while (normalized.startsWith("_") || normalized.startsWith(".")) {
+				normalized = normalized.substring(1);
+			}
+			return normalized.toLowerCase();
 		}
 	}
 

@@ -77,6 +77,7 @@ import net.boricj.bft.coff.constants.CoffMachine;
 import net.boricj.bft.coff.constants.CoffSectionFlags;
 import net.boricj.bft.coff.constants.CoffStorageClass;
 import net.boricj.bft.coff.sections.CoffBytes;
+import net.boricj.bft.coff.sections.CoffUninitialized;
 
 /**
  * An exporter implementation that exports COFF object files.
@@ -312,8 +313,15 @@ public class CoffRelocatableObjectExporter extends Exporter {
 			}
 			else {
 				characteristics.cntUninitializedData();
-				throw new UnsupportedOperationException(
-					"COFF exporter doesn't know how to handle uninitialized sections yet");
+				long virtualSize = sectionSet.getNumAddresses();
+				if (virtualSize > Integer.MAX_VALUE) {
+					throw new UnsupportedOperationException(
+						"COFF exporter does not support uninitialized sections larger than 2 GiB");
+				}
+
+				bytes = null;
+				section = new CoffUninitialized(coff, memoryBlock.getName(), characteristics,
+					(int) virtualSize);
 			}
 
 			sectab.add(section);
@@ -470,10 +478,13 @@ public class CoffRelocatableObjectExporter extends Exporter {
 		long offset = sectab.getOffset() + sectab.getLength();
 
 		for (CoffSection section : sectab) {
-			CoffBytes coffBytes = (CoffBytes) section;
-			byte[] data = coffBytes.getBytes();
-			section.setOffset((int) offset);
-			offset += data.length;
+			if (section.getLength() > 0) {
+				section.setOffset((int) offset);
+				offset += section.getLength();
+			}
+			else {
+				section.setOffset(0);
+			}
 
 			CoffRelocationTable reltab = section.getRelocations();
 			if (!reltab.isEmpty()) {

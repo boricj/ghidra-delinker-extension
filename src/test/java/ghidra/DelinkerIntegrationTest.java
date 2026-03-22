@@ -353,7 +353,7 @@ public abstract class DelinkerIntegrationTest extends AbstractProgramBasedTest {
 		}
 		exporter.setOptions(options);
 
-		File exportedFile = createTempFileForTest(".o");
+		File exportedFile = createTempFileForTest(".obj");
 		assertTrue(exporter.export(exportedFile, program, set, TaskMonitor.DUMMY));
 
 		return exportedFile;

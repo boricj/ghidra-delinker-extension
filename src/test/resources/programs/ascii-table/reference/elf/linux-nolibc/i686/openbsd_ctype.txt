@@ -1,0 +1,145 @@
+
+/mnt/c/Users/jblbe/Documents/Workspace/ghidra-delinker-extension/src/test/resources/programs/ascii-table/reference/elf/linux-nolibc/i686/openbsd_ctype.o:     file format elf32-i386
+/mnt/c/Users/jblbe/Documents/Workspace/ghidra-delinker-extension/src/test/resources/programs/ascii-table/reference/elf/linux-nolibc/i686/openbsd_ctype.o
+architecture: i386, flags 0x00000011:
+HAS_RELOC, HAS_SYMS
+start address 0x00000000
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .text         000001c5  00000000  00000000  00000034  2**0
+                  CONTENTS, ALLOC, LOAD, RELOC, READONLY, CODE
+  1 .data         00000000  00000000  00000000  000001f9  2**0
+                  CONTENTS, ALLOC, LOAD, DATA
+  2 .bss          00000000  00000000  00000000  000001f9  2**0
+                  ALLOC
+  3 .ctf          0000032d  00000000  00000000  000001f9  2**0
+                  CONTENTS, READONLY
+  4 .rodata       00000101  00000000  00000000  00000540  2**5
+                  CONTENTS, ALLOC, LOAD, READONLY, DATA
+  5 .debug_info   00000227  00000000  00000000  00000641  2**0
+                  CONTENTS, RELOC, READONLY, DEBUGGING, OCTETS
+  6 .debug_abbrev 000000a1  00000000  00000000  00000868  2**0
+                  CONTENTS, READONLY, DEBUGGING, OCTETS
+  7 .debug_aranges 00000020  00000000  00000000  00000909  2**0
+                  CONTENTS, RELOC, READONLY, DEBUGGING, OCTETS
+  8 .debug_line   00000239  00000000  00000000  00000929  2**0
+                  CONTENTS, RELOC, READONLY, DEBUGGING, OCTETS
+  9 .debug_str    000001ef  00000000  00000000  00000b62  2**0
+                  CONTENTS, READONLY, DEBUGGING, OCTETS
+ 10 .comment      00000020  00000000  00000000  00000d51  2**0
+                  CONTENTS, READONLY
+ 11 .note.GNU-stack 00000000  00000000  00000000  00000d71  2**0
+                  CONTENTS, READONLY
+ 12 .debug_frame  00000174  00000000  00000000  00000d74  2**2
+                  CONTENTS, RELOC, READONLY, DEBUGGING, OCTETS
+SYMBOL TABLE:
+00000000 l    df *ABS*	00000000 openbsd_ctype.c
+00000000 l    d  .text	00000000 .text
+00000000 l    d  .debug_info	00000000 .debug_info
+00000000 l    d  .debug_abbrev	00000000 .debug_abbrev
+00000000 l    d  .debug_line	00000000 .debug_line
+00000000 l    d  .debug_str	00000000 .debug_str
+00000000 l    d  .debug_frame	00000000 .debug_frame
+00000000 g     O .rodata	00000101 _openbsd_ctype_
+00000000 g     F .text	00000029 openbsd_isalnum
+00000029 g     F .text	00000029 openbsd_isalpha
+00000052 g     F .text	00000029 openbsd_iscntrl
+0000007b g     F .text	00000029 openbsd_isdigit
+000000a4 g     F .text	00000029 openbsd_isgraph
+000000cd g     F .text	00000029 openbsd_islower
+000000f6 g     F .text	0000002b openbsd_isprint
+00000121 g     F .text	00000029 openbsd_ispunct
+0000014a g     F .text	00000029 openbsd_isspace
+00000173 g     F .text	00000029 openbsd_isupper
+0000019c g     F .text	00000029 openbsd_isxdigit
+
+
+RELOCATION RECORDS FOR [.text]:
+OFFSET   TYPE              VALUE
+00000013 R_386_32          _openbsd_ctype_
+0000003c R_386_32          _openbsd_ctype_
+00000065 R_386_32          _openbsd_ctype_
+0000008e R_386_32          _openbsd_ctype_
+000000b7 R_386_32          _openbsd_ctype_
+000000e0 R_386_32          _openbsd_ctype_
+00000109 R_386_32          _openbsd_ctype_
+00000134 R_386_32          _openbsd_ctype_
+0000015d R_386_32          _openbsd_ctype_
+00000186 R_386_32          _openbsd_ctype_
+000001af R_386_32          _openbsd_ctype_
+
+
+RELOCATION RECORDS FOR [.debug_info]:
+OFFSET   TYPE              VALUE
+00000006 R_386_32          .debug_abbrev
+0000000c R_386_32          .debug_str
+00000011 R_386_32          .debug_str
+00000015 R_386_32          .debug_str
+00000019 R_386_32          .text
+00000021 R_386_32          .debug_line
+0000003e R_386_32          .debug_str
+00000045 R_386_32          .debug_str
+0000004f R_386_32          .debug_str
+0000005c R_386_32          _openbsd_ctype_
+00000061 R_386_32          .debug_str
+0000006c R_386_32          .text
+00000091 R_386_32          .debug_str
+0000009c R_386_32          .text
+000000ba R_386_32          .debug_str
+000000c5 R_386_32          .text
+000000e3 R_386_32          .debug_str
+000000ee R_386_32          .text
+0000010c R_386_32          .debug_str
+00000117 R_386_32          .text
+00000135 R_386_32          .debug_str
+00000140 R_386_32          .text
+0000015e R_386_32          .debug_str
+00000169 R_386_32          .text
+00000187 R_386_32          .debug_str
+00000192 R_386_32          .text
+000001b0 R_386_32          .debug_str
+000001bb R_386_32          .text
+000001d9 R_386_32          .debug_str
+000001e4 R_386_32          .text
+00000202 R_386_32          .debug_str
+0000020d R_386_32          .text
+
+
+RELOCATION RECORDS FOR [.debug_aranges]:
+OFFSET   TYPE              VALUE
+00000006 R_386_32          .debug_info
+00000010 R_386_32          .text
+
+
+RELOCATION RECORDS FOR [.debug_line]:
+OFFSET   TYPE              VALUE
+0000003a R_386_32          .text
+
+
+RELOCATION RECORDS FOR [.debug_frame]:
+OFFSET   TYPE              VALUE
+00000018 R_386_32          .debug_frame
+0000001c R_386_32          .text
+00000038 R_386_32          .debug_frame
+0000003c R_386_32          .text
+00000058 R_386_32          .debug_frame
+0000005c R_386_32          .text
+00000078 R_386_32          .debug_frame
+0000007c R_386_32          .text
+00000098 R_386_32          .debug_frame
+0000009c R_386_32          .text
+000000b8 R_386_32          .debug_frame
+000000bc R_386_32          .text
+000000d8 R_386_32          .debug_frame
+000000dc R_386_32          .text
+000000f8 R_386_32          .debug_frame
+000000fc R_386_32          .text
+00000118 R_386_32          .debug_frame
+0000011c R_386_32          .text
+00000138 R_386_32          .debug_frame
+0000013c R_386_32          .text
+00000158 R_386_32          .debug_frame
+0000015c R_386_32          .text
+
+

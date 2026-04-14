@@ -13,13 +13,10 @@
  */
 package ghidra;
 
-import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Collections;
@@ -35,7 +32,6 @@ import generic.jar.ResourceFile;
 import ghidra.app.analyzers.RelocationTableSynthesizerAnalyzer;
 import ghidra.app.util.DomainObjectService;
 import ghidra.app.util.Option;
-import ghidra.app.util.bin.format.coff.CoffSymbolSectionNumber;
 import ghidra.app.util.exporter.Exporter;
 import ghidra.app.util.importer.MessageLog;
 import ghidra.framework.GModule;
@@ -43,24 +39,41 @@ import ghidra.framework.data.OpenMode;
 import ghidra.framework.model.DomainObject;
 import ghidra.framework.store.db.PrivateDatabase;
 import ghidra.program.database.ProgramDB;
+import ghidra.program.database.module.TreeManager;
 import ghidra.program.model.address.Address;
 import ghidra.program.model.address.AddressFactory;
 import ghidra.program.model.address.AddressSet;
 import ghidra.program.model.address.AddressSetView;
 import ghidra.program.model.listing.Program;
+import ghidra.program.model.listing.ProgramModule;
 import ghidra.program.model.mem.MemoryBlock;
 import ghidra.test.AbstractProgramBasedTest;
 import ghidra.test.TestProgramManager;
 import ghidra.util.NamingUtilities;
 import ghidra.util.exception.VersionException;
 import ghidra.util.task.TaskMonitor;
-import net.boricj.bft.coff.CoffFile;
+import net.boricj.bft.TestUtils;
+import net.boricj.bft.coff.CoffHeader;
+import net.boricj.bft.coff.CoffRelocationTable;
+import net.boricj.bft.coff.CoffRelocationTable.CoffRel;
 import net.boricj.bft.coff.CoffSection;
+import net.boricj.bft.coff.CoffSectionTable;
+import net.boricj.bft.coff.CoffSymbolTable;
+import net.boricj.bft.coff.CoffSymbolTable.CoffSymbol;
+import net.boricj.bft.coff.constants.CoffMachine;
 import net.boricj.bft.coff.constants.CoffRelocationType;
+import net.boricj.bft.coff.constants.CoffStorageClass;
 import net.boricj.bft.coff.sections.CoffBytes;
-import net.boricj.bft.elf.ElfFile;
+import net.boricj.bft.elf.ElfHeader;
 import net.boricj.bft.elf.ElfSection;
-import net.boricj.bft.elf.constants.ElfRelocationType;
+import net.boricj.bft.elf.ElfSectionTable;
+import net.boricj.bft.elf.constants.ElfClass;
+import net.boricj.bft.elf.constants.ElfData;
+import net.boricj.bft.elf.constants.ElfMachine;
+import net.boricj.bft.elf.constants.ElfSymbolBinding;
+import net.boricj.bft.elf.constants.ElfSymbolType;
+import net.boricj.bft.elf.constants.ElfSymbolVisibility;
+import net.boricj.bft.elf.constants.ElfType;
 import net.boricj.bft.elf.sections.ElfProgBits;
 import net.boricj.bft.elf.sections.ElfRelTable;
 import net.boricj.bft.elf.sections.ElfRelaTable;
@@ -72,176 +85,9 @@ public abstract class DelinkerIntegrationTest extends AbstractProgramBasedTest {
 	private static Program program = null;
 	private static boolean initialized = false;
 
-	public interface ObjectFile {
-		public byte[] getSectionBytes(String name) throws IOException;
-
-		public default void compareSectionBytes(String referenceSectionName,
-				ObjectFile exportedFile, String exportedSectionName) throws Exception {
-			compareSectionBytes(referenceSectionName, exportedFile, exportedSectionName,
-				Collections.emptyMap());
-		}
-
-		public default void compareSectionBytes(String referenceSectionName,
-				ObjectFile exportedFile, String exportedSectionName, Map<Integer, byte[]> patches)
-				throws Exception {
-			byte[] expectedBytes = getSectionBytes(referenceSectionName);
-			byte[] actualBytes = exportedFile.getSectionBytes(exportedSectionName);
-
-			for (Map.Entry<Integer, byte[]> entry : patches.entrySet()) {
-				byte[] patch = entry.getValue();
-				System.arraycopy(patch, 0, expectedBytes, entry.getKey(), patch.length);
-			}
-
-			assertArrayEquals(expectedBytes, actualBytes);
-		}
-	}
-
-	public class ElfObjectFile implements ObjectFile {
-		private final ElfFile elf;
-
-		public ElfObjectFile(File file) throws IOException {
-			this.elf = new ElfFile.Parser(new FileInputStream(file)).parse();
-		}
-
-		public ElfObjectFile(File file, boolean ignoreSectionErrors) throws IOException {
-			this.elf = new ElfFile.Parser(new FileInputStream(file))
-					.setIgnoreSectionErrors(ignoreSectionErrors)
-					.parse();
-		}
-
-		@Override
-		public byte[] getSectionBytes(String name) throws IOException {
-			return ((ElfProgBits) getSection(name)).getBytes();
-		}
-
-		public void hasSymbolAtAddress(String symbolTable, String symbolName, String sectionName,
-				int offset) {
-			ElfSymbolTable symtab = getSymbolTable(symbolTable);
-
-			assertTrue(symtab.stream()
-					.filter(symbol -> symbol.getName().equals(symbolName))
-					.anyMatch(symbol -> {
-						ElfSection section =
-							elf.getSections().get(symbol.getIndex());
-						return section.getName().equals(sectionName) &&
-							symbol.getValue() == offset;
-					}));
-		}
-
-		public void hasUndefinedSymbol(String symbolTable, String symbolName) {
-			ElfSymbolTable symtab = getSymbolTable(symbolTable);
-
-			assertTrue(symtab.stream()
-					.filter(symbol -> symbol.getName().equals(symbolName))
-					.anyMatch(symbol -> symbol.getIndex() == ElfSection.SHN_UNDEF));
-		}
-
-		public void hasRelocationAtAddress(String relTable, long offset, ElfRelocationType type,
-				String symbolName) {
-			ElfRelTable rel = getRelTable(relTable);
-
-			assertTrue(rel.stream()
-					.filter(r -> r.getOffset() == offset)
-					.anyMatch(
-						r -> r.getType() == type && r.getSymbol().getName().equals(symbolName)));
-		}
-
-		public void hasRelocationAtAddress(String relaTable, long offset, ElfRelocationType type,
-				String symbolName, long addend) {
-			ElfRelaTable rela = getRelaTable(relaTable);
-
-			assertTrue(rela.stream()
-					.filter(r -> r.getOffset() == offset)
-					.anyMatch(
-						r -> r.getType() == type && r.getSymbol().getName().equals(symbolName) &&
-							r.getAddend() == addend));
-		}
-
-		public void compareSectionSizes(String referenceSectionName,
-				ElfObjectFile exportedFile, String exportedSectionName) throws Exception {
-			long expectedSize = getSection(referenceSectionName).getSize();
-			long actualSize = exportedFile.getSection(exportedSectionName).getSize();
-
-			assertEquals(expectedSize, actualSize);
-		}
-
-		private ElfSection getSection(String name) {
-			return elf.getSections()
-					.stream()
-					.filter(s -> s != null && s.getName().equals(name))
-					.findFirst()
-					.get();
-		}
-
-		private ElfSymbolTable getSymbolTable(String name) {
-			return (ElfSymbolTable) getSection(name);
-		}
-
-		private ElfRelTable getRelTable(String name) {
-			return (ElfRelTable) getSection(name);
-		}
-
-		private ElfRelaTable getRelaTable(String name) {
-			return (ElfRelaTable) getSection(name);
-		}
-	}
-
-	public class CoffObjectFile implements ObjectFile {
-		private final CoffFile header;
-
-		public CoffObjectFile(File file) throws IOException {
-			this.header = new CoffFile.Parser(new FileInputStream(file)).parse();
-		}
-
-		@Override
-		public byte[] getSectionBytes(String name) throws IOException {
-			CoffBytes section = (CoffBytes) getSection(name);
-			return section.getBytes();
-		}
-
-		public void hasSymbolAtAddress(String symbolName, String sectionName, int offset) {
-			assertTrue(header.getSymbols()
-					.stream()
-					.filter(symbol -> symbol.getName().equals(symbolName))
-					.anyMatch(symbol -> {
-						CoffSection section =
-							header.getSections().get(symbol.getSectionNumber());
-						return section.getName().equals(sectionName) && symbol.getValue() == offset;
-					}));
-		}
-
-		public void hasUndefinedSymbol(String symbolName) {
-			assertTrue(header.getSymbols()
-					.stream()
-					.filter(symbol -> symbol.getName().equals(symbolName))
-					.anyMatch(
-						symbol -> symbol.getSectionNumber() == CoffSymbolSectionNumber.N_UNDEF));
-		}
-
-		public void hasRelocationAtAddress(String sectionName, long offset, CoffRelocationType type,
-				String symbolName) {
-			CoffSection section = getSection(sectionName);
-			assertTrue(section.getRelocations()
-					.stream()
-					.filter(r -> r.getVirtualAddress() == offset)
-					.anyMatch(r -> header.getSymbols()
-							.get(r.getSymbolTableIndex())
-							.getName()
-							.equals(symbolName) &&
-						r.getType() == type));
-		}
-
-		private CoffSection getSection(String name) {
-			CoffSection section = header.getSections()
-					.stream()
-					.filter(s -> s.getName().equals(name))
-					.findFirst()
-					.orElse(null);
-			assertNotNull(section);
-			return section;
-		}
-	}
-
+	//
+	// Ghidra stuff.
+	//
 	public static class IntegrationTestApplicationLayout extends GhidraTestApplicationLayout {
 		public IntegrationTestApplicationLayout(File userSettingsDir)
 				throws FileNotFoundException, IOException {
@@ -335,6 +181,14 @@ public abstract class DelinkerIntegrationTest extends AbstractProgramBasedTest {
 		return set;
 	}
 
+	//
+	// Generic helper methods.
+	//
+
+	public record Patch(int offset, byte[] bytes) {}
+
+	public record Rel(int offset, Object type, String symbol) {}
+
 	public File exportObjectFile(AddressSetView set, Exporter exporter, List<Option> options)
 			throws Exception {
 		Program program = getProgram();
@@ -357,5 +211,192 @@ public abstract class DelinkerIntegrationTest extends AbstractProgramBasedTest {
 		assertTrue(exporter.export(exportedFile, program, set, TaskMonitor.DUMMY));
 
 		return exportedFile;
+	}
+
+	public AddressSetView findProgramModule(String root, String... path) throws Exception {
+		TreeManager treeManager = ((ProgramDB) getProgram()).getTreeManager();
+		ProgramModule module = treeManager.getRootModule(root);
+		for (String name : path) {
+			module = (ProgramModule) module.getChildren()[module.getIndex(name)];
+		}
+		return module.getAddressSet();
+	}
+
+	//
+	// COFF helper methods.
+	//
+
+	public static void assertHeader(CoffHeader header, CoffMachine machine) {
+		assertEquals(machine, header.getMachine());
+	}
+
+	public static short sectionNumber(CoffSectionTable sections, CoffSection section) {
+		int index = sections.getElements().indexOf(section);
+		assertTrue(index >= 0);
+		return (short) (index + 1);
+	}
+
+	public static <T> T findSectionByName(CoffSectionTable sections, String name, Class<T> clazz) {
+		var section =
+			sections.getElements().stream().filter(s -> s.getName().equals(name)).findFirst();
+		assertTrue(section.isPresent());
+		assertTrue(clazz.isInstance(section.get()));
+		return clazz.cast(section.get());
+	}
+
+	public static void assertSymbol(CoffSymbolTable symtab, short sectionNumber, int value,
+			String name, CoffStorageClass storageClass) {
+		var symbol =
+			symtab.getElements().stream().filter(s -> s.getName().equals(name)).findFirst();
+		assertTrue(symbol.isPresent());
+		assertEquals(sectionNumber, symbol.get().getSectionNumber());
+		assertEquals(value, symbol.get().getValue());
+		assertEquals(storageClass, symbol.get().getStorageClass());
+	}
+
+	public static void assertUndefined(CoffSymbolTable symtab, String name) {
+		assertSymbol(symtab, CoffSymbol.IMAGE_SYM_UNDEFINED, 0, name,
+			CoffStorageClass.IMAGE_SYM_CLASS_EXTERNAL);
+	}
+
+	public static void assertRel(CoffRelocationTable rels, CoffSymbolTable symtab, int offset,
+			CoffRelocationType type, String symbolName) {
+		CoffRel rel =
+			rels.getElements()
+					.stream()
+					.filter(r -> r.getVirtualAddress() == offset)
+					.findFirst()
+					.orElse(null);
+		assertTrue(rel != null);
+		assertEquals(type, rel.getType());
+		assertEquals(symbolName, symtab.get(rel.getSymbolTableIndex()).getName());
+	}
+
+	public static void assertSectionBytes(CoffBytes expected, int expectedOffset, CoffBytes actual,
+			int actualOffset, int length, Patch... patches) {
+		byte[] expectedBytes = new byte[length];
+		System.arraycopy(expected.getBytes(), expectedOffset, expectedBytes, 0, length);
+		for (Patch patch : patches) {
+			System.arraycopy(patch.bytes(), 0, expectedBytes, patch.offset(), patch.bytes().length);
+		}
+		byte[] actualBytes = new byte[length];
+		System.arraycopy(actual.getBytes(), actualOffset, actualBytes, 0, length);
+		TestUtils.assertArrayEquals(expectedBytes, actualBytes);
+	}
+
+	public static void assertSectionBytes(CoffBytes expected, CoffBytes actual) {
+		TestUtils.assertArrayEquals(expected.getBytes(), actual.getBytes());
+	}
+
+	//
+	// ELF helper methods.
+	//
+
+	public static void assertHeader(ElfHeader expected, ElfClass clazz, ElfData data, ElfType type,
+			ElfMachine machine) {
+		assertEquals(expected.getIdentClass(), clazz);
+		assertEquals(expected.getIdentData(), data);
+		assertEquals(expected.getType(), type);
+		assertEquals(expected.getMachine(), machine);
+	}
+
+	public static int sectionNumber(ElfSectionTable sections, ElfSection section) {
+		int index = sections.getElements().indexOf(section);
+		assertTrue(index >= 0);
+		return index;
+	}
+
+	public static <T> T findSectionByName(ElfSectionTable sections, String name, Class<T> clazz) {
+		var section = sections.stream().filter(s -> s.getName().equals(name)).findFirst();
+		assertTrue(section.isPresent());
+		assertTrue(clazz.isInstance(section.get()));
+		return clazz.cast(section.get());
+	}
+
+	public static void assertSymbol(ElfSymbolTable symtab, int index, long value, long size,
+			ElfSymbolType type, ElfSymbolVisibility visibility, ElfSymbolBinding binding) {
+		var sym = symtab.stream().filter(s -> s.getIndex() == index).findFirst();
+		assertTrue(sym.isPresent());
+		assertEquals(sym.get().getValue(), value);
+		assertEquals(sym.get().getSize(), size);
+		assertEquals(sym.get().getType(), type);
+		assertEquals(sym.get().getVisibility(), visibility);
+		assertEquals(sym.get().getBinding(), binding);
+	}
+
+	public static void assertSymbol(ElfSymbolTable symtab, int index, long value, String name,
+			long size, ElfSymbolType type, ElfSymbolVisibility visibility,
+			ElfSymbolBinding binding) {
+		var sym = symtab.stream().filter(s -> s.getName().equals(name)).findFirst();
+		assertTrue(sym.isPresent());
+		assertEquals(sym.get().getName(), name);
+		assertEquals(sym.get().getValue(), value);
+		assertEquals(sym.get().getSize(), size);
+		assertEquals(sym.get().getIndex(), index);
+		assertEquals(sym.get().getType(), type);
+		assertEquals(sym.get().getVisibility(), visibility);
+		assertEquals(sym.get().getBinding(), binding);
+	}
+
+	public static <T> void assertRel(ElfRelTable table, int offset, T type,
+			String symbol) {
+		var rel = table.stream().filter(r -> r.getOffset() == offset).findFirst();
+		assertTrue(rel.isPresent());
+		assertEquals(rel.get().getOffset(), offset);
+		assertEquals(rel.get().getType(), type);
+		assertEquals(rel.get().getSymbol().getName(), symbol);
+	}
+
+	public static void assertRels(ElfRelTable table, Rel... expected) {
+		var actual = table.stream()
+				.map(r -> new Rel((int) r.getOffset(), r.getType(), r.getSymbol().getName()))
+				.toList();
+		assertTrue(actual.size() >= expected.length);
+
+		var expectedCounts = new HashMap<Rel, Integer>();
+		for (var rel : expected) {
+			expectedCounts.merge(rel, 1, Integer::sum);
+		}
+
+		for (int start = 0; start <= actual.size() - expected.length; start++) {
+			var windowCounts = new HashMap<Rel, Integer>();
+			for (int i = start; i < start + expected.length; i++) {
+				windowCounts.merge(actual.get(i), 1, Integer::sum);
+			}
+
+			if (windowCounts.equals(expectedCounts)) {
+				return;
+			}
+		}
+
+		assertTrue("Expected relocations were not found in any contiguous range", false);
+	}
+
+	public static <T> void assertRela(ElfRelaTable table, int offset, T type,
+			String symbol, long addend) {
+		var rel = table.stream().filter(r -> r.getOffset() == offset).findFirst();
+		assertTrue(rel.isPresent());
+		assertEquals(rel.get().getOffset(), offset);
+		assertEquals(rel.get().getType(), type);
+		assertEquals(rel.get().getSymbol().getName(), symbol);
+		assertEquals(rel.get().getAddend(), addend);
+	}
+
+	public static void assertSectionBytes(ElfProgBits expected, int expected_offset,
+			ElfProgBits actual, int actual_offset, int length, Patch... patches) {
+		byte[] expectedBytes = new byte[length];
+		System.arraycopy(expected.getBytes(), expected_offset, expectedBytes, 0, length);
+		for (Patch patch : patches) {
+			System.arraycopy(patch.bytes, 0, expectedBytes, patch.offset, patch.bytes.length);
+		}
+		byte[] actualBytes = new byte[length];
+		System.arraycopy(actual.getBytes(), actual_offset, actualBytes, 0, length);
+		TestUtils.assertArrayEquals(expectedBytes, actualBytes);
+	}
+
+	public static void assertSectionBytes(ElfProgBits expected, ElfProgBits actual) {
+		byte[] expectedBytes = expected.getBytes();
+		byte[] actualBytes = actual.getBytes();
+		TestUtils.assertArrayEquals(expectedBytes, actualBytes);
 	}
 }

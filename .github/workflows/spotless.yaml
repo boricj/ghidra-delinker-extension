@@ -26,7 +26,7 @@ jobs:
         name: "Setup Ghidra"
         uses: antoniovazquezblanco/setup-ghidra@v2.0.5
         with:
-          version: "11.2"
+          version: "12.0.4"
           auth_token: ${{ secrets.GITHUB_TOKEN }}
       -
         name: "Run spotless"

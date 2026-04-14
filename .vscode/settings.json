@@ -10,14 +10,10 @@
 	"java.import.gradle.wrapper.enabled": true,
 	"java.test.config": {
 		"name": "GhidraTest",
-		"classPaths": [
-			"${env:GHIDRA_INSTALL_DIR}/Ghidra/Framework/Utility/lib/Utility.jar"
-		],
 		"vmArgs": [
 			"-Dawt.useSystemAAFontSettings=on",
 			"-Declipse.project.dir=${workspaceFolder}",
 			"-Dfile.encoding=UTF8",
-			"-Djava.system.class.loader=ghidra.GhidraClassLoader",
 			"-Dlog4j.configurationFile=${env:GHIDRA_INSTALL_DIR}/support/debug.log4j.xml",
 			"-Dpython.console.encoding=UTF-8",
 			"-Dsun.java2d.pmoffscreen=false",

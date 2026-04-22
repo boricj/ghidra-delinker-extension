@@ -231,6 +231,16 @@ public abstract class DelinkerIntegrationTest extends AbstractProgramBasedTest {
 						r.getType() == type));
 		}
 
+		public void hasRelocationAtAddress(String sectionName, long offset, CoffRelocationType type,
+				int symbolTableIndex) {
+			CoffSection section = getSection(sectionName);
+			assertTrue(section.getRelocations()
+					.stream()
+					.filter(r -> r.getVirtualAddress() == offset)
+					.anyMatch(
+						r -> r.getType() == type && r.getSymbolTableIndex() == symbolTableIndex));
+		}
+
 		private CoffSection getSection(String name) {
 			CoffSection section = header.getSections()
 					.stream()

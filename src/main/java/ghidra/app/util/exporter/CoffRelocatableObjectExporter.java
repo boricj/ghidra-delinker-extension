@@ -125,7 +125,8 @@ public class CoffRelocatableObjectExporter extends Exporter {
 	private static final Map<CoffMachine, String> COFF_MACHINES = new TreeMap<>(Map.ofEntries(
 		Map.entry(CoffMachine.IMAGE_FILE_MACHINE_UNKNOWN, "(none)"),
 		Map.entry(CoffMachine.IMAGE_FILE_MACHINE_I386, "i386"),
-		Map.entry(CoffMachine.IMAGE_FILE_MACHINE_AMD64, "amd64")));
+		Map.entry(CoffMachine.IMAGE_FILE_MACHINE_AMD64, "amd64"),
+		Map.entry(CoffMachine.IMAGE_FILE_MACHINE_POWERPCBE, "powerpcbe")));
 
 	private static final class ProcessorInfo {
 		String processor;
@@ -153,7 +154,8 @@ public class CoffRelocatableObjectExporter extends Exporter {
 
 	private static final Map<ProcessorInfo, CoffMachine> GHIDRA_TO_COFF_MACHINES = Map.ofEntries(
 		Map.entry(new ProcessorInfo("x86", 4), CoffMachine.IMAGE_FILE_MACHINE_I386),
-		Map.entry(new ProcessorInfo("x86", 8), CoffMachine.IMAGE_FILE_MACHINE_AMD64));
+		Map.entry(new ProcessorInfo("x86", 8), CoffMachine.IMAGE_FILE_MACHINE_AMD64),
+		Map.entry(new ProcessorInfo("PowerPC", 4), CoffMachine.IMAGE_FILE_MACHINE_POWERPCBE));
 
 	private static CoffMachine autodetectCoffMachine(Program program) {
 		String processor = program.getLanguage().getProcessor().toString();

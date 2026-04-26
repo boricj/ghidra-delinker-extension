@@ -1,0 +1,3237 @@
+
+/mnt/c/Users/jblbe/Documents/Workspace/ghidra-delinker-extension/src/test/resources/programs/freelist-allocator/reference/elf/linux-nolibc/i686/main.o:     file format elf32-i386
+/mnt/c/Users/jblbe/Documents/Workspace/ghidra-delinker-extension/src/test/resources/programs/freelist-allocator/reference/elf/linux-nolibc/i686/main.o
+architecture: i386, flags 0x00000011:
+HAS_RELOC, HAS_SYMS
+start address 0x00000000
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .text         000042c7  00000000  00000000  00000034  2**0
+                  CONTENTS, ALLOC, LOAD, RELOC, READONLY, CODE
+  1 .data         00000012  00000000  00000000  000042fc  2**2
+                  CONTENTS, ALLOC, LOAD, DATA
+  2 .bss          000001bc  00000000  00000000  00004320  2**5
+                  ALLOC
+  3 .ctf          00004b4f  00000000  00000000  00004320  2**0
+                  CONTENTS, READONLY
+  4 .rodata       0000085a  00000000  00000000  00008e80  2**5
+                  CONTENTS, ALLOC, LOAD, RELOC, READONLY, DATA
+  5 .text.nolibc_raise 00000016  00000000  00000000  000096da  2**0
+                  CONTENTS, ALLOC, LOAD, RELOC, READONLY, CODE
+  6 .text.nolibc_memmove 00000055  00000000  00000000  000096f0  2**0
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+  7 .text.nolibc_memcpy 00000035  00000000  00000000  00009745  2**0
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+  8 .text.nolibc_memset 0000002e  00000000  00000000  0000977a  2**0
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+  9 .text.nolibc_strlen 00000027  00000000  00000000  000097a8  2**0
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+ 10 .text.nolibc_abort 00000015  00000000  00000000  000097cf  2**0
+                  CONTENTS, ALLOC, LOAD, RELOC, READONLY, CODE
+ 11 .data.nolibc_getopt 00000010  00000000  00000000  000097e4  2**2
+                  CONTENTS, ALLOC, LOAD, DATA
+ 12 .debug_info   000074f4  00000000  00000000  000097f4  2**0
+                  CONTENTS, RELOC, READONLY, DEBUGGING, OCTETS
+ 13 .debug_abbrev 00000524  00000000  00000000  00010ce8  2**0
+                  CONTENTS, READONLY, DEBUGGING, OCTETS
+ 14 .debug_aranges 00000050  00000000  00000000  0001120c  2**0
+                  CONTENTS, RELOC, READONLY, DEBUGGING, OCTETS
+ 15 .debug_ranges 00000610  00000000  00000000  0001125c  2**0
+                  CONTENTS, RELOC, READONLY, DEBUGGING, OCTETS
+ 16 .debug_line   000023d3  00000000  00000000  0001186c  2**0
+                  CONTENTS, RELOC, READONLY, DEBUGGING, OCTETS
+ 17 .debug_str    00001855  00000000  00000000  00013c3f  2**0
+                  CONTENTS, READONLY, DEBUGGING, OCTETS
+ 18 .comment      00000020  00000000  00000000  00015494  2**0
+                  CONTENTS, READONLY
+ 19 .note.GNU-stack 00000000  00000000  00000000  000154b4  2**0
+                  CONTENTS, READONLY
+ 20 .debug_frame  00002278  00000000  00000000  000154b4  2**2
+                  CONTENTS, RELOC, READONLY, DEBUGGING, OCTETS
+SYMBOL TABLE:
+00000000 l    df *ABS*	00000000 main.c
+00000000 l    d  .text	00000000 .text
+00000000 l    d  .data	00000000 .data
+00000000 l    d  .bss	00000000 .bss
+00003b29 l     F .text	00000006 __stack_chk_init
+00000551 l     F .text	0000000b exit
+000000ff l     F .text	0000001e sys_brk
+0000011d l     F .text	00000032 brk
+0000014f l     F .text	00000051 sbrk
+000001a0 l     F .text	0000001e sys_chdir
+000001be l     F .text	00000030 chdir
+000001ee l     F .text	0000001c sys_fchdir
+0000020a l     F .text	00000030 fchdir
+0000023a l     F .text	0000002e sys_chmod
+00000268 l     F .text	00000033 chmod
+0000029b l     F .text	00000033 sys_chown
+000002ce l     F .text	00000036 chown
+00000304 l     F .text	0000001e sys_chroot
+00000322 l     F .text	00000030 chroot
+00000352 l     F .text	0000001c sys_close
+0000036e l     F .text	00000030 close
+0000039e l     F .text	0000001c sys_dup
+000003ba l     F .text	00000030 dup
+000003ea l     F .text	0000005a sys_dup2
+00000444 l     F .text	00000033 dup2
+00000477 l     F .text	00000022 sys_dup3
+00000499 l     F .text	00000036 dup3
+000004cf l     F .text	00000026 sys_execve
+000004f5 l     F .text	00000036 execve
+0000052b l     F .text	0000001b sys_exit
+00000546 l     F .text	0000000b _exit
+0000055c l     F .text	00000037 sys_fork
+00000593 l     F .text	0000002a fork
+000005bd l     F .text	00000015 sys_vfork
+000005d2 l     F .text	0000002a vfork
+000005fc l     F .text	0000001c sys_fsync
+00000618 l     F .text	00000030 fsync
+00000648 l     F .text	00000024 sys_getdents64
+0000066c l     F .text	00000036 getdents64
+000006a2 l     F .text	00000015 sys_geteuid
+000006b7 l     F .text	0000000a geteuid
+000006c1 l     F .text	0000001c sys_getpgid
+000006dd l     F .text	00000030 getpgid
+0000070d l     F .text	0000000f sys_getpgrp
+0000071c l     F .text	0000000a getpgrp
+00000726 l     F .text	00000015 sys_getpid
+0000073b l     F .text	0000000a getpid
+00000745 l     F .text	00000015 sys_getppid
+0000075a l     F .text	0000000a getppid
+00000764 l     F .text	00000015 sys_gettid
+00000779 l     F .text	0000000a gettid
+00000783 l     F .text	0000003b getpagesize
+00000dfb l     F .text	0000005b getauxval
+000007be l     F .text	00000015 sys_getuid
+000007d3 l     F .text	0000000a getuid
+000007dd l     F .text	0000001f sys_kill
+000007fc l     F .text	00000033 kill
+0000082f l     F .text	00000035 sys_link
+00000864 l     F .text	00000033 link
+00000897 l     F .text	00000031 sys_lseek
+000008c8 l     F .text	00000050 lseek
+00000918 l     F .text	00000026 sys_mkdir
+0000093e l     F .text	00000033 mkdir
+00000971 l     F .text	0000001e sys_rmdir
+0000098f l     F .text	00000030 rmdir
+000009bf l     F .text	0000002c sys_mknod
+000009eb l     F .text	00000036 mknod
+00000a21 l     F .text	00000021 sys_pipe2
+00000a42 l     F .text	00000033 pipe2
+00000a75 l     F .text	00000012 pipe
+00000a87 l     F .text	00000023 sys_pivot_root
+00000aaa l     F .text	00000033 pivot_root
+00000add l     F .text	00000024 sys_read
+00000b01 l     F .text	00000036 read
+00000b37 l     F .text	00000015 sys_sched_yield
+00000b4c l     F .text	0000002a sched_yield
+00000b76 l     F .text	0000001f sys_setpgid
+00000b95 l     F .text	00000033 setpgid
+00000bc8 l     F .text	00000011 setpgrp
+00000bd9 l     F .text	00000015 sys_setsid
+00000bee l     F .text	0000002a setsid
+00000c18 l     F .text	00000026 sys_symlink
+00000c3e l     F .text	00000033 symlink
+00000c71 l     F .text	0000001e sys_umask
+00000c8f l     F .text	00000010 umask
+00000c9f l     F .text	00000021 sys_umount2
+00000cc0 l     F .text	00000033 umount2
+00000cf3 l     F .text	00000028 sys_unlink
+00000d1b l     F .text	00000030 unlink
+00000d4b l     F .text	00000024 sys_write
+00000d6f l     F .text	00000036 write
+00000da5 l     F .text	00000023 sys_memfd_create
+00000dc8 l     F .text	00000033 memfd_create
+00000e56 l     F .text	00000026 sys_ioctl
+00000e7c l     F .text	00000069 sys_mmap
+00000ee5 l     F .text	00000055 mmap
+00000f3a l     F .text	00000031 sys_mremap
+00000f6b l     F .text	00000040 mremap
+00000fab l     F .text	00000023 sys_munmap
+00000fce l     F .text	00000033 munmap
+00001001 l     F .text	00000031 sys_mount
+00001032 l     F .text	0000003c mount
+0000106e l     F .text	0000002f sys_prctl
+0000109d l     F .text	0000003c prctl
+000010d9 l     F .text	00000026 sys_getrandom
+000010ff l     F .text	00000036 getrandom
+00001135 l     F .text	00000028 sys_reboot
+0000115d l     F .text	0000003c reboot
+00001199 l     F .text	00000028 sys_prlimit64
+000011c1 l     F .text	00000059 getrlimit
+0000121a l     F .text	00000059 setrlimit
+00001273 l     F .text	0000002f sys_select
+000012a2 l     F .text	0000003c select
+000012de l     F .text	0000002f sys_statx
+0000130d l     F .text	0000003c statx
+00001349 l     F .text	00000191 fstatat
+000014da l     F .text	00000017 stat
+00000000 l    d  .rodata	00000000 .rodata
+000014f1 l     F .text	0000001d fstat
+0000150e l     F .text	0000001a lstat
+00001528 l     F .text	00000023 sys_gettimeofday
+0000154b l     F .text	00000033 gettimeofday
+0000157e l     F .text	00000021 sys_clock_getres
+0000159f l     F .text	00000033 clock_getres
+000015d2 l     F .text	00000021 sys_clock_gettime
+000015f3 l     F .text	00000033 clock_gettime
+00001626 l     F .text	00000021 sys_clock_settime
+00001647 l     F .text	00000033 clock_settime
+0000167a l     F .text	00000028 sys_clock_nanosleep
+000016a2 l     F .text	0000001b clock_nanosleep
+000016bd l     F .text	00000027 time
+000016e4 l     F .text	00000024 sys_timer_create
+00001708 l     F .text	00000036 timer_create
+0000173e l     F .text	0000001c sys_timer_delete
+0000175a l     F .text	00000030 timer_delete
+0000178a l     F .text	00000021 sys_timer_gettime
+000017ab l     F .text	00000033 timer_gettime
+000017de l     F .text	00000028 sys_timer_settime
+00001806 l     F .text	00000039 timer_settime
+0000183f l     F .text	0000001f sys_timerfd_create
+0000185e l     F .text	00000033 timerfd_create
+00001891 l     F .text	00000021 sys_timerfd_gettime
+000018b2 l     F .text	00000033 timerfd_gettime
+000018e5 l     F .text	00000028 sys_timerfd_settime
+0000190d l     F .text	00000039 timerfd_settime
+00001946 l     F .text	00000024 sys_readv
+0000196a l     F .text	00000036 readv
+000019a0 l     F .text	00000024 sys_writev
+000019c4 l     F .text	00000036 writev
+000019fa l     F .text	0000001e sys_uname
+00001a18 l     F .text	00000030 uname
+00001a48 l     F .text	0000002d sys_waitid
+00001a75 l     F .text	0000003b waitid
+00001ab0 l     F .text	00000153 waitpid
+00001c03 l     F .text	00000014 wait
+00001c17 l     F .text	00000011 isascii
+00001c28 l     F .text	0000001d isblank
+00001c45 l     F .text	0000001f iscntrl
+00001c64 l     F .text	00000014 isdigit
+00001c78 l     F .text	00000014 isgraph
+00001c8c l     F .text	00000014 islower
+00001ca0 l     F .text	00000014 isprint
+00001cb4 l     F .text	00000022 isspace
+00001cd6 l     F .text	00000014 isupper
+00001cea l     F .text	00000036 isxdigit
+00001d20 l     F .text	0000002f isalpha
+00001d4f l     F .text	0000002f isalnum
+00001d7e l     F .text	0000002f ispunct
+00001dad l     F .text	0000001f sys_setns
+00001dcc l     F .text	00000033 setns
+00001dff l     F .text	0000001c sys_unshare
+00001e1b l     F .text	00000030 unshare
+00000000 l    d  .text.nolibc_raise	00000000 .text.nolibc_raise
+00001e4b l     F .text	0000002a sys_faccessat
+00001e75 l     F .text	00000039 faccessat
+00001eae l     F .text	00000017 access
+00001ec5 l     F .text	000000ae msleep
+00001f73 l     F .text	00000044 sleep
+00001fb7 l     F .text	0000004c usleep
+00002003 l     F .text	0000003a tcsetpgrp
+0000203d l     F .text	0000002a sys_openat
+00002067 l     F .text	0000005e openat
+000020c5 l     F .text	0000002c sys_open
+000020f1 l     F .text	0000005b open
+0000214c l     F .text	0000004e memcmp
+00000000 l    d  .text.nolibc_memmove	00000000 .text.nolibc_memmove
+00000000 l    d  .text.nolibc_memcpy	00000000 .text.nolibc_memcpy
+00000000 l    d  .text.nolibc_memset	00000000 .text.nolibc_memset
+0000219a l     F .text	00000038 memchr
+000021d2 l     F .text	0000002c strchr
+000021fe l     F .text	00000041 strcmp
+0000223f l     F .text	00000030 strcpy
+00000000 l    d  .text.nolibc_strlen	00000000 .text.nolibc_strlen
+0000226f l     F .text	0000002f strnlen
+0000229e l     F .text	00000057 strdup
+00002769 l     F .text	0000005c malloc
+000022f5 l     F .text	0000005e strndup
+00002353 l     F .text	00000077 strlcat
+000023ca l     F .text	00000072 strlcpy
+0000243c l     F .text	00000050 strncat
+0000248c l     F .text	00000055 strncmp
+000024e1 l     F .text	0000003b strncpy
+0000251c l     F .text	00000035 strrchr
+00002551 l     F .text	0000006b strstr
+000025bc l     F .text	0000001c tolower
+000025d8 l     F .text	0000001c toupper
+000001a0 l     O .bss	00000015 itoa_buffer
+00000000 l    d  .text.nolibc_abort	00000000 .text.nolibc_abort
+000025f4 l     F .text	0000006e atol
+00002662 l     F .text	00000010 atoi
+00002672 l     F .text	00000031 free
+000026a3 l     F .text	000000c6 getenv
+000027c5 l     F .text	00000057 calloc
+0000281c l     F .text	0000009a realloc
+000028b6 l     F .text	00000090 utoh_r
+00002946 l     F .text	000000a9 utoa_r
+000029ef l     F .text	00000048 itoa_r
+00002a37 l     F .text	000000a1 u64toh_r
+00002ad8 l     F .text	000000ea u64toa_r
+00002bc2 l     F .text	00000066 i64toa_r
+00002c28 l     F .text	0000026f __strtox
+00002e97 l     F .text	00000027 strtol
+00002ebe l     F .text	00000021 strtoul
+00002edf l     F .text	00000027 strtoll
+00002f06 l     F .text	00000021 strtoull
+00002f27 l     F .text	00000027 strtoimax
+00002f4e l     F .text	00000021 strtoumax
+00000028 l     O .rodata	00000004 stdin
+0000002c l     O .rodata	00000004 stdout
+00000030 l     O .rodata	00000004 stderr
+00002f6f l     F .text	00000021 fdopen
+00002f90 l     F .text	0000008e fopen
+0000301e l     F .text	0000002a fileno
+00003048 l     F .text	0000002a fflush
+00003072 l     F .text	00000043 fclose
+000030b5 l     F .text	00000034 fgetc
+000030e9 l     F .text	00000013 getchar
+000030fc l     F .text	0000003a fputc
+00003136 l     F .text	00000016 putchar
+0000314c l     F .text	00000050 _fwrite
+0000319c l     F .text	0000003e fwrite
+000031da l     F .text	00000028 fputs
+00003202 l     F .text	00000035 puts
+00003237 l     F .text	00000074 fgets
+000032ab l     F .text	0000031a __nolibc_printf
+00003b09 l     F .text	00000020 strerror
+000035c5 l     F .text	00000017 __nolibc_fprintf_cb
+000035dc l     F .text	00000024 vfprintf
+00003600 l     F .text	0000001f vprintf
+0000361f l     F .text	00000029 fprintf
+00003648 l     F .text	0000002c printf
+00003674 l     F .text	00000039 vdprintf
+000036ad l     F .text	00000029 dprintf
+000036d6 l     F .text	00000039 __nolibc_sprintf_cb
+0000370f l     F .text	00000057 vsnprintf
+00003766 l     F .text	00000029 snprintf
+0000378f l     F .text	0000001b vsprintf
+000037aa l     F .text	00000029 sprintf
+000037d3 l     F .text	00000291 vsscanf
+00003a64 l     F .text	00000029 sscanf
+00003a8d l     F .text	00000062 perror
+00003aef l     F .text	0000001a setvbuf
+00000000 l     O .data	00000012 buf.1
+00003b2f l     F .text	00000021 fdopendir
+00003b50 l     F .text	00000030 opendir
+00003b80 l     F .text	00000033 closedir
+00003bb3 l     F .text	000000ce readdir_r
+00003c81 l     F .text	00000335 getopt
+000001b8 l     O .bss	00000004 __optpos.0
+00003fb6 l     F .text	0000008c sys_poll
+00004042 l     F .text	00000036 poll
+00004078 l     F .text	00000050 allocate_and_fill
+00000000 l    d  .debug_info	00000000 .debug_info
+00000000 l    d  .debug_abbrev	00000000 .debug_abbrev
+00000000 l    d  .debug_ranges	00000000 .debug_ranges
+00000000 l    d  .debug_line	00000000 .debug_line
+00000000 l    d  .debug_str	00000000 .debug_str
+00000000 l    d  .debug_frame	00000000 .debug_frame
+00000000  w    O .bss	00000004 environ
+00000004  w    O .bss	00000004 _auxv
+00000000  w    F .text	000000ee _start_c
+00000000  w      *UND*	00000000 __preinit_array_start
+00000000  w      *UND*	00000000 __preinit_array_end
+00000000  w      *UND*	00000000 __init_array_start
+00000000  w      *UND*	00000000 __init_array_end
+000040c8 g     F .text	000001ff main
+00000000  w      *UND*	00000000 __fini_array_end
+00000000  w      *UND*	00000000 __fini_array_start
+000000ee  w    F .text	00000011 _start
+00000008  w    O .bss	00000004 errno
+00000000  w    F .text.nolibc_raise	00000016 raise
+00000000  w    F .text.nolibc_memmove	00000055 memmove
+00000000  w    F .text.nolibc_memcpy	00000035 memcpy
+00000000  w    F .text.nolibc_memset	0000002e memset
+00000000  w    F .text.nolibc_strlen	00000027 strlen
+00000000  w    F .text.nolibc_abort	00000015 abort
+00000000  w    O .data.nolibc_getopt	00000004 optarg
+00000004  w    O .data.nolibc_getopt	00000004 optind
+00000008  w    O .data.nolibc_getopt	00000004 opterr
+0000000c  w    O .data.nolibc_getopt	00000004 optopt
+00000020 g     O .bss	00000180 s_heap
+000000a0 g     O .rodata	00000180 s_snapshot_1
+00000220 g     O .rodata	00000180 s_snapshot_2
+000003a0 g     O .rodata	00000180 s_snapshot_3
+00000520 g     O .rodata	00000180 s_snapshot_4
+000006a0 g     O .rodata	00000180 s_snapshot_5
+00000820 g     O .rodata	00000028 s_heap_ranges
+00000000         *UND*	00000000 freelist_alloc
+00000000         *UND*	00000000 freelist_init
+00000000         *UND*	00000000 freelist_free
+
+
+RELOCATION RECORDS FOR [.text]:
+OFFSET   TYPE              VALUE
+00000035 R_386_32          environ
+00000053 R_386_32          _auxv
+0000005a R_386_32          __preinit_array_start
+0000007d R_386_32          __preinit_array_end
+00000086 R_386_32          __init_array_start
+000000a9 R_386_32          __init_array_end
+000000bc R_386_PC32        main
+000000c9 R_386_32          __fini_array_end
+000000dd R_386_32          __fini_array_start
+000000f7 R_386_PC32        _start_c
+00000139 R_386_32          errno
+00000191 R_386_32          errno
+000001de R_386_32          errno
+0000022a R_386_32          errno
+0000028b R_386_32          errno
+000002f4 R_386_32          errno
+00000342 R_386_32          errno
+0000038e R_386_32          errno
+000003da R_386_32          errno
+00000467 R_386_32          errno
+000004bf R_386_32          errno
+0000051b R_386_32          errno
+000005ad R_386_32          errno
+000005ec R_386_32          errno
+00000638 R_386_32          errno
+00000692 R_386_32          errno
+000006fd R_386_32          errno
+000007ae R_386_32          errno
+0000081f R_386_32          errno
+00000887 R_386_32          errno
+00000900 R_386_32          errno
+00000961 R_386_32          errno
+000009af R_386_32          errno
+00000a11 R_386_32          errno
+00000a65 R_386_32          errno
+00000acd R_386_32          errno
+00000b27 R_386_32          errno
+00000b66 R_386_32          errno
+00000bb8 R_386_32          errno
+00000c08 R_386_32          errno
+00000c61 R_386_32          errno
+00000ce3 R_386_32          errno
+00000d3b R_386_32          errno
+00000d95 R_386_32          errno
+00000deb R_386_32          errno
+00000e02 R_386_32          _auxv
+00000f2a R_386_32          errno
+00000f9b R_386_32          errno
+00000ff1 R_386_32          errno
+0000105e R_386_32          errno
+000010c9 R_386_32          errno
+00001125 R_386_32          errno
+00001189 R_386_32          errno
+000011e9 R_386_32          errno
+00001263 R_386_32          errno
+000012ce R_386_32          errno
+00001339 R_386_32          errno
+00001384 R_386_32          errno
+000014fd R_386_32          .rodata
+0000156e R_386_32          errno
+000015c2 R_386_32          errno
+00001616 R_386_32          errno
+0000166a R_386_32          errno
+0000172e R_386_32          errno
+0000177a R_386_32          errno
+000017ce R_386_32          errno
+0000182f R_386_32          errno
+00001881 R_386_32          errno
+000018d5 R_386_32          errno
+00001936 R_386_32          errno
+00001990 R_386_32          errno
+000019ea R_386_32          errno
+00001a38 R_386_32          errno
+00001aa0 R_386_32          errno
+00001ac4 R_386_32          errno
+00001b67 R_386_32          .rodata
+00001def R_386_32          errno
+00001e3b R_386_32          errno
+00001e9e R_386_32          errno
+0000202d R_386_32          errno
+000020b5 R_386_32          errno
+0000213c R_386_32          errno
+000022ab R_386_PC32        strlen
+000022e9 R_386_PC32        memcpy
+0000233c R_386_PC32        memcpy
+0000255e R_386_PC32        strlen
+0000257c R_386_PC32        strlen
+000026aa R_386_32          environ
+000026ea R_386_32          environ
+00002714 R_386_32          environ
+0000272f R_386_32          environ
+0000274c R_386_32          environ
+000027fd R_386_32          errno
+00002896 R_386_PC32        memcpy
+00002c79 R_386_32          errno
+00002cfe R_386_32          .rodata
+00002d14 R_386_32          .rodata
+00002d3d R_386_32          .rodata
+00002e55 R_386_32          errno
+00002f7a R_386_32          errno
+00002fd0 R_386_32          errno
+00003032 R_386_32          errno
+0000305c R_386_32          errno
+00003086 R_386_32          errno
+000031e7 R_386_PC32        strlen
+000034a6 R_386_32          .rodata
+000034b3 R_386_32          errno
+000034fe R_386_PC32        strlen
+00003553 R_386_32          .rodata
+000035f2 R_386_32          .text
+000036f2 R_386_PC32        memcpy
+0000372c R_386_32          .text
+0000399c R_386_32          errno
+00003a96 R_386_32          errno
+00003aab R_386_32          .rodata
+00003ab2 R_386_32          .rodata
+00003acc R_386_32          .rodata
+00003adc R_386_32          .rodata
+00003b14 R_386_32          .data
+00003b23 R_386_32          .data
+00003b3a R_386_32          errno
+00003b94 R_386_32          errno
+00003c88 R_386_32          optind
+00003c92 R_386_32          .bss
+00003c9c R_386_32          optind
+00003ca5 R_386_32          optind
+00003caf R_386_32          optind
+00003cd0 R_386_32          optind
+00003cf4 R_386_32          optind
+00003cfd R_386_32          optind
+00003d10 R_386_32          optarg
+00003d29 R_386_32          optind
+00003d50 R_386_32          optind
+00003d6d R_386_32          optind
+00003d8a R_386_32          optind
+00003d92 R_386_32          optind
+00003da1 R_386_32          .bss
+00003daa R_386_32          .bss
+00003db2 R_386_32          .bss
+00003db7 R_386_32          optind
+00003dcb R_386_32          .bss
+00003dd8 R_386_32          optind
+00003dec R_386_32          .bss
+00003df6 R_386_32          .bss
+00003dfe R_386_32          .bss
+00003e03 R_386_32          optind
+00003e17 R_386_32          .bss
+00003e25 R_386_32          optind
+00003e2d R_386_32          optind
+00003e33 R_386_32          .bss
+00003e97 R_386_32          optopt
+00003ea6 R_386_32          opterr
+00003ec4 R_386_32          .rodata
+00003ef0 R_386_32          optarg
+00003f0b R_386_32          .bss
+00003f14 R_386_32          optind
+00003f1d R_386_32          optind
+00003f30 R_386_32          optarg
+00003f35 R_386_32          .bss
+00003f3e R_386_32          optarg
+00003f44 R_386_32          .bss
+00003f4b R_386_32          optarg
+00003f51 R_386_32          .bss
+00003f5a R_386_32          optind
+00003f68 R_386_32          optopt
+00003f7e R_386_32          opterr
+00003f9c R_386_32          .rodata
+00004068 R_386_32          errno
+00004092 R_386_PC32        freelist_alloc
+000040bc R_386_PC32        memset
+000040dc R_386_32          s_heap
+000040ec R_386_PC32        freelist_init
+000040f4 R_386_32          s_snapshot_1
+000040f9 R_386_32          s_snapshot_1
+00004102 R_386_32          s_snapshot_1
+0000416d R_386_32          s_snapshot_2
+00004172 R_386_32          s_snapshot_2
+0000417b R_386_32          s_snapshot_2
+000041b8 R_386_PC32        freelist_free
+000041ca R_386_32          s_snapshot_3
+000041cf R_386_32          s_snapshot_3
+000041d8 R_386_32          s_snapshot_3
+00004215 R_386_PC32        freelist_free
+00004227 R_386_32          s_snapshot_4
+0000422c R_386_32          s_snapshot_4
+00004235 R_386_32          s_snapshot_4
+0000426f R_386_PC32        freelist_free
+00004281 R_386_32          s_snapshot_5
+00004286 R_386_32          s_snapshot_5
+0000428f R_386_32          s_snapshot_5
+000042b0 R_386_32          .rodata
+
+
+RELOCATION RECORDS FOR [.rodata]:
+OFFSET   TYPE              VALUE
+00000004 R_386_32          .text
+00000008 R_386_32          .text
+0000000c R_386_32          .text
+00000010 R_386_32          .text
+00000014 R_386_32          .text
+00000018 R_386_32          .text
+0000001c R_386_32          .text
+00000220 R_386_32          s_heap
+00000240 R_386_32          s_heap
+00000260 R_386_32          s_heap
+00000280 R_386_32          s_heap
+000002a0 R_386_32          s_heap
+000002e0 R_386_32          s_heap
+00000320 R_386_32          s_heap
+000003a0 R_386_32          s_heap
+000003c0 R_386_32          s_heap
+000003e0 R_386_32          s_heap
+00000400 R_386_32          s_heap
+00000420 R_386_32          s_heap
+00000460 R_386_32          s_heap
+000004a0 R_386_32          s_heap
+00000520 R_386_32          s_heap
+00000540 R_386_32          s_heap
+000005a0 R_386_32          s_heap
+00000820 R_386_32          s_snapshot_1
+00000824 R_386_32          s_snapshot_1
+00000828 R_386_32          s_snapshot_2
+0000082c R_386_32          s_snapshot_2
+00000830 R_386_32          s_snapshot_3
+00000834 R_386_32          s_snapshot_3
+00000838 R_386_32          s_snapshot_4
+0000083c R_386_32          s_snapshot_4
+00000840 R_386_32          s_snapshot_5
+00000844 R_386_32          s_snapshot_5
+
+
+RELOCATION RECORDS FOR [.text.nolibc_raise]:
+OFFSET   TYPE              VALUE
+00000004 R_386_PC32        .text
+0000000d R_386_PC32        .text
+
+
+RELOCATION RECORDS FOR [.text.nolibc_abort]:
+OFFSET   TYPE              VALUE
+00000004 R_386_PC32        .text
+0000000c R_386_PC32        .text
+
+
+RELOCATION RECORDS FOR [.debug_info]:
+OFFSET   TYPE              VALUE
+00000006 R_386_32          .debug_abbrev
+0000000c R_386_32          .debug_str
+00000011 R_386_32          .debug_str
+00000015 R_386_32          .debug_str
+00000019 R_386_32          .debug_ranges
+00000021 R_386_32          .debug_line
+00000028 R_386_32          .debug_str
+00000034 R_386_32          .debug_str
+0000003b R_386_32          .debug_str
+00000042 R_386_32          .debug_str
+00000047 R_386_32          .debug_str
+00000055 R_386_32          .debug_str
+00000061 R_386_32          .debug_str
+0000006f R_386_32          .debug_str
+00000074 R_386_32          .debug_str
+00000082 R_386_32          .debug_str
+00000087 R_386_32          .debug_str
+00000093 R_386_32          .debug_str
+000000a1 R_386_32          .debug_str
+000000a8 R_386_32          .debug_str
+000000b2 R_386_32          .debug_str
+000000be R_386_32          .debug_str
+000000ca R_386_32          .debug_str
+000000d6 R_386_32          .debug_str
+000000e2 R_386_32          .debug_str
+000000ee R_386_32          .debug_str
+000000fa R_386_32          .debug_str
+00000106 R_386_32          .debug_str
+00000112 R_386_32          .debug_str
+0000011e R_386_32          .debug_str
+0000012a R_386_32          .debug_str
+00000136 R_386_32          .debug_str
+00000142 R_386_32          .debug_str
+0000014e R_386_32          .debug_str
+0000015a R_386_32          .debug_str
+00000166 R_386_32          .debug_str
+00000172 R_386_32          .debug_str
+0000017e R_386_32          .debug_str
+0000018a R_386_32          .debug_str
+00000196 R_386_32          .debug_str
+000001af R_386_32          .debug_str
+000001b9 R_386_32          .debug_str
+000001c5 R_386_32          .debug_str
+000001d1 R_386_32          .debug_str
+000001dd R_386_32          .debug_str
+000001e9 R_386_32          .debug_str
+000001f5 R_386_32          .debug_str
+00000201 R_386_32          .debug_str
+0000020d R_386_32          .debug_str
+00000219 R_386_32          .debug_str
+00000225 R_386_32          .debug_str
+00000231 R_386_32          .debug_str
+0000023d R_386_32          .debug_str
+0000024a R_386_32          environ
+00000255 R_386_32          .debug_str
+00000262 R_386_32          _auxv
+0000029d R_386_32          .debug_str
+000002a9 R_386_32          .debug_str
+000002b5 R_386_32          .debug_str
+000002c1 R_386_32          .debug_str
+000002e9 R_386_32          .debug_str
+000002f5 R_386_32          .debug_str
+00000301 R_386_32          .debug_str
+0000030e R_386_32          .debug_str
+0000031b R_386_32          .debug_str
+00000328 R_386_32          .debug_str
+00000336 R_386_32          .debug_str
+00000344 R_386_32          .debug_str
+00000351 R_386_32          .debug_str
+0000035e R_386_32          .debug_str
+0000036b R_386_32          .debug_str
+00000378 R_386_32          .debug_str
+00000385 R_386_32          .debug_str
+00000392 R_386_32          .debug_str
+0000039f R_386_32          .debug_str
+000003ac R_386_32          .debug_str
+000003b9 R_386_32          .debug_str
+000003c6 R_386_32          .debug_str
+000003d3 R_386_32          .debug_str
+000003e0 R_386_32          .debug_str
+000003ed R_386_32          .debug_str
+000003fa R_386_32          .debug_str
+00000407 R_386_32          .debug_str
+00000414 R_386_32          .debug_str
+00000421 R_386_32          .debug_str
+0000042e R_386_32          .debug_str
+0000043b R_386_32          .debug_str
+00000448 R_386_32          .debug_str
+00000455 R_386_32          .debug_str
+00000462 R_386_32          .debug_str
+0000046f R_386_32          .debug_str
+0000049d R_386_32          .debug_str
+000004aa R_386_32          .debug_str
+000004b7 R_386_32          .debug_str
+000004c5 R_386_32          .debug_str
+000004d2 R_386_32          .debug_str
+000004df R_386_32          .debug_str
+000004f2 R_386_32          .debug_str
+000004ff R_386_32          .debug_str
+0000050c R_386_32          .debug_str
+0000051a R_386_32          .debug_str
+00000527 R_386_32          .debug_str
+00000534 R_386_32          .debug_str
+00000547 R_386_32          .debug_str
+00000554 R_386_32          .debug_str
+00000561 R_386_32          .debug_str
+0000056f R_386_32          .debug_str
+0000057c R_386_32          .debug_str
+00000589 R_386_32          .debug_str
+00000596 R_386_32          .debug_str
+000005a3 R_386_32          .debug_str
+000005b0 R_386_32          .debug_str
+000005d6 R_386_32          .debug_str
+000005e2 R_386_32          .debug_str
+000005f8 R_386_32          .debug_str
+00000604 R_386_32          .debug_str
+0000061a R_386_32          .debug_str
+00000626 R_386_32          .debug_str
+00000633 R_386_32          .debug_str
+00000640 R_386_32          .debug_str
+0000064d R_386_32          .debug_str
+0000065a R_386_32          .debug_str
+00000667 R_386_32          .debug_str
+00000674 R_386_32          .debug_str
+00000681 R_386_32          .debug_str
+0000068e R_386_32          .debug_str
+0000069b R_386_32          .debug_str
+000006a8 R_386_32          .debug_str
+000006b5 R_386_32          .debug_str
+000006d5 R_386_32          .debug_str
+000006e1 R_386_32          .debug_str
+000006ed R_386_32          .debug_str
+00000703 R_386_32          .debug_str
+00000710 R_386_32          .debug_str
+0000071c R_386_32          .debug_str
+00000729 R_386_32          .debug_str
+0000073e R_386_32          .debug_str
+0000074b R_386_32          .debug_str
+00000762 R_386_32          .debug_str
+0000076f R_386_32          .debug_str
+0000077c R_386_32          .debug_str
+00000789 R_386_32          .debug_str
+000007a0 R_386_32          .debug_str
+000007ad R_386_32          .debug_str
+000007ba R_386_32          .debug_str
+000007d1 R_386_32          .debug_str
+000007de R_386_32          .debug_str
+000007eb R_386_32          .debug_str
+000007f8 R_386_32          .debug_str
+00000805 R_386_32          .debug_str
+0000081c R_386_32          .debug_str
+00000829 R_386_32          .debug_str
+00000836 R_386_32          .debug_str
+0000085d R_386_32          .debug_str
+0000086a R_386_32          .debug_str
+00000881 R_386_32          .debug_str
+0000088e R_386_32          .debug_str
+0000089b R_386_32          .debug_str
+000008b2 R_386_32          .debug_str
+000008be R_386_32          .debug_str
+000008ca R_386_32          .debug_str
+000008d6 R_386_32          .debug_str
+000008e2 R_386_32          .debug_str
+000008f8 R_386_32          .debug_str
+00000915 R_386_32          .debug_str
+00000939 R_386_32          .debug_str
+00000946 R_386_32          .debug_str
+00000953 R_386_32          .debug_str
+00000961 R_386_32          .debug_str
+0000096e R_386_32          .debug_str
+0000097a R_386_32          .debug_str
+00000992 R_386_32          .debug_str
+0000099e R_386_32          .debug_str
+000009aa R_386_32          .debug_str
+000009b6 R_386_32          .debug_str
+000009cc R_386_32          .debug_str
+000009d9 R_386_32          .debug_str
+000009e6 R_386_32          .debug_str
+000009f3 R_386_32          .debug_str
+00000a0f R_386_32          .debug_str
+00000a2c R_386_32          .debug_str
+00000a42 R_386_32          .debug_str
+00000a50 R_386_32          .debug_str
+00000a7a R_386_32          .debug_str
+00000a87 R_386_32          .debug_str
+00000a94 R_386_32          .debug_str
+00000ab2 R_386_32          .debug_str
+00000ac0 R_386_32          .debug_str
+00000ace R_386_32          .debug_str
+00000adc R_386_32          .debug_str
+00000aea R_386_32          .debug_str
+00000af9 R_386_32          .debug_str
+00000b06 R_386_32          errno
+00000b0b R_386_32          .debug_str
+00000b18 R_386_32          .debug_str
+00000b21 R_386_32          .debug_str
+00000b2e R_386_32          .debug_str
+00000b3b R_386_32          .debug_str
+00000b48 R_386_32          .debug_str
+00000b55 R_386_32          .debug_str
+00000b62 R_386_32          .debug_str
+00000b6f R_386_32          .debug_str
+00000b7c R_386_32          .debug_str
+00000b89 R_386_32          .debug_str
+00000b96 R_386_32          .debug_str
+00000ba3 R_386_32          .debug_str
+00000bb0 R_386_32          .debug_str
+00000bbd R_386_32          .debug_str
+00000bca R_386_32          .debug_str
+00000bd7 R_386_32          .debug_str
+00000be4 R_386_32          .debug_str
+00000bf1 R_386_32          .debug_str
+00000bff R_386_32          .debug_str
+00000c0c R_386_32          .debug_str
+00000c19 R_386_32          .debug_str
+00000c2c R_386_32          .debug_str
+00000c39 R_386_32          .debug_str
+00000c46 R_386_32          .debug_str
+00000c80 R_386_32          .debug_str
+00000c8c R_386_32          .debug_str
+00000c99 R_386_32          .debug_str
+00000ca6 R_386_32          .debug_str
+00000cc9 R_386_32          .debug_str
+00000cd7 R_386_32          .debug_str
+00000ce4 R_386_32          .debug_str
+00000cf1 R_386_32          .debug_str
+00000cfe R_386_32          .debug_str
+00000d0b R_386_32          .debug_str
+00000d19 R_386_32          .debug_str
+00000d28 R_386_32          .debug_str
+00000d43 R_386_32          .debug_str
+00000d62 R_386_32          .debug_str
+00000d6f R_386_32          .bss
+00000d74 R_386_32          .debug_str
+00000d81 R_386_32          .debug_str
+00000d9f R_386_32          .debug_str
+00000dab R_386_32          .debug_str
+00000db8 R_386_32          .rodata
+00000dc8 R_386_32          .debug_str
+00000dd5 R_386_32          .rodata
+00000dda R_386_32          .debug_str
+00000de7 R_386_32          .rodata
+00000dec R_386_32          .debug_str
+00000e1d R_386_32          .debug_str
+00000e2b R_386_32          .debug_str
+00000e38 R_386_32          .debug_str
+00000e5f R_386_32          .debug_str
+00000e79 R_386_32          .debug_str
+00000e86 R_386_32          optarg
+00000e8b R_386_32          .debug_str
+00000e98 R_386_32          optind
+00000e9d R_386_32          .debug_str
+00000eaa R_386_32          opterr
+00000eaf R_386_32          .debug_str
+00000ebc R_386_32          optopt
+00000ec1 R_386_32          .debug_str
+00000eda R_386_32          .debug_str
+00000ee7 R_386_32          .debug_str
+00000ef5 R_386_32          .debug_str
+00000f01 R_386_32          .debug_str
+00000f0e R_386_32          .debug_str
+00000f1b R_386_32          .debug_str
+00000f39 R_386_32          .debug_str
+00000f45 R_386_32          .debug_str
+00000f63 R_386_32          .debug_str
+00000f70 R_386_32          s_heap
+00000f75 R_386_32          .debug_str
+00000f82 R_386_32          .debug_str
+00000f8f R_386_32          .debug_str
+00000fad R_386_32          .debug_str
+00000fba R_386_32          .debug_str
+00000fc7 R_386_32          .debug_str
+00000fe5 R_386_32          .debug_str
+00000ff2 R_386_32          .debug_str
+00000fff R_386_32          .debug_str
+0000101d R_386_32          .debug_str
+0000102a R_386_32          .debug_str
+00001037 R_386_32          .debug_str
+00001055 R_386_32          .debug_str
+00001063 R_386_32          .debug_str
+00001070 R_386_32          .debug_str
+0000108f R_386_32          .debug_str
+0000109d R_386_32          .debug_str
+000010b0 R_386_32          .debug_str
+000010be R_386_32          .debug_str
+000010cb R_386_32          .debug_str
+000010d8 R_386_32          .debug_str
+000010e5 R_386_32          .debug_str
+000010f2 R_386_32          .debug_str
+000010ff R_386_32          .debug_str
+0000110c R_386_32          .debug_str
+0000111a R_386_32          .debug_str
+0000112e R_386_32          .debug_str
+0000113c R_386_32          .debug_str
+00001149 R_386_32          .debug_str
+00001156 R_386_32          .debug_str
+00001163 R_386_32          .debug_str
+00001170 R_386_32          .debug_str
+0000117d R_386_32          .debug_str
+0000118a R_386_32          .debug_str
+00001198 R_386_32          .debug_str
+000011ac R_386_32          .debug_str
+000011ba R_386_32          .debug_str
+000011c7 R_386_32          .debug_str
+000011d4 R_386_32          .debug_str
+000011e1 R_386_32          .debug_str
+000011f4 R_386_32          .debug_str
+00001202 R_386_32          .debug_str
+00001215 R_386_32          .debug_str
+00001222 R_386_32          s_snapshot_1
+00001227 R_386_32          .debug_str
+00001234 R_386_32          s_snapshot_2
+00001239 R_386_32          .debug_str
+00001246 R_386_32          s_snapshot_3
+0000124b R_386_32          .debug_str
+00001258 R_386_32          s_snapshot_4
+0000125d R_386_32          .debug_str
+0000126a R_386_32          s_snapshot_5
+0000126f R_386_32          .debug_str
+0000127c R_386_32          .debug_str
+000012b7 R_386_32          .debug_str
+000012c4 R_386_32          s_heap_ranges
+000012c9 R_386_32          .debug_str
+000012e0 R_386_32          .debug_str
+000012f7 R_386_32          .debug_str
+00001312 R_386_32          .debug_str
+00001319 R_386_32          .debug_str
+00001336 R_386_32          .debug_str
+00001341 R_386_32          .text
+00001350 R_386_32          .debug_str
+0000135f R_386_32          .debug_str
+0000139b R_386_32          .debug_str
+000013a6 R_386_32          .text
+000013b5 R_386_32          .debug_str
+000013c4 R_386_32          .debug_str
+000013d3 R_386_32          .debug_str
+000013f2 R_386_32          .debug_str
+000013fd R_386_32          .text
+0000141b R_386_32          .debug_str
+0000142a R_386_32          .debug_str
+00001439 R_386_32          .debug_ranges
+0000143e R_386_32          .debug_str
+00001455 R_386_32          .debug_str
+00001460 R_386_32          .text
+0000147e R_386_32          .debug_str
+0000148d R_386_32          .debug_str
+000014a9 R_386_32          .text
+000014b2 R_386_32          .debug_str
+000014c1 R_386_32          .debug_str
+000014cf R_386_32          .debug_str
+000014dd R_386_32          .debug_str
+000014eb R_386_32          .debug_str
+000014f9 R_386_32          .debug_str
+00001507 R_386_32          .debug_str
+00001517 R_386_32          .debug_str
+00001522 R_386_32          .text
+00001531 R_386_32          .debug_str
+00001540 R_386_32          .debug_str
+0000154f R_386_32          .debug_str
+0000155e R_386_32          .debug_str
+0000156b R_386_32          .bss
+00001597 R_386_32          .debug_str
+000015ad R_386_32          .debug_str
+000015b8 R_386_32          .text
+000015c7 R_386_32          .debug_str
+000015d6 R_386_32          .debug_str
+000015e5 R_386_32          .debug_str
+00001605 R_386_32          .debug_str
+00001668 R_386_32          .debug_str
+00001673 R_386_32          .text
+00001682 R_386_32          .debug_str
+0000169f R_386_32          .debug_str
+000016aa R_386_32          .text
+000016b9 R_386_32          .debug_str
+000016d7 R_386_32          .debug_str
+000016e2 R_386_32          .text
+00001700 R_386_32          .debug_str
+00001707 R_386_32          .text
+00001712 R_386_32          .debug_str
+0000171e R_386_32          .text
+0000172d R_386_32          .debug_str
+0000174b R_386_32          .data
+00001761 R_386_32          .debug_str
+0000176d R_386_32          .text
+0000177c R_386_32          .debug_str
+0000179c R_386_32          .debug_str
+000017ac R_386_32          .debug_str
+000017bd R_386_32          .debug_str
+000017c5 R_386_32          .text
+000017e5 R_386_32          .debug_str
+000017f1 R_386_32          .text
+00001810 R_386_32          .debug_str
+00001821 R_386_32          .debug_str
+00001842 R_386_32          .debug_str
+0000184e R_386_32          .text
+0000186d R_386_32          .debug_str
+0000187d R_386_32          .debug_str
+0000188d R_386_32          .debug_str
+0000189d R_386_32          .debug_str
+000018ad R_386_32          .debug_str
+000018bd R_386_32          .debug_str
+000018cd R_386_32          .debug_str
+000018dd R_386_32          .debug_str
+000018ed R_386_32          .debug_str
+000018f5 R_386_32          .text
+000018fb R_386_32          .debug_str
+00001907 R_386_32          .text
+00001937 R_386_32          .debug_str
+00001958 R_386_32          .debug_str
+00001964 R_386_32          .text
+00001993 R_386_32          .debug_str
+000019a4 R_386_32          .debug_str
+000019b0 R_386_32          .text
+000019cf R_386_32          .debug_str
+000019f0 R_386_32          .debug_str
+00001a11 R_386_32          .debug_str
+00001a1d R_386_32          .text
+00001a3c R_386_32          .debug_str
+00001a5c R_386_32          .debug_str
+00001a6c R_386_32          .debug_str
+00001a8d R_386_32          .debug_str
+00001a99 R_386_32          .text
+00001aa8 R_386_32          .debug_str
+00001ac8 R_386_32          .debug_str
+00001ad8 R_386_32          .debug_str
+00001ae9 R_386_32          .debug_str
+00001af5 R_386_32          .text
+00001b24 R_386_32          .debug_str
+00001b45 R_386_32          .debug_str
+00001b51 R_386_32          .text
+00001b7f R_386_32          .debug_str
+00001b8f R_386_32          .debug_str
+00001ba0 R_386_32          .debug_str
+00001bac R_386_32          .text
+00001bcc R_386_32          .debug_str
+00001bed R_386_32          .debug_str
+00001bf9 R_386_32          .text
+00001c08 R_386_32          .debug_str
+00001c29 R_386_32          .debug_str
+00001c4a R_386_32          .debug_str
+00001c56 R_386_32          .text
+00001c75 R_386_32          .debug_str
+00001c86 R_386_32          .debug_str
+00001c92 R_386_32          .text
+00001ca1 R_386_32          .debug_str
+00001cc1 R_386_32          .debug_str
+00001cd2 R_386_32          .debug_str
+00001cde R_386_32          .text
+00001ced R_386_32          .debug_str
+00001d0d R_386_32          .debug_str
+00001d1e R_386_32          .debug_str
+00001d29 R_386_32          .text
+00001d46 R_386_32          .debug_str
+00001d71 R_386_32          .debug_str
+00001d80 R_386_32          .debug_str
+00001d8f R_386_32          .debug_str
+00001db8 R_386_32          .debug_str
+00001dc7 R_386_32          .debug_str
+00001e04 R_386_32          .debug_str
+00001e15 R_386_32          .debug_str
+00001e25 R_386_32          .debug_str
+00001e2d R_386_32          .text
+00001e32 R_386_32          .debug_str
+00001e3a R_386_32          .text
+00001e3f R_386_32          .text
+00001e5a R_386_32          .debug_str
+00001e65 R_386_32          .text
+00001e81 R_386_32          .debug_str
+00001e90 R_386_32          .debug_str
+00001ebc R_386_32          .debug_str
+00001ec7 R_386_32          .text
+00001ee4 R_386_32          .debug_str
+00001eef R_386_32          .text
+00001f0b R_386_32          .debug_str
+00001f1b R_386_32          .debug_str
+00001f26 R_386_32          .text
+00001f42 R_386_32          .debug_str
+00001f51 R_386_32          .debug_str
+00001f60 R_386_32          .debug_str
+00001f6f R_386_32          .debug_str
+00001f86 R_386_32          .debug_str
+00001f91 R_386_32          .text
+00001faf R_386_32          .debug_str
+00001fbe R_386_32          .debug_str
+00001feb R_386_32          .debug_str
+00001ff6 R_386_32          .text
+00002013 R_386_32          .debug_str
+0000201e R_386_32          .text
+0000203a R_386_32          .debug_str
+00002058 R_386_32          .debug_str
+00002063 R_386_32          .text
+0000206e R_386_32          .debug_str
+00002079 R_386_32          .text
+00002088 R_386_32          .debug_str
+000020a6 R_386_32          .debug_str
+000020b1 R_386_32          .text
+000020c0 R_386_32          .debug_str
+000020dd R_386_32          .debug_str
+000020e8 R_386_32          .text
+000020f7 R_386_32          .debug_str
+00002114 R_386_32          .debug_str
+0000211f R_386_32          .text
+0000212e R_386_32          .debug_str
+0000214b R_386_32          .debug_str
+00002156 R_386_32          .text
+00002165 R_386_32          .debug_str
+00002174 R_386_32          .debug_str
+00002183 R_386_32          .debug_str
+000021a1 R_386_32          .debug_str
+000021ac R_386_32          .text
+000021c9 R_386_32          .debug_str
+000021d9 R_386_32          .debug_str
+000021e5 R_386_32          .text
+000021f4 R_386_32          .debug_str
+00002204 R_386_32          .debug_str
+00002214 R_386_32          .debug_str
+00002225 R_386_32          .debug_str
+00002231 R_386_32          .text
+00002240 R_386_32          .debug_str
+00002250 R_386_32          .debug_str
+00002260 R_386_32          .debug_str
+00002271 R_386_32          .debug_str
+0000227d R_386_32          .text
+0000228c R_386_32          .debug_str
+0000229c R_386_32          .debug_str
+000022ac R_386_32          .debug_str
+000022bd R_386_32          .debug_str
+000022c9 R_386_32          .text
+000022d8 R_386_32          .debug_str
+000022e8 R_386_32          .debug_str
+000022f8 R_386_32          .debug_str
+00002309 R_386_32          .debug_str
+00002315 R_386_32          .text
+00002324 R_386_32          .debug_str
+00002334 R_386_32          .debug_str
+00002344 R_386_32          .debug_str
+00002355 R_386_32          .debug_str
+00002361 R_386_32          .text
+00002370 R_386_32          .debug_str
+00002380 R_386_32          .debug_str
+00002390 R_386_32          .debug_str
+000023a1 R_386_32          .debug_str
+000023ad R_386_32          .text
+000023bc R_386_32          .debug_str
+000023cc R_386_32          .debug_str
+000023dc R_386_32          .debug_str
+000023ec R_386_32          .debug_str
+000023fd R_386_32          .debug_str
+0000240e R_386_32          .debug_str
+0000242e R_386_32          .debug_str
+0000244e R_386_32          .debug_str
+0000245e R_386_32          .debug_str
+00002484 R_386_32          .text
+0000248a R_386_32          .debug_str
+00002496 R_386_32          .text
+000024b4 R_386_32          .debug_str
+000024e5 R_386_32          .debug_str
+000024f1 R_386_32          .text
+0000250f R_386_32          .debug_str
+0000252f R_386_32          .debug_str
+00002560 R_386_32          .debug_str
+0000256c R_386_32          .text
+0000258a R_386_32          .debug_str
+000025aa R_386_32          .debug_str
+000025ca R_386_32          .text
+000025e3 R_386_32          .debug_str
+000025ef R_386_32          .text
+0000260d R_386_32          .debug_str
+0000263e R_386_32          .debug_str
+00002649 R_386_32          .text
+00002666 R_386_32          .debug_str
+00002684 R_386_32          .debug_str
+000026b2 R_386_32          .debug_str
+000026bd R_386_32          .text
+000026da R_386_32          .debug_str
+000026f8 R_386_32          .debug_str
+00002717 R_386_32          .debug_str
+00002722 R_386_32          .text
+00002731 R_386_32          .debug_str
+00002740 R_386_32          .debug_str
+0000274f R_386_32          .debug_str
+0000275e R_386_32          .debug_str
+0000277c R_386_32          .text
+00002785 R_386_32          .debug_str
+000027a2 R_386_32          .debug_str
+000027ad R_386_32          .text
+000027bc R_386_32          .debug_str
+000027cb R_386_32          .debug_str
+000027e8 R_386_32          .debug_str
+000027f3 R_386_32          .text
+00002811 R_386_32          .debug_str
+00002821 R_386_32          .debug_str
+0000282c R_386_32          .text
+0000283b R_386_32          .debug_str
+00002867 R_386_32          .debug_str
+0000286e R_386_32          .text
+0000288c R_386_32          .debug_str
+0000289b R_386_32          .text
+000028a4 R_386_32          .debug_str
+000028b5 R_386_32          .debug_str
+000028c0 R_386_32          .text
+000028dd R_386_32          .debug_str
+000028e8 R_386_32          .text
+00002930 R_386_32          .debug_str
+00002937 R_386_32          .text.nolibc_abort
+00002942 R_386_32          .debug_str
+0000294e R_386_32          .text
+0000296c R_386_32          .debug_str
+00002978 R_386_32          .text
+00002996 R_386_32          .debug_str
+000029a2 R_386_32          .text
+000029b1 R_386_32          .debug_str
+000029c1 R_386_32          .debug_str
+000029d1 R_386_32          .debug_str
+000029e1 R_386_32          .debug_str
+000029f2 R_386_32          .debug_str
+000029fe R_386_32          .text
+00002a3a R_386_32          .debug_str
+00002a46 R_386_32          .text
+00002a75 R_386_32          .debug_str
+00002a96 R_386_32          .debug_str
+00002aa2 R_386_32          .text
+00002acd R_386_32          .debug_str
+00002aeb R_386_32          .debug_str
+00002afc R_386_32          .debug_str
+00002b08 R_386_32          .text
+00002b37 R_386_32          .debug_str
+00002b47 R_386_32          .debug_str
+00002b58 R_386_32          .debug_str
+00002b63 R_386_32          .text
+00002b90 R_386_32          .debug_str
+00002baf R_386_32          .debug_str
+00002bba R_386_32          .text
+00002be7 R_386_32          .debug_str
+00002c06 R_386_32          .debug_str
+00002c11 R_386_32          .text
+00002c2f R_386_32          .debug_str
+00002c5d R_386_32          .debug_str
+00002c68 R_386_32          .text
+00002ca5 R_386_32          .debug_str
+00002cb0 R_386_32          .text
+00002cce R_386_32          .debug_str
+00002ced R_386_32          .debug_str
+00002cf8 R_386_32          .text.nolibc_strlen
+00002d26 R_386_32          .debug_str
+00002d31 R_386_32          .text
+00002d6e R_386_32          .debug_str
+00002d79 R_386_32          .text
+00002daf R_386_32          .debug_str
+00002dbf R_386_32          .debug_str
+00002dca R_386_32          .text
+00002df4 R_386_32          .debug_str
+00002dff R_386_32          .text
+00002e45 R_386_32          .debug_str
+00002e50 R_386_32          .text.nolibc_memset
+00002e98 R_386_32          .debug_str
+00002ea3 R_386_32          .text.nolibc_memcpy
+00002eef R_386_32          .debug_str
+00002efa R_386_32          .text.nolibc_memmove
+00002f55 R_386_32          .debug_str
+00002f60 R_386_32          .text
+00002fb6 R_386_32          .debug_str
+00002fc1 R_386_32          .text
+00002fd0 R_386_32          .debug_str
+00002fdf R_386_32          .debug_str
+00002fef R_386_32          .debug_str
+00002ffe R_386_32          .text
+0000300b R_386_32          .debug_str
+0000301b R_386_32          .debug_ranges
+00003020 R_386_32          .debug_str
+00003031 R_386_32          .debug_str
+0000303c R_386_32          .text
+0000304b R_386_32          .debug_str
+0000305a R_386_32          .debug_str
+00003069 R_386_32          .debug_str
+00003078 R_386_32          .text
+00003081 R_386_32          .debug_str
+00003090 R_386_32          .debug_str
+0000309e R_386_32          .debug_str
+000030ac R_386_32          .debug_str
+000030ba R_386_32          .debug_str
+000030c8 R_386_32          .debug_str
+000030d8 R_386_32          .debug_str
+000030e3 R_386_32          .text
+000030f2 R_386_32          .debug_str
+00003101 R_386_32          .debug_str
+00003110 R_386_32          .debug_str
+00003120 R_386_32          .debug_str
+0000312f R_386_32          .text
+0000313c R_386_32          .debug_str
+0000314c R_386_32          .debug_ranges
+00003151 R_386_32          .debug_str
+00003162 R_386_32          .debug_str
+0000316d R_386_32          .text
+0000317c R_386_32          .debug_str
+0000318b R_386_32          .debug_str
+0000319a R_386_32          .debug_str
+000031a9 R_386_32          .debug_str
+000031b8 R_386_32          .text
+000031c1 R_386_32          .debug_str
+000031d0 R_386_32          .debug_str
+000031de R_386_32          .debug_str
+000031ec R_386_32          .debug_str
+000031fa R_386_32          .debug_str
+00003208 R_386_32          .debug_str
+00003218 R_386_32          .debug_str
+00003223 R_386_32          .text
+0000324f R_386_32          .debug_ranges
+00003254 R_386_32          .debug_str
+00003265 R_386_32          .debug_str
+00003270 R_386_32          .text
+0000327f R_386_32          .debug_str
+0000328e R_386_32          .debug_str
+0000329e R_386_32          .debug_str
+000032a9 R_386_32          .text
+000032b8 R_386_32          .debug_str
+000032c7 R_386_32          .debug_str
+000032d7 R_386_32          .debug_str
+000032e2 R_386_32          .text
+000032f1 R_386_32          .debug_str
+00003300 R_386_32          .debug_str
+00003310 R_386_32          .debug_str
+0000331b R_386_32          .text
+0000332a R_386_32          .debug_str
+00003339 R_386_32          .debug_str
+00003349 R_386_32          .debug_str
+00003354 R_386_32          .text
+00003371 R_386_32          .debug_str
+00003380 R_386_32          .debug_str
+0000338f R_386_32          .debug_str
+0000339e R_386_32          .debug_ranges
+000033a3 R_386_32          .debug_str
+000033b4 R_386_32          .debug_str
+000033bf R_386_32          .text
+000033dc R_386_32          .debug_str
+000033eb R_386_32          .debug_str
+000033fa R_386_32          .debug_str
+00003409 R_386_32          .text
+00003412 R_386_32          .debug_str
+00003421 R_386_32          .debug_str
+0000342f R_386_32          .debug_str
+0000343d R_386_32          .debug_str
+0000344b R_386_32          .debug_str
+00003459 R_386_32          .debug_str
+00003469 R_386_32          .debug_str
+00003474 R_386_32          .text.nolibc_raise
+00003483 R_386_32          .debug_str
+00003493 R_386_32          .debug_str
+0000349e R_386_32          .text
+000034ad R_386_32          .debug_str
+000034bc R_386_32          .debug_ranges
+000034c1 R_386_32          .debug_str
+000034d2 R_386_32          .debug_str
+000034dd R_386_32          .text
+000034ec R_386_32          .debug_str
+000034fb R_386_32          .text
+00003504 R_386_32          .debug_str
+00003513 R_386_32          .debug_str
+00003521 R_386_32          .debug_str
+00003531 R_386_32          .debug_str
+0000353c R_386_32          .text
+00003559 R_386_32          .debug_str
+00003568 R_386_32          .debug_ranges
+0000356d R_386_32          .debug_str
+0000357e R_386_32          .debug_str
+00003589 R_386_32          .text
+000035a6 R_386_32          .debug_str
+000035b5 R_386_32          .text
+000035be R_386_32          .debug_str
+000035cd R_386_32          .debug_str
+000035db R_386_32          .debug_str
+000035e9 R_386_32          .debug_str
+000035f9 R_386_32          .debug_str
+00003604 R_386_32          .text
+00003621 R_386_32          .debug_str
+0000362c R_386_32          .text
+00003649 R_386_32          .debug_str
+00003654 R_386_32          .text
+00003671 R_386_32          .debug_str
+0000367c R_386_32          .text
+00003699 R_386_32          .debug_str
+000036a4 R_386_32          .text
+000036c1 R_386_32          .debug_str
+000036cc R_386_32          .text
+000036e9 R_386_32          .debug_str
+000036f4 R_386_32          .text
+00003711 R_386_32          .debug_str
+0000371c R_386_32          .text
+00003739 R_386_32          .debug_str
+00003744 R_386_32          .text
+00003761 R_386_32          .debug_str
+0000376c R_386_32          .text
+00003789 R_386_32          .debug_str
+00003794 R_386_32          .text
+000037b1 R_386_32          .debug_str
+000037bc R_386_32          .text
+000037d9 R_386_32          .debug_str
+000037e4 R_386_32          .text
+00003801 R_386_32          .debug_str
+0000380c R_386_32          .text
+0000381b R_386_32          .debug_str
+00003831 R_386_32          .debug_str
+0000383c R_386_32          .text
+0000385a R_386_32          .debug_str
+00003869 R_386_32          .debug_str
+00003878 R_386_32          .debug_str
+00003896 R_386_32          .debug_str
+000038b5 R_386_32          .debug_str
+000038c0 R_386_32          .text
+000038cf R_386_32          .debug_str
+000038ed R_386_32          .debug_str
+000038fc R_386_32          .debug_str
+0000390b R_386_32          .debug_ranges
+00003910 R_386_32          .debug_str
+00003927 R_386_32          .debug_str
+00003932 R_386_32          .text
+00003941 R_386_32          .debug_str
+0000395f R_386_32          .debug_str
+0000396e R_386_32          .debug_str
+0000397d R_386_32          .debug_str
+0000398c R_386_32          .text
+00003995 R_386_32          .debug_str
+000039a4 R_386_32          .debug_str
+000039b2 R_386_32          .debug_str
+000039c0 R_386_32          .debug_str
+000039ce R_386_32          .debug_str
+000039dc R_386_32          .debug_str
+000039ea R_386_32          .debug_str
+00003a00 R_386_32          .debug_str
+00003a0b R_386_32          .text
+00003a29 R_386_32          .debug_ranges
+00003a2e R_386_32          .debug_str
+00003a45 R_386_32          .debug_str
+00003a50 R_386_32          .text
+00003a6e R_386_32          .text
+00003a77 R_386_32          .debug_str
+00003a86 R_386_32          .debug_str
+00003a94 R_386_32          .debug_str
+00003aa4 R_386_32          .debug_str
+00003aaf R_386_32          .text
+00003acc R_386_32          .debug_str
+00003adb R_386_32          .debug_str
+00003aea R_386_32          .debug_ranges
+00003aef R_386_32          .debug_str
+00003b06 R_386_32          .debug_str
+00003b11 R_386_32          .text
+00003b2e R_386_32          .debug_str
+00003b3d R_386_32          .debug_str
+00003b4c R_386_32          .text
+00003b55 R_386_32          .debug_str
+00003b64 R_386_32          .debug_str
+00003b72 R_386_32          .debug_str
+00003b80 R_386_32          .debug_str
+00003b8e R_386_32          .debug_str
+00003b9e R_386_32          .debug_str
+00003ba9 R_386_32          .text
+00003bc6 R_386_32          .debug_str
+00003bd5 R_386_32          .debug_str
+00003be4 R_386_32          .debug_ranges
+00003be9 R_386_32          .debug_str
+00003bfa R_386_32          .debug_str
+00003c05 R_386_32          .text
+00003c22 R_386_32          .debug_str
+00003c31 R_386_32          .debug_str
+00003c40 R_386_32          .text
+00003c49 R_386_32          .debug_str
+00003c58 R_386_32          .debug_str
+00003c66 R_386_32          .debug_str
+00003c74 R_386_32          .debug_str
+00003c82 R_386_32          .debug_str
+00003c92 R_386_32          .debug_str
+00003c9d R_386_32          .text
+00003cba R_386_32          .debug_str
+00003cc9 R_386_32          .debug_str
+00003cd8 R_386_32          .debug_str
+00003ce7 R_386_32          .debug_ranges
+00003cec R_386_32          .debug_str
+00003d09 R_386_32          .debug_str
+00003d14 R_386_32          .text
+00003d31 R_386_32          .debug_str
+00003d40 R_386_32          .debug_str
+00003d4f R_386_32          .debug_str
+00003d5e R_386_32          .text
+00003d67 R_386_32          .debug_str
+00003d76 R_386_32          .debug_str
+00003d84 R_386_32          .debug_str
+00003d92 R_386_32          .debug_str
+00003da0 R_386_32          .debug_str
+00003dae R_386_32          .debug_str
+00003dbe R_386_32          .debug_str
+00003dc9 R_386_32          .text
+00003de6 R_386_32          .debug_str
+00003df5 R_386_32          .debug_ranges
+00003dfa R_386_32          .debug_str
+00003e0b R_386_32          .debug_str
+00003e16 R_386_32          .text
+00003e33 R_386_32          .debug_str
+00003e42 R_386_32          .text
+00003e4b R_386_32          .debug_str
+00003e5a R_386_32          .debug_str
+00003e68 R_386_32          .debug_str
+00003e76 R_386_32          .debug_str
+00003e86 R_386_32          .debug_str
+00003e91 R_386_32          .text
+00003ea0 R_386_32          .debug_str
+00003eaf R_386_32          .debug_str
+00003ebe R_386_32          .debug_ranges
+00003ec3 R_386_32          .debug_str
+00003ed4 R_386_32          .debug_str
+00003edf R_386_32          .text
+00003eee R_386_32          .debug_str
+00003efd R_386_32          .debug_str
+00003f0c R_386_32          .text
+00003f15 R_386_32          .debug_str
+00003f24 R_386_32          .debug_str
+00003f32 R_386_32          .debug_str
+00003f40 R_386_32          .debug_str
+00003f50 R_386_32          .debug_str
+00003f5b R_386_32          .text
+00003f6a R_386_32          .debug_str
+00003f79 R_386_32          .debug_str
+00003f88 R_386_32          .debug_str
+00003f97 R_386_32          .debug_str
+00003fa6 R_386_32          .debug_ranges
+00003fab R_386_32          .debug_str
+00003fbc R_386_32          .debug_str
+00003fc7 R_386_32          .text
+00003fd6 R_386_32          .debug_str
+00003fe5 R_386_32          .debug_str
+00003ff4 R_386_32          .debug_str
+00004003 R_386_32          .debug_str
+00004012 R_386_32          .text
+0000401b R_386_32          .debug_str
+0000402a R_386_32          .debug_str
+00004038 R_386_32          .debug_str
+00004046 R_386_32          .debug_str
+00004054 R_386_32          .debug_str
+00004062 R_386_32          .debug_str
+00004072 R_386_32          .debug_str
+0000407d R_386_32          .text
+0000408c R_386_32          .debug_str
+0000409b R_386_32          .debug_str
+000040aa R_386_32          .debug_ranges
+000040af R_386_32          .debug_str
+000040c0 R_386_32          .debug_str
+000040cb R_386_32          .text
+000040da R_386_32          .debug_str
+000040e9 R_386_32          .debug_str
+000040f8 R_386_32          .text
+00004101 R_386_32          .debug_str
+00004110 R_386_32          .debug_str
+0000411e R_386_32          .debug_str
+0000412c R_386_32          .debug_str
+0000413c R_386_32          .debug_str
+00004147 R_386_32          .text
+00004156 R_386_32          .debug_str
+00004165 R_386_32          .debug_ranges
+0000416a R_386_32          .debug_str
+0000417b R_386_32          .debug_str
+00004186 R_386_32          .text
+00004195 R_386_32          .debug_str
+000041a4 R_386_32          .text
+000041ad R_386_32          .debug_str
+000041bc R_386_32          .debug_str
+000041ca R_386_32          .debug_str
+000041da R_386_32          .debug_str
+000041e5 R_386_32          .text
+000041f4 R_386_32          .debug_str
+00004212 R_386_32          .debug_str
+00004221 R_386_32          .debug_ranges
+00004226 R_386_32          .debug_str
+00004243 R_386_32          .debug_str
+0000424e R_386_32          .text
+0000425d R_386_32          .debug_str
+0000427b R_386_32          .debug_str
+0000428a R_386_32          .text
+00004293 R_386_32          .debug_str
+000042a2 R_386_32          .debug_str
+000042b0 R_386_32          .debug_str
+000042be R_386_32          .debug_str
+000042cc R_386_32          .debug_str
+000042dc R_386_32          .debug_str
+000042e7 R_386_32          .text
+000042f6 R_386_32          .debug_str
+0000431a R_386_32          .debug_str
+00004325 R_386_32          .text
+00004334 R_386_32          .debug_str
+00004343 R_386_32          .debug_str
+00004352 R_386_32          .debug_str
+00004361 R_386_32          .debug_str
+0000437d R_386_32          .debug_str
+00004388 R_386_32          .text
+00004397 R_386_32          .debug_str
+000043a6 R_386_32          .debug_str
+000043b5 R_386_32          .debug_str
+000043c4 R_386_32          .debug_str
+000043d3 R_386_32          .text
+000043dc R_386_32          .debug_str
+000043eb R_386_32          .debug_str
+000043f9 R_386_32          .debug_str
+00004407 R_386_32          .debug_str
+00004415 R_386_32          .debug_str
+00004423 R_386_32          .debug_str
+00004433 R_386_32          .debug_str
+0000443e R_386_32          .text
+0000444d R_386_32          .debug_str
+0000446a R_386_32          .debug_ranges
+0000446f R_386_32          .debug_str
+00004480 R_386_32          .debug_str
+0000448b R_386_32          .text
+0000449a R_386_32          .debug_str
+000044b7 R_386_32          .text
+000044c0 R_386_32          .debug_str
+000044cf R_386_32          .debug_str
+000044dd R_386_32          .debug_str
+000044eb R_386_32          .debug_str
+000044fb R_386_32          .debug_str
+00004506 R_386_32          .text
+00004515 R_386_32          .debug_str
+00004532 R_386_32          .debug_ranges
+00004537 R_386_32          .debug_str
+00004548 R_386_32          .debug_str
+00004553 R_386_32          .text
+00004562 R_386_32          .debug_str
+0000457f R_386_32          .text
+00004588 R_386_32          .debug_str
+00004597 R_386_32          .debug_str
+000045a5 R_386_32          .debug_str
+000045b3 R_386_32          .debug_str
+000045c3 R_386_32          .debug_str
+000045ce R_386_32          .text
+000045dd R_386_32          .debug_str
+000045fb R_386_32          .debug_ranges
+00004600 R_386_32          .debug_str
+00004611 R_386_32          .debug_str
+0000461c R_386_32          .text
+0000462b R_386_32          .debug_str
+00004649 R_386_32          .text
+00004652 R_386_32          .debug_str
+00004661 R_386_32          .debug_str
+0000466f R_386_32          .debug_str
+0000467d R_386_32          .debug_str
+0000468d R_386_32          .debug_str
+00004698 R_386_32          .text
+000046c3 R_386_32          .debug_ranges
+000046c8 R_386_32          .debug_str
+000046e5 R_386_32          .debug_str
+000046f0 R_386_32          .text
+0000471b R_386_32          .text
+00004724 R_386_32          .debug_str
+00004733 R_386_32          .debug_str
+00004741 R_386_32          .debug_str
+0000474f R_386_32          .debug_str
+0000475f R_386_32          .debug_str
+0000476a R_386_32          .text
+00004779 R_386_32          .debug_str
+0000479e R_386_32          .debug_str
+000047a9 R_386_32          .text
+000047b8 R_386_32          .debug_str
+000047d7 R_386_32          .debug_str
+000047e2 R_386_32          .text
+000047f1 R_386_32          .debug_str
+00004810 R_386_32          .debug_str
+0000481b R_386_32          .text
+00004838 R_386_32          .debug_str
+00004856 R_386_32          .debug_str
+00004865 R_386_32          .debug_str
+00004884 R_386_32          .text
+0000488d R_386_32          .debug_str
+0000489e R_386_32          .debug_str
+000048a9 R_386_32          .text
+000048c6 R_386_32          .debug_str
+000048d5 R_386_32          .debug_str
+000048e4 R_386_32          .debug_str
+00004902 R_386_32          .debug_ranges
+00004907 R_386_32          .debug_str
+0000491e R_386_32          .debug_str
+00004929 R_386_32          .text
+00004946 R_386_32          .debug_str
+00004955 R_386_32          .debug_str
+00004964 R_386_32          .debug_str
+00004982 R_386_32          .text
+0000498b R_386_32          .debug_str
+0000499a R_386_32          .debug_str
+000049a8 R_386_32          .debug_str
+000049b6 R_386_32          .debug_str
+000049c4 R_386_32          .debug_str
+000049d2 R_386_32          .debug_str
+000049e0 R_386_32          .debug_str
+000049f0 R_386_32          .debug_str
+000049fb R_386_32          .text
+00004a0a R_386_32          .debug_str
+00004a19 R_386_32          .debug_str
+00004a28 R_386_32          .debug_str
+00004a37 R_386_32          .debug_str
+00004a46 R_386_32          .debug_str
+00004a55 R_386_32          .debug_ranges
+00004a5a R_386_32          .debug_str
+00004a71 R_386_32          .debug_str
+00004a7c R_386_32          .text
+00004a8b R_386_32          .debug_str
+00004a9a R_386_32          .debug_str
+00004aa9 R_386_32          .debug_str
+00004ab8 R_386_32          .debug_str
+00004ac7 R_386_32          .debug_str
+00004ad6 R_386_32          .text
+00004adf R_386_32          .debug_str
+00004aee R_386_32          .debug_str
+00004afc R_386_32          .debug_str
+00004b0a R_386_32          .debug_str
+00004b18 R_386_32          .debug_str
+00004b26 R_386_32          .debug_str
+00004b34 R_386_32          .debug_str
+00004b44 R_386_32          .debug_str
+00004b4f R_386_32          .text
+00004b5e R_386_32          .debug_str
+00004b6d R_386_32          .debug_str
+00004b7c R_386_32          .debug_str
+00004b8b R_386_32          .text
+00004b94 R_386_32          .debug_str
+00004bab R_386_32          .debug_str
+00004bb6 R_386_32          .text
+00004bc5 R_386_32          .debug_str
+00004bd4 R_386_32          .debug_str
+00004be3 R_386_32          .debug_str
+00004c01 R_386_32          .text
+00004c0a R_386_32          .debug_str
+00004c21 R_386_32          .debug_str
+00004c2c R_386_32          .text
+00004c4a R_386_32          .debug_str
+00004c59 R_386_32          .debug_str
+00004c68 R_386_32          .debug_str
+00004c77 R_386_32          .text
+00004c80 R_386_32          .debug_str
+00004c8f R_386_32          .debug_str
+00004c9d R_386_32          .debug_str
+00004cab R_386_32          .debug_str
+00004cb9 R_386_32          .debug_str
+00004cc7 R_386_32          .debug_str
+00004ce3 R_386_32          .debug_str
+00004cee R_386_32          .text
+00004d0c R_386_32          .debug_ranges
+00004d11 R_386_32          .debug_str
+00004d22 R_386_32          .debug_str
+00004d2d R_386_32          .text
+00004d3c R_386_32          .debug_str
+00004d4b R_386_32          .debug_str
+00004d78 R_386_32          .text
+00004d81 R_386_32          .debug_str
+00004d90 R_386_32          .debug_str
+00004d9e R_386_32          .debug_str
+00004dac R_386_32          .debug_str
+00004dba R_386_32          .debug_str
+00004dc8 R_386_32          .debug_str
+00004dd8 R_386_32          .debug_str
+00004de3 R_386_32          .text
+00004e01 R_386_32          .debug_str
+00004e10 R_386_32          .debug_str
+00004e1f R_386_32          .debug_ranges
+00004e24 R_386_32          .debug_str
+00004e35 R_386_32          .debug_str
+00004e40 R_386_32          .text
+00004e5e R_386_32          .debug_str
+00004e6d R_386_32          .debug_str
+00004e7c R_386_32          .text
+00004e85 R_386_32          .debug_str
+00004e94 R_386_32          .debug_str
+00004ea2 R_386_32          .debug_str
+00004eb0 R_386_32          .debug_str
+00004ebe R_386_32          .debug_str
+00004ece R_386_32          .debug_str
+00004ed9 R_386_32          .text
+00004ee8 R_386_32          .debug_str
+00004ef7 R_386_32          .debug_str
+00004f06 R_386_32          .debug_str
+00004f15 R_386_32          .debug_str
+00004f24 R_386_32          .debug_str
+00004f33 R_386_32          .debug_ranges
+00004f38 R_386_32          .debug_str
+00004f49 R_386_32          .debug_str
+00004f54 R_386_32          .text
+00004f63 R_386_32          .debug_str
+00004f72 R_386_32          .debug_str
+00004f81 R_386_32          .debug_str
+00004f90 R_386_32          .debug_str
+00004f9f R_386_32          .debug_str
+00004fae R_386_32          .text
+00004fb7 R_386_32          .debug_str
+00004fc6 R_386_32          .debug_str
+00004fd4 R_386_32          .debug_str
+00004fe2 R_386_32          .debug_str
+00004ff0 R_386_32          .debug_str
+00004ffe R_386_32          .debug_str
+0000500c R_386_32          .debug_str
+0000501c R_386_32          .debug_str
+00005027 R_386_32          .text
+00005063 R_386_32          .debug_str
+00005072 R_386_32          .debug_str
+00005081 R_386_32          .debug_ranges
+00005086 R_386_32          .debug_str
+00005097 R_386_32          .debug_str
+000050a2 R_386_32          .text
+000050de R_386_32          .debug_str
+000050ed R_386_32          .debug_str
+000050fc R_386_32          .text
+00005105 R_386_32          .debug_str
+00005114 R_386_32          .debug_str
+00005122 R_386_32          .debug_str
+00005130 R_386_32          .debug_str
+0000513e R_386_32          .debug_str
+0000514c R_386_32          .debug_str
+0000515a R_386_32          .debug_str
+0000516a R_386_32          .debug_str
+00005175 R_386_32          .text
+00005184 R_386_32          .debug_str
+00005193 R_386_32          .debug_str
+000051a2 R_386_32          .debug_ranges
+000051a7 R_386_32          .debug_str
+000051b8 R_386_32          .debug_str
+000051c3 R_386_32          .text
+000051d2 R_386_32          .debug_str
+000051e1 R_386_32          .debug_str
+000051f0 R_386_32          .text
+000051f9 R_386_32          .debug_str
+00005208 R_386_32          .debug_str
+00005216 R_386_32          .debug_str
+00005224 R_386_32          .debug_str
+00005234 R_386_32          .debug_str
+0000523f R_386_32          .text
+0000524e R_386_32          .debug_str
+0000525d R_386_32          .debug_str
+0000526c R_386_32          .debug_str
+0000527b R_386_32          .debug_str
+0000528a R_386_32          .debug_str
+000052a9 R_386_32          .debug_str
+000052b4 R_386_32          .text
+000052c3 R_386_32          .debug_str
+000052d2 R_386_32          .debug_str
+000052e1 R_386_32          .debug_str
+000052f0 R_386_32          .debug_str
+000052ff R_386_32          .debug_str
+0000530e R_386_32          .text
+00005317 R_386_32          .debug_str
+00005326 R_386_32          .debug_str
+00005334 R_386_32          .debug_str
+00005342 R_386_32          .debug_str
+00005350 R_386_32          .debug_str
+0000535e R_386_32          .debug_str
+0000536c R_386_32          .debug_str
+0000537c R_386_32          .debug_str
+00005387 R_386_32          .text
+00005396 R_386_32          .debug_str
+000053a5 R_386_32          .debug_str
+000053b4 R_386_32          .debug_str
+000053c3 R_386_32          .debug_str
+000053e0 R_386_32          .debug_str
+000053ff R_386_32          .debug_str
+0000540a R_386_32          .text
+00005419 R_386_32          .debug_str
+00005428 R_386_32          .debug_str
+00005437 R_386_32          .debug_str
+00005446 R_386_32          .debug_str
+00005463 R_386_32          .debug_str
+0000547f R_386_32          .text
+00005488 R_386_32          .debug_str
+00005497 R_386_32          .debug_str
+000054a8 R_386_32          .debug_str
+000054b3 R_386_32          .text
+000054ee R_386_32          .text
+000054f7 R_386_32          .debug_str
+00005506 R_386_32          .debug_str
+00005514 R_386_32          .debug_str
+00005522 R_386_32          .debug_str
+00005530 R_386_32          .debug_str
+00005540 R_386_32          .debug_str
+0000554b R_386_32          .text
+0000555a R_386_32          .debug_str
+00005569 R_386_32          .debug_str
+00005588 R_386_32          .debug_str
+00005594 R_386_32          .text
+000055a3 R_386_32          .debug_str
+000055b3 R_386_32          .debug_str
+000055c3 R_386_32          .debug_ranges
+000055c8 R_386_32          .debug_str
+000055da R_386_32          .debug_str
+000055e6 R_386_32          .text
+000055f5 R_386_32          .debug_str
+00005605 R_386_32          .debug_str
+00005615 R_386_32          .text
+0000561e R_386_32          .debug_str
+0000562e R_386_32          .debug_str
+0000563d R_386_32          .debug_str
+0000564c R_386_32          .debug_str
+0000565d R_386_32          .debug_str
+00005669 R_386_32          .text
+00005697 R_386_32          .debug_str
+000056a7 R_386_32          .debug_ranges
+000056ac R_386_32          .debug_str
+000056be R_386_32          .debug_str
+000056ca R_386_32          .text
+000056f8 R_386_32          .debug_str
+00005708 R_386_32          .text
+00005711 R_386_32          .debug_str
+00005721 R_386_32          .debug_str
+00005730 R_386_32          .debug_str
+0000573f R_386_32          .debug_str
+0000574e R_386_32          .debug_str
+0000575f R_386_32          .debug_str
+0000576b R_386_32          .text
+0000577a R_386_32          .debug_str
+0000578a R_386_32          .debug_ranges
+0000578f R_386_32          .debug_str
+000057a1 R_386_32          .debug_str
+000057ad R_386_32          .text
+000057bc R_386_32          .debug_str
+000057cc R_386_32          .text
+000057d5 R_386_32          .debug_str
+000057e5 R_386_32          .debug_str
+000057f4 R_386_32          .debug_str
+00005803 R_386_32          .debug_str
+00005812 R_386_32          .debug_str
+00005823 R_386_32          .debug_str
+0000582f R_386_32          .text
+0000583e R_386_32          .debug_str
+0000584e R_386_32          .debug_str
+0000585e R_386_32          .debug_ranges
+00005863 R_386_32          .debug_str
+00005875 R_386_32          .debug_str
+00005881 R_386_32          .text
+00005890 R_386_32          .debug_str
+000058a0 R_386_32          .debug_str
+000058b0 R_386_32          .text
+000058b9 R_386_32          .debug_str
+000058c9 R_386_32          .debug_str
+000058d8 R_386_32          .debug_str
+000058e7 R_386_32          .debug_str
+000058f8 R_386_32          .debug_str
+00005904 R_386_32          .text
+00005913 R_386_32          .debug_str
+00005924 R_386_32          .debug_str
+00005930 R_386_32          .text
+0000593f R_386_32          .debug_str
+0000594f R_386_32          .text
+00005958 R_386_32          .debug_str
+00005968 R_386_32          .debug_str
+00005977 R_386_32          .debug_str
+00005988 R_386_32          .debug_str
+00005994 R_386_32          .text
+000059c3 R_386_32          .debug_ranges
+000059c8 R_386_32          .debug_str
+000059da R_386_32          .debug_str
+000059e6 R_386_32          .text
+00005a15 R_386_32          .text
+00005a1e R_386_32          .debug_str
+00005a2e R_386_32          .debug_str
+00005a3d R_386_32          .debug_str
+00005a4c R_386_32          .debug_str
+00005a5b R_386_32          .debug_str
+00005a6c R_386_32          .debug_str
+00005a78 R_386_32          .text
+00005a87 R_386_32          .debug_ranges
+00005a8c R_386_32          .debug_str
+00005a9e R_386_32          .debug_str
+00005aaa R_386_32          .text
+00005ab9 R_386_32          .text
+00005ac2 R_386_32          .debug_str
+00005ad2 R_386_32          .debug_str
+00005ae3 R_386_32          .debug_str
+00005aef R_386_32          .text
+00005afa R_386_32          .debug_str
+00005b06 R_386_32          .text
+00005b25 R_386_32          .debug_str
+00005b35 R_386_32          .debug_ranges
+00005b3a R_386_32          .debug_str
+00005b4c R_386_32          .debug_str
+00005b58 R_386_32          .text
+00005b77 R_386_32          .debug_str
+00005b87 R_386_32          .text
+00005b90 R_386_32          .debug_str
+00005ba0 R_386_32          .debug_str
+00005baf R_386_32          .debug_str
+00005bbe R_386_32          .debug_str
+00005bcf R_386_32          .debug_str
+00005bdb R_386_32          .text
+00005bea R_386_32          .debug_ranges
+00005bef R_386_32          .debug_str
+00005c01 R_386_32          .debug_str
+00005c0d R_386_32          .text
+00005c1c R_386_32          .text
+00005c25 R_386_32          .debug_str
+00005c35 R_386_32          .debug_str
+00005c46 R_386_32          .debug_str
+00005c52 R_386_32          .text
+00005c80 R_386_32          .debug_str
+00005c90 R_386_32          .debug_ranges
+00005c95 R_386_32          .debug_str
+00005ca7 R_386_32          .debug_str
+00005cb3 R_386_32          .text
+00005ce1 R_386_32          .debug_str
+00005cf1 R_386_32          .text
+00005cfa R_386_32          .debug_str
+00005d0a R_386_32          .debug_str
+00005d19 R_386_32          .debug_str
+00005d28 R_386_32          .debug_str
+00005d37 R_386_32          .debug_str
+00005d48 R_386_32          .debug_str
+00005d54 R_386_32          .text
+00005d83 R_386_32          .debug_ranges
+00005d88 R_386_32          .debug_str
+00005d9a R_386_32          .debug_str
+00005da6 R_386_32          .text
+00005dd5 R_386_32          .text
+00005dde R_386_32          .debug_str
+00005dee R_386_32          .debug_str
+00005dfd R_386_32          .debug_str
+00005e0c R_386_32          .debug_str
+00005e1d R_386_32          .debug_str
+00005e29 R_386_32          .text
+00005e38 R_386_32          .debug_str
+00005e49 R_386_32          .debug_str
+00005e55 R_386_32          .text
+00005e64 R_386_32          .debug_str
+00005e74 R_386_32          .debug_str
+00005e84 R_386_32          .debug_ranges
+00005e89 R_386_32          .debug_str
+00005e9b R_386_32          .debug_str
+00005ea7 R_386_32          .text
+00005eb6 R_386_32          .debug_str
+00005ec6 R_386_32          .debug_str
+00005ed6 R_386_32          .text
+00005edf R_386_32          .debug_str
+00005eef R_386_32          .debug_str
+00005efe R_386_32          .debug_str
+00005f0d R_386_32          .debug_str
+00005f1e R_386_32          .debug_str
+00005f2a R_386_32          .text
+00005f39 R_386_32          .debug_str
+00005f49 R_386_32          .debug_str
+00005f69 R_386_32          .debug_ranges
+00005f6e R_386_32          .debug_str
+00005f80 R_386_32          .debug_str
+00005f8c R_386_32          .text
+00005f9b R_386_32          .debug_str
+00005fab R_386_32          .debug_str
+00005fcb R_386_32          .text
+00005fd4 R_386_32          .debug_str
+00005fe4 R_386_32          .debug_str
+00005ff3 R_386_32          .debug_str
+00006002 R_386_32          .debug_str
+00006011 R_386_32          .debug_str
+00006020 R_386_32          .debug_str
+00006031 R_386_32          .debug_str
+0000603d R_386_32          .text
+0000604c R_386_32          .debug_str
+0000605c R_386_32          .debug_ranges
+00006061 R_386_32          .debug_str
+00006073 R_386_32          .debug_str
+0000607f R_386_32          .text
+0000608e R_386_32          .debug_str
+0000609e R_386_32          .text
+000060a7 R_386_32          .debug_str
+000060b7 R_386_32          .debug_str
+000060c6 R_386_32          .debug_str
+000060d7 R_386_32          .debug_str
+000060e3 R_386_32          .text
+000060f2 R_386_32          .debug_str
+00006102 R_386_32          .debug_str
+00006112 R_386_32          .debug_ranges
+00006117 R_386_32          .debug_str
+00006129 R_386_32          .debug_str
+00006135 R_386_32          .text
+00006144 R_386_32          .debug_str
+00006154 R_386_32          .debug_str
+00006164 R_386_32          .text
+0000616d R_386_32          .debug_str
+0000617d R_386_32          .debug_str
+0000618c R_386_32          .debug_str
+0000619b R_386_32          .debug_str
+000061aa R_386_32          .debug_str
+000061bb R_386_32          .debug_str
+000061c7 R_386_32          .text
+000061e5 R_386_32          .debug_str
+000061f5 R_386_32          .debug_str
+00006205 R_386_32          .debug_ranges
+0000620a R_386_32          .debug_str
+0000621c R_386_32          .debug_str
+00006228 R_386_32          .text
+00006246 R_386_32          .debug_str
+00006256 R_386_32          .debug_str
+00006266 R_386_32          .text
+0000626f R_386_32          .debug_str
+0000627f R_386_32          .debug_str
+0000628e R_386_32          .debug_str
+0000629d R_386_32          .debug_str
+000062ac R_386_32          .debug_str
+000062bd R_386_32          .debug_str
+000062c9 R_386_32          .text
+000062f8 R_386_32          .debug_ranges
+000062fd R_386_32          .debug_str
+0000630f R_386_32          .debug_str
+0000631b R_386_32          .text
+0000634a R_386_32          .text
+00006353 R_386_32          .debug_str
+00006363 R_386_32          .debug_str
+00006372 R_386_32          .debug_str
+00006381 R_386_32          .debug_str
+00006390 R_386_32          .debug_str
+0000639f R_386_32          .debug_str
+000063ae R_386_32          .debug_str
+000063bf R_386_32          .debug_str
+000063cb R_386_32          .text
+000063ea R_386_32          .debug_str
+000063fa R_386_32          .debug_ranges
+000063ff R_386_32          .debug_str
+00006411 R_386_32          .debug_str
+0000641d R_386_32          .text
+0000643c R_386_32          .debug_str
+0000644c R_386_32          .text
+00006455 R_386_32          .debug_str
+00006465 R_386_32          .debug_str
+00006474 R_386_32          .debug_str
+00006483 R_386_32          .debug_str
+00006494 R_386_32          .debug_str
+000064a0 R_386_32          .text
+000064ab R_386_32          .debug_str
+000064b7 R_386_32          .text
+000064c6 R_386_32          .text
+000064cf R_386_32          .debug_str
+000064df R_386_32          .debug_str
+000064f0 R_386_32          .debug_str
+000064fc R_386_32          .text
+0000650b R_386_32          .debug_ranges
+00006510 R_386_32          .debug_str
+00006522 R_386_32          .debug_str
+0000652e R_386_32          .text
+00006539 R_386_32          .debug_str
+00006545 R_386_32          .text
+00006554 R_386_32          .text
+0000655d R_386_32          .debug_str
+0000656d R_386_32          .debug_str
+0000657e R_386_32          .debug_str
+0000658a R_386_32          .text
+00006595 R_386_32          .debug_str
+000065a1 R_386_32          .text
+000065b0 R_386_32          .text
+000065b9 R_386_32          .debug_str
+000065c9 R_386_32          .debug_str
+000065da R_386_32          .debug_str
+000065e6 R_386_32          .text
+000065f1 R_386_32          .debug_str
+000065fd R_386_32          .text
+0000660c R_386_32          .text
+00006615 R_386_32          .debug_str
+00006625 R_386_32          .debug_str
+00006636 R_386_32          .debug_str
+00006642 R_386_32          .text
+0000664d R_386_32          .debug_str
+00006659 R_386_32          .text
+00006664 R_386_32          .debug_str
+00006670 R_386_32          .text
+0000668f R_386_32          .debug_ranges
+00006694 R_386_32          .debug_str
+000066a6 R_386_32          .debug_str
+000066b2 R_386_32          .text
+000066d1 R_386_32          .text
+000066da R_386_32          .debug_str
+000066ea R_386_32          .debug_str
+000066f9 R_386_32          .debug_str
+0000670a R_386_32          .debug_str
+00006716 R_386_32          .text
+00006721 R_386_32          .debug_str
+0000672d R_386_32          .text
+0000673c R_386_32          .text
+00006745 R_386_32          .debug_str
+00006755 R_386_32          .debug_str
+00006766 R_386_32          .debug_str
+00006772 R_386_32          .text
+00006790 R_386_32          .debug_str
+000067a0 R_386_32          .debug_str
+000067b0 R_386_32          .debug_ranges
+000067b5 R_386_32          .debug_str
+000067c7 R_386_32          .debug_str
+000067d3 R_386_32          .text
+000067f1 R_386_32          .debug_str
+00006801 R_386_32          .debug_str
+00006811 R_386_32          .text
+0000681a R_386_32          .debug_str
+0000682a R_386_32          .debug_str
+00006839 R_386_32          .debug_str
+00006848 R_386_32          .debug_str
+00006857 R_386_32          .debug_str
+00006868 R_386_32          .debug_str
+00006874 R_386_32          .text
+00006892 R_386_32          .debug_ranges
+00006897 R_386_32          .debug_str
+000068a9 R_386_32          .debug_str
+000068b5 R_386_32          .text
+000068d3 R_386_32          .text
+000068dc R_386_32          .debug_str
+000068ec R_386_32          .debug_str
+000068fb R_386_32          .debug_str
+0000690c R_386_32          .debug_str
+00006918 R_386_32          .text
+00006927 R_386_32          .debug_ranges
+0000692c R_386_32          .debug_str
+0000693e R_386_32          .debug_str
+0000694a R_386_32          .text
+00006959 R_386_32          .text
+00006962 R_386_32          .debug_str
+00006972 R_386_32          .debug_str
+00006983 R_386_32          .debug_str
+0000698f R_386_32          .text
+0000699e R_386_32          .debug_ranges
+000069a3 R_386_32          .debug_str
+000069b5 R_386_32          .debug_str
+000069c1 R_386_32          .text
+000069d0 R_386_32          .text
+000069d9 R_386_32          .debug_str
+000069e9 R_386_32          .debug_str
+000069f8 R_386_32          .debug_str
+00006a07 R_386_32          .debug_str
+00006a16 R_386_32          .debug_str
+00006a25 R_386_32          .debug_str
+00006a34 R_386_32          .debug_str
+00006a45 R_386_32          .debug_str
+00006a4d R_386_32          .text
+00006a5c R_386_32          .debug_str
+00006a6d R_386_32          .debug_str
+00006a75 R_386_32          .text
+00006a84 R_386_32          .debug_str
+00006a95 R_386_32          .debug_str
+00006a9d R_386_32          .text
+00006aac R_386_32          .debug_str
+00006abc R_386_32          .text
+00006ac5 R_386_32          .debug_str
+00006ad5 R_386_32          .debug_str
+00006ae4 R_386_32          .debug_str
+00006af5 R_386_32          .debug_str
+00006b01 R_386_32          .text
+00006b10 R_386_32          .debug_str
+00006b20 R_386_32          .debug_str
+00006b30 R_386_32          .debug_str
+00006b40 R_386_32          .debug_ranges
+00006b45 R_386_32          .debug_str
+00006b57 R_386_32          .debug_str
+00006b63 R_386_32          .text
+00006b72 R_386_32          .debug_str
+00006b82 R_386_32          .debug_str
+00006b92 R_386_32          .debug_str
+00006ba2 R_386_32          .text
+00006bab R_386_32          .debug_str
+00006bbb R_386_32          .debug_str
+00006bca R_386_32          .debug_str
+00006bd9 R_386_32          .debug_str
+00006be8 R_386_32          .debug_str
+00006bf9 R_386_32          .debug_str
+00006c05 R_386_32          .text
+00006c34 R_386_32          .debug_str
+00006c44 R_386_32          .debug_ranges
+00006c49 R_386_32          .debug_str
+00006c5b R_386_32          .debug_str
+00006c67 R_386_32          .text
+00006c96 R_386_32          .debug_str
+00006ca6 R_386_32          .text
+00006caf R_386_32          .debug_str
+00006cbf R_386_32          .debug_str
+00006cce R_386_32          .debug_str
+00006cdd R_386_32          .debug_str
+00006cec R_386_32          .debug_str
+00006cfd R_386_32          .debug_str
+00006d09 R_386_32          .text
+00006d38 R_386_32          .debug_ranges
+00006d3d R_386_32          .debug_str
+00006d4f R_386_32          .debug_str
+00006d5a R_386_32          .text
+00006d96 R_386_32          .debug_str
+00006da5 R_386_32          .text
+00006db2 R_386_32          .debug_str
+00006dc2 R_386_32          .debug_str
+00006dd1 R_386_32          .debug_str
+00006de0 R_386_32          .debug_str
+00006df0 R_386_32          .text
+00006df9 R_386_32          .debug_str
+00006e09 R_386_32          .debug_str
+00006e18 R_386_32          .debug_str
+00006e27 R_386_32          .debug_str
+00006e36 R_386_32          .debug_str
+00006e52 R_386_32          .text
+00006e6f R_386_32          .debug_ranges
+00006e74 R_386_32          .debug_str
+00006e85 R_386_32          .debug_str
+00006e90 R_386_32          .text
+00006ead R_386_32          .text
+00006eb6 R_386_32          .debug_str
+00006ec5 R_386_32          .debug_str
+00006ed3 R_386_32          .debug_str
+00006ee3 R_386_32          .debug_str
+00006eee R_386_32          .text
+00006f0b R_386_32          .debug_ranges
+00006f10 R_386_32          .debug_str
+00006f21 R_386_32          .debug_str
+00006f2c R_386_32          .text
+00006f49 R_386_32          .text
+00006f52 R_386_32          .debug_str
+00006f61 R_386_32          .debug_str
+00006f6f R_386_32          .debug_str
+00006f7f R_386_32          .debug_str
+00006f8a R_386_32          .text
+00006f99 R_386_32          .debug_str
+00006fa8 R_386_32          .debug_ranges
+00006fad R_386_32          .debug_str
+00006fbe R_386_32          .debug_str
+00006fc9 R_386_32          .text
+00006fd8 R_386_32          .debug_str
+00006fe7 R_386_32          .text
+00006ff0 R_386_32          .debug_str
+00006fff R_386_32          .debug_str
+0000700d R_386_32          .debug_str
+0000701d R_386_32          .debug_str
+00007028 R_386_32          .text
+00007037 R_386_32          .debug_str
+00007046 R_386_32          .debug_str
+00007055 R_386_32          .debug_str
+00007064 R_386_32          .debug_ranges
+00007069 R_386_32          .debug_str
+0000707a R_386_32          .debug_str
+00007085 R_386_32          .text
+00007094 R_386_32          .debug_str
+000070a3 R_386_32          .debug_str
+000070b2 R_386_32          .debug_str
+000070c1 R_386_32          .text
+000070ca R_386_32          .debug_str
+000070d9 R_386_32          .debug_str
+000070e7 R_386_32          .debug_str
+000070f5 R_386_32          .debug_str
+00007103 R_386_32          .debug_str
+00007111 R_386_32          .debug_str
+0000711f R_386_32          .debug_str
+0000712f R_386_32          .debug_str
+0000713a R_386_32          .text
+00007149 R_386_32          .debug_str
+00007158 R_386_32          .debug_str
+00007167 R_386_32          .debug_ranges
+0000716c R_386_32          .debug_str
+0000717d R_386_32          .debug_str
+00007188 R_386_32          .text
+00007197 R_386_32          .debug_str
+000071a6 R_386_32          .debug_str
+000071b5 R_386_32          .text
+000071be R_386_32          .debug_str
+000071cd R_386_32          .debug_str
+000071db R_386_32          .debug_str
+000071e9 R_386_32          .debug_str
+000071f7 R_386_32          .debug_str
+00007205 R_386_32          .debug_str
+00007215 R_386_32          .debug_str
+00007220 R_386_32          .text
+0000722f R_386_32          .debug_str
+0000723e R_386_32          .debug_ranges
+00007243 R_386_32          .debug_str
+00007254 R_386_32          .debug_str
+0000725f R_386_32          .text
+0000726e R_386_32          .debug_str
+0000727d R_386_32          .text
+00007286 R_386_32          .debug_str
+00007295 R_386_32          .debug_str
+000072a3 R_386_32          .debug_str
+000072b3 R_386_32          .debug_str
+000072be R_386_32          .text
+000072cd R_386_32          .debug_str
+000072dc R_386_32          .debug_ranges
+000072e1 R_386_32          .debug_str
+000072f2 R_386_32          .debug_str
+000072fd R_386_32          .text
+0000730c R_386_32          .debug_str
+0000731b R_386_32          .text
+00007324 R_386_32          .debug_str
+00007333 R_386_32          .debug_str
+00007341 R_386_32          .debug_str
+00007351 R_386_32          .debug_str
+0000735c R_386_32          .text
+00007395 R_386_32          .text
+000073a4 R_386_32          .debug_str
+000073c3 R_386_32          .debug_str
+000073ce R_386_32          .text
+000073dd R_386_32          .debug_str
+000073ec R_386_32          .text
+000073f5 R_386_32          .debug_str
+00007404 R_386_32          .debug_str
+00007412 R_386_32          .debug_str
+00007422 R_386_32          .debug_str
+00007429 R_386_32          .text
+00007434 R_386_32          .debug_str
+0000743b R_386_32          .text
+00007458 R_386_32          .debug_str
+00007467 R_386_32          .debug_str
+00007476 R_386_32          .debug_str
+00007485 R_386_32          .debug_str
+00007494 R_386_32          .debug_str
+000074a3 R_386_32          .debug_str
+000074b2 R_386_32          .debug_str
+000074c1 R_386_32          .debug_str
+000074c8 R_386_32          .debug_str
+
+
+RELOCATION RECORDS FOR [.debug_aranges]:
+OFFSET   TYPE              VALUE
+00000006 R_386_32          .debug_info
+00000010 R_386_32          .text
+00000018 R_386_32          .text.nolibc_raise
+00000020 R_386_32          .text.nolibc_memmove
+00000028 R_386_32          .text.nolibc_memcpy
+00000030 R_386_32          .text.nolibc_memset
+00000038 R_386_32          .text.nolibc_strlen
+00000040 R_386_32          .text.nolibc_abort
+
+
+RELOCATION RECORDS FOR [.debug_ranges]:
+OFFSET   TYPE              VALUE
+00000000 R_386_32          .text
+00000004 R_386_32          .text
+00000008 R_386_32          .text
+0000000c R_386_32          .text
+00000018 R_386_32          .text
+0000001c R_386_32          .text
+00000020 R_386_32          .text
+00000024 R_386_32          .text
+00000030 R_386_32          .text
+00000034 R_386_32          .text
+00000038 R_386_32          .text
+0000003c R_386_32          .text
+00000048 R_386_32          .text
+0000004c R_386_32          .text
+00000050 R_386_32          .text
+00000054 R_386_32          .text
+00000060 R_386_32          .text
+00000064 R_386_32          .text
+00000068 R_386_32          .text
+0000006c R_386_32          .text
+00000078 R_386_32          .text
+0000007c R_386_32          .text
+00000080 R_386_32          .text
+00000084 R_386_32          .text
+00000090 R_386_32          .text
+00000094 R_386_32          .text
+00000098 R_386_32          .text
+0000009c R_386_32          .text
+000000a8 R_386_32          .text
+000000ac R_386_32          .text
+000000b0 R_386_32          .text
+000000b4 R_386_32          .text
+000000c0 R_386_32          .text
+000000c4 R_386_32          .text
+000000c8 R_386_32          .text
+000000cc R_386_32          .text
+000000d8 R_386_32          .text
+000000dc R_386_32          .text
+000000e0 R_386_32          .text
+000000e4 R_386_32          .text
+000000f0 R_386_32          .text
+000000f4 R_386_32          .text
+000000f8 R_386_32          .text
+000000fc R_386_32          .text
+00000108 R_386_32          .text
+0000010c R_386_32          .text
+00000110 R_386_32          .text
+00000114 R_386_32          .text
+00000120 R_386_32          .text
+00000124 R_386_32          .text
+00000128 R_386_32          .text
+0000012c R_386_32          .text
+00000138 R_386_32          .text
+0000013c R_386_32          .text
+00000140 R_386_32          .text
+00000144 R_386_32          .text
+00000150 R_386_32          .text
+00000154 R_386_32          .text
+00000158 R_386_32          .text
+0000015c R_386_32          .text
+00000168 R_386_32          .text
+0000016c R_386_32          .text
+00000170 R_386_32          .text
+00000174 R_386_32          .text
+00000180 R_386_32          .text
+00000184 R_386_32          .text
+00000188 R_386_32          .text
+0000018c R_386_32          .text
+00000198 R_386_32          .text
+0000019c R_386_32          .text
+000001a0 R_386_32          .text
+000001a4 R_386_32          .text
+000001b0 R_386_32          .text
+000001b4 R_386_32          .text
+000001b8 R_386_32          .text
+000001bc R_386_32          .text
+000001c8 R_386_32          .text
+000001cc R_386_32          .text
+000001d0 R_386_32          .text
+000001d4 R_386_32          .text
+000001e0 R_386_32          .text
+000001e4 R_386_32          .text
+000001e8 R_386_32          .text
+000001ec R_386_32          .text
+000001f8 R_386_32          .text
+000001fc R_386_32          .text
+00000200 R_386_32          .text
+00000204 R_386_32          .text
+00000210 R_386_32          .text
+00000214 R_386_32          .text
+00000218 R_386_32          .text
+0000021c R_386_32          .text
+00000228 R_386_32          .text
+0000022c R_386_32          .text
+00000230 R_386_32          .text
+00000234 R_386_32          .text
+00000240 R_386_32          .text
+00000244 R_386_32          .text
+00000248 R_386_32          .text
+0000024c R_386_32          .text
+00000258 R_386_32          .text
+0000025c R_386_32          .text
+00000260 R_386_32          .text
+00000264 R_386_32          .text
+00000270 R_386_32          .text
+00000274 R_386_32          .text
+00000278 R_386_32          .text
+0000027c R_386_32          .text
+00000288 R_386_32          .text
+0000028c R_386_32          .text
+00000290 R_386_32          .text
+00000294 R_386_32          .text
+000002a0 R_386_32          .text
+000002a4 R_386_32          .text
+000002a8 R_386_32          .text
+000002ac R_386_32          .text
+000002b8 R_386_32          .text
+000002bc R_386_32          .text
+000002c0 R_386_32          .text
+000002c4 R_386_32          .text
+000002d0 R_386_32          .text
+000002d4 R_386_32          .text
+000002d8 R_386_32          .text
+000002dc R_386_32          .text
+000002e8 R_386_32          .text
+000002ec R_386_32          .text
+000002f0 R_386_32          .text
+000002f4 R_386_32          .text
+00000300 R_386_32          .text
+00000304 R_386_32          .text
+00000308 R_386_32          .text
+0000030c R_386_32          .text
+00000318 R_386_32          .text
+0000031c R_386_32          .text
+00000320 R_386_32          .text
+00000324 R_386_32          .text
+00000330 R_386_32          .text
+00000334 R_386_32          .text
+00000338 R_386_32          .text
+0000033c R_386_32          .text
+00000348 R_386_32          .text
+0000034c R_386_32          .text
+00000350 R_386_32          .text
+00000354 R_386_32          .text
+00000360 R_386_32          .text
+00000364 R_386_32          .text
+00000368 R_386_32          .text
+0000036c R_386_32          .text
+00000378 R_386_32          .text
+0000037c R_386_32          .text
+00000380 R_386_32          .text
+00000384 R_386_32          .text
+00000390 R_386_32          .text
+00000394 R_386_32          .text
+00000398 R_386_32          .text
+0000039c R_386_32          .text
+000003a8 R_386_32          .text
+000003ac R_386_32          .text
+000003b0 R_386_32          .text
+000003b4 R_386_32          .text
+000003c0 R_386_32          .text
+000003c4 R_386_32          .text
+000003c8 R_386_32          .text
+000003cc R_386_32          .text
+000003d8 R_386_32          .text
+000003dc R_386_32          .text
+000003e0 R_386_32          .text
+000003e4 R_386_32          .text
+000003f0 R_386_32          .text
+000003f4 R_386_32          .text
+000003f8 R_386_32          .text
+000003fc R_386_32          .text
+00000408 R_386_32          .text
+0000040c R_386_32          .text
+00000410 R_386_32          .text
+00000414 R_386_32          .text
+00000420 R_386_32          .text
+00000424 R_386_32          .text
+00000428 R_386_32          .text
+0000042c R_386_32          .text
+00000438 R_386_32          .text
+0000043c R_386_32          .text
+00000440 R_386_32          .text
+00000444 R_386_32          .text
+00000450 R_386_32          .text
+00000454 R_386_32          .text
+00000458 R_386_32          .text
+0000045c R_386_32          .text
+00000468 R_386_32          .text
+0000046c R_386_32          .text
+00000470 R_386_32          .text
+00000474 R_386_32          .text
+00000480 R_386_32          .text
+00000484 R_386_32          .text
+00000488 R_386_32          .text
+0000048c R_386_32          .text
+00000498 R_386_32          .text
+0000049c R_386_32          .text
+000004a0 R_386_32          .text
+000004a4 R_386_32          .text
+000004b0 R_386_32          .text
+000004b4 R_386_32          .text
+000004b8 R_386_32          .text
+000004bc R_386_32          .text
+000004c8 R_386_32          .text
+000004cc R_386_32          .text
+000004d0 R_386_32          .text
+000004d4 R_386_32          .text
+000004e0 R_386_32          .text
+000004e4 R_386_32          .text
+000004e8 R_386_32          .text
+000004ec R_386_32          .text
+000004f8 R_386_32          .text
+000004fc R_386_32          .text
+00000500 R_386_32          .text
+00000504 R_386_32          .text
+00000510 R_386_32          .text
+00000514 R_386_32          .text
+00000518 R_386_32          .text
+0000051c R_386_32          .text
+00000528 R_386_32          .text
+0000052c R_386_32          .text
+00000530 R_386_32          .text
+00000534 R_386_32          .text
+00000540 R_386_32          .text
+00000544 R_386_32          .text
+00000548 R_386_32          .text
+0000054c R_386_32          .text
+00000558 R_386_32          .text
+0000055c R_386_32          .text
+00000560 R_386_32          .text
+00000564 R_386_32          .text
+00000570 R_386_32          .text
+00000574 R_386_32          .text
+00000578 R_386_32          .text
+0000057c R_386_32          .text
+00000588 R_386_32          .text
+0000058c R_386_32          .text
+00000590 R_386_32          .text
+00000594 R_386_32          .text
+000005a0 R_386_32          .text
+000005a4 R_386_32          .text
+000005a8 R_386_32          .text
+000005ac R_386_32          .text
+000005b8 R_386_32          .text
+000005bc R_386_32          .text
+000005c0 R_386_32          .text
+000005c4 R_386_32          .text
+000005d0 R_386_32          .text
+000005d4 R_386_32          .text
+000005d8 R_386_32          .text.nolibc_raise
+000005dc R_386_32          .text.nolibc_raise
+000005e0 R_386_32          .text.nolibc_memmove
+000005e4 R_386_32          .text.nolibc_memmove
+000005e8 R_386_32          .text.nolibc_memcpy
+000005ec R_386_32          .text.nolibc_memcpy
+000005f0 R_386_32          .text.nolibc_memset
+000005f4 R_386_32          .text.nolibc_memset
+000005f8 R_386_32          .text.nolibc_strlen
+000005fc R_386_32          .text.nolibc_strlen
+00000600 R_386_32          .text.nolibc_abort
+00000604 R_386_32          .text.nolibc_abort
+
+
+RELOCATION RECORDS FOR [.debug_line]:
+OFFSET   TYPE              VALUE
+000003b1 R_386_32          .text
+000022d2 R_386_32          .text.nolibc_raise
+000022ec R_386_32          .text.nolibc_memmove
+00002326 R_386_32          .text.nolibc_memcpy
+00002358 R_386_32          .text.nolibc_memset
+00002383 R_386_32          .text.nolibc_strlen
+000023bf R_386_32          .text.nolibc_abort
+
+
+RELOCATION RECORDS FOR [.debug_frame]:
+OFFSET   TYPE              VALUE
+00000018 R_386_32          .debug_frame
+0000001c R_386_32          .text
+00000030 R_386_32          .debug_frame
+00000034 R_386_32          .text
+00000040 R_386_32          .debug_frame
+00000044 R_386_32          .text
+00000064 R_386_32          .debug_frame
+00000068 R_386_32          .text
+00000084 R_386_32          .debug_frame
+00000088 R_386_32          .text
+000000a4 R_386_32          .debug_frame
+000000a8 R_386_32          .text
+000000c8 R_386_32          .debug_frame
+000000cc R_386_32          .text
+000000e8 R_386_32          .debug_frame
+000000ec R_386_32          .text
+0000010c R_386_32          .debug_frame
+00000110 R_386_32          .text
+0000012c R_386_32          .debug_frame
+00000130 R_386_32          .text
+00000154 R_386_32          .debug_frame
+00000158 R_386_32          .text
+00000174 R_386_32          .debug_frame
+00000178 R_386_32          .text
+000001a0 R_386_32          .debug_frame
+000001a4 R_386_32          .text
+000001c0 R_386_32          .debug_frame
+000001c4 R_386_32          .text
+000001e4 R_386_32          .debug_frame
+000001e8 R_386_32          .text
+00000204 R_386_32          .debug_frame
+00000208 R_386_32          .text
+00000228 R_386_32          .debug_frame
+0000022c R_386_32          .text
+00000248 R_386_32          .debug_frame
+0000024c R_386_32          .text
+0000026c R_386_32          .debug_frame
+00000270 R_386_32          .text
+0000028c R_386_32          .debug_frame
+00000290 R_386_32          .text
+000002b0 R_386_32          .debug_frame
+000002b4 R_386_32          .text
+000002d0 R_386_32          .debug_frame
+000002d4 R_386_32          .text
+000002f4 R_386_32          .debug_frame
+000002f8 R_386_32          .text
+00000314 R_386_32          .debug_frame
+00000318 R_386_32          .text
+00000338 R_386_32          .debug_frame
+0000033c R_386_32          .text
+00000358 R_386_32          .debug_frame
+0000035c R_386_32          .text
+00000374 R_386_32          .debug_frame
+00000378 R_386_32          .text
+0000038c R_386_32          .debug_frame
+00000390 R_386_32          .text
+000003a4 R_386_32          .debug_frame
+000003a8 R_386_32          .text
+000003d0 R_386_32          .debug_frame
+000003d4 R_386_32          .text
+000003f0 R_386_32          .debug_frame
+000003f4 R_386_32          .text
+00000410 R_386_32          .debug_frame
+00000414 R_386_32          .text
+00000430 R_386_32          .debug_frame
+00000434 R_386_32          .text
+00000454 R_386_32          .debug_frame
+00000458 R_386_32          .text
+00000474 R_386_32          .debug_frame
+00000478 R_386_32          .text
+00000498 R_386_32          .debug_frame
+0000049c R_386_32          .text
+000004b8 R_386_32          .debug_frame
+000004bc R_386_32          .text
+000004d8 R_386_32          .debug_frame
+000004dc R_386_32          .text
+000004f8 R_386_32          .debug_frame
+000004fc R_386_32          .text
+0000051c R_386_32          .debug_frame
+00000520 R_386_32          .text
+0000053c R_386_32          .debug_frame
+00000540 R_386_32          .text
+0000055c R_386_32          .debug_frame
+00000560 R_386_32          .text
+0000057c R_386_32          .debug_frame
+00000580 R_386_32          .text
+0000059c R_386_32          .debug_frame
+000005a0 R_386_32          .text
+000005bc R_386_32          .debug_frame
+000005c0 R_386_32          .text
+000005dc R_386_32          .debug_frame
+000005e0 R_386_32          .text
+000005fc R_386_32          .debug_frame
+00000600 R_386_32          .text
+0000061c R_386_32          .debug_frame
+00000620 R_386_32          .text
+0000063c R_386_32          .debug_frame
+00000640 R_386_32          .text
+0000065c R_386_32          .debug_frame
+00000660 R_386_32          .text
+0000067c R_386_32          .debug_frame
+00000680 R_386_32          .text
+0000069c R_386_32          .debug_frame
+000006a0 R_386_32          .text
+000006c0 R_386_32          .debug_frame
+000006c4 R_386_32          .text
+000006e0 R_386_32          .debug_frame
+000006e4 R_386_32          .text
+0000070c R_386_32          .debug_frame
+00000710 R_386_32          .text
+0000072c R_386_32          .debug_frame
+00000730 R_386_32          .text
+00000750 R_386_32          .debug_frame
+00000754 R_386_32          .text
+00000770 R_386_32          .debug_frame
+00000774 R_386_32          .text
+00000794 R_386_32          .debug_frame
+00000798 R_386_32          .text
+000007b4 R_386_32          .debug_frame
+000007b8 R_386_32          .text
+000007d8 R_386_32          .debug_frame
+000007dc R_386_32          .text
+000007f8 R_386_32          .debug_frame
+000007fc R_386_32          .text
+00000820 R_386_32          .debug_frame
+00000824 R_386_32          .text
+00000840 R_386_32          .debug_frame
+00000844 R_386_32          .text
+00000864 R_386_32          .debug_frame
+00000868 R_386_32          .text
+00000884 R_386_32          .debug_frame
+00000888 R_386_32          .text
+000008a4 R_386_32          .debug_frame
+000008a8 R_386_32          .text
+000008c8 R_386_32          .debug_frame
+000008cc R_386_32          .text
+000008e8 R_386_32          .debug_frame
+000008ec R_386_32          .text
+0000090c R_386_32          .debug_frame
+00000910 R_386_32          .text
+0000092c R_386_32          .debug_frame
+00000930 R_386_32          .text
+0000094c R_386_32          .debug_frame
+00000950 R_386_32          .text
+0000096c R_386_32          .debug_frame
+00000970 R_386_32          .text
+00000990 R_386_32          .debug_frame
+00000994 R_386_32          .text
+000009b0 R_386_32          .debug_frame
+000009b4 R_386_32          .text
+000009d0 R_386_32          .debug_frame
+000009d4 R_386_32          .text
+000009f0 R_386_32          .debug_frame
+000009f4 R_386_32          .text
+00000a10 R_386_32          .debug_frame
+00000a14 R_386_32          .text
+00000a34 R_386_32          .debug_frame
+00000a38 R_386_32          .text
+00000a54 R_386_32          .debug_frame
+00000a58 R_386_32          .text
+00000a78 R_386_32          .debug_frame
+00000a7c R_386_32          .text
+00000a98 R_386_32          .debug_frame
+00000a9c R_386_32          .text
+00000abc R_386_32          .debug_frame
+00000ac0 R_386_32          .text
+00000adc R_386_32          .debug_frame
+00000ae0 R_386_32          .text
+00000b00 R_386_32          .debug_frame
+00000b04 R_386_32          .text
+00000b20 R_386_32          .debug_frame
+00000b24 R_386_32          .text
+00000b44 R_386_32          .debug_frame
+00000b48 R_386_32          .text
+00000b64 R_386_32          .debug_frame
+00000b68 R_386_32          .text
+00000b88 R_386_32          .debug_frame
+00000b8c R_386_32          .text
+00000ba8 R_386_32          .debug_frame
+00000bac R_386_32          .text
+00000bc8 R_386_32          .debug_frame
+00000bcc R_386_32          .text
+00000bec R_386_32          .debug_frame
+00000bf0 R_386_32          .text
+00000c18 R_386_32          .debug_frame
+00000c1c R_386_32          .text
+00000c38 R_386_32          .debug_frame
+00000c3c R_386_32          .text
+00000c64 R_386_32          .debug_frame
+00000c68 R_386_32          .text
+00000c84 R_386_32          .debug_frame
+00000c88 R_386_32          .text
+00000ca8 R_386_32          .debug_frame
+00000cac R_386_32          .text
+00000cc8 R_386_32          .debug_frame
+00000ccc R_386_32          .text
+00000cf4 R_386_32          .debug_frame
+00000cf8 R_386_32          .text
+00000d14 R_386_32          .debug_frame
+00000d18 R_386_32          .text
+00000d40 R_386_32          .debug_frame
+00000d44 R_386_32          .text
+00000d60 R_386_32          .debug_frame
+00000d64 R_386_32          .text
+00000d84 R_386_32          .debug_frame
+00000d88 R_386_32          .text
+00000da4 R_386_32          .debug_frame
+00000da8 R_386_32          .text
+00000dcc R_386_32          .debug_frame
+00000dd0 R_386_32          .text
+00000dec R_386_32          .debug_frame
+00000df0 R_386_32          .text
+00000e14 R_386_32          .debug_frame
+00000e18 R_386_32          .text
+00000e34 R_386_32          .debug_frame
+00000e38 R_386_32          .text
+00000e54 R_386_32          .debug_frame
+00000e58 R_386_32          .text
+00000e80 R_386_32          .debug_frame
+00000e84 R_386_32          .text
+00000ea0 R_386_32          .debug_frame
+00000ea4 R_386_32          .text
+00000ecc R_386_32          .debug_frame
+00000ed0 R_386_32          .text
+00000eec R_386_32          .debug_frame
+00000ef0 R_386_32          .text
+00000f0c R_386_32          .debug_frame
+00000f10 R_386_32          .text
+00000f2c R_386_32          .debug_frame
+00000f30 R_386_32          .text
+00000f4c R_386_32          .debug_frame
+00000f50 R_386_32          .text
+00000f6c R_386_32          .debug_frame
+00000f70 R_386_32          .text
+00000f90 R_386_32          .debug_frame
+00000f94 R_386_32          .text
+00000fb0 R_386_32          .debug_frame
+00000fb4 R_386_32          .text
+00000fd4 R_386_32          .debug_frame
+00000fd8 R_386_32          .text
+00000ff4 R_386_32          .debug_frame
+00000ff8 R_386_32          .text
+00001018 R_386_32          .debug_frame
+0000101c R_386_32          .text
+00001038 R_386_32          .debug_frame
+0000103c R_386_32          .text
+0000105c R_386_32          .debug_frame
+00001060 R_386_32          .text
+0000107c R_386_32          .debug_frame
+00001080 R_386_32          .text
+000010a4 R_386_32          .debug_frame
+000010a8 R_386_32          .text
+000010c4 R_386_32          .debug_frame
+000010c8 R_386_32          .text
+000010e4 R_386_32          .debug_frame
+000010e8 R_386_32          .text
+00001108 R_386_32          .debug_frame
+0000110c R_386_32          .text
+00001128 R_386_32          .debug_frame
+0000112c R_386_32          .text
+0000114c R_386_32          .debug_frame
+00001150 R_386_32          .text
+0000116c R_386_32          .debug_frame
+00001170 R_386_32          .text
+00001190 R_386_32          .debug_frame
+00001194 R_386_32          .text
+000011b0 R_386_32          .debug_frame
+000011b4 R_386_32          .text
+000011d8 R_386_32          .debug_frame
+000011dc R_386_32          .text
+000011f8 R_386_32          .debug_frame
+000011fc R_386_32          .text
+0000121c R_386_32          .debug_frame
+00001220 R_386_32          .text
+0000123c R_386_32          .debug_frame
+00001240 R_386_32          .text
+00001260 R_386_32          .debug_frame
+00001264 R_386_32          .text
+00001280 R_386_32          .debug_frame
+00001284 R_386_32          .text
+000012a8 R_386_32          .debug_frame
+000012ac R_386_32          .text
+000012c8 R_386_32          .debug_frame
+000012cc R_386_32          .text
+000012ec R_386_32          .debug_frame
+000012f0 R_386_32          .text
+0000130c R_386_32          .debug_frame
+00001310 R_386_32          .text
+00001330 R_386_32          .debug_frame
+00001334 R_386_32          .text
+00001350 R_386_32          .debug_frame
+00001354 R_386_32          .text
+00001374 R_386_32          .debug_frame
+00001378 R_386_32          .text
+00001394 R_386_32          .debug_frame
+00001398 R_386_32          .text
+000013c0 R_386_32          .debug_frame
+000013c4 R_386_32          .text
+000013e0 R_386_32          .debug_frame
+000013e4 R_386_32          .text
+00001400 R_386_32          .debug_frame
+00001404 R_386_32          .text
+00001420 R_386_32          .debug_frame
+00001424 R_386_32          .text
+00001440 R_386_32          .debug_frame
+00001444 R_386_32          .text
+00001460 R_386_32          .debug_frame
+00001464 R_386_32          .text
+00001480 R_386_32          .debug_frame
+00001484 R_386_32          .text
+000014a0 R_386_32          .debug_frame
+000014a4 R_386_32          .text
+000014c0 R_386_32          .debug_frame
+000014c4 R_386_32          .text
+000014e0 R_386_32          .debug_frame
+000014e4 R_386_32          .text
+00001500 R_386_32          .debug_frame
+00001504 R_386_32          .text
+00001520 R_386_32          .debug_frame
+00001524 R_386_32          .text
+00001540 R_386_32          .debug_frame
+00001544 R_386_32          .text
+00001560 R_386_32          .debug_frame
+00001564 R_386_32          .text
+00001580 R_386_32          .debug_frame
+00001584 R_386_32          .text
+000015a0 R_386_32          .debug_frame
+000015a4 R_386_32          .text
+000015c0 R_386_32          .debug_frame
+000015c4 R_386_32          .text
+000015e4 R_386_32          .debug_frame
+000015e8 R_386_32          .text
+00001604 R_386_32          .debug_frame
+00001608 R_386_32          .text
+00001628 R_386_32          .debug_frame
+0000162c R_386_32          .text
+00001648 R_386_32          .debug_frame
+0000164c R_386_32          .text.nolibc_raise
+00001668 R_386_32          .debug_frame
+0000166c R_386_32          .text
+00001690 R_386_32          .debug_frame
+00001694 R_386_32          .text
+000016b0 R_386_32          .debug_frame
+000016b4 R_386_32          .text
+000016d0 R_386_32          .debug_frame
+000016d4 R_386_32          .text
+000016f4 R_386_32          .debug_frame
+000016f8 R_386_32          .text
+00001714 R_386_32          .debug_frame
+00001718 R_386_32          .text
+00001734 R_386_32          .debug_frame
+00001738 R_386_32          .text
+00001754 R_386_32          .debug_frame
+00001758 R_386_32          .text
+0000177c R_386_32          .debug_frame
+00001780 R_386_32          .text
+0000179c R_386_32          .debug_frame
+000017a0 R_386_32          .text
+000017c4 R_386_32          .debug_frame
+000017c8 R_386_32          .text
+000017e4 R_386_32          .debug_frame
+000017e8 R_386_32          .text
+00001804 R_386_32          .debug_frame
+00001808 R_386_32          .text.nolibc_memmove
+00001824 R_386_32          .debug_frame
+00001828 R_386_32          .text.nolibc_memcpy
+00001844 R_386_32          .debug_frame
+00001848 R_386_32          .text.nolibc_memset
+00001864 R_386_32          .debug_frame
+00001868 R_386_32          .text
+00001884 R_386_32          .debug_frame
+00001888 R_386_32          .text
+000018a4 R_386_32          .debug_frame
+000018a8 R_386_32          .text
+000018c4 R_386_32          .debug_frame
+000018c8 R_386_32          .text
+000018e4 R_386_32          .debug_frame
+000018e8 R_386_32          .text.nolibc_strlen
+00001904 R_386_32          .debug_frame
+00001908 R_386_32          .text
+00001924 R_386_32          .debug_frame
+00001928 R_386_32          .text
+00001944 R_386_32          .debug_frame
+00001948 R_386_32          .text
+00001964 R_386_32          .debug_frame
+00001968 R_386_32          .text
+00001984 R_386_32          .debug_frame
+00001988 R_386_32          .text
+000019a4 R_386_32          .debug_frame
+000019a8 R_386_32          .text
+000019c4 R_386_32          .debug_frame
+000019c8 R_386_32          .text
+000019e4 R_386_32          .debug_frame
+000019e8 R_386_32          .text
+00001a04 R_386_32          .debug_frame
+00001a08 R_386_32          .text
+00001a24 R_386_32          .debug_frame
+00001a28 R_386_32          .text
+00001a44 R_386_32          .debug_frame
+00001a48 R_386_32          .text
+00001a64 R_386_32          .debug_frame
+00001a68 R_386_32          .text
+00001a84 R_386_32          .debug_frame
+00001a88 R_386_32          .text.nolibc_abort
+00001a9c R_386_32          .debug_frame
+00001aa0 R_386_32          .text
+00001abc R_386_32          .debug_frame
+00001ac0 R_386_32          .text
+00001adc R_386_32          .debug_frame
+00001ae0 R_386_32          .text
+00001afc R_386_32          .debug_frame
+00001b00 R_386_32          .text
+00001b1c R_386_32          .debug_frame
+00001b20 R_386_32          .text
+00001b3c R_386_32          .debug_frame
+00001b40 R_386_32          .text
+00001b5c R_386_32          .debug_frame
+00001b60 R_386_32          .text
+00001b7c R_386_32          .debug_frame
+00001b80 R_386_32          .text
+00001b9c R_386_32          .debug_frame
+00001ba0 R_386_32          .text
+00001bbc R_386_32          .debug_frame
+00001bc0 R_386_32          .text
+00001bdc R_386_32          .debug_frame
+00001be0 R_386_32          .text
+00001bfc R_386_32          .debug_frame
+00001c00 R_386_32          .text
+00001c1c R_386_32          .debug_frame
+00001c20 R_386_32          .text
+00001c3c R_386_32          .debug_frame
+00001c40 R_386_32          .text
+00001c60 R_386_32          .debug_frame
+00001c64 R_386_32          .text
+00001c80 R_386_32          .debug_frame
+00001c84 R_386_32          .text
+00001ca0 R_386_32          .debug_frame
+00001ca4 R_386_32          .text
+00001cc0 R_386_32          .debug_frame
+00001cc4 R_386_32          .text
+00001ce0 R_386_32          .debug_frame
+00001ce4 R_386_32          .text
+00001d00 R_386_32          .debug_frame
+00001d04 R_386_32          .text
+00001d20 R_386_32          .debug_frame
+00001d24 R_386_32          .text
+00001d40 R_386_32          .debug_frame
+00001d44 R_386_32          .text
+00001d60 R_386_32          .debug_frame
+00001d64 R_386_32          .text
+00001d80 R_386_32          .debug_frame
+00001d84 R_386_32          .text
+00001da0 R_386_32          .debug_frame
+00001da4 R_386_32          .text
+00001dc0 R_386_32          .debug_frame
+00001dc4 R_386_32          .text
+00001de0 R_386_32          .debug_frame
+00001de4 R_386_32          .text
+00001e00 R_386_32          .debug_frame
+00001e04 R_386_32          .text
+00001e20 R_386_32          .debug_frame
+00001e24 R_386_32          .text
+00001e40 R_386_32          .debug_frame
+00001e44 R_386_32          .text
+00001e60 R_386_32          .debug_frame
+00001e64 R_386_32          .text
+00001e80 R_386_32          .debug_frame
+00001e84 R_386_32          .text
+00001ea0 R_386_32          .debug_frame
+00001ea4 R_386_32          .text
+00001ec0 R_386_32          .debug_frame
+00001ec4 R_386_32          .text
+00001ee0 R_386_32          .debug_frame
+00001ee4 R_386_32          .text
+00001f00 R_386_32          .debug_frame
+00001f04 R_386_32          .text
+00001f20 R_386_32          .debug_frame
+00001f24 R_386_32          .text
+00001f40 R_386_32          .debug_frame
+00001f44 R_386_32          .text
+00001f60 R_386_32          .debug_frame
+00001f64 R_386_32          .text
+00001f80 R_386_32          .debug_frame
+00001f84 R_386_32          .text
+00001fa0 R_386_32          .debug_frame
+00001fa4 R_386_32          .text
+00001fc0 R_386_32          .debug_frame
+00001fc4 R_386_32          .text
+00001fe0 R_386_32          .debug_frame
+00001fe4 R_386_32          .text
+00002000 R_386_32          .debug_frame
+00002004 R_386_32          .text
+00002020 R_386_32          .debug_frame
+00002024 R_386_32          .text
+00002040 R_386_32          .debug_frame
+00002044 R_386_32          .text
+00002060 R_386_32          .debug_frame
+00002064 R_386_32          .text
+00002080 R_386_32          .debug_frame
+00002084 R_386_32          .text
+000020a0 R_386_32          .debug_frame
+000020a4 R_386_32          .text
+000020c0 R_386_32          .debug_frame
+000020c4 R_386_32          .text
+000020e4 R_386_32          .debug_frame
+000020e8 R_386_32          .text
+00002104 R_386_32          .debug_frame
+00002108 R_386_32          .text
+00002124 R_386_32          .debug_frame
+00002128 R_386_32          .text
+00002144 R_386_32          .debug_frame
+00002148 R_386_32          .text
+00002164 R_386_32          .debug_frame
+00002168 R_386_32          .text
+00002184 R_386_32          .debug_frame
+00002188 R_386_32          .text
+000021a4 R_386_32          .debug_frame
+000021a8 R_386_32          .text
+000021c4 R_386_32          .debug_frame
+000021c8 R_386_32          .text
+000021e4 R_386_32          .debug_frame
+000021e8 R_386_32          .text
+00002210 R_386_32          .debug_frame
+00002214 R_386_32          .text
+00002230 R_386_32          .debug_frame
+00002234 R_386_32          .text
+00002250 R_386_32          .debug_frame
+00002254 R_386_32          .text
+
+

@@ -16,6 +16,7 @@ package ghidra.app.analyzers.relocations.utils;
 import ghidra.program.model.address.Address;
 import ghidra.program.model.listing.CodeUnit;
 import ghidra.program.model.listing.Program;
+import ghidra.program.model.symbol.OffsetReference;
 import ghidra.program.model.symbol.Reference;
 import ghidra.program.model.symbol.Symbol;
 
@@ -65,16 +66,22 @@ public class RelocationTarget {
 	public static RelocationTarget get(Program program, Reference reference) {
 		Address address = reference.getToAddress();
 		long offset = 0;
-		Symbol symbol = program.getSymbolTable().getSymbol(reference);
+
+		// SymbolTable.getSymbol(reference) returns the symbol at the "to" address.
+		// For offset references we need OffsetReference.getBaseAddress() instead.
+		Address lookupAddress = reference.isOffsetReference()
+				? ((OffsetReference) reference).getBaseAddress()
+				: address;
 
 		// Normalize references to base of symbol, if any.
-		CodeUnit codeUnit = program.getListing().getCodeUnitContaining(address);
+		CodeUnit codeUnit = program.getListing().getCodeUnitContaining(lookupAddress);
 		if (codeUnit != null) {
 			address = codeUnit.getMinAddress();
 			offset = reference.getToAddress().subtract(address);
-			symbol = program.getSymbolTable().getPrimarySymbol(address);
 		}
 
+		// Ensure that there is a symbol at the target address.
+		Symbol symbol = program.getSymbolTable().getPrimarySymbol(address);
 		if (symbol == null) {
 			return null;
 		}

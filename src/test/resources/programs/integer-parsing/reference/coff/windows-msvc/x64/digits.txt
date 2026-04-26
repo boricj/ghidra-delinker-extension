@@ -1,0 +1,187 @@
+
+Dump of file C:\Users\jblbe\Documents\Workspace\ghidra-delinker-extension\src\test\resources\programs\integer-parsing\reference\coff\windows-msvc\x64\digits.obj
+
+File Type: COFF OBJECT
+
+FILE HEADER VALUES
+            8664 machine (x64)
+               5 number of sections
+        69EC795D time date stamp Sat Apr 25 10:20:45 2026
+             3E3 file pointer to symbol table
+               E number of symbols
+               0 size of optional header
+               0 characteristics
+
+SECTION HEADER #1
+.drectve name
+       0 physical address
+       0 virtual address
+      2F size of raw data
+      DC file pointer to raw data (000000DC to 0000010A)
+       0 file pointer to relocation table
+       0 file pointer to line numbers
+       0 number of relocations
+       0 number of line numbers
+  100A00 flags
+         Info
+         Remove
+         1 byte align
+
+RAW DATA #1
+  00000000: 20 20 20 2F 44 45 46 41 55 4C 54 4C 49 42 3A 22     /DEFAULTLIB:"
+  00000010: 4C 49 42 43 4D 54 22 20 2F 44 45 46 41 55 4C 54  LIBCMT" /DEFAULT
+  00000020: 4C 49 42 3A 22 4F 4C 44 4E 41 4D 45 53 22 20     LIB:"OLDNAMES" 
+
+   Linker Directives
+   -----------------
+   /DEFAULTLIB:LIBCMT
+   /DEFAULTLIB:OLDNAMES
+
+SECTION HEADER #2
+.debug$S name
+       0 physical address
+       0 virtual address
+     1C4 size of raw data
+     10B file pointer to raw data (0000010B to 000002CE)
+     2CF file pointer to relocation table
+       0 file pointer to line numbers
+       2 number of relocations
+       0 number of line numbers
+42100040 flags
+         Initialized Data
+         Discardable
+         1 byte align
+         Read Only
+
+RAW DATA #2
+  00000000: 04 00 00 00 F1 00 00 00 D8 00 00 00 9A 00 01 11  ....ñ...Ø.......
+  00000010: 00 00 00 00 43 3A 5C 55 73 65 72 73 5C 6A 62 6C  ....C:\Users\jbl
+  00000020: 62 65 5C 44 6F 63 75 6D 65 6E 74 73 5C 57 6F 72  be\Documents\Wor
+  00000030: 6B 73 70 61 63 65 5C 67 68 69 64 72 61 2D 64 65  kspace\ghidra-de
+  00000040: 6C 69 6E 6B 65 72 2D 65 78 74 65 6E 73 69 6F 6E  linker-extension
+  00000050: 5C 73 72 63 5C 74 65 73 74 5C 72 65 73 6F 75 72  \src\test\resour
+  00000060: 63 65 73 5C 70 72 6F 67 72 61 6D 73 5C 69 6E 74  ces\programs\int
+  00000070: 65 67 65 72 2D 70 61 72 73 69 6E 67 5C 72 65 66  eger-parsing\ref
+  00000080: 65 72 65 6E 63 65 5C 63 6F 66 66 5C 77 69 6E 64  erence\coff\wind
+  00000090: 6F 77 73 2D 6D 73 76 63 5C 78 36 34 5C 64 69 67  ows-msvc\x64\dig
+  000000A0: 69 74 73 2E 6F 62 6A 00 3A 00 3C 11 00 60 00 00  its.obj.:.<..`..
+  000000B0: D0 00 13 00 2C 00 99 89 00 00 13 00 2C 00 99 89  Ð...,.......,...
+  000000C0: 00 00 4D 69 63 72 6F 73 6F 66 74 20 28 52 29 20  ..Microsoft (R) 
+  000000D0: 4F 70 74 69 6D 69 7A 69 6E 67 20 43 6F 6D 70 69  Optimizing Compi
+  000000E0: 6C 65 72 00 F1 00 00 00 17 00 00 00 15 00 0D 11  ler.ñ...........
+  000000F0: 01 10 00 00 00 00 00 00 00 00 73 5F 64 69 67 69  ..........s_digi
+  00000100: 74 73 00 00 F4 00 00 00 28 00 00 00 01 00 00 00  ts..ô...(.......
+  00000110: 20 03 3A 72 35 3A 86 20 08 A7 61 34 7F 82 9C AF   .:r5:. .§a4...¯
+  00000120: D5 A7 D8 CF 60 42 63 6A 4E 91 50 67 27 F4 21 05  Õ§ØÏ`BcjN.Pg'ô!.
+  00000130: 37 F6 00 00 F3 00 00 00 77 00 00 00 00 43 3A 5C  7ö..ó...w....C:\
+  00000140: 55 73 65 72 73 5C 6A 62 6C 62 65 5C 44 6F 63 75  Users\jblbe\Docu
+  00000150: 6D 65 6E 74 73 5C 57 6F 72 6B 73 70 61 63 65 5C  ments\Workspace\
+  00000160: 67 68 69 64 72 61 2D 64 65 6C 69 6E 6B 65 72 2D  ghidra-delinker-
+  00000170: 65 78 74 65 6E 73 69 6F 6E 5C 73 72 63 5C 74 65  extension\src\te
+  00000180: 73 74 5C 72 65 73 6F 75 72 63 65 73 5C 70 72 6F  st\resources\pro
+  00000190: 67 72 61 6D 73 5C 69 6E 74 65 67 65 72 2D 70 61  grams\integer-pa
+  000001A0: 72 73 69 6E 67 5C 73 72 63 5C 64 69 67 69 74 73  rsing\src\digits
+  000001B0: 2E 63 00 00 F1 00 00 00 08 00 00 00 06 00 4C 11  .c..ñ.........L.
+  000001C0: 07 10 00 00                                      ....
+
+RELOCATIONS #2
+                                                Symbol    Symbol
+ Offset    Type              Applied To         Index     Name
+ --------  ----------------  -----------------  --------  ------
+ 000000F4  SECREL                     00000000         B  s_digits
+ 000000F8  SECTION                        0000         B  s_digits
+
+SECTION HEADER #3
+.debug$T name
+       0 physical address
+       0 virtual address
+      B0 size of raw data
+     2E3 file pointer to raw data (000002E3 to 00000392)
+       0 file pointer to relocation table
+       0 file pointer to line numbers
+       0 number of relocations
+       0 number of line numbers
+42100040 flags
+         Initialized Data
+         Discardable
+         1 byte align
+         Read Only
+
+RAW DATA #3
+  00000000: 04 00 00 00 AA 00 15 15 ED FF 7B 22 0F 4F B8 4C  ....ª...íÿ{".O¸L
+  00000010: A3 06 8F 26 5A 3C D9 40 01 00 00 00 43 3A 5C 55  £..&Z<Ù@....C:\U
+  00000020: 73 65 72 73 5C 6A 62 6C 62 65 5C 44 6F 63 75 6D  sers\jblbe\Docum
+  00000030: 65 6E 74 73 5C 57 6F 72 6B 73 70 61 63 65 5C 67  ents\Workspace\g
+  00000040: 68 69 64 72 61 2D 64 65 6C 69 6E 6B 65 72 2D 65  hidra-delinker-e
+  00000050: 78 74 65 6E 73 69 6F 6E 5C 73 72 63 5C 74 65 73  xtension\src\tes
+  00000060: 74 5C 72 65 73 6F 75 72 63 65 73 5C 70 72 6F 67  t\resources\prog
+  00000070: 72 61 6D 73 5C 69 6E 74 65 67 65 72 2D 70 61 72  rams\integer-par
+  00000080: 73 69 6E 67 5C 72 65 66 65 72 65 6E 63 65 5C 63  sing\reference\c
+  00000090: 6F 66 66 5C 77 69 6E 64 6F 77 73 2D 6D 73 76 63  off\windows-msvc
+  000000A0: 5C 78 36 34 5C 64 69 67 69 74 73 2E 70 64 62 00  \x64\digits.pdb.
+
+SECTION HEADER #4
+  .rdata name
+       0 physical address
+       0 virtual address
+      28 size of raw data
+     393 file pointer to raw data (00000393 to 000003BA)
+       0 file pointer to relocation table
+       0 file pointer to line numbers
+       0 number of relocations
+       0 number of line numbers
+40400040 flags
+         Initialized Data
+         8 byte align
+         Read Only
+
+RAW DATA #4
+  00000000: 00 00 00 00 01 00 00 00 02 00 00 00 03 00 00 00  ................
+  00000010: 04 00 00 00 05 00 00 00 06 00 00 00 07 00 00 00  ................
+  00000020: 08 00 00 00 09 00 00 00                          ........
+
+SECTION HEADER #5
+ .chks64 name
+       0 physical address
+       0 virtual address
+      28 size of raw data
+     3BB file pointer to raw data (000003BB to 000003E2)
+       0 file pointer to relocation table
+       0 file pointer to line numbers
+       0 number of relocations
+       0 number of line numbers
+     A00 flags
+         Info
+         Remove
+         (no align specified)
+
+RAW DATA #5
+  00000000: 23 07 66 15 27 1A BF 1A 58 2C 0A F5 E6 37 AD F3  #.f.'.¿.X,.õæ7­ó
+  00000010: A6 4E 88 6E 21 C6 83 E1 10 B4 79 6E AC 59 C7 D8  ¦N.n!Æ.á.´yn¬YÇØ
+  00000020: 00 00 00 00 00 00 00 00                          ........
+
+COFF SYMBOL TABLE
+000 01048999 ABS    notype       Static       | @comp.id
+001 80010190 ABS    notype       Static       | @feat.00
+002 00000003 ABS    notype       Static       | @vol.md
+003 00000000 SECT1  notype       Static       | .drectve
+    Section length   2F, #relocs    0, #linenums    0, checksum        0
+005 00000000 SECT2  notype       Static       | .debug$S
+    Section length  1C4, #relocs    2, #linenums    0, checksum        0
+007 00000000 SECT3  notype       Static       | .debug$T
+    Section length   B0, #relocs    0, #linenums    0, checksum        0
+009 00000000 SECT4  notype       Static       | .rdata
+    Section length   28, #relocs    0, #linenums    0, checksum 640344B3
+00B 00000000 SECT4  notype       External     | s_digits
+00C 00000000 SECT5  notype       Static       | .chks64
+    Section length   28, #relocs    0, #linenums    0, checksum        0
+
+String Table Size = 0x0 bytes
+
+  Summary
+
+          28 .chks64
+         1C4 .debug$S
+          B0 .debug$T
+          2F .drectve
+          28 .rdata

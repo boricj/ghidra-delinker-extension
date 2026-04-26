@@ -1,0 +1,59 @@
+
+/mnt/c/Users/jblbe/Documents/Workspace/ghidra-delinker-extension/src/test/resources/programs/integer-parsing/reference/elf/linux-nolibc/x86_64/digits.o:     file format elf64-x86-64
+/mnt/c/Users/jblbe/Documents/Workspace/ghidra-delinker-extension/src/test/resources/programs/integer-parsing/reference/elf/linux-nolibc/x86_64/digits.o
+architecture: i386:x86-64, flags 0x00000011:
+HAS_RELOC, HAS_SYMS
+start address 0x0000000000000000
+
+Sections:
+Idx Name          Size      VMA               LMA               File off  Algn
+  0 .text         00000000  0000000000000000  0000000000000000  00000040  2**0
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+  1 .data         00000000  0000000000000000  0000000000000000  00000040  2**0
+                  CONTENTS, ALLOC, LOAD, DATA
+  2 .bss          00000000  0000000000000000  0000000000000000  00000040  2**0
+                  ALLOC
+  3 .ctf          0000012e  0000000000000000  0000000000000000  00000040  2**0
+                  CONTENTS, READONLY
+  4 .rodata       00000028  0000000000000000  0000000000000000  00000180  2**5
+                  CONTENTS, ALLOC, LOAD, READONLY, DATA
+  5 .debug_info   0000005c  0000000000000000  0000000000000000  000001a8  2**0
+                  CONTENTS, RELOC, READONLY, DEBUGGING, OCTETS
+  6 .debug_abbrev 00000052  0000000000000000  0000000000000000  00000204  2**0
+                  CONTENTS, READONLY, DEBUGGING, OCTETS
+  7 .debug_aranges 00000020  0000000000000000  0000000000000000  00000256  2**0
+                  CONTENTS, RELOC, READONLY, DEBUGGING, OCTETS
+  8 .debug_line   0000002e  0000000000000000  0000000000000000  00000276  2**0
+                  CONTENTS, READONLY, DEBUGGING, OCTETS
+  9 .debug_str    00000136  0000000000000000  0000000000000000  000002a4  2**0
+                  CONTENTS, READONLY, DEBUGGING, OCTETS
+ 10 .comment      00000028  0000000000000000  0000000000000000  000003da  2**0
+                  CONTENTS, READONLY
+ 11 .note.GNU-stack 00000000  0000000000000000  0000000000000000  00000402  2**0
+                  CONTENTS, READONLY
+SYMBOL TABLE:
+0000000000000000 l    df *ABS*	0000000000000000 digits.c
+0000000000000000 l    d  .debug_info	0000000000000000 .debug_info
+0000000000000000 l    d  .debug_abbrev	0000000000000000 .debug_abbrev
+0000000000000000 l    d  .debug_line	0000000000000000 .debug_line
+0000000000000000 l    d  .debug_str	0000000000000000 .debug_str
+0000000000000000 g     O .rodata	0000000000000028 s_digits
+
+
+RELOCATION RECORDS FOR [.debug_info]:
+OFFSET           TYPE              VALUE
+0000000000000006 R_X86_64_32       .debug_abbrev
+000000000000000c R_X86_64_32       .debug_str+0x000000000000006d
+0000000000000011 R_X86_64_32       .debug_str+0x000000000000010f
+0000000000000015 R_X86_64_32       .debug_str
+0000000000000019 R_X86_64_32       .debug_line
+0000000000000035 R_X86_64_32       .debug_str+0x000000000000011c
+0000000000000046 R_X86_64_32       .debug_str+0x0000000000000101
+0000000000000053 R_X86_64_64       s_digits
+
+
+RELOCATION RECORDS FOR [.debug_aranges]:
+OFFSET           TYPE              VALUE
+0000000000000006 R_X86_64_32       .debug_info
+
+

@@ -1,0 +1,3779 @@
+
+/mnt/c/Users/jblbe/Documents/Workspace/ghidra-delinker-extension/src/test/resources/programs/integer-parsing/reference/elf/linux-nolibc/mips/main.o:     file format elf32-tradbigmips
+/mnt/c/Users/jblbe/Documents/Workspace/ghidra-delinker-extension/src/test/resources/programs/integer-parsing/reference/elf/linux-nolibc/mips/main.o
+architecture: mips:isa32r2, flags 0x00000011:
+HAS_RELOC, HAS_SYMS
+start address 0x00000000
+private flags = 70001001: [abi=O32] [mips32r2] [not 32bitmode] [noreorder]
+
+MIPS ABI Flags Version: 0
+
+ISA: MIPS32r2
+GPR size: 32
+CPR1 size: 32
+CPR2 size: 0
+FP ABI: Hard float (32-bit CPU, Any FPU)
+ISA Extension: None
+ASEs:
+	None
+FLAGS 1: 00000000
+FLAGS 2: 00000000
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .text         00008970  00000000  00000000  00000040  2**4
+                  CONTENTS, ALLOC, LOAD, RELOC, READONLY, CODE
+  1 .data         00000020  00000000  00000000  000089b0  2**4
+                  CONTENTS, ALLOC, LOAD, DATA
+  2 .bss          00000030  00000000  00000000  000089d0  2**4
+                  ALLOC
+  3 .reginfo      00000018  00000000  00000000  000089d0  2**2
+                  CONTENTS, ALLOC, LOAD, READONLY, DATA, LINK_ONCE_SAME_SIZE
+  4 .MIPS.abiflags 00000018  00000000  00000000  000089e8  2**3
+                  CONTENTS, ALLOC, LOAD, READONLY, DATA, LINK_ONCE_SAME_SIZE
+  5 .pdr          00002100  00000000  00000000  00008a00  2**2
+                  CONTENTS, RELOC, READONLY
+  6 .mdebug.abi32 00000000  00000000  00000000  0000ab00  2**0
+                  CONTENTS, READONLY
+  7 .ctf          00004608  00000000  00000000  0000ab00  2**0
+                  CONTENTS, READONLY
+  8 .rodata.str1.4 00000094  00000000  00000000  0000f108  2**2
+                  CONTENTS, ALLOC, LOAD, READONLY, DATA
+  9 .rodata       00000030  00000000  00000000  0000f1a0  2**4
+                  CONTENTS, ALLOC, LOAD, RELOC, READONLY, DATA
+ 10 .text.nolibc_raise 00000044  00000000  00000000  0000f1d0  2**2
+                  CONTENTS, ALLOC, LOAD, RELOC, READONLY, CODE
+ 11 .text.nolibc_memmove 000000b4  00000000  00000000  0000f214  2**2
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+ 12 .text.nolibc_memcpy 0000007c  00000000  00000000  0000f2c8  2**2
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+ 13 .text.nolibc_memset 0000006c  00000000  00000000  0000f344  2**2
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+ 14 .text.nolibc_strlen 00000058  00000000  00000000  0000f3b0  2**2
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+ 15 .text.nolibc_abort 00000030  00000000  00000000  0000f408  2**2
+                  CONTENTS, ALLOC, LOAD, RELOC, READONLY, CODE
+ 16 .data.nolibc_getopt 00000010  00000000  00000000  0000f438  2**2
+                  CONTENTS, ALLOC, LOAD, DATA
+ 17 .sbss         00000004  00000000  00000000  0000f448  2**2
+                  ALLOC
+ 18 .debug_info   00007058  00000000  00000000  0000f448  2**0
+                  CONTENTS, RELOC, READONLY, DEBUGGING, OCTETS
+ 19 .debug_abbrev 00000517  00000000  00000000  000164a0  2**0
+                  CONTENTS, READONLY, DEBUGGING, OCTETS
+ 20 .debug_aranges 00000050  00000000  00000000  000169b7  2**0
+                  CONTENTS, RELOC, READONLY, DEBUGGING, OCTETS
+ 21 .debug_ranges 00000610  00000000  00000000  00016a07  2**0
+                  CONTENTS, RELOC, READONLY, DEBUGGING, OCTETS
+ 22 .debug_line   0000281f  00000000  00000000  00017017  2**0
+                  CONTENTS, RELOC, READONLY, DEBUGGING, OCTETS
+ 23 .debug_str    0000178e  00000000  00000000  00019836  2**0
+                  CONTENTS, READONLY, DEBUGGING, OCTETS
+ 24 .comment      00000020  00000000  00000000  0001afc4  2**0
+                  CONTENTS, READONLY
+ 25 .note.GNU-stack 00000000  00000000  00000000  0001afe4  2**0
+                  CONTENTS, READONLY
+ 26 .debug_frame  00002448  00000000  00000000  0001afe4  2**2
+                  CONTENTS, RELOC, READONLY, DEBUGGING, OCTETS
+ 27 .gnu.attributes 00000010  00000000  00000000  0001d42c  2**0
+                  CONTENTS, READONLY
+SYMBOL TABLE:
+00000000 l    df *ABS*	00000000 src/main.c
+00000000 l    d  .text	00000000 .text
+00000000 l    d  .data	00000000 .data
+00000000 l    d  .bss	00000000 .bss
+00000000 l    d  .mdebug.abi32	00000000 .mdebug.abi32
+00000000 l    d  .ctf	00000000 .ctf
+00007f38 l     F .text	00000024 __stack_chk_init
+00000b68 l     F .text	00000020 exit
+000001b4 l     F .text	0000004c sys_brk
+00000200 l     F .text	00000064 brk
+00000264 l     F .text	0000009c sbrk
+00000300 l     F .text	0000004c sys_chdir
+0000034c l     F .text	00000068 chdir
+000003b4 l     F .text	00000048 sys_fchdir
+000003fc l     F .text	00000068 fchdir
+00000464 l     F .text	00000060 sys_chmod
+000004c4 l     F .text	00000070 chmod
+00000534 l     F .text	00000078 sys_chown
+000005ac l     F .text	00000078 chown
+00000624 l     F .text	0000004c sys_chroot
+00000670 l     F .text	00000068 chroot
+000006d8 l     F .text	00000048 sys_close
+00000720 l     F .text	00000068 close
+00000788 l     F .text	00000048 sys_dup
+000007d0 l     F .text	00000068 dup
+00000838 l     F .text	000000c0 sys_dup2
+000008f8 l     F .text	00000070 dup2
+00000968 l     F .text	00000058 sys_dup3
+000009c0 l     F .text	00000078 dup3
+00000a38 l     F .text	00000064 sys_execve
+00000a9c l     F .text	00000078 execve
+00000b14 l     F .text	00000034 sys_exit
+00000b48 l     F .text	00000020 _exit
+00000b88 l     F .text	00000060 sys_fork
+00000be8 l     F .text	00000060 fork
+00000c48 l     F .text	00000090 sys_vfork
+00000cd8 l     F .text	00000060 vfork
+00000d38 l     F .text	00000048 sys_fsync
+00000d80 l     F .text	00000068 fsync
+00000de8 l     F .text	0000005c sys_getdents64
+00000e44 l     F .text	00000078 getdents64
+00000ebc l     F .text	00000040 sys_geteuid
+00000efc l     F .text	00000030 geteuid
+00000f2c l     F .text	00000048 sys_getpgid
+00000f74 l     F .text	00000068 getpgid
+00000fdc l     F .text	00000034 sys_getpgrp
+00001010 l     F .text	00000030 getpgrp
+00001040 l     F .text	00000040 sys_getpid
+00001080 l     F .text	00000030 getpid
+000010b0 l     F .text	00000040 sys_getppid
+000010f0 l     F .text	00000030 getppid
+00001120 l     F .text	00000040 sys_gettid
+00001160 l     F .text	00000030 gettid
+00001190 l     F .text	00000070 getpagesize
+000020c8 l     F .text	000000bc getauxval
+00001200 l     F .text	00000040 sys_getuid
+00001240 l     F .text	00000030 getuid
+00001270 l     F .text	00000050 sys_kill
+000012c0 l     F .text	00000070 kill
+00001330 l     F .text	00000070 sys_link
+000013a0 l     F .text	00000070 link
+00001410 l     F .text	00000080 sys_lseek
+00001490 l     F .text	00000090 lseek
+00001520 l     F .text	0000005c sys_mkdir
+0000157c l     F .text	00000070 mkdir
+000015ec l     F .text	0000004c sys_rmdir
+00001638 l     F .text	00000068 rmdir
+000016a0 l     F .text	00000068 sys_mknod
+00001708 l     F .text	00000078 mknod
+00001780 l     F .text	00000054 sys_pipe2
+000017d4 l     F .text	00000070 pipe2
+00001844 l     F .text	0000003c pipe
+00001880 l     F .text	00000058 sys_pivot_root
+000018d8 l     F .text	00000070 pivot_root
+00001948 l     F .text	00000060 sys_read
+000019a8 l     F .text	00000078 read
+00001a20 l     F .text	00000040 sys_sched_yield
+00001a60 l     F .text	00000060 sched_yield
+00001ac0 l     F .text	00000050 sys_setpgid
+00001b10 l     F .text	00000070 setpgid
+00001b80 l     F .text	00000038 setpgrp
+00001bb8 l     F .text	00000040 sys_setsid
+00001bf8 l     F .text	00000060 setsid
+00001c58 l     F .text	0000005c sys_symlink
+00001cb4 l     F .text	00000070 symlink
+00001d24 l     F .text	0000004c sys_umask
+00001d70 l     F .text	00000038 umask
+00001da8 l     F .text	00000054 sys_umount2
+00001dfc l     F .text	00000070 umount2
+00001e6c l     F .text	00000054 sys_unlink
+00001ec0 l     F .text	00000068 unlink
+00001f28 l     F .text	00000060 sys_write
+00001f88 l     F .text	00000078 write
+00002000 l     F .text	00000058 sys_memfd_create
+00002058 l     F .text	00000070 memfd_create
+00002184 l     F .text	00000064 sys_ioctl
+000021e8 l     F .text	000000b4 sys_mmap
+0000229c l     F .text	00000098 mmap
+00002334 l     F .text	0000007c sys_mremap
+000023b0 l     F .text	00000088 mremap
+00002438 l     F .text	00000058 sys_munmap
+00002490 l     F .text	00000070 munmap
+00002500 l     F .text	00000080 sys_mount
+00002580 l     F .text	00000088 mount
+00002608 l     F .text	0000007c sys_prctl
+00002684 l     F .text	00000088 prctl
+0000270c l     F .text	00000064 sys_getrandom
+00002770 l     F .text	00000078 getrandom
+000027e8 l     F .text	00000064 sys_reboot
+0000284c l     F .text	0000007c reboot
+000028c8 l     F .text	00000068 sys_prlimit64
+00002930 l     F .text	000000a4 getrlimit
+000029d4 l     F .text	000000ac setrlimit
+00002a80 l     F .text	0000007c sys_select
+00002afc l     F .text	00000088 select
+00002b84 l     F .text	00000078 sys_statx
+00002bfc l     F .text	00000088 statx
+00002c84 l     F .text	000001f0 fstatat
+00002e74 l     F .text	00000048 stat
+00000000 l    d  .rodata.str1.4	00000000 .rodata.str1.4
+00002ebc l     F .text	0000004c fstat
+00002f08 l     F .text	00000048 lstat
+00002f50 l     F .text	00000058 sys_gettimeofday
+00002fa8 l     F .text	00000070 gettimeofday
+00003018 l     F .text	00000054 sys_clock_getres
+0000306c l     F .text	00000070 clock_getres
+000030dc l     F .text	00000054 sys_clock_gettime
+00003130 l     F .text	00000070 clock_gettime
+000031a0 l     F .text	00000054 sys_clock_settime
+000031f4 l     F .text	00000070 clock_settime
+00003264 l     F .text	00000068 sys_clock_nanosleep
+000032cc l     F .text	00000054 clock_nanosleep
+00003320 l     F .text	0000005c time
+0000337c l     F .text	00000060 sys_timer_create
+000033dc l     F .text	00000078 timer_create
+00003454 l     F .text	00000048 sys_timer_delete
+0000349c l     F .text	00000068 timer_delete
+00003504 l     F .text	00000054 sys_timer_gettime
+00003558 l     F .text	00000070 timer_gettime
+000035c8 l     F .text	00000068 sys_timer_settime
+00003630 l     F .text	00000080 timer_settime
+000036b0 l     F .text	00000050 sys_timerfd_create
+00003700 l     F .text	00000070 timerfd_create
+00003770 l     F .text	00000054 sys_timerfd_gettime
+000037c4 l     F .text	00000070 timerfd_gettime
+00003834 l     F .text	00000068 sys_timerfd_settime
+0000389c l     F .text	00000080 timerfd_settime
+0000391c l     F .text	0000005c sys_readv
+00003978 l     F .text	00000078 readv
+000039f0 l     F .text	0000005c sys_writev
+00003a4c l     F .text	00000078 writev
+00003ac4 l     F .text	0000004c sys_uname
+00003b10 l     F .text	00000068 uname
+00003b78 l     F .text	00000074 sys_waitid
+00003bec l     F .text	00000084 waitid
+00003c70 l     F .text	00000270 waitpid
+00003ee0 l     F .text	00000040 wait
+00003f20 l     F .text	00000030 isascii
+00003f50 l     F .text	00000054 isblank
+00003fa4 l     F .text	00000054 iscntrl
+00003ff8 l     F .text	00000034 isdigit
+0000402c l     F .text	00000034 isgraph
+00004060 l     F .text	00000034 islower
+00004094 l     F .text	00000034 isprint
+000040c8 l     F .text	00000058 isspace
+00004120 l     F .text	00000034 isupper
+00004154 l     F .text	00000078 isxdigit
+000041cc l     F .text	00000064 isalpha
+00004230 l     F .text	00000064 isalnum
+00004294 l     F .text	00000064 ispunct
+000042f8 l     F .text	00000050 sys_setns
+00004348 l     F .text	00000070 setns
+000043b8 l     F .text	00000048 sys_unshare
+00004400 l     F .text	00000068 unshare
+00000000 l    d  .text.nolibc_raise	00000000 .text.nolibc_raise
+00004468 l     F .text	00000064 sys_faccessat
+000044cc l     F .text	00000080 faccessat
+0000454c l     F .text	00000048 access
+00004594 l     F .text	00000114 msleep
+000046a8 l     F .text	00000080 sleep
+00004728 l     F .text	00000094 usleep
+000047bc l     F .text	00000080 tcsetpgrp
+0000483c l     F .text	00000068 sys_openat
+000048a4 l     F .text	000000b0 openat
+00004954 l     F .text	00000064 sys_open
+000049b8 l     F .text	000000ac open
+00004a64 l     F .text	00000098 memcmp
+00000000 l    d  .text.nolibc_memmove	00000000 .text.nolibc_memmove
+00000000 l    d  .text.nolibc_memcpy	00000000 .text.nolibc_memcpy
+00000000 l    d  .text.nolibc_memset	00000000 .text.nolibc_memset
+00004afc l     F .text	00000084 memchr
+00004b80 l     F .text	00000074 strchr
+00004bf4 l     F .text	00000084 strcmp
+00004c78 l     F .text	00000064 strcpy
+00000000 l    d  .text.nolibc_strlen	00000000 .text.nolibc_strlen
+00004cdc l     F .text	00000070 strnlen
+00004d4c l     F .text	00000088 strdup
+000056fc l     F .text	000000b8 malloc
+00004dd4 l     F .text	00000098 strndup
+00004e6c l     F .text	00000108 strlcat
+00004f74 l     F .text	000000ec strlcpy
+00005060 l     F .text	000000bc strncat
+0000511c l     F .text	000000a0 strncmp
+000051bc l     F .text	0000008c strncpy
+00005248 l     F .text	00000074 strrchr
+000052bc l     F .text	000000c8 strstr
+00005384 l     F .text	00000058 tolower
+000053dc l     F .text	00000058 toupper
+0000000c l     O .bss	00000015 itoa_buffer
+00000000 l    d  .text.nolibc_abort	00000000 .text.nolibc_abort
+00005434 l     F .text	000000d0 atol
+00005504 l     F .text	00000038 atoi
+0000553c l     F .text	00000070 free
+000055ac l     F .text	00000150 getenv
+000057b4 l     F .text	000000a4 calloc
+00005858 l     F .text	000000fc realloc
+00005954 l     F .text	00000134 utoh_r
+00005a88 l     F .text	00000140 utoa_r
+00005bc8 l     F .text	0000009c itoa_r
+00005c64 l     F .text	00000120 u64toh_r
+00005d84 l     F .text	000001fc u64toa_r
+00005f80 l     F .text	000000c8 i64toa_r
+00006048 l     F .text	000004ec __strtox
+00006534 l     F .text	00000070 strtol
+000065a4 l     F .text	0000006c strtoul
+00006610 l     F .text	0000006c strtoll
+0000667c l     F .text	00000068 strtoull
+000066e4 l     F .text	0000006c strtoimax
+00006750 l     F .text	00000068 strtoumax
+0000001c l     O .rodata	00000004 stdin
+00000020 l     O .rodata	00000004 stdout
+00000024 l     O .rodata	00000004 stderr
+000067b8 l     F .text	00000054 fdopen
+0000680c l     F .text	00000100 fopen
+0000690c l     F .text	00000058 fileno
+00006964 l     F .text	00000054 fflush
+000069b8 l     F .text	00000084 fclose
+00006a3c l     F .text	00000068 fgetc
+00006aa4 l     F .text	00000038 getchar
+00006adc l     F .text	00000078 fputc
+00006b54 l     F .text	00000040 putchar
+00006b94 l     F .text	000000ac _fwrite
+00006c40 l     F .text	000000a0 fwrite
+00006ce0 l     F .text	00000050 fputs
+00006d30 l     F .text	00000068 puts
+00006d98 l     F .text	00000104 fgets
+00006e9c l     F .text	00000590 __nolibc_printf
+00007edc l     F .text	0000005c strerror
+0000742c l     F .text	0000004c __nolibc_fprintf_cb
+00007478 l     F .text	0000005c vfprintf
+000074d4 l     F .text	00000048 vprintf
+0000751c l     F .text	00000060 fprintf
+0000757c l     F .text	00000064 printf
+000075e0 l     F .text	00000074 vdprintf
+00007654 l     F .text	00000060 dprintf
+000076b4 l     F .text	00000074 __nolibc_sprintf_cb
+00007728 l     F .text	000000bc vsnprintf
+000077e4 l     F .text	00000064 snprintf
+00007848 l     F .text	0000004c vsprintf
+00007894 l     F .text	00000060 sprintf
+000078f4 l     F .text	00000474 vsscanf
+00007d68 l     F .text	00000060 sscanf
+00007dc8 l     F .text	000000c0 perror
+00007e88 l     F .text	00000054 setvbuf
+00000000 l     O .data	00000012 buf.1
+00007f5c l     F .text	00000050 fdopendir
+00007fac l     F .text	00000068 opendir
+00008014 l     F .text	0000006c closedir
+00008080 l     F .text	0000014c readdir_r
+00000000 l    d  .data.nolibc_getopt	00000000 .data.nolibc_getopt
+000081cc l     F .text	000004e8 getopt
+00000000 l     O .sbss	00000004 __optpos.0
+000086b4 l     F .text	000000f8 sys_poll
+000087ac l     F .text	00000078 poll
+00000000 l    d  .debug_info	00000000 .debug_info
+00000000 l    d  .debug_abbrev	00000000 .debug_abbrev
+00000000 l    d  .debug_aranges	00000000 .debug_aranges
+00000000 l    d  .debug_ranges	00000000 .debug_ranges
+00000000 l    d  .debug_line	00000000 .debug_line
+00000000 l    d  .debug_str	00000000 .debug_str
+00000000 l    d  .note.GNU-stack	00000000 .note.GNU-stack
+00000000 l    d  .rodata	00000000 .rodata
+00000000 l    d  .sbss	00000000 .sbss
+00000000 l    d  .debug_frame	00000000 .debug_frame
+00000000 l       .rodata.str1.4	00000000 $LC0
+00000004 l       .rodata.str1.4	00000000 $LC1
+00000008 l       .rodata.str1.4	00000000 $LC2
+0000000c l       .rodata.str1.4	00000000 $LC3
+00000010 l       .rodata.str1.4	00000000 $LC4
+00000018 l       .rodata.str1.4	00000000 $LC5
+0000001c l       .rodata.str1.4	00000000 $LC6
+00000020 l       .rodata.str1.4	00000000 $LC7
+00000030 l       .rodata.str1.4	00000000 $LC8
+00000050 l       .rodata.str1.4	00000000 $LC9
+00000074 l       .rodata.str1.4	00000000 $LC10
+00000078 l       .rodata.str1.4	00000000 $LC11
+00000080 l       .rodata.str1.4	00000000 $LC12
+00000000 l    d  .reginfo	00000000 .reginfo
+00000000 l    d  .MIPS.abiflags	00000000 .MIPS.abiflags
+00000000 l    d  .pdr	00000000 .pdr
+00000000 l    d  .comment	00000000 .comment
+00000000 l    d  .gnu.attributes	00000000 .gnu.attributes
+00000000  w    O .bss	00000004 environ
+00000004  w    O .bss	00000004 _auxv
+00000000  w    F .text	0000019c _start_c
+00000000  w      *UND*	00000000 __preinit_array_start
+00000000  w      *UND*	00000000 __preinit_array_end
+00000000  w      *UND*	00000000 __init_array_start
+00000000  w      *UND*	00000000 __init_array_end
+000088b4 g     F .text	000000b8 main
+00000000  w      *UND*	00000000 __fini_array_end
+00000000  w      *UND*	00000000 __fini_array_start
+0000019c  w    F .text	00000018 __start
+00000008  w    O .bss	00000004 errno
+00000000  w    F .text.nolibc_memset	0000006c memset
+00000000  w    F .text.nolibc_raise	00000044 raise
+00000000  w    F .text.nolibc_memmove	000000b4 memmove
+00000000  w    F .text.nolibc_memcpy	0000007c memcpy
+00000000  w    F .text.nolibc_strlen	00000058 strlen
+00000000  w    F .text.nolibc_abort	00000030 abort
+00000000  w    O .data.nolibc_getopt	00000004 optarg
+00000004  w    O .data.nolibc_getopt	00000004 optind
+00000008  w    O .data.nolibc_getopt	00000004 opterr
+0000000c  w    O .data.nolibc_getopt	00000004 optopt
+00000028 g     O .rodata	00000004 s_ascii_digit_bias
+00000000         *UND*	00000000 s_digits
+00008824 g     F .text	00000090 parse_decimal
+
+
+RELOCATION RECORDS FOR [.text]:
+OFFSET   TYPE              VALUE
+00000014 R_MIPS_26         .text
+0000004c R_MIPS_HI16       environ
+00000054 R_MIPS_LO16       environ
+0000007c R_MIPS_HI16       _auxv
+00000084 R_MIPS_LO16       _auxv
+00000088 R_MIPS_HI16       __preinit_array_start
+0000008c R_MIPS_LO16       __preinit_array_start
+000000c8 R_MIPS_HI16       __preinit_array_end
+000000cc R_MIPS_LO16       __preinit_array_end
+000000dc R_MIPS_HI16       __init_array_start
+000000e0 R_MIPS_LO16       __init_array_start
+0000011c R_MIPS_HI16       __init_array_end
+00000120 R_MIPS_LO16       __init_array_end
+0000013c R_MIPS_26         main
+00000148 R_MIPS_HI16       __fini_array_end
+0000014c R_MIPS_LO16       __fini_array_end
+0000017c R_MIPS_HI16       __fini_array_start
+00000180 R_MIPS_LO16       __fini_array_start
+00000194 R_MIPS_26         .text
+000001a4 R_MIPS_HI16       _start_c
+000001a8 R_MIPS_LO16       _start_c
+00000218 R_MIPS_26         .text
+00000230 R_MIPS_HI16       errno
+00000238 R_MIPS_LO16       errno
+0000027c R_MIPS_26         .text
+000002a4 R_MIPS_26         .text
+000002d8 R_MIPS_HI16       errno
+000002e0 R_MIPS_LO16       errno
+00000364 R_MIPS_26         .text
+00000384 R_MIPS_HI16       errno
+00000388 R_MIPS_LO16       errno
+00000414 R_MIPS_26         .text
+00000434 R_MIPS_HI16       errno
+00000438 R_MIPS_LO16       errno
+000004e4 R_MIPS_26         .text
+00000504 R_MIPS_HI16       errno
+00000508 R_MIPS_LO16       errno
+000005d4 R_MIPS_26         .text
+000005f4 R_MIPS_HI16       errno
+000005f8 R_MIPS_LO16       errno
+00000688 R_MIPS_26         .text
+000006a8 R_MIPS_HI16       errno
+000006ac R_MIPS_LO16       errno
+00000738 R_MIPS_26         .text
+00000758 R_MIPS_HI16       errno
+0000075c R_MIPS_LO16       errno
+000007e8 R_MIPS_26         .text
+00000808 R_MIPS_HI16       errno
+0000080c R_MIPS_LO16       errno
+00000918 R_MIPS_26         .text
+00000938 R_MIPS_HI16       errno
+0000093c R_MIPS_LO16       errno
+000009e8 R_MIPS_26         .text
+00000a08 R_MIPS_HI16       errno
+00000a0c R_MIPS_LO16       errno
+00000ac4 R_MIPS_26         .text
+00000ae4 R_MIPS_HI16       errno
+00000ae8 R_MIPS_LO16       errno
+00000b60 R_MIPS_26         .text
+00000b80 R_MIPS_26         .text
+00000bf8 R_MIPS_26         .text
+00000c18 R_MIPS_HI16       errno
+00000c1c R_MIPS_LO16       errno
+00000c6c R_MIPS_26         memset
+00000ce8 R_MIPS_26         .text
+00000d08 R_MIPS_HI16       errno
+00000d0c R_MIPS_LO16       errno
+00000d98 R_MIPS_26         .text
+00000db8 R_MIPS_HI16       errno
+00000dbc R_MIPS_LO16       errno
+00000e6c R_MIPS_26         .text
+00000e8c R_MIPS_HI16       errno
+00000e90 R_MIPS_LO16       errno
+00000f0c R_MIPS_26         .text
+00000f8c R_MIPS_26         .text
+00000fac R_MIPS_HI16       errno
+00000fb0 R_MIPS_LO16       errno
+00000ff0 R_MIPS_26         .text
+00001020 R_MIPS_26         .text
+00001090 R_MIPS_26         .text
+00001100 R_MIPS_26         .text
+00001170 R_MIPS_26         .text
+000011a4 R_MIPS_26         .text
+000011d0 R_MIPS_HI16       errno
+000011d4 R_MIPS_LO16       errno
+00001250 R_MIPS_26         .text
+000012e0 R_MIPS_26         .text
+00001300 R_MIPS_HI16       errno
+00001304 R_MIPS_LO16       errno
+000013c0 R_MIPS_26         .text
+000013e0 R_MIPS_HI16       errno
+000013e4 R_MIPS_LO16       errno
+000014c0 R_MIPS_26         .text
+000014e8 R_MIPS_HI16       errno
+000014ec R_MIPS_LO16       errno
+0000159c R_MIPS_26         .text
+000015bc R_MIPS_HI16       errno
+000015c0 R_MIPS_LO16       errno
+00001650 R_MIPS_26         .text
+00001670 R_MIPS_HI16       errno
+00001674 R_MIPS_LO16       errno
+00001730 R_MIPS_26         .text
+00001750 R_MIPS_HI16       errno
+00001754 R_MIPS_LO16       errno
+000017f4 R_MIPS_26         .text
+00001814 R_MIPS_HI16       errno
+00001818 R_MIPS_LO16       errno
+00001860 R_MIPS_26         .text
+000018f8 R_MIPS_26         .text
+00001918 R_MIPS_HI16       errno
+0000191c R_MIPS_LO16       errno
+000019d0 R_MIPS_26         .text
+000019f0 R_MIPS_HI16       errno
+000019f4 R_MIPS_LO16       errno
+00001a70 R_MIPS_26         .text
+00001a90 R_MIPS_HI16       errno
+00001a94 R_MIPS_LO16       errno
+00001b30 R_MIPS_26         .text
+00001b50 R_MIPS_HI16       errno
+00001b54 R_MIPS_LO16       errno
+00001b98 R_MIPS_26         .text
+00001c08 R_MIPS_26         .text
+00001c28 R_MIPS_HI16       errno
+00001c2c R_MIPS_LO16       errno
+00001cd4 R_MIPS_26         .text
+00001cf4 R_MIPS_HI16       errno
+00001cf8 R_MIPS_LO16       errno
+00001d88 R_MIPS_26         .text
+00001e1c R_MIPS_26         .text
+00001e3c R_MIPS_HI16       errno
+00001e40 R_MIPS_LO16       errno
+00001ed8 R_MIPS_26         .text
+00001ef8 R_MIPS_HI16       errno
+00001efc R_MIPS_LO16       errno
+00001fb0 R_MIPS_26         .text
+00001fd0 R_MIPS_HI16       errno
+00001fd4 R_MIPS_LO16       errno
+00002078 R_MIPS_26         .text
+00002098 R_MIPS_HI16       errno
+0000209c R_MIPS_LO16       errno
+000020d8 R_MIPS_HI16       _auxv
+000020dc R_MIPS_LO16       _auxv
+000022e4 R_MIPS_26         .text
+00002308 R_MIPS_HI16       errno
+0000230c R_MIPS_LO16       errno
+000023e8 R_MIPS_26         .text
+0000240c R_MIPS_HI16       errno
+00002410 R_MIPS_LO16       errno
+000024b0 R_MIPS_26         .text
+000024d0 R_MIPS_HI16       errno
+000024d4 R_MIPS_LO16       errno
+000025b8 R_MIPS_26         .text
+000025d8 R_MIPS_HI16       errno
+000025dc R_MIPS_LO16       errno
+000026bc R_MIPS_26         .text
+000026dc R_MIPS_HI16       errno
+000026e0 R_MIPS_LO16       errno
+00002798 R_MIPS_26         .text
+000027b8 R_MIPS_HI16       errno
+000027bc R_MIPS_LO16       errno
+00002878 R_MIPS_26         .text
+00002898 R_MIPS_HI16       errno
+0000289c R_MIPS_LO16       errno
+0000295c R_MIPS_26         .text
+0000297c R_MIPS_HI16       errno
+00002980 R_MIPS_LO16       errno
+00002a30 R_MIPS_26         .text
+00002a50 R_MIPS_HI16       errno
+00002a54 R_MIPS_LO16       errno
+00002b34 R_MIPS_26         .text
+00002b54 R_MIPS_HI16       errno
+00002b58 R_MIPS_LO16       errno
+00002c34 R_MIPS_26         .text
+00002c54 R_MIPS_HI16       errno
+00002c58 R_MIPS_LO16       errno
+00002cc4 R_MIPS_26         .text
+00002ce4 R_MIPS_HI16       errno
+00002ce8 R_MIPS_LO16       errno
+00002e9c R_MIPS_26         .text
+00002edc R_MIPS_HI16       $LC0
+00002ee0 R_MIPS_LO16       $LC0
+00002ee8 R_MIPS_26         .text
+00002f30 R_MIPS_26         .text
+00002fc8 R_MIPS_26         .text
+00002fe8 R_MIPS_HI16       errno
+00002fec R_MIPS_LO16       errno
+0000308c R_MIPS_26         .text
+000030ac R_MIPS_HI16       errno
+000030b0 R_MIPS_LO16       errno
+00003150 R_MIPS_26         .text
+00003170 R_MIPS_HI16       errno
+00003174 R_MIPS_LO16       errno
+00003214 R_MIPS_26         .text
+00003234 R_MIPS_HI16       errno
+00003238 R_MIPS_LO16       errno
+000032fc R_MIPS_26         .text
+00003340 R_MIPS_26         .text
+00003404 R_MIPS_26         .text
+00003424 R_MIPS_HI16       errno
+00003428 R_MIPS_LO16       errno
+000034b4 R_MIPS_26         .text
+000034d4 R_MIPS_HI16       errno
+000034d8 R_MIPS_LO16       errno
+00003578 R_MIPS_26         .text
+00003598 R_MIPS_HI16       errno
+0000359c R_MIPS_LO16       errno
+00003660 R_MIPS_26         .text
+00003680 R_MIPS_HI16       errno
+00003684 R_MIPS_LO16       errno
+00003720 R_MIPS_26         .text
+00003740 R_MIPS_HI16       errno
+00003744 R_MIPS_LO16       errno
+000037e4 R_MIPS_26         .text
+00003804 R_MIPS_HI16       errno
+00003808 R_MIPS_LO16       errno
+000038cc R_MIPS_26         .text
+000038ec R_MIPS_HI16       errno
+000038f0 R_MIPS_LO16       errno
+000039a0 R_MIPS_26         .text
+000039c0 R_MIPS_HI16       errno
+000039c4 R_MIPS_LO16       errno
+00003a74 R_MIPS_26         .text
+00003a94 R_MIPS_HI16       errno
+00003a98 R_MIPS_LO16       errno
+00003b28 R_MIPS_26         .text
+00003b48 R_MIPS_HI16       errno
+00003b4c R_MIPS_LO16       errno
+00003c20 R_MIPS_26         .text
+00003c40 R_MIPS_HI16       errno
+00003c44 R_MIPS_LO16       errno
+00003c9c R_MIPS_HI16       errno
+00003ca4 R_MIPS_LO16       errno
+00003d50 R_MIPS_26         .text
+00003d88 R_MIPS_HI16       .rodata
+00003d8c R_MIPS_LO16       .rodata
+00003f00 R_MIPS_26         .text
+0000416c R_MIPS_26         .text
+000041e4 R_MIPS_26         .text
+000041f8 R_MIPS_26         .text
+00004248 R_MIPS_26         .text
+0000425c R_MIPS_26         .text
+000042ac R_MIPS_26         .text
+000042c0 R_MIPS_26         .text
+00004368 R_MIPS_26         .text
+00004388 R_MIPS_HI16       errno
+0000438c R_MIPS_LO16       errno
+00004418 R_MIPS_26         .text
+00004438 R_MIPS_HI16       errno
+0000443c R_MIPS_LO16       errno
+000044fc R_MIPS_26         .text
+0000451c R_MIPS_HI16       errno
+00004520 R_MIPS_LO16       errno
+00004574 R_MIPS_26         .text
+0000460c R_MIPS_26         .text
+000046e0 R_MIPS_26         .text
+0000479c R_MIPS_26         .text
+000047ec R_MIPS_26         .text
+0000480c R_MIPS_HI16       errno
+00004810 R_MIPS_LO16       errno
+00004904 R_MIPS_26         .text
+00004924 R_MIPS_HI16       errno
+00004928 R_MIPS_LO16       errno
+00004a14 R_MIPS_26         .text
+00004a34 R_MIPS_HI16       errno
+00004a38 R_MIPS_LO16       errno
+00004d64 R_MIPS_26         strlen
+00004d7c R_MIPS_26         .text
+00004db0 R_MIPS_26         memcpy
+00004df4 R_MIPS_26         .text
+00004e0c R_MIPS_26         .text
+00004e38 R_MIPS_26         memcpy
+00004e90 R_MIPS_26         .text
+000052d8 R_MIPS_26         strlen
+00005300 R_MIPS_26         strlen
+00005320 R_MIPS_26         .text
+0000551c R_MIPS_26         .text
+00005580 R_MIPS_26         .text
+000055bc R_MIPS_HI16       environ
+000055c0 R_MIPS_LO16       environ
+00005618 R_MIPS_HI16       environ
+0000561c R_MIPS_LO16       environ
+0000565c R_MIPS_HI16       environ
+00005660 R_MIPS_LO16       environ
+0000568c R_MIPS_HI16       environ
+00005690 R_MIPS_LO16       environ
+000056c4 R_MIPS_HI16       environ
+000056c8 R_MIPS_LO16       environ
+00005758 R_MIPS_26         .text
+0000581c R_MIPS_HI16       errno
+00005824 R_MIPS_LO16       errno
+00005838 R_MIPS_26         .text
+00005880 R_MIPS_26         .text
+000058d8 R_MIPS_26         .text
+00005918 R_MIPS_26         memcpy
+00005930 R_MIPS_26         .text
+00005c30 R_MIPS_26         .text
+00006014 R_MIPS_26         .text
+000060c0 R_MIPS_HI16       errno
+000060c8 R_MIPS_LO16       errno
+000060ec R_MIPS_26         .text
+000061c8 R_MIPS_HI16       $LC1
+000061cc R_MIPS_LO16       $LC1
+000061d4 R_MIPS_26         .text
+000061e8 R_MIPS_HI16       $LC2
+000061ec R_MIPS_LO16       $LC2
+000061f4 R_MIPS_26         .text
+00006230 R_MIPS_HI16       $LC3
+00006234 R_MIPS_LO16       $LC3
+0000623c R_MIPS_26         .text
+00006498 R_MIPS_HI16       errno
+000064a0 R_MIPS_LO16       errno
+00006580 R_MIPS_26         .text
+000065ec R_MIPS_26         .text
+0000665c R_MIPS_26         .text
+000066c4 R_MIPS_26         .text
+00006730 R_MIPS_26         .text
+00006798 R_MIPS_26         .text
+000067d8 R_MIPS_HI16       errno
+000067e0 R_MIPS_LO16       errno
+00006888 R_MIPS_HI16       errno
+00006890 R_MIPS_LO16       errno
+000068d8 R_MIPS_26         .text
+000068ec R_MIPS_26         .text
+00006930 R_MIPS_HI16       errno
+00006938 R_MIPS_LO16       errno
+00006988 R_MIPS_HI16       errno
+00006990 R_MIPS_LO16       errno
+000069e0 R_MIPS_HI16       errno
+000069e8 R_MIPS_LO16       errno
+00006a04 R_MIPS_26         .text
+00006a54 R_MIPS_26         .text
+00006a6c R_MIPS_26         .text
+00006abc R_MIPS_26         .text
+00006b04 R_MIPS_26         .text
+00006b1c R_MIPS_26         .text
+00006b74 R_MIPS_26         .text
+00006bb4 R_MIPS_26         .text
+00006bd4 R_MIPS_26         .text
+00006c78 R_MIPS_26         .text
+00006cfc R_MIPS_26         strlen
+00006d10 R_MIPS_26         .text
+00006d50 R_MIPS_26         .text
+00006d78 R_MIPS_26         .text
+00006dc4 R_MIPS_26         .text
+00007160 R_MIPS_26         .text
+0000717c R_MIPS_26         .text
+000071c0 R_MIPS_26         .text
+0000720c R_MIPS_HI16       $LC4
+00007210 R_MIPS_LO16       $LC4
+00007230 R_MIPS_HI16       errno
+00007234 R_MIPS_LO16       errno
+0000723c R_MIPS_26         .text
+000072b8 R_MIPS_26         strlen
+0000734c R_MIPS_HI16       $LC5
+00007350 R_MIPS_LO16       $LC5
+00007458 R_MIPS_26         .text
+000074ac R_MIPS_HI16       .text
+000074b0 R_MIPS_LO16       .text
+000074b4 R_MIPS_26         .text
+000074fc R_MIPS_26         .text
+00007554 R_MIPS_26         .text
+000075b8 R_MIPS_26         .text
+00007604 R_MIPS_26         .text
+00007634 R_MIPS_26         .text
+0000768c R_MIPS_26         .text
+000076ec R_MIPS_26         memcpy
+00007768 R_MIPS_HI16       .text
+0000776c R_MIPS_LO16       .text
+00007770 R_MIPS_26         .text
+00007820 R_MIPS_26         .text
+00007874 R_MIPS_26         .text
+000078cc R_MIPS_26         .text
+000079f4 R_MIPS_26         .text
+00007b0c R_MIPS_26         .text
+00007bd4 R_MIPS_26         .text
+00007c00 R_MIPS_HI16       errno
+00007c08 R_MIPS_LO16       errno
+00007c5c R_MIPS_26         .text
+00007c8c R_MIPS_26         .text
+00007cbc R_MIPS_26         .text
+00007da0 R_MIPS_26         .text
+00007e08 R_MIPS_HI16       $LC0
+00007e0c R_MIPS_LO16       $LC0
+00007e2c R_MIPS_HI16       $LC6
+00007e30 R_MIPS_LO16       $LC6
+00007e3c R_MIPS_HI16       $LC0
+00007e40 R_MIPS_LO16       $LC0
+00007e44 R_MIPS_HI16       errno
+00007e48 R_MIPS_LO16       errno
+00007e58 R_MIPS_HI16       $LC7
+00007e5c R_MIPS_LO16       $LC7
+00007e64 R_MIPS_26         .text
+00007f00 R_MIPS_HI16       .data
+00007f04 R_MIPS_LO16       .data
+00007f10 R_MIPS_26         .text
+00007f18 R_MIPS_HI16       .data
+00007f1c R_MIPS_LO16       .data
+00007f78 R_MIPS_HI16       errno
+00007f80 R_MIPS_LO16       errno
+00007fc8 R_MIPS_26         .text
+00007ff4 R_MIPS_26         .text
+0000803c R_MIPS_HI16       errno
+00008044 R_MIPS_LO16       errno
+00008060 R_MIPS_26         .text
+000080dc R_MIPS_26         .text
+00008140 R_MIPS_26         .text
+0000819c R_MIPS_26         .text
+000081e8 R_MIPS_HI16       optind
+000081ec R_MIPS_LO16       optind
+000081f8 R_MIPS_HI16       .sbss
+000081fc R_MIPS_LO16       .sbss
+00008200 R_MIPS_HI16       optind
+00008208 R_MIPS_LO16       optind
+0000820c R_MIPS_HI16       optind
+00008210 R_MIPS_LO16       optind
+00008224 R_MIPS_HI16       optind
+00008228 R_MIPS_LO16       optind
+00008250 R_MIPS_HI16       optind
+00008254 R_MIPS_LO16       optind
+0000828c R_MIPS_HI16       optind
+00008290 R_MIPS_LO16       optind
+00008298 R_MIPS_HI16       optind
+0000829c R_MIPS_LO16       optind
+000082b0 R_MIPS_HI16       optarg
+000082b4 R_MIPS_LO16       optarg
+000082d0 R_MIPS_HI16       optind
+000082d4 R_MIPS_LO16       optind
+00008304 R_MIPS_HI16       optind
+00008308 R_MIPS_LO16       optind
+00008330 R_MIPS_HI16       optind
+00008334 R_MIPS_LO16       optind
+00008358 R_MIPS_HI16       optind
+0000835c R_MIPS_LO16       optind
+00008364 R_MIPS_HI16       optind
+00008368 R_MIPS_LO16       optind
+00008378 R_MIPS_HI16       .sbss
+0000837c R_MIPS_LO16       .sbss
+00008388 R_MIPS_HI16       .sbss
+0000838c R_MIPS_LO16       .sbss
+00008394 R_MIPS_HI16       .sbss
+00008398 R_MIPS_LO16       .sbss
+0000839c R_MIPS_HI16       optind
+000083a0 R_MIPS_LO16       optind
+000083b4 R_MIPS_HI16       .sbss
+000083b8 R_MIPS_LO16       .sbss
+000083c8 R_MIPS_HI16       optind
+000083cc R_MIPS_LO16       optind
+000083e0 R_MIPS_HI16       .sbss
+000083e4 R_MIPS_LO16       .sbss
+000083f0 R_MIPS_HI16       .sbss
+000083f4 R_MIPS_LO16       .sbss
+000083fc R_MIPS_HI16       .sbss
+00008400 R_MIPS_LO16       .sbss
+00008404 R_MIPS_HI16       optind
+00008408 R_MIPS_LO16       optind
+0000841c R_MIPS_HI16       .sbss
+00008420 R_MIPS_LO16       .sbss
+00008434 R_MIPS_HI16       optind
+00008438 R_MIPS_LO16       optind
+00008440 R_MIPS_HI16       optind
+00008444 R_MIPS_LO16       optind
+00008448 R_MIPS_HI16       .sbss
+0000844c R_MIPS_LO16       .sbss
+000084ec R_MIPS_HI16       optopt
+000084f0 R_MIPS_LO16       optopt
+00008508 R_MIPS_HI16       opterr
+0000850c R_MIPS_LO16       opterr
+00008534 R_MIPS_HI16       $LC8
+00008538 R_MIPS_LO16       $LC8
+00008540 R_MIPS_26         .text
+00008570 R_MIPS_HI16       optarg
+00008574 R_MIPS_LO16       optarg
+00008598 R_MIPS_HI16       .sbss
+0000859c R_MIPS_LO16       .sbss
+000085a8 R_MIPS_HI16       optind
+000085ac R_MIPS_LO16       optind
+000085b4 R_MIPS_HI16       optind
+000085b8 R_MIPS_LO16       optind
+000085cc R_MIPS_HI16       optarg
+000085d0 R_MIPS_LO16       optarg
+000085d4 R_MIPS_HI16       .sbss
+000085d8 R_MIPS_LO16       .sbss
+000085e4 R_MIPS_HI16       optarg
+000085e8 R_MIPS_LO16       optarg
+000085ec R_MIPS_HI16       .sbss
+000085f0 R_MIPS_LO16       .sbss
+000085f8 R_MIPS_HI16       optarg
+000085fc R_MIPS_LO16       optarg
+00008600 R_MIPS_HI16       .sbss
+00008604 R_MIPS_LO16       .sbss
+00008608 R_MIPS_HI16       optind
+0000860c R_MIPS_LO16       optind
+00008624 R_MIPS_HI16       optopt
+00008628 R_MIPS_LO16       optopt
+0000864c R_MIPS_HI16       opterr
+00008650 R_MIPS_LO16       opterr
+00008678 R_MIPS_HI16       $LC9
+0000867c R_MIPS_LO16       $LC9
+00008684 R_MIPS_26         .text
+000087d4 R_MIPS_26         .text
+000087f4 R_MIPS_HI16       errno
+000087f8 R_MIPS_LO16       errno
+00008858 R_MIPS_HI16       s_digits
+0000885c R_MIPS_LO16       s_digits
+000088c4 R_MIPS_HI16       $LC3
+000088c8 R_MIPS_LO16       $LC3
+000088cc R_MIPS_26         parse_decimal
+000088e8 R_MIPS_HI16       $LC10
+000088ec R_MIPS_LO16       $LC10
+000088f0 R_MIPS_26         parse_decimal
+00008914 R_MIPS_HI16       $LC11
+00008918 R_MIPS_LO16       $LC11
+0000891c R_MIPS_26         parse_decimal
+00008940 R_MIPS_HI16       $LC12
+00008944 R_MIPS_LO16       $LC12
+00008948 R_MIPS_26         .text
+
+
+RELOCATION RECORDS FOR [.pdr]:
+OFFSET   TYPE              VALUE
+00000000 R_MIPS_32         _start_c
+00000020 R_MIPS_32         __start
+00000040 R_MIPS_32         .text
+00000060 R_MIPS_32         .text
+00000080 R_MIPS_32         .text
+000000a0 R_MIPS_32         .text
+000000c0 R_MIPS_32         .text
+000000e0 R_MIPS_32         .text
+00000100 R_MIPS_32         .text
+00000120 R_MIPS_32         .text
+00000140 R_MIPS_32         .text
+00000160 R_MIPS_32         .text
+00000180 R_MIPS_32         .text
+000001a0 R_MIPS_32         .text
+000001c0 R_MIPS_32         .text
+000001e0 R_MIPS_32         .text
+00000200 R_MIPS_32         .text
+00000220 R_MIPS_32         .text
+00000240 R_MIPS_32         .text
+00000260 R_MIPS_32         .text
+00000280 R_MIPS_32         .text
+000002a0 R_MIPS_32         .text
+000002c0 R_MIPS_32         .text
+000002e0 R_MIPS_32         .text
+00000300 R_MIPS_32         .text
+00000320 R_MIPS_32         .text
+00000340 R_MIPS_32         .text
+00000360 R_MIPS_32         .text
+00000380 R_MIPS_32         .text
+000003a0 R_MIPS_32         .text
+000003c0 R_MIPS_32         .text
+000003e0 R_MIPS_32         .text
+00000400 R_MIPS_32         .text
+00000420 R_MIPS_32         .text
+00000440 R_MIPS_32         .text
+00000460 R_MIPS_32         .text
+00000480 R_MIPS_32         .text
+000004a0 R_MIPS_32         .text
+000004c0 R_MIPS_32         .text
+000004e0 R_MIPS_32         .text
+00000500 R_MIPS_32         .text
+00000520 R_MIPS_32         .text
+00000540 R_MIPS_32         .text
+00000560 R_MIPS_32         .text
+00000580 R_MIPS_32         .text
+000005a0 R_MIPS_32         .text
+000005c0 R_MIPS_32         .text
+000005e0 R_MIPS_32         .text
+00000600 R_MIPS_32         .text
+00000620 R_MIPS_32         .text
+00000640 R_MIPS_32         .text
+00000660 R_MIPS_32         .text
+00000680 R_MIPS_32         .text
+000006a0 R_MIPS_32         .text
+000006c0 R_MIPS_32         .text
+000006e0 R_MIPS_32         .text
+00000700 R_MIPS_32         .text
+00000720 R_MIPS_32         .text
+00000740 R_MIPS_32         .text
+00000760 R_MIPS_32         .text
+00000780 R_MIPS_32         .text
+000007a0 R_MIPS_32         .text
+000007c0 R_MIPS_32         .text
+000007e0 R_MIPS_32         .text
+00000800 R_MIPS_32         .text
+00000820 R_MIPS_32         .text
+00000840 R_MIPS_32         .text
+00000860 R_MIPS_32         .text
+00000880 R_MIPS_32         .text
+000008a0 R_MIPS_32         .text
+000008c0 R_MIPS_32         .text
+000008e0 R_MIPS_32         .text
+00000900 R_MIPS_32         .text
+00000920 R_MIPS_32         .text
+00000940 R_MIPS_32         .text
+00000960 R_MIPS_32         .text
+00000980 R_MIPS_32         .text
+000009a0 R_MIPS_32         .text
+000009c0 R_MIPS_32         .text
+000009e0 R_MIPS_32         .text
+00000a00 R_MIPS_32         .text
+00000a20 R_MIPS_32         .text
+00000a40 R_MIPS_32         .text
+00000a60 R_MIPS_32         .text
+00000a80 R_MIPS_32         .text
+00000aa0 R_MIPS_32         .text
+00000ac0 R_MIPS_32         .text
+00000ae0 R_MIPS_32         .text
+00000b00 R_MIPS_32         .text
+00000b20 R_MIPS_32         .text
+00000b40 R_MIPS_32         .text
+00000b60 R_MIPS_32         .text
+00000b80 R_MIPS_32         .text
+00000ba0 R_MIPS_32         .text
+00000bc0 R_MIPS_32         .text
+00000be0 R_MIPS_32         .text
+00000c00 R_MIPS_32         .text
+00000c20 R_MIPS_32         .text
+00000c40 R_MIPS_32         .text
+00000c60 R_MIPS_32         .text
+00000c80 R_MIPS_32         .text
+00000ca0 R_MIPS_32         .text
+00000cc0 R_MIPS_32         .text
+00000ce0 R_MIPS_32         .text
+00000d00 R_MIPS_32         .text
+00000d20 R_MIPS_32         .text
+00000d40 R_MIPS_32         .text
+00000d60 R_MIPS_32         .text
+00000d80 R_MIPS_32         .text
+00000da0 R_MIPS_32         .text
+00000dc0 R_MIPS_32         .text
+00000de0 R_MIPS_32         .text
+00000e00 R_MIPS_32         .text
+00000e20 R_MIPS_32         .text
+00000e40 R_MIPS_32         .text
+00000e60 R_MIPS_32         .text
+00000e80 R_MIPS_32         .text
+00000ea0 R_MIPS_32         .text
+00000ec0 R_MIPS_32         .text
+00000ee0 R_MIPS_32         .text
+00000f00 R_MIPS_32         .text
+00000f20 R_MIPS_32         .text
+00000f40 R_MIPS_32         .text
+00000f60 R_MIPS_32         .text
+00000f80 R_MIPS_32         .text
+00000fa0 R_MIPS_32         .text
+00000fc0 R_MIPS_32         .text
+00000fe0 R_MIPS_32         .text
+00001000 R_MIPS_32         .text
+00001020 R_MIPS_32         .text
+00001040 R_MIPS_32         .text
+00001060 R_MIPS_32         .text
+00001080 R_MIPS_32         .text
+000010a0 R_MIPS_32         .text
+000010c0 R_MIPS_32         .text
+000010e0 R_MIPS_32         .text
+00001100 R_MIPS_32         .text
+00001120 R_MIPS_32         .text
+00001140 R_MIPS_32         .text
+00001160 R_MIPS_32         .text
+00001180 R_MIPS_32         .text
+000011a0 R_MIPS_32         .text
+000011c0 R_MIPS_32         .text
+000011e0 R_MIPS_32         .text
+00001200 R_MIPS_32         .text
+00001220 R_MIPS_32         .text
+00001240 R_MIPS_32         .text
+00001260 R_MIPS_32         .text
+00001280 R_MIPS_32         .text
+000012a0 R_MIPS_32         .text
+000012c0 R_MIPS_32         .text
+000012e0 R_MIPS_32         .text
+00001300 R_MIPS_32         .text
+00001320 R_MIPS_32         .text
+00001340 R_MIPS_32         .text
+00001360 R_MIPS_32         .text
+00001380 R_MIPS_32         .text
+000013a0 R_MIPS_32         .text
+000013c0 R_MIPS_32         .text
+000013e0 R_MIPS_32         .text
+00001400 R_MIPS_32         .text
+00001420 R_MIPS_32         .text
+00001440 R_MIPS_32         .text
+00001460 R_MIPS_32         .text
+00001480 R_MIPS_32         .text
+000014a0 R_MIPS_32         .text
+000014c0 R_MIPS_32         .text
+000014e0 R_MIPS_32         .text
+00001500 R_MIPS_32         raise
+00001520 R_MIPS_32         .text
+00001540 R_MIPS_32         .text
+00001560 R_MIPS_32         .text
+00001580 R_MIPS_32         .text
+000015a0 R_MIPS_32         .text
+000015c0 R_MIPS_32         .text
+000015e0 R_MIPS_32         .text
+00001600 R_MIPS_32         .text
+00001620 R_MIPS_32         .text
+00001640 R_MIPS_32         .text
+00001660 R_MIPS_32         .text
+00001680 R_MIPS_32         .text
+000016a0 R_MIPS_32         memmove
+000016c0 R_MIPS_32         memcpy
+000016e0 R_MIPS_32         memset
+00001700 R_MIPS_32         .text
+00001720 R_MIPS_32         .text
+00001740 R_MIPS_32         .text
+00001760 R_MIPS_32         .text
+00001780 R_MIPS_32         strlen
+000017a0 R_MIPS_32         .text
+000017c0 R_MIPS_32         .text
+000017e0 R_MIPS_32         .text
+00001800 R_MIPS_32         .text
+00001820 R_MIPS_32         .text
+00001840 R_MIPS_32         .text
+00001860 R_MIPS_32         .text
+00001880 R_MIPS_32         .text
+000018a0 R_MIPS_32         .text
+000018c0 R_MIPS_32         .text
+000018e0 R_MIPS_32         .text
+00001900 R_MIPS_32         .text
+00001920 R_MIPS_32         abort
+00001940 R_MIPS_32         .text
+00001960 R_MIPS_32         .text
+00001980 R_MIPS_32         .text
+000019a0 R_MIPS_32         .text
+000019c0 R_MIPS_32         .text
+000019e0 R_MIPS_32         .text
+00001a00 R_MIPS_32         .text
+00001a20 R_MIPS_32         .text
+00001a40 R_MIPS_32         .text
+00001a60 R_MIPS_32         .text
+00001a80 R_MIPS_32         .text
+00001aa0 R_MIPS_32         .text
+00001ac0 R_MIPS_32         .text
+00001ae0 R_MIPS_32         .text
+00001b00 R_MIPS_32         .text
+00001b20 R_MIPS_32         .text
+00001b40 R_MIPS_32         .text
+00001b60 R_MIPS_32         .text
+00001b80 R_MIPS_32         .text
+00001ba0 R_MIPS_32         .text
+00001bc0 R_MIPS_32         .text
+00001be0 R_MIPS_32         .text
+00001c00 R_MIPS_32         .text
+00001c20 R_MIPS_32         .text
+00001c40 R_MIPS_32         .text
+00001c60 R_MIPS_32         .text
+00001c80 R_MIPS_32         .text
+00001ca0 R_MIPS_32         .text
+00001cc0 R_MIPS_32         .text
+00001ce0 R_MIPS_32         .text
+00001d00 R_MIPS_32         .text
+00001d20 R_MIPS_32         .text
+00001d40 R_MIPS_32         .text
+00001d60 R_MIPS_32         .text
+00001d80 R_MIPS_32         .text
+00001da0 R_MIPS_32         .text
+00001dc0 R_MIPS_32         .text
+00001de0 R_MIPS_32         .text
+00001e00 R_MIPS_32         .text
+00001e20 R_MIPS_32         .text
+00001e40 R_MIPS_32         .text
+00001e60 R_MIPS_32         .text
+00001e80 R_MIPS_32         .text
+00001ea0 R_MIPS_32         .text
+00001ec0 R_MIPS_32         .text
+00001ee0 R_MIPS_32         .text
+00001f00 R_MIPS_32         .text
+00001f20 R_MIPS_32         .text
+00001f40 R_MIPS_32         .text
+00001f60 R_MIPS_32         .text
+00001f80 R_MIPS_32         .text
+00001fa0 R_MIPS_32         .text
+00001fc0 R_MIPS_32         .text
+00001fe0 R_MIPS_32         .text
+00002000 R_MIPS_32         .text
+00002020 R_MIPS_32         .text
+00002040 R_MIPS_32         .text
+00002060 R_MIPS_32         .text
+00002080 R_MIPS_32         .text
+000020a0 R_MIPS_32         .text
+000020c0 R_MIPS_32         parse_decimal
+000020e0 R_MIPS_32         main
+
+
+RELOCATION RECORDS FOR [.rodata]:
+OFFSET   TYPE              VALUE
+00000000 R_MIPS_32         .text
+00000004 R_MIPS_32         .text
+00000008 R_MIPS_32         .text
+0000000c R_MIPS_32         .text
+00000010 R_MIPS_32         .text
+00000014 R_MIPS_32         .text
+00000018 R_MIPS_32         .text
+00000028 R_MIPS_32         s_digits
+
+
+RELOCATION RECORDS FOR [.text.nolibc_raise]:
+OFFSET   TYPE              VALUE
+00000014 R_MIPS_26         .text
+00000024 R_MIPS_26         .text
+
+
+RELOCATION RECORDS FOR [.text.nolibc_abort]:
+OFFSET   TYPE              VALUE
+00000010 R_MIPS_26         .text
+00000020 R_MIPS_26         .text
+
+
+RELOCATION RECORDS FOR [.debug_info]:
+OFFSET   TYPE              VALUE
+00000006 R_MIPS_32         .debug_abbrev
+0000000c R_MIPS_32         .debug_str
+00000011 R_MIPS_32         .debug_str
+00000015 R_MIPS_32         .debug_str
+00000019 R_MIPS_32         .debug_ranges
+00000021 R_MIPS_32         .debug_line
+00000028 R_MIPS_32         .debug_str
+0000002f R_MIPS_32         .debug_str
+00000036 R_MIPS_32         .debug_str
+0000003d R_MIPS_32         .debug_str
+00000042 R_MIPS_32         .debug_str
+00000050 R_MIPS_32         .debug_str
+00000061 R_MIPS_32         .debug_str
+0000006f R_MIPS_32         .debug_str
+00000074 R_MIPS_32         .debug_str
+00000082 R_MIPS_32         .debug_str
+00000087 R_MIPS_32         .debug_str
+00000093 R_MIPS_32         .debug_str
+000000a1 R_MIPS_32         .debug_str
+000000a8 R_MIPS_32         .debug_str
+000000b2 R_MIPS_32         .debug_str
+000000be R_MIPS_32         .debug_str
+000000ca R_MIPS_32         .debug_str
+000000d6 R_MIPS_32         .debug_str
+000000e2 R_MIPS_32         .debug_str
+000000ee R_MIPS_32         .debug_str
+000000fa R_MIPS_32         .debug_str
+00000106 R_MIPS_32         .debug_str
+00000112 R_MIPS_32         .debug_str
+0000011e R_MIPS_32         .debug_str
+0000012a R_MIPS_32         .debug_str
+00000136 R_MIPS_32         .debug_str
+00000142 R_MIPS_32         .debug_str
+0000014e R_MIPS_32         .debug_str
+0000015a R_MIPS_32         .debug_str
+00000166 R_MIPS_32         .debug_str
+00000172 R_MIPS_32         .debug_str
+0000017e R_MIPS_32         .debug_str
+0000018a R_MIPS_32         .debug_str
+000001a3 R_MIPS_32         .debug_str
+000001ad R_MIPS_32         .debug_str
+000001b9 R_MIPS_32         .debug_str
+000001c5 R_MIPS_32         .debug_str
+000001d1 R_MIPS_32         .debug_str
+000001dd R_MIPS_32         .debug_str
+000001e9 R_MIPS_32         .debug_str
+000001f5 R_MIPS_32         .debug_str
+00000201 R_MIPS_32         .debug_str
+0000020d R_MIPS_32         .debug_str
+00000219 R_MIPS_32         .debug_str
+00000225 R_MIPS_32         .debug_str
+00000231 R_MIPS_32         .debug_str
+0000023e R_MIPS_32         environ
+00000249 R_MIPS_32         .debug_str
+00000256 R_MIPS_32         _auxv
+00000291 R_MIPS_32         .debug_str
+0000029d R_MIPS_32         .debug_str
+000002a9 R_MIPS_32         .debug_str
+000002b5 R_MIPS_32         .debug_str
+000002dd R_MIPS_32         .debug_str
+000002e9 R_MIPS_32         .debug_str
+000002f5 R_MIPS_32         .debug_str
+00000302 R_MIPS_32         .debug_str
+0000030f R_MIPS_32         .debug_str
+0000031c R_MIPS_32         .debug_str
+0000032a R_MIPS_32         .debug_str
+00000338 R_MIPS_32         .debug_str
+00000345 R_MIPS_32         .debug_str
+00000352 R_MIPS_32         .debug_str
+0000035f R_MIPS_32         .debug_str
+0000036c R_MIPS_32         .debug_str
+00000379 R_MIPS_32         .debug_str
+00000386 R_MIPS_32         .debug_str
+00000393 R_MIPS_32         .debug_str
+000003a0 R_MIPS_32         .debug_str
+000003ad R_MIPS_32         .debug_str
+000003ba R_MIPS_32         .debug_str
+000003c7 R_MIPS_32         .debug_str
+000003d4 R_MIPS_32         .debug_str
+000003e1 R_MIPS_32         .debug_str
+000003ee R_MIPS_32         .debug_str
+000003fb R_MIPS_32         .debug_str
+00000408 R_MIPS_32         .debug_str
+00000415 R_MIPS_32         .debug_str
+00000422 R_MIPS_32         .debug_str
+0000042f R_MIPS_32         .debug_str
+0000043c R_MIPS_32         .debug_str
+00000449 R_MIPS_32         .debug_str
+00000456 R_MIPS_32         .debug_str
+00000463 R_MIPS_32         .debug_str
+00000491 R_MIPS_32         .debug_str
+0000049e R_MIPS_32         .debug_str
+000004ab R_MIPS_32         .debug_str
+000004b9 R_MIPS_32         .debug_str
+000004c6 R_MIPS_32         .debug_str
+000004d3 R_MIPS_32         .debug_str
+000004e6 R_MIPS_32         .debug_str
+000004f3 R_MIPS_32         .debug_str
+00000500 R_MIPS_32         .debug_str
+0000050e R_MIPS_32         .debug_str
+0000051b R_MIPS_32         .debug_str
+00000528 R_MIPS_32         .debug_str
+0000053b R_MIPS_32         .debug_str
+00000548 R_MIPS_32         .debug_str
+00000555 R_MIPS_32         .debug_str
+00000563 R_MIPS_32         .debug_str
+00000570 R_MIPS_32         .debug_str
+0000057d R_MIPS_32         .debug_str
+0000058a R_MIPS_32         .debug_str
+00000597 R_MIPS_32         .debug_str
+000005a4 R_MIPS_32         .debug_str
+000005ca R_MIPS_32         .debug_str
+000005d6 R_MIPS_32         .debug_str
+000005ec R_MIPS_32         .debug_str
+000005f8 R_MIPS_32         .debug_str
+0000060e R_MIPS_32         .debug_str
+0000061a R_MIPS_32         .debug_str
+00000627 R_MIPS_32         .debug_str
+00000634 R_MIPS_32         .debug_str
+00000641 R_MIPS_32         .debug_str
+0000064e R_MIPS_32         .debug_str
+0000065b R_MIPS_32         .debug_str
+00000668 R_MIPS_32         .debug_str
+00000675 R_MIPS_32         .debug_str
+00000682 R_MIPS_32         .debug_str
+0000068f R_MIPS_32         .debug_str
+0000069c R_MIPS_32         .debug_str
+000006a9 R_MIPS_32         .debug_str
+000006c9 R_MIPS_32         .debug_str
+000006d5 R_MIPS_32         .debug_str
+000006e3 R_MIPS_32         .debug_str
+000006f0 R_MIPS_32         .debug_str
+000006fc R_MIPS_32         .debug_str
+00000709 R_MIPS_32         .debug_str
+0000071e R_MIPS_32         .debug_str
+0000072b R_MIPS_32         .debug_str
+00000742 R_MIPS_32         .debug_str
+0000074f R_MIPS_32         .debug_str
+0000075c R_MIPS_32         .debug_str
+00000769 R_MIPS_32         .debug_str
+00000780 R_MIPS_32         .debug_str
+0000078d R_MIPS_32         .debug_str
+0000079a R_MIPS_32         .debug_str
+000007b1 R_MIPS_32         .debug_str
+000007be R_MIPS_32         .debug_str
+000007cb R_MIPS_32         .debug_str
+000007d8 R_MIPS_32         .debug_str
+000007e5 R_MIPS_32         .debug_str
+000007fc R_MIPS_32         .debug_str
+00000809 R_MIPS_32         .debug_str
+00000816 R_MIPS_32         .debug_str
+0000083d R_MIPS_32         .debug_str
+0000084a R_MIPS_32         .debug_str
+00000861 R_MIPS_32         .debug_str
+0000086e R_MIPS_32         .debug_str
+0000087b R_MIPS_32         .debug_str
+00000892 R_MIPS_32         .debug_str
+0000089e R_MIPS_32         .debug_str
+000008aa R_MIPS_32         .debug_str
+000008b6 R_MIPS_32         .debug_str
+000008c2 R_MIPS_32         .debug_str
+000008d8 R_MIPS_32         .debug_str
+000008f5 R_MIPS_32         .debug_str
+00000919 R_MIPS_32         .debug_str
+00000926 R_MIPS_32         .debug_str
+00000933 R_MIPS_32         .debug_str
+00000941 R_MIPS_32         .debug_str
+0000094e R_MIPS_32         .debug_str
+0000095a R_MIPS_32         .debug_str
+00000972 R_MIPS_32         .debug_str
+0000097e R_MIPS_32         .debug_str
+0000098a R_MIPS_32         .debug_str
+00000996 R_MIPS_32         .debug_str
+000009ac R_MIPS_32         .debug_str
+000009b9 R_MIPS_32         .debug_str
+000009c6 R_MIPS_32         .debug_str
+000009d3 R_MIPS_32         .debug_str
+000009ef R_MIPS_32         .debug_str
+00000a0c R_MIPS_32         .debug_str
+00000a20 R_MIPS_32         .debug_str
+00000a36 R_MIPS_32         .debug_str
+00000a44 R_MIPS_32         .debug_str
+00000a6e R_MIPS_32         .debug_str
+00000a7b R_MIPS_32         .debug_str
+00000a88 R_MIPS_32         .debug_str
+00000aa6 R_MIPS_32         .debug_str
+00000ab4 R_MIPS_32         .debug_str
+00000ac2 R_MIPS_32         .debug_str
+00000ad0 R_MIPS_32         .debug_str
+00000ade R_MIPS_32         .debug_str
+00000aed R_MIPS_32         .debug_str
+00000afb R_MIPS_32         .debug_str
+00000b09 R_MIPS_32         .debug_str
+00000b17 R_MIPS_32         .debug_str
+00000b25 R_MIPS_32         .debug_str
+00000b33 R_MIPS_32         .debug_str
+00000b41 R_MIPS_32         .debug_str
+00000b4f R_MIPS_32         .debug_str
+00000b6b R_MIPS_32         .debug_str
+00000b79 R_MIPS_32         .debug_str
+00000b87 R_MIPS_32         .debug_str
+00000b96 R_MIPS_32         .debug_str
+00000ba3 R_MIPS_32         errno
+00000ba8 R_MIPS_32         .debug_str
+00000bb5 R_MIPS_32         .debug_str
+00000bba R_MIPS_32         .debug_str
+00000bc7 R_MIPS_32         .debug_str
+00000bd4 R_MIPS_32         .debug_str
+00000be1 R_MIPS_32         .debug_str
+00000bee R_MIPS_32         .debug_str
+00000bfb R_MIPS_32         .debug_str
+00000c08 R_MIPS_32         .debug_str
+00000c15 R_MIPS_32         .debug_str
+00000c22 R_MIPS_32         .debug_str
+00000c2f R_MIPS_32         .debug_str
+00000c3c R_MIPS_32         .debug_str
+00000c49 R_MIPS_32         .debug_str
+00000c56 R_MIPS_32         .debug_str
+00000c63 R_MIPS_32         .debug_str
+00000c70 R_MIPS_32         .debug_str
+00000c7d R_MIPS_32         .debug_str
+00000c8a R_MIPS_32         .debug_str
+00000c98 R_MIPS_32         .debug_str
+00000ca5 R_MIPS_32         .debug_str
+00000cb2 R_MIPS_32         .debug_str
+00000cc5 R_MIPS_32         .debug_str
+00000cd2 R_MIPS_32         .debug_str
+00000cdf R_MIPS_32         .debug_str
+00000d19 R_MIPS_32         .debug_str
+00000d25 R_MIPS_32         .debug_str
+00000d32 R_MIPS_32         .debug_str
+00000d3f R_MIPS_32         .debug_str
+00000d62 R_MIPS_32         .debug_str
+00000d70 R_MIPS_32         .debug_str
+00000d7d R_MIPS_32         .debug_str
+00000d8a R_MIPS_32         .debug_str
+00000d97 R_MIPS_32         .debug_str
+00000da4 R_MIPS_32         .debug_str
+00000db2 R_MIPS_32         .debug_str
+00000dc1 R_MIPS_32         .debug_str
+00000ddc R_MIPS_32         .debug_str
+00000dfb R_MIPS_32         .debug_str
+00000e08 R_MIPS_32         .bss
+00000e0d R_MIPS_32         .debug_str
+00000e1a R_MIPS_32         .debug_str
+00000e38 R_MIPS_32         .debug_str
+00000e44 R_MIPS_32         .debug_str
+00000e51 R_MIPS_32         .rodata
+00000e61 R_MIPS_32         .debug_str
+00000e6e R_MIPS_32         .rodata
+00000e73 R_MIPS_32         .debug_str
+00000e80 R_MIPS_32         .rodata
+00000e85 R_MIPS_32         .debug_str
+00000eb6 R_MIPS_32         .debug_str
+00000ec4 R_MIPS_32         .debug_str
+00000ed1 R_MIPS_32         .debug_str
+00000ef8 R_MIPS_32         .debug_str
+00000f12 R_MIPS_32         .debug_str
+00000f1f R_MIPS_32         optarg
+00000f24 R_MIPS_32         .debug_str
+00000f31 R_MIPS_32         optind
+00000f36 R_MIPS_32         .debug_str
+00000f43 R_MIPS_32         opterr
+00000f48 R_MIPS_32         .debug_str
+00000f55 R_MIPS_32         optopt
+00000f5a R_MIPS_32         .debug_str
+00000f73 R_MIPS_32         .debug_str
+00000f80 R_MIPS_32         .debug_str
+00000fa3 R_MIPS_32         .debug_str
+00000faf R_MIPS_32         .debug_str
+00000fbc R_MIPS_32         s_ascii_digit_bias
+00000fcc R_MIPS_32         .debug_str
+00000fd3 R_MIPS_32         .debug_str
+00000ff0 R_MIPS_32         .debug_str
+00000ffb R_MIPS_32         .text
+00001006 R_MIPS_32         .debug_str
+00001011 R_MIPS_32         .text
+0000102d R_MIPS_32         .debug_str
+0000103d R_MIPS_32         .debug_str
+00001048 R_MIPS_32         .text
+00001066 R_MIPS_32         .debug_str
+00001075 R_MIPS_32         .debug_str
+00001084 R_MIPS_32         .debug_ranges
+00001089 R_MIPS_32         .debug_str
+000010a0 R_MIPS_32         .debug_str
+000010ab R_MIPS_32         .text
+000010c9 R_MIPS_32         .debug_str
+000010d8 R_MIPS_32         .debug_str
+000010f4 R_MIPS_32         .text
+000010fd R_MIPS_32         .debug_str
+0000110b R_MIPS_32         .debug_str
+00001119 R_MIPS_32         .debug_str
+00001127 R_MIPS_32         .debug_str
+00001135 R_MIPS_32         .debug_str
+00001143 R_MIPS_32         .debug_str
+00001153 R_MIPS_32         .debug_str
+0000115e R_MIPS_32         .text
+0000116d R_MIPS_32         .debug_str
+0000117c R_MIPS_32         .debug_str
+0000118b R_MIPS_32         .debug_str
+0000119a R_MIPS_32         .debug_str
+000011a7 R_MIPS_32         .sbss
+000011d3 R_MIPS_32         .debug_str
+000011e9 R_MIPS_32         .debug_str
+000011f4 R_MIPS_32         .text
+00001203 R_MIPS_32         .debug_str
+00001212 R_MIPS_32         .debug_str
+00001221 R_MIPS_32         .debug_str
+00001241 R_MIPS_32         .debug_str
+000012a8 R_MIPS_32         .debug_str
+000012b3 R_MIPS_32         .text
+000012c2 R_MIPS_32         .debug_str
+000012df R_MIPS_32         .debug_str
+000012ea R_MIPS_32         .text
+000012f9 R_MIPS_32         .debug_str
+00001317 R_MIPS_32         .debug_str
+00001322 R_MIPS_32         .text
+00001340 R_MIPS_32         .debug_str
+00001347 R_MIPS_32         .text
+00001352 R_MIPS_32         .debug_str
+0000135e R_MIPS_32         .text
+0000136d R_MIPS_32         .debug_str
+0000138b R_MIPS_32         .data
+000013a1 R_MIPS_32         .debug_str
+000013ad R_MIPS_32         .text
+000013bc R_MIPS_32         .debug_str
+000013dc R_MIPS_32         .debug_str
+000013ec R_MIPS_32         .debug_str
+000013fd R_MIPS_32         .debug_str
+00001405 R_MIPS_32         .text
+00001425 R_MIPS_32         .debug_str
+00001431 R_MIPS_32         .text
+00001450 R_MIPS_32         .debug_str
+00001461 R_MIPS_32         .debug_str
+00001482 R_MIPS_32         .debug_str
+0000148e R_MIPS_32         .text
+000014ad R_MIPS_32         .debug_str
+000014bd R_MIPS_32         .debug_str
+000014cd R_MIPS_32         .debug_str
+000014dd R_MIPS_32         .debug_str
+000014ed R_MIPS_32         .debug_str
+000014fd R_MIPS_32         .debug_str
+0000150d R_MIPS_32         .debug_str
+0000151d R_MIPS_32         .debug_str
+0000152d R_MIPS_32         .debug_str
+00001535 R_MIPS_32         .text
+0000153b R_MIPS_32         .debug_str
+00001547 R_MIPS_32         .text
+00001577 R_MIPS_32         .debug_str
+00001598 R_MIPS_32         .debug_str
+000015a4 R_MIPS_32         .text
+000015d3 R_MIPS_32         .debug_str
+000015e4 R_MIPS_32         .debug_str
+000015f0 R_MIPS_32         .text
+0000160f R_MIPS_32         .debug_str
+00001630 R_MIPS_32         .debug_str
+00001651 R_MIPS_32         .debug_str
+0000165d R_MIPS_32         .text
+0000167c R_MIPS_32         .debug_str
+0000169c R_MIPS_32         .debug_str
+000016ac R_MIPS_32         .debug_str
+000016cd R_MIPS_32         .debug_str
+000016d9 R_MIPS_32         .text
+000016e8 R_MIPS_32         .debug_str
+00001708 R_MIPS_32         .debug_str
+00001718 R_MIPS_32         .debug_str
+00001729 R_MIPS_32         .debug_str
+00001735 R_MIPS_32         .text
+00001764 R_MIPS_32         .debug_str
+00001785 R_MIPS_32         .debug_str
+00001791 R_MIPS_32         .text
+000017bf R_MIPS_32         .debug_str
+000017cf R_MIPS_32         .debug_str
+000017e0 R_MIPS_32         .debug_str
+000017ec R_MIPS_32         .text
+0000180c R_MIPS_32         .debug_str
+0000182d R_MIPS_32         .debug_str
+00001839 R_MIPS_32         .text
+00001848 R_MIPS_32         .debug_str
+00001869 R_MIPS_32         .debug_str
+0000188a R_MIPS_32         .debug_str
+00001896 R_MIPS_32         .text
+000018b5 R_MIPS_32         .debug_str
+000018c6 R_MIPS_32         .debug_str
+000018d2 R_MIPS_32         .text
+000018e1 R_MIPS_32         .debug_str
+00001901 R_MIPS_32         .debug_str
+00001912 R_MIPS_32         .debug_str
+0000191e R_MIPS_32         .text
+0000192d R_MIPS_32         .debug_str
+0000194d R_MIPS_32         .debug_str
+0000195e R_MIPS_32         .debug_str
+00001969 R_MIPS_32         .text
+00001986 R_MIPS_32         .debug_str
+000019b1 R_MIPS_32         .debug_str
+000019c0 R_MIPS_32         .debug_str
+000019d0 R_MIPS_32         .debug_str
+000019fc R_MIPS_32         .debug_str
+00001a0b R_MIPS_32         .debug_str
+00001a48 R_MIPS_32         .debug_str
+00001a58 R_MIPS_32         .debug_str
+00001a68 R_MIPS_32         .debug_str
+00001a70 R_MIPS_32         .text
+00001a75 R_MIPS_32         .debug_str
+00001a7d R_MIPS_32         .text
+00001a82 R_MIPS_32         .text
+00001a9d R_MIPS_32         .debug_str
+00001aa8 R_MIPS_32         .text
+00001ac4 R_MIPS_32         .debug_str
+00001ad3 R_MIPS_32         .debug_str
+00001aff R_MIPS_32         .debug_str
+00001b0a R_MIPS_32         .text
+00001b27 R_MIPS_32         .debug_str
+00001b32 R_MIPS_32         .text
+00001b4e R_MIPS_32         .debug_str
+00001b5e R_MIPS_32         .debug_str
+00001b69 R_MIPS_32         .text
+00001b85 R_MIPS_32         .debug_str
+00001b94 R_MIPS_32         .debug_str
+00001ba3 R_MIPS_32         .debug_str
+00001bb2 R_MIPS_32         .debug_str
+00001bc9 R_MIPS_32         .debug_str
+00001bd4 R_MIPS_32         .text
+00001bf2 R_MIPS_32         .debug_str
+00001c01 R_MIPS_32         .debug_str
+00001c2e R_MIPS_32         .debug_str
+00001c39 R_MIPS_32         .text
+00001c56 R_MIPS_32         .debug_str
+00001c61 R_MIPS_32         .text
+00001c7d R_MIPS_32         .debug_str
+00001c9b R_MIPS_32         .debug_str
+00001ca6 R_MIPS_32         .text
+00001cb1 R_MIPS_32         .debug_str
+00001cbc R_MIPS_32         .text
+00001ccb R_MIPS_32         .debug_str
+00001ce9 R_MIPS_32         .debug_str
+00001cf4 R_MIPS_32         .text
+00001d03 R_MIPS_32         .debug_str
+00001d20 R_MIPS_32         .debug_str
+00001d2b R_MIPS_32         .text
+00001d3a R_MIPS_32         .debug_str
+00001d57 R_MIPS_32         .debug_str
+00001d62 R_MIPS_32         .text
+00001d71 R_MIPS_32         .debug_str
+00001d8e R_MIPS_32         .debug_str
+00001d99 R_MIPS_32         .text
+00001da8 R_MIPS_32         .debug_str
+00001db7 R_MIPS_32         .debug_str
+00001dc6 R_MIPS_32         .debug_str
+00001de4 R_MIPS_32         .debug_str
+00001def R_MIPS_32         .text
+00001e0c R_MIPS_32         .debug_str
+00001e1c R_MIPS_32         .debug_str
+00001e28 R_MIPS_32         .text
+00001e37 R_MIPS_32         .debug_str
+00001e47 R_MIPS_32         .debug_str
+00001e57 R_MIPS_32         .debug_str
+00001e68 R_MIPS_32         .debug_str
+00001e74 R_MIPS_32         .text
+00001e83 R_MIPS_32         .debug_str
+00001e93 R_MIPS_32         .debug_str
+00001ea3 R_MIPS_32         .debug_str
+00001eb4 R_MIPS_32         .debug_str
+00001ec0 R_MIPS_32         .text
+00001ecf R_MIPS_32         .debug_str
+00001edf R_MIPS_32         .debug_str
+00001eef R_MIPS_32         .debug_str
+00001f00 R_MIPS_32         .debug_str
+00001f0c R_MIPS_32         .text
+00001f1b R_MIPS_32         .debug_str
+00001f2b R_MIPS_32         .debug_str
+00001f3b R_MIPS_32         .debug_str
+00001f4c R_MIPS_32         .debug_str
+00001f58 R_MIPS_32         .text
+00001f67 R_MIPS_32         .debug_str
+00001f77 R_MIPS_32         .debug_str
+00001f87 R_MIPS_32         .debug_str
+00001f98 R_MIPS_32         .debug_str
+00001fa4 R_MIPS_32         .text
+00001fb3 R_MIPS_32         .debug_str
+00001fc3 R_MIPS_32         .debug_str
+00001fd3 R_MIPS_32         .debug_str
+00001fe4 R_MIPS_32         .debug_str
+00001ff0 R_MIPS_32         .text
+00001fff R_MIPS_32         .debug_str
+0000200f R_MIPS_32         .debug_str
+0000201f R_MIPS_32         .debug_str
+0000202f R_MIPS_32         .debug_str
+0000203f R_MIPS_32         .debug_str
+0000204f R_MIPS_32         .debug_str
+0000206f R_MIPS_32         .debug_str
+0000208f R_MIPS_32         .debug_str
+0000209f R_MIPS_32         .debug_str
+000020c5 R_MIPS_32         .text
+000020cb R_MIPS_32         .debug_str
+000020d7 R_MIPS_32         .text
+000020f5 R_MIPS_32         .debug_str
+00002126 R_MIPS_32         .debug_str
+00002132 R_MIPS_32         .text
+00002150 R_MIPS_32         .debug_str
+00002170 R_MIPS_32         .debug_str
+000021a1 R_MIPS_32         .debug_str
+000021ad R_MIPS_32         .text
+000021cb R_MIPS_32         .debug_str
+000021eb R_MIPS_32         .debug_str
+0000220b R_MIPS_32         .text
+00002224 R_MIPS_32         .debug_str
+00002230 R_MIPS_32         .text
+0000224e R_MIPS_32         .debug_str
+0000227f R_MIPS_32         .debug_str
+0000228a R_MIPS_32         .text
+000022a7 R_MIPS_32         .debug_str
+000022c5 R_MIPS_32         .debug_str
+000022f3 R_MIPS_32         .debug_str
+000022fe R_MIPS_32         .text
+0000231b R_MIPS_32         .debug_str
+00002339 R_MIPS_32         .debug_str
+00002358 R_MIPS_32         .debug_str
+00002363 R_MIPS_32         .text
+00002372 R_MIPS_32         .debug_str
+00002381 R_MIPS_32         .debug_str
+00002390 R_MIPS_32         .debug_str
+0000239f R_MIPS_32         .debug_str
+000023bd R_MIPS_32         .text
+000023c6 R_MIPS_32         .debug_str
+000023e3 R_MIPS_32         .debug_str
+000023ee R_MIPS_32         .text
+000023fd R_MIPS_32         .debug_str
+0000240c R_MIPS_32         .debug_str
+00002429 R_MIPS_32         .debug_str
+00002434 R_MIPS_32         .text
+00002452 R_MIPS_32         .debug_str
+00002462 R_MIPS_32         .debug_str
+0000246d R_MIPS_32         .text
+0000247c R_MIPS_32         .debug_str
+000024a8 R_MIPS_32         .debug_str
+000024af R_MIPS_32         .text
+000024cd R_MIPS_32         .debug_str
+000024dc R_MIPS_32         .text
+000024e5 R_MIPS_32         .debug_str
+000024f6 R_MIPS_32         .debug_str
+00002501 R_MIPS_32         .text
+0000251e R_MIPS_32         .debug_str
+00002529 R_MIPS_32         .text
+00002571 R_MIPS_32         .debug_str
+00002578 R_MIPS_32         .text.nolibc_abort
+00002583 R_MIPS_32         .debug_str
+0000258f R_MIPS_32         .text
+000025ad R_MIPS_32         .debug_str
+000025b9 R_MIPS_32         .text
+000025d7 R_MIPS_32         .debug_str
+000025e3 R_MIPS_32         .text
+000025f2 R_MIPS_32         .debug_str
+00002602 R_MIPS_32         .debug_str
+00002612 R_MIPS_32         .debug_str
+00002622 R_MIPS_32         .debug_str
+00002633 R_MIPS_32         .debug_str
+0000263f R_MIPS_32         .text
+0000267b R_MIPS_32         .debug_str
+00002687 R_MIPS_32         .text
+000026b6 R_MIPS_32         .debug_str
+000026d7 R_MIPS_32         .debug_str
+000026e3 R_MIPS_32         .text
+0000270e R_MIPS_32         .debug_str
+0000272c R_MIPS_32         .debug_str
+0000273d R_MIPS_32         .debug_str
+00002749 R_MIPS_32         .text
+00002778 R_MIPS_32         .debug_str
+00002788 R_MIPS_32         .debug_str
+00002799 R_MIPS_32         .debug_str
+000027a4 R_MIPS_32         .text
+000027d1 R_MIPS_32         .debug_str
+000027f0 R_MIPS_32         .debug_str
+000027fb R_MIPS_32         .text
+00002828 R_MIPS_32         .debug_str
+00002847 R_MIPS_32         .debug_str
+00002852 R_MIPS_32         .text
+00002870 R_MIPS_32         .debug_str
+0000289e R_MIPS_32         .debug_str
+000028a9 R_MIPS_32         .text
+000028e6 R_MIPS_32         .debug_str
+000028f1 R_MIPS_32         .text
+0000290f R_MIPS_32         .debug_str
+0000292e R_MIPS_32         .debug_str
+00002939 R_MIPS_32         .text.nolibc_strlen
+00002967 R_MIPS_32         .debug_str
+00002972 R_MIPS_32         .text
+000029af R_MIPS_32         .debug_str
+000029ba R_MIPS_32         .text
+000029f0 R_MIPS_32         .debug_str
+00002a00 R_MIPS_32         .debug_str
+00002a0b R_MIPS_32         .text
+00002a35 R_MIPS_32         .debug_str
+00002a40 R_MIPS_32         .text
+00002a86 R_MIPS_32         .debug_str
+00002a91 R_MIPS_32         .text.nolibc_memset
+00002ad9 R_MIPS_32         .debug_str
+00002ae4 R_MIPS_32         .text.nolibc_memcpy
+00002b30 R_MIPS_32         .debug_str
+00002b3b R_MIPS_32         .text.nolibc_memmove
+00002b96 R_MIPS_32         .debug_str
+00002ba1 R_MIPS_32         .text
+00002bf7 R_MIPS_32         .debug_str
+00002c02 R_MIPS_32         .text
+00002c11 R_MIPS_32         .debug_str
+00002c20 R_MIPS_32         .debug_str
+00002c30 R_MIPS_32         .debug_str
+00002c3f R_MIPS_32         .text
+00002c4c R_MIPS_32         .debug_str
+00002c5c R_MIPS_32         .debug_ranges
+00002c61 R_MIPS_32         .debug_str
+00002c72 R_MIPS_32         .debug_str
+00002c7d R_MIPS_32         .text
+00002c8c R_MIPS_32         .debug_str
+00002c9b R_MIPS_32         .debug_str
+00002caa R_MIPS_32         .debug_str
+00002cb9 R_MIPS_32         .text
+00002cc2 R_MIPS_32         .debug_str
+00002cd0 R_MIPS_32         .debug_str
+00002cde R_MIPS_32         .debug_str
+00002cec R_MIPS_32         .debug_str
+00002cfa R_MIPS_32         .debug_str
+00002d0a R_MIPS_32         .debug_str
+00002d15 R_MIPS_32         .text
+00002d24 R_MIPS_32         .debug_str
+00002d33 R_MIPS_32         .debug_str
+00002d42 R_MIPS_32         .debug_str
+00002d52 R_MIPS_32         .debug_str
+00002d61 R_MIPS_32         .text
+00002d6e R_MIPS_32         .debug_str
+00002d7e R_MIPS_32         .debug_ranges
+00002d83 R_MIPS_32         .debug_str
+00002d94 R_MIPS_32         .debug_str
+00002d9f R_MIPS_32         .text
+00002dae R_MIPS_32         .debug_str
+00002dbd R_MIPS_32         .debug_str
+00002dcc R_MIPS_32         .debug_str
+00002ddb R_MIPS_32         .debug_str
+00002dea R_MIPS_32         .text
+00002df3 R_MIPS_32         .debug_str
+00002e01 R_MIPS_32         .debug_str
+00002e0f R_MIPS_32         .debug_str
+00002e1d R_MIPS_32         .debug_str
+00002e2b R_MIPS_32         .debug_str
+00002e3b R_MIPS_32         .debug_str
+00002e46 R_MIPS_32         .text
+00002e72 R_MIPS_32         .debug_ranges
+00002e77 R_MIPS_32         .debug_str
+00002e88 R_MIPS_32         .debug_str
+00002e93 R_MIPS_32         .text
+00002ea2 R_MIPS_32         .debug_str
+00002eb1 R_MIPS_32         .debug_str
+00002ec1 R_MIPS_32         .debug_str
+00002ecc R_MIPS_32         .text
+00002edb R_MIPS_32         .debug_str
+00002eea R_MIPS_32         .debug_str
+00002efa R_MIPS_32         .debug_str
+00002f05 R_MIPS_32         .text
+00002f14 R_MIPS_32         .debug_str
+00002f23 R_MIPS_32         .debug_str
+00002f33 R_MIPS_32         .debug_str
+00002f3e R_MIPS_32         .text
+00002f4d R_MIPS_32         .debug_str
+00002f5c R_MIPS_32         .debug_str
+00002f6c R_MIPS_32         .debug_str
+00002f77 R_MIPS_32         .text
+00002f94 R_MIPS_32         .debug_str
+00002fa3 R_MIPS_32         .debug_str
+00002fb2 R_MIPS_32         .debug_str
+00002fc1 R_MIPS_32         .debug_ranges
+00002fc6 R_MIPS_32         .debug_str
+00002fd7 R_MIPS_32         .debug_str
+00002fe2 R_MIPS_32         .text
+00002fff R_MIPS_32         .debug_str
+0000300e R_MIPS_32         .debug_str
+0000301d R_MIPS_32         .debug_str
+0000302c R_MIPS_32         .text
+00003035 R_MIPS_32         .debug_str
+00003043 R_MIPS_32         .debug_str
+00003051 R_MIPS_32         .debug_str
+0000305f R_MIPS_32         .debug_str
+0000306d R_MIPS_32         .debug_str
+0000307d R_MIPS_32         .debug_str
+00003088 R_MIPS_32         .text.nolibc_raise
+00003097 R_MIPS_32         .debug_str
+000030a7 R_MIPS_32         .debug_str
+000030b2 R_MIPS_32         .text
+000030c1 R_MIPS_32         .debug_str
+000030d0 R_MIPS_32         .debug_ranges
+000030d5 R_MIPS_32         .debug_str
+000030e6 R_MIPS_32         .debug_str
+000030f1 R_MIPS_32         .text
+00003100 R_MIPS_32         .debug_str
+0000310f R_MIPS_32         .text
+00003118 R_MIPS_32         .debug_str
+00003126 R_MIPS_32         .debug_str
+00003134 R_MIPS_32         .debug_str
+00003144 R_MIPS_32         .debug_str
+0000314f R_MIPS_32         .text
+0000316c R_MIPS_32         .debug_str
+0000317b R_MIPS_32         .debug_ranges
+00003180 R_MIPS_32         .debug_str
+00003191 R_MIPS_32         .debug_str
+0000319c R_MIPS_32         .text
+000031b9 R_MIPS_32         .debug_str
+000031c8 R_MIPS_32         .text
+000031d1 R_MIPS_32         .debug_str
+000031df R_MIPS_32         .debug_str
+000031ed R_MIPS_32         .debug_str
+000031fb R_MIPS_32         .debug_str
+0000320b R_MIPS_32         .debug_str
+00003216 R_MIPS_32         .text
+00003233 R_MIPS_32         .debug_str
+0000323e R_MIPS_32         .text
+0000325b R_MIPS_32         .debug_str
+00003266 R_MIPS_32         .text
+00003283 R_MIPS_32         .debug_str
+0000328e R_MIPS_32         .text
+000032ab R_MIPS_32         .debug_str
+000032b6 R_MIPS_32         .text
+000032d3 R_MIPS_32         .debug_str
+000032de R_MIPS_32         .text
+000032fb R_MIPS_32         .debug_str
+00003306 R_MIPS_32         .text
+00003323 R_MIPS_32         .debug_str
+0000332e R_MIPS_32         .text
+0000334b R_MIPS_32         .debug_str
+00003356 R_MIPS_32         .text
+00003373 R_MIPS_32         .debug_str
+0000337e R_MIPS_32         .text
+0000339b R_MIPS_32         .debug_str
+000033a6 R_MIPS_32         .text
+000033c3 R_MIPS_32         .debug_str
+000033ce R_MIPS_32         .text
+000033eb R_MIPS_32         .debug_str
+000033f6 R_MIPS_32         .text
+00003413 R_MIPS_32         .debug_str
+0000341e R_MIPS_32         .text
+0000342d R_MIPS_32         .debug_str
+00003443 R_MIPS_32         .debug_str
+0000344e R_MIPS_32         .text
+0000346c R_MIPS_32         .debug_str
+0000347b R_MIPS_32         .debug_str
+0000348a R_MIPS_32         .debug_str
+000034aa R_MIPS_32         .debug_str
+000034ca R_MIPS_32         .debug_str
+000034d5 R_MIPS_32         .text
+000034e4 R_MIPS_32         .debug_str
+00003502 R_MIPS_32         .debug_str
+00003511 R_MIPS_32         .debug_str
+00003520 R_MIPS_32         .debug_ranges
+00003525 R_MIPS_32         .debug_str
+0000353c R_MIPS_32         .debug_str
+00003547 R_MIPS_32         .text
+00003556 R_MIPS_32         .debug_str
+00003574 R_MIPS_32         .debug_str
+00003583 R_MIPS_32         .debug_str
+00003592 R_MIPS_32         .debug_str
+000035a1 R_MIPS_32         .text
+000035aa R_MIPS_32         .debug_str
+000035b8 R_MIPS_32         .debug_str
+000035c6 R_MIPS_32         .debug_str
+000035d4 R_MIPS_32         .debug_str
+000035e2 R_MIPS_32         .debug_str
+000035f0 R_MIPS_32         .debug_str
+00003606 R_MIPS_32         .debug_str
+00003611 R_MIPS_32         .text
+0000362f R_MIPS_32         .debug_ranges
+00003634 R_MIPS_32         .debug_str
+0000364b R_MIPS_32         .debug_str
+00003656 R_MIPS_32         .text
+00003674 R_MIPS_32         .text
+0000367d R_MIPS_32         .debug_str
+0000368b R_MIPS_32         .debug_str
+00003699 R_MIPS_32         .debug_str
+000036a9 R_MIPS_32         .debug_str
+000036b4 R_MIPS_32         .text
+000036d1 R_MIPS_32         .debug_str
+000036e0 R_MIPS_32         .debug_str
+000036ef R_MIPS_32         .debug_ranges
+000036f4 R_MIPS_32         .debug_str
+0000370b R_MIPS_32         .debug_str
+00003716 R_MIPS_32         .text
+00003733 R_MIPS_32         .debug_str
+00003742 R_MIPS_32         .debug_str
+00003751 R_MIPS_32         .text
+0000375a R_MIPS_32         .debug_str
+00003768 R_MIPS_32         .debug_str
+00003776 R_MIPS_32         .debug_str
+00003784 R_MIPS_32         .debug_str
+00003792 R_MIPS_32         .debug_str
+000037a2 R_MIPS_32         .debug_str
+000037ad R_MIPS_32         .text
+000037ca R_MIPS_32         .debug_str
+000037d9 R_MIPS_32         .debug_str
+000037e8 R_MIPS_32         .debug_ranges
+000037ed R_MIPS_32         .debug_str
+000037fe R_MIPS_32         .debug_str
+00003809 R_MIPS_32         .text
+00003826 R_MIPS_32         .debug_str
+00003835 R_MIPS_32         .debug_str
+00003844 R_MIPS_32         .text
+0000384d R_MIPS_32         .debug_str
+0000385b R_MIPS_32         .debug_str
+00003869 R_MIPS_32         .debug_str
+00003877 R_MIPS_32         .debug_str
+00003885 R_MIPS_32         .debug_str
+00003895 R_MIPS_32         .debug_str
+000038a0 R_MIPS_32         .text
+000038bd R_MIPS_32         .debug_str
+000038cc R_MIPS_32         .debug_str
+000038db R_MIPS_32         .debug_str
+000038ea R_MIPS_32         .debug_ranges
+000038ef R_MIPS_32         .debug_str
+0000390c R_MIPS_32         .debug_str
+00003917 R_MIPS_32         .text
+00003934 R_MIPS_32         .debug_str
+00003943 R_MIPS_32         .debug_str
+00003952 R_MIPS_32         .debug_str
+00003961 R_MIPS_32         .text
+0000396a R_MIPS_32         .debug_str
+00003978 R_MIPS_32         .debug_str
+00003986 R_MIPS_32         .debug_str
+00003994 R_MIPS_32         .debug_str
+000039a2 R_MIPS_32         .debug_str
+000039b2 R_MIPS_32         .debug_str
+000039bd R_MIPS_32         .text
+000039da R_MIPS_32         .debug_str
+000039e9 R_MIPS_32         .debug_ranges
+000039ee R_MIPS_32         .debug_str
+000039ff R_MIPS_32         .debug_str
+00003a0a R_MIPS_32         .text
+00003a27 R_MIPS_32         .debug_str
+00003a36 R_MIPS_32         .text
+00003a3f R_MIPS_32         .debug_str
+00003a4d R_MIPS_32         .debug_str
+00003a5b R_MIPS_32         .debug_str
+00003a69 R_MIPS_32         .debug_str
+00003a79 R_MIPS_32         .debug_str
+00003a84 R_MIPS_32         .text
+00003a93 R_MIPS_32         .debug_str
+00003aa2 R_MIPS_32         .debug_str
+00003ab1 R_MIPS_32         .debug_ranges
+00003ab6 R_MIPS_32         .debug_str
+00003ac7 R_MIPS_32         .debug_str
+00003ad2 R_MIPS_32         .text
+00003ae1 R_MIPS_32         .debug_str
+00003af0 R_MIPS_32         .debug_str
+00003aff R_MIPS_32         .text
+00003b08 R_MIPS_32         .debug_str
+00003b16 R_MIPS_32         .debug_str
+00003b24 R_MIPS_32         .debug_str
+00003b32 R_MIPS_32         .debug_str
+00003b42 R_MIPS_32         .debug_str
+00003b4d R_MIPS_32         .text
+00003b5c R_MIPS_32         .debug_str
+00003b6b R_MIPS_32         .debug_str
+00003b7a R_MIPS_32         .debug_str
+00003b89 R_MIPS_32         .debug_str
+00003b98 R_MIPS_32         .debug_ranges
+00003b9d R_MIPS_32         .debug_str
+00003bae R_MIPS_32         .debug_str
+00003bb9 R_MIPS_32         .text
+00003bc8 R_MIPS_32         .debug_str
+00003bd7 R_MIPS_32         .debug_str
+00003be6 R_MIPS_32         .debug_str
+00003bf5 R_MIPS_32         .debug_str
+00003c04 R_MIPS_32         .text
+00003c0d R_MIPS_32         .debug_str
+00003c1b R_MIPS_32         .debug_str
+00003c29 R_MIPS_32         .debug_str
+00003c37 R_MIPS_32         .debug_str
+00003c45 R_MIPS_32         .debug_str
+00003c55 R_MIPS_32         .debug_str
+00003c60 R_MIPS_32         .text
+00003c6f R_MIPS_32         .debug_str
+00003c7e R_MIPS_32         .debug_str
+00003c8d R_MIPS_32         .debug_ranges
+00003c92 R_MIPS_32         .debug_str
+00003ca3 R_MIPS_32         .debug_str
+00003cae R_MIPS_32         .text
+00003cbd R_MIPS_32         .debug_str
+00003ccc R_MIPS_32         .debug_str
+00003cdb R_MIPS_32         .text
+00003ce4 R_MIPS_32         .debug_str
+00003cf2 R_MIPS_32         .debug_str
+00003d00 R_MIPS_32         .debug_str
+00003d0e R_MIPS_32         .debug_str
+00003d1e R_MIPS_32         .debug_str
+00003d29 R_MIPS_32         .text
+00003d38 R_MIPS_32         .debug_str
+00003d47 R_MIPS_32         .debug_ranges
+00003d4c R_MIPS_32         .debug_str
+00003d5d R_MIPS_32         .debug_str
+00003d68 R_MIPS_32         .text
+00003d77 R_MIPS_32         .debug_str
+00003d86 R_MIPS_32         .text
+00003d8f R_MIPS_32         .debug_str
+00003d9d R_MIPS_32         .debug_str
+00003dab R_MIPS_32         .debug_str
+00003dbb R_MIPS_32         .debug_str
+00003dc6 R_MIPS_32         .text
+00003dd5 R_MIPS_32         .debug_str
+00003df3 R_MIPS_32         .debug_str
+00003e02 R_MIPS_32         .debug_ranges
+00003e07 R_MIPS_32         .debug_str
+00003e24 R_MIPS_32         .debug_str
+00003e2f R_MIPS_32         .text
+00003e3e R_MIPS_32         .debug_str
+00003e5c R_MIPS_32         .debug_str
+00003e6b R_MIPS_32         .text
+00003e74 R_MIPS_32         .debug_str
+00003e82 R_MIPS_32         .debug_str
+00003e90 R_MIPS_32         .debug_str
+00003e9e R_MIPS_32         .debug_str
+00003eac R_MIPS_32         .debug_str
+00003ebc R_MIPS_32         .debug_str
+00003ec7 R_MIPS_32         .text
+00003ed6 R_MIPS_32         .debug_str
+00003efa R_MIPS_32         .debug_str
+00003f05 R_MIPS_32         .text
+00003f14 R_MIPS_32         .debug_str
+00003f23 R_MIPS_32         .debug_str
+00003f32 R_MIPS_32         .debug_str
+00003f41 R_MIPS_32         .debug_str
+00003f5d R_MIPS_32         .debug_str
+00003f68 R_MIPS_32         .text
+00003f77 R_MIPS_32         .debug_str
+00003f86 R_MIPS_32         .debug_str
+00003f95 R_MIPS_32         .debug_str
+00003fa4 R_MIPS_32         .debug_str
+00003fb3 R_MIPS_32         .text
+00003fbc R_MIPS_32         .debug_str
+00003fca R_MIPS_32         .debug_str
+00003fd8 R_MIPS_32         .debug_str
+00003fe6 R_MIPS_32         .debug_str
+00003ff4 R_MIPS_32         .debug_str
+00004004 R_MIPS_32         .debug_str
+0000400f R_MIPS_32         .text
+0000401e R_MIPS_32         .debug_str
+0000403b R_MIPS_32         .debug_ranges
+00004040 R_MIPS_32         .debug_str
+00004051 R_MIPS_32         .debug_str
+0000405c R_MIPS_32         .text
+0000406b R_MIPS_32         .debug_str
+00004088 R_MIPS_32         .text
+00004091 R_MIPS_32         .debug_str
+0000409f R_MIPS_32         .debug_str
+000040ad R_MIPS_32         .debug_str
+000040bb R_MIPS_32         .debug_str
+000040cb R_MIPS_32         .debug_str
+000040d6 R_MIPS_32         .text
+000040e5 R_MIPS_32         .debug_str
+00004102 R_MIPS_32         .debug_ranges
+00004107 R_MIPS_32         .debug_str
+00004118 R_MIPS_32         .debug_str
+00004123 R_MIPS_32         .text
+00004132 R_MIPS_32         .debug_str
+0000414f R_MIPS_32         .text
+00004158 R_MIPS_32         .debug_str
+00004166 R_MIPS_32         .debug_str
+00004174 R_MIPS_32         .debug_str
+00004182 R_MIPS_32         .debug_str
+00004192 R_MIPS_32         .debug_str
+0000419d R_MIPS_32         .text
+000041ac R_MIPS_32         .debug_str
+000041ca R_MIPS_32         .debug_ranges
+000041cf R_MIPS_32         .debug_str
+000041e0 R_MIPS_32         .debug_str
+000041eb R_MIPS_32         .text
+000041fa R_MIPS_32         .debug_str
+00004218 R_MIPS_32         .text
+00004221 R_MIPS_32         .debug_str
+0000422f R_MIPS_32         .debug_str
+0000423d R_MIPS_32         .debug_str
+0000424b R_MIPS_32         .debug_str
+0000425b R_MIPS_32         .debug_str
+00004266 R_MIPS_32         .text
+00004291 R_MIPS_32         .debug_ranges
+00004296 R_MIPS_32         .debug_str
+000042b3 R_MIPS_32         .debug_str
+000042be R_MIPS_32         .text
+000042e9 R_MIPS_32         .text
+000042f2 R_MIPS_32         .debug_str
+00004300 R_MIPS_32         .debug_str
+0000430e R_MIPS_32         .debug_str
+0000431c R_MIPS_32         .debug_str
+0000432c R_MIPS_32         .debug_str
+00004337 R_MIPS_32         .text
+00004346 R_MIPS_32         .debug_str
+0000436b R_MIPS_32         .debug_str
+00004376 R_MIPS_32         .text
+00004385 R_MIPS_32         .debug_str
+000043a4 R_MIPS_32         .debug_str
+000043af R_MIPS_32         .text
+000043be R_MIPS_32         .debug_str
+000043dd R_MIPS_32         .debug_str
+000043e8 R_MIPS_32         .text
+00004405 R_MIPS_32         .debug_str
+00004423 R_MIPS_32         .debug_str
+00004432 R_MIPS_32         .debug_str
+00004452 R_MIPS_32         .text
+0000445b R_MIPS_32         .debug_str
+0000446d R_MIPS_32         .debug_str
+00004478 R_MIPS_32         .text
+00004495 R_MIPS_32         .debug_str
+000044a4 R_MIPS_32         .debug_str
+000044b3 R_MIPS_32         .debug_str
+000044d1 R_MIPS_32         .debug_ranges
+000044d6 R_MIPS_32         .debug_str
+000044ed R_MIPS_32         .debug_str
+000044f8 R_MIPS_32         .text
+00004515 R_MIPS_32         .debug_str
+00004524 R_MIPS_32         .debug_str
+00004533 R_MIPS_32         .debug_str
+00004551 R_MIPS_32         .text
+0000455a R_MIPS_32         .debug_str
+00004568 R_MIPS_32         .debug_str
+00004576 R_MIPS_32         .debug_str
+00004584 R_MIPS_32         .debug_str
+00004592 R_MIPS_32         .debug_str
+000045a0 R_MIPS_32         .debug_str
+000045b0 R_MIPS_32         .debug_str
+000045bb R_MIPS_32         .text
+000045ca R_MIPS_32         .debug_str
+000045d9 R_MIPS_32         .debug_str
+000045e8 R_MIPS_32         .debug_str
+000045f7 R_MIPS_32         .debug_str
+00004606 R_MIPS_32         .debug_str
+00004615 R_MIPS_32         .debug_ranges
+0000461a R_MIPS_32         .debug_str
+00004631 R_MIPS_32         .debug_str
+0000463c R_MIPS_32         .text
+0000464b R_MIPS_32         .debug_str
+0000465a R_MIPS_32         .debug_str
+00004669 R_MIPS_32         .debug_str
+00004678 R_MIPS_32         .debug_str
+00004687 R_MIPS_32         .debug_str
+00004696 R_MIPS_32         .text
+0000469f R_MIPS_32         .debug_str
+000046ad R_MIPS_32         .debug_str
+000046bb R_MIPS_32         .debug_str
+000046c9 R_MIPS_32         .debug_str
+000046d7 R_MIPS_32         .debug_str
+000046e5 R_MIPS_32         .debug_str
+000046f5 R_MIPS_32         .debug_str
+00004700 R_MIPS_32         .text
+0000470f R_MIPS_32         .debug_str
+0000471e R_MIPS_32         .debug_str
+0000472d R_MIPS_32         .debug_str
+0000473c R_MIPS_32         .text
+00004745 R_MIPS_32         .debug_str
+0000475c R_MIPS_32         .debug_str
+00004767 R_MIPS_32         .text
+00004776 R_MIPS_32         .debug_str
+00004785 R_MIPS_32         .debug_str
+00004794 R_MIPS_32         .debug_str
+000047b2 R_MIPS_32         .text
+000047bb R_MIPS_32         .debug_str
+000047d2 R_MIPS_32         .debug_str
+000047dd R_MIPS_32         .text
+000047fb R_MIPS_32         .debug_str
+0000480a R_MIPS_32         .debug_str
+00004819 R_MIPS_32         .debug_str
+00004828 R_MIPS_32         .text
+00004831 R_MIPS_32         .debug_str
+0000483f R_MIPS_32         .debug_str
+0000484d R_MIPS_32         .debug_str
+0000485b R_MIPS_32         .debug_str
+00004869 R_MIPS_32         .debug_str
+00004885 R_MIPS_32         .debug_str
+00004890 R_MIPS_32         .text
+000048ae R_MIPS_32         .debug_ranges
+000048b3 R_MIPS_32         .debug_str
+000048c4 R_MIPS_32         .debug_str
+000048cf R_MIPS_32         .text
+000048de R_MIPS_32         .debug_str
+000048ed R_MIPS_32         .debug_str
+0000491a R_MIPS_32         .text
+00004923 R_MIPS_32         .debug_str
+00004931 R_MIPS_32         .debug_str
+0000493f R_MIPS_32         .debug_str
+0000494d R_MIPS_32         .debug_str
+0000495b R_MIPS_32         .debug_str
+0000496b R_MIPS_32         .debug_str
+00004976 R_MIPS_32         .text
+00004994 R_MIPS_32         .debug_str
+000049a3 R_MIPS_32         .debug_str
+000049b2 R_MIPS_32         .debug_ranges
+000049b7 R_MIPS_32         .debug_str
+000049c8 R_MIPS_32         .debug_str
+000049d3 R_MIPS_32         .text
+000049f1 R_MIPS_32         .debug_str
+00004a00 R_MIPS_32         .debug_str
+00004a0f R_MIPS_32         .text
+00004a18 R_MIPS_32         .debug_str
+00004a26 R_MIPS_32         .debug_str
+00004a34 R_MIPS_32         .debug_str
+00004a42 R_MIPS_32         .debug_str
+00004a50 R_MIPS_32         .debug_str
+00004a60 R_MIPS_32         .debug_str
+00004a6b R_MIPS_32         .text
+00004a7a R_MIPS_32         .debug_str
+00004a89 R_MIPS_32         .debug_str
+00004a98 R_MIPS_32         .debug_str
+00004aa7 R_MIPS_32         .debug_str
+00004ab6 R_MIPS_32         .debug_str
+00004ac5 R_MIPS_32         .debug_ranges
+00004aca R_MIPS_32         .debug_str
+00004adb R_MIPS_32         .debug_str
+00004ae6 R_MIPS_32         .text
+00004af5 R_MIPS_32         .debug_str
+00004b04 R_MIPS_32         .debug_str
+00004b13 R_MIPS_32         .debug_str
+00004b22 R_MIPS_32         .debug_str
+00004b31 R_MIPS_32         .debug_str
+00004b40 R_MIPS_32         .text
+00004b49 R_MIPS_32         .debug_str
+00004b57 R_MIPS_32         .debug_str
+00004b65 R_MIPS_32         .debug_str
+00004b73 R_MIPS_32         .debug_str
+00004b81 R_MIPS_32         .debug_str
+00004b8f R_MIPS_32         .debug_str
+00004b9f R_MIPS_32         .debug_str
+00004baa R_MIPS_32         .text
+00004be6 R_MIPS_32         .debug_str
+00004bf5 R_MIPS_32         .debug_str
+00004c04 R_MIPS_32         .debug_ranges
+00004c09 R_MIPS_32         .debug_str
+00004c1a R_MIPS_32         .debug_str
+00004c25 R_MIPS_32         .text
+00004c61 R_MIPS_32         .debug_str
+00004c70 R_MIPS_32         .debug_str
+00004c7f R_MIPS_32         .text
+00004c88 R_MIPS_32         .debug_str
+00004c96 R_MIPS_32         .debug_str
+00004ca4 R_MIPS_32         .debug_str
+00004cb2 R_MIPS_32         .debug_str
+00004cc0 R_MIPS_32         .debug_str
+00004cce R_MIPS_32         .debug_str
+00004cde R_MIPS_32         .debug_str
+00004ce9 R_MIPS_32         .text
+00004cf8 R_MIPS_32         .debug_str
+00004d07 R_MIPS_32         .debug_str
+00004d16 R_MIPS_32         .debug_ranges
+00004d1b R_MIPS_32         .debug_str
+00004d2c R_MIPS_32         .debug_str
+00004d37 R_MIPS_32         .text
+00004d46 R_MIPS_32         .debug_str
+00004d55 R_MIPS_32         .debug_str
+00004d64 R_MIPS_32         .text
+00004d6d R_MIPS_32         .debug_str
+00004d7b R_MIPS_32         .debug_str
+00004d89 R_MIPS_32         .debug_str
+00004d97 R_MIPS_32         .debug_str
+00004da7 R_MIPS_32         .debug_str
+00004db2 R_MIPS_32         .text
+00004dc1 R_MIPS_32         .debug_str
+00004dd0 R_MIPS_32         .debug_str
+00004ddf R_MIPS_32         .debug_str
+00004dee R_MIPS_32         .debug_str
+00004dfd R_MIPS_32         .debug_str
+00004e1c R_MIPS_32         .debug_str
+00004e27 R_MIPS_32         .text
+00004e36 R_MIPS_32         .debug_str
+00004e45 R_MIPS_32         .debug_str
+00004e54 R_MIPS_32         .debug_str
+00004e63 R_MIPS_32         .debug_str
+00004e72 R_MIPS_32         .debug_str
+00004e81 R_MIPS_32         .text
+00004e8a R_MIPS_32         .debug_str
+00004e98 R_MIPS_32         .debug_str
+00004ea6 R_MIPS_32         .debug_str
+00004eb4 R_MIPS_32         .debug_str
+00004ec2 R_MIPS_32         .debug_str
+00004ed0 R_MIPS_32         .debug_str
+00004ee0 R_MIPS_32         .debug_str
+00004eeb R_MIPS_32         .text
+00004efa R_MIPS_32         .debug_str
+00004f09 R_MIPS_32         .debug_str
+00004f18 R_MIPS_32         .debug_str
+00004f27 R_MIPS_32         .debug_str
+00004f44 R_MIPS_32         .debug_str
+00004f63 R_MIPS_32         .debug_str
+00004f6e R_MIPS_32         .text
+00004f7d R_MIPS_32         .debug_str
+00004f8c R_MIPS_32         .debug_str
+00004f9b R_MIPS_32         .debug_str
+00004faa R_MIPS_32         .debug_str
+00004fc7 R_MIPS_32         .debug_str
+00004fe3 R_MIPS_32         .text
+00004fec R_MIPS_32         .debug_str
+00004ffa R_MIPS_32         .debug_str
+00005008 R_MIPS_32         .debug_str
+00005016 R_MIPS_32         .debug_str
+00005024 R_MIPS_32         .debug_str
+00005032 R_MIPS_32         .debug_str
+00005040 R_MIPS_32         .debug_str
+00005050 R_MIPS_32         .debug_str
+0000505b R_MIPS_32         .text
+00005096 R_MIPS_32         .text
+0000509f R_MIPS_32         .debug_str
+000050ad R_MIPS_32         .debug_str
+000050bb R_MIPS_32         .debug_str
+000050c9 R_MIPS_32         .debug_str
+000050d7 R_MIPS_32         .debug_str
+000050e7 R_MIPS_32         .debug_str
+000050f2 R_MIPS_32         .text
+00005101 R_MIPS_32         .debug_str
+00005110 R_MIPS_32         .debug_str
+0000512f R_MIPS_32         .debug_str
+0000513b R_MIPS_32         .text
+0000514a R_MIPS_32         .debug_str
+0000515a R_MIPS_32         .debug_str
+0000516a R_MIPS_32         .debug_ranges
+0000516f R_MIPS_32         .debug_str
+00005181 R_MIPS_32         .debug_str
+0000518d R_MIPS_32         .text
+0000519c R_MIPS_32         .debug_str
+000051ac R_MIPS_32         .debug_str
+000051bc R_MIPS_32         .text
+000051c5 R_MIPS_32         .debug_str
+000051d4 R_MIPS_32         .debug_str
+000051e3 R_MIPS_32         .debug_str
+000051f2 R_MIPS_32         .debug_str
+00005203 R_MIPS_32         .debug_str
+0000520f R_MIPS_32         .text
+0000523d R_MIPS_32         .debug_str
+0000524d R_MIPS_32         .debug_ranges
+00005252 R_MIPS_32         .debug_str
+00005264 R_MIPS_32         .debug_str
+00005270 R_MIPS_32         .text
+0000529e R_MIPS_32         .debug_str
+000052ae R_MIPS_32         .text
+000052b7 R_MIPS_32         .debug_str
+000052c6 R_MIPS_32         .debug_str
+000052d5 R_MIPS_32         .debug_str
+000052e4 R_MIPS_32         .debug_str
+000052f3 R_MIPS_32         .debug_str
+00005304 R_MIPS_32         .debug_str
+00005310 R_MIPS_32         .text
+0000531f R_MIPS_32         .debug_str
+0000532f R_MIPS_32         .debug_ranges
+00005334 R_MIPS_32         .debug_str
+00005346 R_MIPS_32         .debug_str
+00005352 R_MIPS_32         .text
+00005361 R_MIPS_32         .debug_str
+00005371 R_MIPS_32         .text
+0000537a R_MIPS_32         .debug_str
+00005389 R_MIPS_32         .debug_str
+00005398 R_MIPS_32         .debug_str
+000053a7 R_MIPS_32         .debug_str
+000053b6 R_MIPS_32         .debug_str
+000053c7 R_MIPS_32         .debug_str
+000053d3 R_MIPS_32         .text
+000053e2 R_MIPS_32         .debug_str
+000053f2 R_MIPS_32         .debug_str
+00005402 R_MIPS_32         .debug_ranges
+00005407 R_MIPS_32         .debug_str
+00005419 R_MIPS_32         .debug_str
+00005425 R_MIPS_32         .text
+00005434 R_MIPS_32         .debug_str
+00005444 R_MIPS_32         .debug_str
+00005454 R_MIPS_32         .text
+0000545d R_MIPS_32         .debug_str
+0000546c R_MIPS_32         .debug_str
+0000547b R_MIPS_32         .debug_str
+0000548a R_MIPS_32         .debug_str
+0000549b R_MIPS_32         .debug_str
+000054a7 R_MIPS_32         .text
+000054b6 R_MIPS_32         .debug_str
+000054c7 R_MIPS_32         .debug_str
+000054d3 R_MIPS_32         .text
+000054e2 R_MIPS_32         .debug_str
+000054f2 R_MIPS_32         .text
+000054fb R_MIPS_32         .debug_str
+0000550a R_MIPS_32         .debug_str
+00005519 R_MIPS_32         .debug_str
+0000552a R_MIPS_32         .debug_str
+00005536 R_MIPS_32         .text
+00005565 R_MIPS_32         .debug_ranges
+0000556a R_MIPS_32         .debug_str
+0000557c R_MIPS_32         .debug_str
+00005588 R_MIPS_32         .text
+000055b7 R_MIPS_32         .text
+000055c0 R_MIPS_32         .debug_str
+000055cf R_MIPS_32         .debug_str
+000055de R_MIPS_32         .debug_str
+000055ed R_MIPS_32         .debug_str
+000055fc R_MIPS_32         .debug_str
+0000560d R_MIPS_32         .debug_str
+00005619 R_MIPS_32         .text
+00005628 R_MIPS_32         .debug_ranges
+0000562d R_MIPS_32         .debug_str
+0000563f R_MIPS_32         .debug_str
+0000564b R_MIPS_32         .text
+0000565a R_MIPS_32         .text
+00005663 R_MIPS_32         .debug_str
+00005672 R_MIPS_32         .debug_str
+00005683 R_MIPS_32         .debug_str
+0000568f R_MIPS_32         .text
+0000569a R_MIPS_32         .debug_str
+000056a6 R_MIPS_32         .text
+000056c5 R_MIPS_32         .debug_str
+000056d5 R_MIPS_32         .debug_ranges
+000056da R_MIPS_32         .debug_str
+000056ec R_MIPS_32         .debug_str
+000056f8 R_MIPS_32         .text
+00005717 R_MIPS_32         .debug_str
+00005727 R_MIPS_32         .text
+00005730 R_MIPS_32         .debug_str
+0000573f R_MIPS_32         .debug_str
+0000574e R_MIPS_32         .debug_str
+0000575d R_MIPS_32         .debug_str
+0000576e R_MIPS_32         .debug_str
+0000577a R_MIPS_32         .text
+00005789 R_MIPS_32         .debug_ranges
+0000578e R_MIPS_32         .debug_str
+000057a0 R_MIPS_32         .debug_str
+000057ac R_MIPS_32         .text
+000057bb R_MIPS_32         .text
+000057c4 R_MIPS_32         .debug_str
+000057d3 R_MIPS_32         .debug_str
+000057e4 R_MIPS_32         .debug_str
+000057f0 R_MIPS_32         .text
+0000581e R_MIPS_32         .debug_str
+0000582e R_MIPS_32         .debug_ranges
+00005833 R_MIPS_32         .debug_str
+00005845 R_MIPS_32         .debug_str
+00005851 R_MIPS_32         .text
+0000587f R_MIPS_32         .debug_str
+0000588f R_MIPS_32         .text
+00005898 R_MIPS_32         .debug_str
+000058a7 R_MIPS_32         .debug_str
+000058b6 R_MIPS_32         .debug_str
+000058c5 R_MIPS_32         .debug_str
+000058d4 R_MIPS_32         .debug_str
+000058e5 R_MIPS_32         .debug_str
+000058f1 R_MIPS_32         .text
+00005920 R_MIPS_32         .debug_ranges
+00005925 R_MIPS_32         .debug_str
+00005937 R_MIPS_32         .debug_str
+00005943 R_MIPS_32         .text
+00005972 R_MIPS_32         .text
+0000597b R_MIPS_32         .debug_str
+0000598a R_MIPS_32         .debug_str
+00005999 R_MIPS_32         .debug_str
+000059a8 R_MIPS_32         .debug_str
+000059b9 R_MIPS_32         .debug_str
+000059c5 R_MIPS_32         .text
+000059d4 R_MIPS_32         .debug_str
+000059e5 R_MIPS_32         .debug_str
+000059f1 R_MIPS_32         .text
+00005a00 R_MIPS_32         .debug_str
+00005a10 R_MIPS_32         .debug_str
+00005a20 R_MIPS_32         .debug_ranges
+00005a25 R_MIPS_32         .debug_str
+00005a37 R_MIPS_32         .debug_str
+00005a43 R_MIPS_32         .text
+00005a52 R_MIPS_32         .debug_str
+00005a62 R_MIPS_32         .debug_str
+00005a72 R_MIPS_32         .text
+00005a7b R_MIPS_32         .debug_str
+00005a8a R_MIPS_32         .debug_str
+00005a99 R_MIPS_32         .debug_str
+00005aa8 R_MIPS_32         .debug_str
+00005ab9 R_MIPS_32         .debug_str
+00005ac5 R_MIPS_32         .text
+00005ad4 R_MIPS_32         .debug_str
+00005ae4 R_MIPS_32         .debug_str
+00005b04 R_MIPS_32         .debug_ranges
+00005b09 R_MIPS_32         .debug_str
+00005b1b R_MIPS_32         .debug_str
+00005b27 R_MIPS_32         .text
+00005b36 R_MIPS_32         .debug_str
+00005b46 R_MIPS_32         .debug_str
+00005b66 R_MIPS_32         .text
+00005b6f R_MIPS_32         .debug_str
+00005b7e R_MIPS_32         .debug_str
+00005b8d R_MIPS_32         .debug_str
+00005b9c R_MIPS_32         .debug_str
+00005bab R_MIPS_32         .debug_str
+00005bbc R_MIPS_32         .debug_str
+00005bc8 R_MIPS_32         .text
+00005bd7 R_MIPS_32         .debug_str
+00005be7 R_MIPS_32         .debug_ranges
+00005bec R_MIPS_32         .debug_str
+00005bfe R_MIPS_32         .debug_str
+00005c0a R_MIPS_32         .text
+00005c19 R_MIPS_32         .debug_str
+00005c29 R_MIPS_32         .text
+00005c32 R_MIPS_32         .debug_str
+00005c41 R_MIPS_32         .debug_str
+00005c50 R_MIPS_32         .debug_str
+00005c61 R_MIPS_32         .debug_str
+00005c6d R_MIPS_32         .text
+00005c7c R_MIPS_32         .debug_str
+00005c8c R_MIPS_32         .debug_str
+00005c9c R_MIPS_32         .debug_ranges
+00005ca1 R_MIPS_32         .debug_str
+00005cb3 R_MIPS_32         .debug_str
+00005cbf R_MIPS_32         .text
+00005cce R_MIPS_32         .debug_str
+00005cde R_MIPS_32         .debug_str
+00005cee R_MIPS_32         .text
+00005cf7 R_MIPS_32         .debug_str
+00005d06 R_MIPS_32         .debug_str
+00005d15 R_MIPS_32         .debug_str
+00005d24 R_MIPS_32         .debug_str
+00005d33 R_MIPS_32         .debug_str
+00005d44 R_MIPS_32         .debug_str
+00005d50 R_MIPS_32         .text
+00005d6e R_MIPS_32         .debug_str
+00005d7e R_MIPS_32         .debug_str
+00005d8e R_MIPS_32         .debug_ranges
+00005d93 R_MIPS_32         .debug_str
+00005da5 R_MIPS_32         .debug_str
+00005db1 R_MIPS_32         .text
+00005dcf R_MIPS_32         .debug_str
+00005ddf R_MIPS_32         .debug_str
+00005def R_MIPS_32         .text
+00005df8 R_MIPS_32         .debug_str
+00005e07 R_MIPS_32         .debug_str
+00005e16 R_MIPS_32         .debug_str
+00005e25 R_MIPS_32         .debug_str
+00005e34 R_MIPS_32         .debug_str
+00005e45 R_MIPS_32         .debug_str
+00005e51 R_MIPS_32         .text
+00005e80 R_MIPS_32         .debug_ranges
+00005e85 R_MIPS_32         .debug_str
+00005e97 R_MIPS_32         .debug_str
+00005ea3 R_MIPS_32         .text
+00005ed2 R_MIPS_32         .text
+00005edb R_MIPS_32         .debug_str
+00005eea R_MIPS_32         .debug_str
+00005ef9 R_MIPS_32         .debug_str
+00005f08 R_MIPS_32         .debug_str
+00005f17 R_MIPS_32         .debug_str
+00005f26 R_MIPS_32         .debug_str
+00005f37 R_MIPS_32         .debug_str
+00005f43 R_MIPS_32         .text
+00005f62 R_MIPS_32         .debug_str
+00005f72 R_MIPS_32         .debug_ranges
+00005f77 R_MIPS_32         .debug_str
+00005f89 R_MIPS_32         .debug_str
+00005f95 R_MIPS_32         .text
+00005fb4 R_MIPS_32         .debug_str
+00005fc4 R_MIPS_32         .text
+00005fcd R_MIPS_32         .debug_str
+00005fdc R_MIPS_32         .debug_str
+00005feb R_MIPS_32         .debug_str
+00005ffa R_MIPS_32         .debug_str
+0000600b R_MIPS_32         .debug_str
+00006017 R_MIPS_32         .text
+00006022 R_MIPS_32         .debug_str
+0000602e R_MIPS_32         .text
+0000603d R_MIPS_32         .text
+00006046 R_MIPS_32         .debug_str
+00006055 R_MIPS_32         .debug_str
+00006066 R_MIPS_32         .debug_str
+00006072 R_MIPS_32         .text
+00006081 R_MIPS_32         .debug_ranges
+00006086 R_MIPS_32         .debug_str
+00006098 R_MIPS_32         .debug_str
+000060a4 R_MIPS_32         .text
+000060af R_MIPS_32         .debug_str
+000060bb R_MIPS_32         .text
+000060ca R_MIPS_32         .text
+000060d3 R_MIPS_32         .debug_str
+000060e2 R_MIPS_32         .debug_str
+000060f3 R_MIPS_32         .debug_str
+000060ff R_MIPS_32         .text
+0000610a R_MIPS_32         .debug_str
+00006116 R_MIPS_32         .text
+00006125 R_MIPS_32         .text
+0000612e R_MIPS_32         .debug_str
+0000613d R_MIPS_32         .debug_str
+0000614e R_MIPS_32         .debug_str
+0000615a R_MIPS_32         .text
+00006165 R_MIPS_32         .debug_str
+00006171 R_MIPS_32         .text
+00006180 R_MIPS_32         .text
+00006189 R_MIPS_32         .debug_str
+00006198 R_MIPS_32         .debug_str
+000061a9 R_MIPS_32         .debug_str
+000061b5 R_MIPS_32         .text
+000061c0 R_MIPS_32         .debug_str
+000061cc R_MIPS_32         .text
+000061d7 R_MIPS_32         .debug_str
+000061e3 R_MIPS_32         .text
+00006202 R_MIPS_32         .debug_ranges
+00006207 R_MIPS_32         .debug_str
+00006219 R_MIPS_32         .debug_str
+00006225 R_MIPS_32         .text
+00006244 R_MIPS_32         .text
+0000624d R_MIPS_32         .debug_str
+0000625c R_MIPS_32         .debug_str
+0000626b R_MIPS_32         .debug_str
+0000627c R_MIPS_32         .debug_str
+00006288 R_MIPS_32         .text
+00006293 R_MIPS_32         .debug_str
+0000629f R_MIPS_32         .text
+000062ae R_MIPS_32         .text
+000062b7 R_MIPS_32         .debug_str
+000062c6 R_MIPS_32         .debug_str
+000062d7 R_MIPS_32         .debug_str
+000062e3 R_MIPS_32         .text
+00006301 R_MIPS_32         .debug_str
+00006311 R_MIPS_32         .debug_str
+00006321 R_MIPS_32         .debug_ranges
+00006326 R_MIPS_32         .debug_str
+00006338 R_MIPS_32         .debug_str
+00006344 R_MIPS_32         .text
+00006362 R_MIPS_32         .debug_str
+00006372 R_MIPS_32         .debug_str
+00006382 R_MIPS_32         .text
+0000638b R_MIPS_32         .debug_str
+0000639a R_MIPS_32         .debug_str
+000063a9 R_MIPS_32         .debug_str
+000063b8 R_MIPS_32         .debug_str
+000063c7 R_MIPS_32         .debug_str
+000063d8 R_MIPS_32         .debug_str
+000063e4 R_MIPS_32         .text
+00006402 R_MIPS_32         .debug_ranges
+00006407 R_MIPS_32         .debug_str
+00006419 R_MIPS_32         .debug_str
+00006425 R_MIPS_32         .text
+00006443 R_MIPS_32         .text
+0000644c R_MIPS_32         .debug_str
+0000645b R_MIPS_32         .debug_str
+0000646a R_MIPS_32         .debug_str
+0000647b R_MIPS_32         .debug_str
+00006487 R_MIPS_32         .text
+00006496 R_MIPS_32         .debug_ranges
+0000649b R_MIPS_32         .debug_str
+000064ad R_MIPS_32         .debug_str
+000064b9 R_MIPS_32         .text
+000064c8 R_MIPS_32         .debug_str
+000064d9 R_MIPS_32         .text
+000064e2 R_MIPS_32         .debug_str
+000064f1 R_MIPS_32         .debug_str
+00006500 R_MIPS_32         .debug_str
+0000650f R_MIPS_32         .debug_str
+00006520 R_MIPS_32         .debug_str
+0000652c R_MIPS_32         .text
+0000653b R_MIPS_32         .debug_ranges
+00006540 R_MIPS_32         .debug_str
+00006552 R_MIPS_32         .debug_str
+0000655e R_MIPS_32         .text
+0000656d R_MIPS_32         .text
+00006576 R_MIPS_32         .debug_str
+00006585 R_MIPS_32         .debug_str
+00006594 R_MIPS_32         .debug_str
+000065a3 R_MIPS_32         .debug_str
+000065b2 R_MIPS_32         .debug_str
+000065c1 R_MIPS_32         .debug_str
+000065d2 R_MIPS_32         .debug_str
+000065da R_MIPS_32         .text
+000065e9 R_MIPS_32         .debug_str
+000065fa R_MIPS_32         .debug_str
+00006602 R_MIPS_32         .text
+00006611 R_MIPS_32         .debug_str
+00006622 R_MIPS_32         .debug_str
+0000662a R_MIPS_32         .text
+00006639 R_MIPS_32         .debug_str
+00006649 R_MIPS_32         .text
+00006652 R_MIPS_32         .debug_str
+00006661 R_MIPS_32         .debug_str
+00006670 R_MIPS_32         .debug_str
+00006681 R_MIPS_32         .debug_str
+0000668d R_MIPS_32         .text
+0000669c R_MIPS_32         .debug_str
+000066ac R_MIPS_32         .debug_str
+000066bc R_MIPS_32         .debug_str
+000066cc R_MIPS_32         .debug_ranges
+000066d1 R_MIPS_32         .debug_str
+000066e3 R_MIPS_32         .debug_str
+000066ef R_MIPS_32         .text
+000066fe R_MIPS_32         .debug_str
+0000670e R_MIPS_32         .debug_str
+0000671e R_MIPS_32         .debug_str
+0000672e R_MIPS_32         .text
+00006737 R_MIPS_32         .debug_str
+00006746 R_MIPS_32         .debug_str
+00006755 R_MIPS_32         .debug_str
+00006764 R_MIPS_32         .debug_str
+00006773 R_MIPS_32         .debug_str
+00006784 R_MIPS_32         .debug_str
+00006790 R_MIPS_32         .text
+000067bf R_MIPS_32         .debug_str
+000067cf R_MIPS_32         .debug_ranges
+000067d4 R_MIPS_32         .debug_str
+000067e6 R_MIPS_32         .debug_str
+000067f2 R_MIPS_32         .text
+00006821 R_MIPS_32         .debug_str
+00006831 R_MIPS_32         .text
+0000683a R_MIPS_32         .debug_str
+00006849 R_MIPS_32         .debug_str
+00006858 R_MIPS_32         .debug_str
+00006867 R_MIPS_32         .debug_str
+00006876 R_MIPS_32         .debug_str
+00006887 R_MIPS_32         .debug_str
+00006893 R_MIPS_32         .text
+000068c2 R_MIPS_32         .debug_ranges
+000068c7 R_MIPS_32         .debug_str
+000068d9 R_MIPS_32         .debug_str
+000068e4 R_MIPS_32         .text
+00006920 R_MIPS_32         .debug_str
+0000692f R_MIPS_32         .text
+0000693c R_MIPS_32         .debug_str
+0000694b R_MIPS_32         .debug_str
+0000695a R_MIPS_32         .debug_str
+00006969 R_MIPS_32         .debug_str
+00006979 R_MIPS_32         .text
+00006982 R_MIPS_32         .debug_str
+00006991 R_MIPS_32         .debug_str
+000069a0 R_MIPS_32         .debug_str
+000069af R_MIPS_32         .debug_str
+000069be R_MIPS_32         .debug_str
+000069da R_MIPS_32         .text
+000069f7 R_MIPS_32         .debug_ranges
+000069fc R_MIPS_32         .debug_str
+00006a0d R_MIPS_32         .debug_str
+00006a18 R_MIPS_32         .text
+00006a35 R_MIPS_32         .text
+00006a3e R_MIPS_32         .debug_str
+00006a4c R_MIPS_32         .debug_str
+00006a5a R_MIPS_32         .debug_str
+00006a6a R_MIPS_32         .debug_str
+00006a75 R_MIPS_32         .text
+00006a92 R_MIPS_32         .debug_ranges
+00006a97 R_MIPS_32         .debug_str
+00006aa8 R_MIPS_32         .debug_str
+00006ab3 R_MIPS_32         .text
+00006ad0 R_MIPS_32         .text
+00006ad9 R_MIPS_32         .debug_str
+00006ae7 R_MIPS_32         .debug_str
+00006af5 R_MIPS_32         .debug_str
+00006b05 R_MIPS_32         .debug_str
+00006b10 R_MIPS_32         .text
+00006b1f R_MIPS_32         .debug_str
+00006b2e R_MIPS_32         .debug_ranges
+00006b33 R_MIPS_32         .debug_str
+00006b44 R_MIPS_32         .debug_str
+00006b4f R_MIPS_32         .text
+00006b5e R_MIPS_32         .debug_str
+00006b6d R_MIPS_32         .text
+00006b76 R_MIPS_32         .debug_str
+00006b84 R_MIPS_32         .debug_str
+00006b92 R_MIPS_32         .debug_str
+00006ba2 R_MIPS_32         .debug_str
+00006bad R_MIPS_32         .text
+00006bbc R_MIPS_32         .debug_str
+00006bcb R_MIPS_32         .debug_str
+00006bda R_MIPS_32         .debug_str
+00006be9 R_MIPS_32         .debug_ranges
+00006bee R_MIPS_32         .debug_str
+00006bff R_MIPS_32         .debug_str
+00006c0a R_MIPS_32         .text
+00006c19 R_MIPS_32         .debug_str
+00006c28 R_MIPS_32         .debug_str
+00006c37 R_MIPS_32         .debug_str
+00006c46 R_MIPS_32         .text
+00006c4f R_MIPS_32         .debug_str
+00006c5d R_MIPS_32         .debug_str
+00006c6b R_MIPS_32         .debug_str
+00006c79 R_MIPS_32         .debug_str
+00006c87 R_MIPS_32         .debug_str
+00006c95 R_MIPS_32         .debug_str
+00006ca5 R_MIPS_32         .debug_str
+00006cb0 R_MIPS_32         .text
+00006cbf R_MIPS_32         .debug_str
+00006cce R_MIPS_32         .debug_str
+00006cdd R_MIPS_32         .debug_ranges
+00006ce2 R_MIPS_32         .debug_str
+00006cf3 R_MIPS_32         .debug_str
+00006cfe R_MIPS_32         .text
+00006d0d R_MIPS_32         .debug_str
+00006d1c R_MIPS_32         .debug_str
+00006d2b R_MIPS_32         .text
+00006d34 R_MIPS_32         .debug_str
+00006d42 R_MIPS_32         .debug_str
+00006d50 R_MIPS_32         .debug_str
+00006d5e R_MIPS_32         .debug_str
+00006d6c R_MIPS_32         .debug_str
+00006d7c R_MIPS_32         .debug_str
+00006d87 R_MIPS_32         .text
+00006d96 R_MIPS_32         .debug_str
+00006da5 R_MIPS_32         .debug_ranges
+00006daa R_MIPS_32         .debug_str
+00006dbb R_MIPS_32         .debug_str
+00006dc6 R_MIPS_32         .text
+00006dd5 R_MIPS_32         .debug_str
+00006de4 R_MIPS_32         .text
+00006ded R_MIPS_32         .debug_str
+00006dfb R_MIPS_32         .debug_str
+00006e09 R_MIPS_32         .debug_str
+00006e19 R_MIPS_32         .debug_str
+00006e24 R_MIPS_32         .text
+00006e33 R_MIPS_32         .debug_str
+00006e42 R_MIPS_32         .debug_ranges
+00006e47 R_MIPS_32         .debug_str
+00006e58 R_MIPS_32         .debug_str
+00006e63 R_MIPS_32         .text
+00006e72 R_MIPS_32         .debug_str
+00006e81 R_MIPS_32         .text
+00006e8a R_MIPS_32         .debug_str
+00006e98 R_MIPS_32         .debug_str
+00006ea6 R_MIPS_32         .debug_str
+00006eb6 R_MIPS_32         .debug_str
+00006ec1 R_MIPS_32         .text
+00006efa R_MIPS_32         .text
+00006f09 R_MIPS_32         .debug_str
+00006f28 R_MIPS_32         .debug_str
+00006f33 R_MIPS_32         .text
+00006f42 R_MIPS_32         .debug_str
+00006f51 R_MIPS_32         .text
+00006f5a R_MIPS_32         .debug_str
+00006f68 R_MIPS_32         .debug_str
+00006f76 R_MIPS_32         .debug_str
+00006f86 R_MIPS_32         .debug_str
+00006f8d R_MIPS_32         .text
+00006f98 R_MIPS_32         .debug_str
+00006f9f R_MIPS_32         .text
+00006fbc R_MIPS_32         .debug_str
+00006fcb R_MIPS_32         .debug_str
+00006fda R_MIPS_32         .debug_str
+00006fe9 R_MIPS_32         .debug_str
+00006ff8 R_MIPS_32         .debug_str
+00007007 R_MIPS_32         .debug_str
+00007016 R_MIPS_32         .debug_str
+00007025 R_MIPS_32         .debug_str
+0000702c R_MIPS_32         .debug_str
+
+
+RELOCATION RECORDS FOR [.debug_aranges]:
+OFFSET   TYPE              VALUE
+00000006 R_MIPS_32         .debug_info
+00000010 R_MIPS_32         .text
+00000018 R_MIPS_32         .text.nolibc_raise
+00000020 R_MIPS_32         .text.nolibc_memmove
+00000028 R_MIPS_32         .text.nolibc_memcpy
+00000030 R_MIPS_32         .text.nolibc_memset
+00000038 R_MIPS_32         .text.nolibc_strlen
+00000040 R_MIPS_32         .text.nolibc_abort
+
+
+RELOCATION RECORDS FOR [.debug_ranges]:
+OFFSET   TYPE              VALUE
+00000000 R_MIPS_32         .text
+00000004 R_MIPS_32         .text
+00000008 R_MIPS_32         .text
+0000000c R_MIPS_32         .text
+00000018 R_MIPS_32         .text
+0000001c R_MIPS_32         .text
+00000020 R_MIPS_32         .text
+00000024 R_MIPS_32         .text
+00000030 R_MIPS_32         .text
+00000034 R_MIPS_32         .text
+00000038 R_MIPS_32         .text
+0000003c R_MIPS_32         .text
+00000048 R_MIPS_32         .text
+0000004c R_MIPS_32         .text
+00000050 R_MIPS_32         .text
+00000054 R_MIPS_32         .text
+00000060 R_MIPS_32         .text
+00000064 R_MIPS_32         .text
+00000068 R_MIPS_32         .text
+0000006c R_MIPS_32         .text
+00000078 R_MIPS_32         .text
+0000007c R_MIPS_32         .text
+00000080 R_MIPS_32         .text
+00000084 R_MIPS_32         .text
+00000090 R_MIPS_32         .text
+00000094 R_MIPS_32         .text
+00000098 R_MIPS_32         .text
+0000009c R_MIPS_32         .text
+000000a8 R_MIPS_32         .text
+000000ac R_MIPS_32         .text
+000000b0 R_MIPS_32         .text
+000000b4 R_MIPS_32         .text
+000000c0 R_MIPS_32         .text
+000000c4 R_MIPS_32         .text
+000000c8 R_MIPS_32         .text
+000000cc R_MIPS_32         .text
+000000d8 R_MIPS_32         .text
+000000dc R_MIPS_32         .text
+000000e0 R_MIPS_32         .text
+000000e4 R_MIPS_32         .text
+000000f0 R_MIPS_32         .text
+000000f4 R_MIPS_32         .text
+000000f8 R_MIPS_32         .text
+000000fc R_MIPS_32         .text
+00000108 R_MIPS_32         .text
+0000010c R_MIPS_32         .text
+00000110 R_MIPS_32         .text
+00000114 R_MIPS_32         .text
+00000120 R_MIPS_32         .text
+00000124 R_MIPS_32         .text
+00000128 R_MIPS_32         .text
+0000012c R_MIPS_32         .text
+00000138 R_MIPS_32         .text
+0000013c R_MIPS_32         .text
+00000140 R_MIPS_32         .text
+00000144 R_MIPS_32         .text
+00000150 R_MIPS_32         .text
+00000154 R_MIPS_32         .text
+00000158 R_MIPS_32         .text
+0000015c R_MIPS_32         .text
+00000168 R_MIPS_32         .text
+0000016c R_MIPS_32         .text
+00000170 R_MIPS_32         .text
+00000174 R_MIPS_32         .text
+00000180 R_MIPS_32         .text
+00000184 R_MIPS_32         .text
+00000188 R_MIPS_32         .text
+0000018c R_MIPS_32         .text
+00000198 R_MIPS_32         .text
+0000019c R_MIPS_32         .text
+000001a0 R_MIPS_32         .text
+000001a4 R_MIPS_32         .text
+000001b0 R_MIPS_32         .text
+000001b4 R_MIPS_32         .text
+000001b8 R_MIPS_32         .text
+000001bc R_MIPS_32         .text
+000001c8 R_MIPS_32         .text
+000001cc R_MIPS_32         .text
+000001d0 R_MIPS_32         .text
+000001d4 R_MIPS_32         .text
+000001e0 R_MIPS_32         .text
+000001e4 R_MIPS_32         .text
+000001e8 R_MIPS_32         .text
+000001ec R_MIPS_32         .text
+000001f8 R_MIPS_32         .text
+000001fc R_MIPS_32         .text
+00000200 R_MIPS_32         .text
+00000204 R_MIPS_32         .text
+00000210 R_MIPS_32         .text
+00000214 R_MIPS_32         .text
+00000218 R_MIPS_32         .text
+0000021c R_MIPS_32         .text
+00000228 R_MIPS_32         .text
+0000022c R_MIPS_32         .text
+00000230 R_MIPS_32         .text
+00000234 R_MIPS_32         .text
+00000240 R_MIPS_32         .text
+00000244 R_MIPS_32         .text
+00000248 R_MIPS_32         .text
+0000024c R_MIPS_32         .text
+00000258 R_MIPS_32         .text
+0000025c R_MIPS_32         .text
+00000260 R_MIPS_32         .text
+00000264 R_MIPS_32         .text
+00000270 R_MIPS_32         .text
+00000274 R_MIPS_32         .text
+00000278 R_MIPS_32         .text
+0000027c R_MIPS_32         .text
+00000288 R_MIPS_32         .text
+0000028c R_MIPS_32         .text
+00000290 R_MIPS_32         .text
+00000294 R_MIPS_32         .text
+000002a0 R_MIPS_32         .text
+000002a4 R_MIPS_32         .text
+000002a8 R_MIPS_32         .text
+000002ac R_MIPS_32         .text
+000002b8 R_MIPS_32         .text
+000002bc R_MIPS_32         .text
+000002c0 R_MIPS_32         .text
+000002c4 R_MIPS_32         .text
+000002d0 R_MIPS_32         .text
+000002d4 R_MIPS_32         .text
+000002d8 R_MIPS_32         .text
+000002dc R_MIPS_32         .text
+000002e8 R_MIPS_32         .text
+000002ec R_MIPS_32         .text
+000002f0 R_MIPS_32         .text
+000002f4 R_MIPS_32         .text
+00000300 R_MIPS_32         .text
+00000304 R_MIPS_32         .text
+00000308 R_MIPS_32         .text
+0000030c R_MIPS_32         .text
+00000318 R_MIPS_32         .text
+0000031c R_MIPS_32         .text
+00000320 R_MIPS_32         .text
+00000324 R_MIPS_32         .text
+00000330 R_MIPS_32         .text
+00000334 R_MIPS_32         .text
+00000338 R_MIPS_32         .text
+0000033c R_MIPS_32         .text
+00000348 R_MIPS_32         .text
+0000034c R_MIPS_32         .text
+00000350 R_MIPS_32         .text
+00000354 R_MIPS_32         .text
+00000360 R_MIPS_32         .text
+00000364 R_MIPS_32         .text
+00000368 R_MIPS_32         .text
+0000036c R_MIPS_32         .text
+00000378 R_MIPS_32         .text
+0000037c R_MIPS_32         .text
+00000380 R_MIPS_32         .text
+00000384 R_MIPS_32         .text
+00000390 R_MIPS_32         .text
+00000394 R_MIPS_32         .text
+00000398 R_MIPS_32         .text
+0000039c R_MIPS_32         .text
+000003a8 R_MIPS_32         .text
+000003ac R_MIPS_32         .text
+000003b0 R_MIPS_32         .text
+000003b4 R_MIPS_32         .text
+000003c0 R_MIPS_32         .text
+000003c4 R_MIPS_32         .text
+000003c8 R_MIPS_32         .text
+000003cc R_MIPS_32         .text
+000003d8 R_MIPS_32         .text
+000003dc R_MIPS_32         .text
+000003e0 R_MIPS_32         .text
+000003e4 R_MIPS_32         .text
+000003f0 R_MIPS_32         .text
+000003f4 R_MIPS_32         .text
+000003f8 R_MIPS_32         .text
+000003fc R_MIPS_32         .text
+00000408 R_MIPS_32         .text
+0000040c R_MIPS_32         .text
+00000410 R_MIPS_32         .text
+00000414 R_MIPS_32         .text
+00000420 R_MIPS_32         .text
+00000424 R_MIPS_32         .text
+00000428 R_MIPS_32         .text
+0000042c R_MIPS_32         .text
+00000438 R_MIPS_32         .text
+0000043c R_MIPS_32         .text
+00000440 R_MIPS_32         .text
+00000444 R_MIPS_32         .text
+00000450 R_MIPS_32         .text
+00000454 R_MIPS_32         .text
+00000458 R_MIPS_32         .text
+0000045c R_MIPS_32         .text
+00000468 R_MIPS_32         .text
+0000046c R_MIPS_32         .text
+00000470 R_MIPS_32         .text
+00000474 R_MIPS_32         .text
+00000480 R_MIPS_32         .text
+00000484 R_MIPS_32         .text
+00000488 R_MIPS_32         .text
+0000048c R_MIPS_32         .text
+00000498 R_MIPS_32         .text
+0000049c R_MIPS_32         .text
+000004a0 R_MIPS_32         .text
+000004a4 R_MIPS_32         .text
+000004b0 R_MIPS_32         .text
+000004b4 R_MIPS_32         .text
+000004b8 R_MIPS_32         .text
+000004bc R_MIPS_32         .text
+000004c8 R_MIPS_32         .text
+000004cc R_MIPS_32         .text
+000004d0 R_MIPS_32         .text
+000004d4 R_MIPS_32         .text
+000004e0 R_MIPS_32         .text
+000004e4 R_MIPS_32         .text
+000004e8 R_MIPS_32         .text
+000004ec R_MIPS_32         .text
+000004f8 R_MIPS_32         .text
+000004fc R_MIPS_32         .text
+00000500 R_MIPS_32         .text
+00000504 R_MIPS_32         .text
+00000510 R_MIPS_32         .text
+00000514 R_MIPS_32         .text
+00000518 R_MIPS_32         .text
+0000051c R_MIPS_32         .text
+00000528 R_MIPS_32         .text
+0000052c R_MIPS_32         .text
+00000530 R_MIPS_32         .text
+00000534 R_MIPS_32         .text
+00000540 R_MIPS_32         .text
+00000544 R_MIPS_32         .text
+00000548 R_MIPS_32         .text
+0000054c R_MIPS_32         .text
+00000558 R_MIPS_32         .text
+0000055c R_MIPS_32         .text
+00000560 R_MIPS_32         .text
+00000564 R_MIPS_32         .text
+00000570 R_MIPS_32         .text
+00000574 R_MIPS_32         .text
+00000578 R_MIPS_32         .text
+0000057c R_MIPS_32         .text
+00000588 R_MIPS_32         .text
+0000058c R_MIPS_32         .text
+00000590 R_MIPS_32         .text
+00000594 R_MIPS_32         .text
+000005a0 R_MIPS_32         .text
+000005a4 R_MIPS_32         .text
+000005a8 R_MIPS_32         .text
+000005ac R_MIPS_32         .text
+000005b8 R_MIPS_32         .text
+000005bc R_MIPS_32         .text
+000005c0 R_MIPS_32         .text
+000005c4 R_MIPS_32         .text
+000005d0 R_MIPS_32         .text
+000005d4 R_MIPS_32         .text
+000005d8 R_MIPS_32         .text.nolibc_raise
+000005dc R_MIPS_32         .text.nolibc_raise
+000005e0 R_MIPS_32         .text.nolibc_memmove
+000005e4 R_MIPS_32         .text.nolibc_memmove
+000005e8 R_MIPS_32         .text.nolibc_memcpy
+000005ec R_MIPS_32         .text.nolibc_memcpy
+000005f0 R_MIPS_32         .text.nolibc_memset
+000005f4 R_MIPS_32         .text.nolibc_memset
+000005f8 R_MIPS_32         .text.nolibc_strlen
+000005fc R_MIPS_32         .text.nolibc_strlen
+00000600 R_MIPS_32         .text.nolibc_abort
+00000604 R_MIPS_32         .text.nolibc_abort
+
+
+RELOCATION RECORDS FOR [.debug_line]:
+OFFSET   TYPE              VALUE
+00000335 R_MIPS_32         .text
+00002717 R_MIPS_32         .text.nolibc_raise
+00002732 R_MIPS_32         .text.nolibc_memmove
+0000276e R_MIPS_32         .text.nolibc_memcpy
+000027a2 R_MIPS_32         .text.nolibc_memset
+000027ce R_MIPS_32         .text.nolibc_strlen
+0000280a R_MIPS_32         .text.nolibc_abort
+
+
+RELOCATION RECORDS FOR [.debug_frame]:
+OFFSET   TYPE              VALUE
+00000014 R_MIPS_32         .debug_frame
+00000018 R_MIPS_32         .text
+00000030 R_MIPS_32         .debug_frame
+00000034 R_MIPS_32         .text
+00000040 R_MIPS_32         .debug_frame
+00000044 R_MIPS_32         .text
+00000060 R_MIPS_32         .debug_frame
+00000064 R_MIPS_32         .text
+00000084 R_MIPS_32         .debug_frame
+00000088 R_MIPS_32         .text
+000000a8 R_MIPS_32         .debug_frame
+000000ac R_MIPS_32         .text
+000000c8 R_MIPS_32         .debug_frame
+000000cc R_MIPS_32         .text
+000000ec R_MIPS_32         .debug_frame
+000000f0 R_MIPS_32         .text
+0000010c R_MIPS_32         .debug_frame
+00000110 R_MIPS_32         .text
+00000130 R_MIPS_32         .debug_frame
+00000134 R_MIPS_32         .text
+00000154 R_MIPS_32         .debug_frame
+00000158 R_MIPS_32         .text
+00000178 R_MIPS_32         .debug_frame
+0000017c R_MIPS_32         .text
+0000019c R_MIPS_32         .debug_frame
+000001a0 R_MIPS_32         .text
+000001c0 R_MIPS_32         .debug_frame
+000001c4 R_MIPS_32         .text
+000001e0 R_MIPS_32         .debug_frame
+000001e4 R_MIPS_32         .text
+00000204 R_MIPS_32         .debug_frame
+00000208 R_MIPS_32         .text
+00000224 R_MIPS_32         .debug_frame
+00000228 R_MIPS_32         .text
+00000248 R_MIPS_32         .debug_frame
+0000024c R_MIPS_32         .text
+00000268 R_MIPS_32         .debug_frame
+0000026c R_MIPS_32         .text
+0000028c R_MIPS_32         .debug_frame
+00000290 R_MIPS_32         .text
+000002b0 R_MIPS_32         .debug_frame
+000002b4 R_MIPS_32         .text
+000002d4 R_MIPS_32         .debug_frame
+000002d8 R_MIPS_32         .text
+000002f4 R_MIPS_32         .debug_frame
+000002f8 R_MIPS_32         .text
+00000318 R_MIPS_32         .debug_frame
+0000031c R_MIPS_32         .text
+0000033c R_MIPS_32         .debug_frame
+00000340 R_MIPS_32         .text
+00000360 R_MIPS_32         .debug_frame
+00000364 R_MIPS_32         .text
+0000037c R_MIPS_32         .debug_frame
+00000380 R_MIPS_32         .text
+00000398 R_MIPS_32         .debug_frame
+0000039c R_MIPS_32         .text
+000003b4 R_MIPS_32         .debug_frame
+000003b8 R_MIPS_32         .text
+000003d8 R_MIPS_32         .debug_frame
+000003dc R_MIPS_32         .text
+000003fc R_MIPS_32         .debug_frame
+00000400 R_MIPS_32         .text
+00000420 R_MIPS_32         .debug_frame
+00000424 R_MIPS_32         .text
+00000444 R_MIPS_32         .debug_frame
+00000448 R_MIPS_32         .text
+00000464 R_MIPS_32         .debug_frame
+00000468 R_MIPS_32         .text
+00000488 R_MIPS_32         .debug_frame
+0000048c R_MIPS_32         .text
+000004ac R_MIPS_32         .debug_frame
+000004b0 R_MIPS_32         .text
+000004d0 R_MIPS_32         .debug_frame
+000004d4 R_MIPS_32         .text
+000004f0 R_MIPS_32         .debug_frame
+000004f4 R_MIPS_32         .text
+00000514 R_MIPS_32         .debug_frame
+00000518 R_MIPS_32         .text
+00000534 R_MIPS_32         .debug_frame
+00000538 R_MIPS_32         .text
+00000558 R_MIPS_32         .debug_frame
+0000055c R_MIPS_32         .text
+0000057c R_MIPS_32         .debug_frame
+00000580 R_MIPS_32         .text
+000005a0 R_MIPS_32         .debug_frame
+000005a4 R_MIPS_32         .text
+000005c0 R_MIPS_32         .debug_frame
+000005c4 R_MIPS_32         .text
+000005e4 R_MIPS_32         .debug_frame
+000005e8 R_MIPS_32         .text
+00000604 R_MIPS_32         .debug_frame
+00000608 R_MIPS_32         .text
+00000628 R_MIPS_32         .debug_frame
+0000062c R_MIPS_32         .text
+00000648 R_MIPS_32         .debug_frame
+0000064c R_MIPS_32         .text
+0000066c R_MIPS_32         .debug_frame
+00000670 R_MIPS_32         .text
+00000690 R_MIPS_32         .debug_frame
+00000694 R_MIPS_32         .text
+000006b0 R_MIPS_32         .debug_frame
+000006b4 R_MIPS_32         .text
+000006d4 R_MIPS_32         .debug_frame
+000006d8 R_MIPS_32         .text
+000006f4 R_MIPS_32         .debug_frame
+000006f8 R_MIPS_32         .text
+00000718 R_MIPS_32         .debug_frame
+0000071c R_MIPS_32         .text
+0000073c R_MIPS_32         .debug_frame
+00000740 R_MIPS_32         .text
+00000760 R_MIPS_32         .debug_frame
+00000764 R_MIPS_32         .text
+00000788 R_MIPS_32         .debug_frame
+0000078c R_MIPS_32         .text
+000007ac R_MIPS_32         .debug_frame
+000007b0 R_MIPS_32         .text
+000007d0 R_MIPS_32         .debug_frame
+000007d4 R_MIPS_32         .text
+000007f4 R_MIPS_32         .debug_frame
+000007f8 R_MIPS_32         .text
+00000814 R_MIPS_32         .debug_frame
+00000818 R_MIPS_32         .text
+00000838 R_MIPS_32         .debug_frame
+0000083c R_MIPS_32         .text
+0000085c R_MIPS_32         .debug_frame
+00000860 R_MIPS_32         .text
+00000880 R_MIPS_32         .debug_frame
+00000884 R_MIPS_32         .text
+000008a0 R_MIPS_32         .debug_frame
+000008a4 R_MIPS_32         .text
+000008c4 R_MIPS_32         .debug_frame
+000008c8 R_MIPS_32         .text
+000008e8 R_MIPS_32         .debug_frame
+000008ec R_MIPS_32         .text
+00000908 R_MIPS_32         .debug_frame
+0000090c R_MIPS_32         .text
+0000092c R_MIPS_32         .debug_frame
+00000930 R_MIPS_32         .text
+00000950 R_MIPS_32         .debug_frame
+00000954 R_MIPS_32         .text
+00000974 R_MIPS_32         .debug_frame
+00000978 R_MIPS_32         .text
+00000994 R_MIPS_32         .debug_frame
+00000998 R_MIPS_32         .text
+000009b8 R_MIPS_32         .debug_frame
+000009bc R_MIPS_32         .text
+000009d8 R_MIPS_32         .debug_frame
+000009dc R_MIPS_32         .text
+000009fc R_MIPS_32         .debug_frame
+00000a00 R_MIPS_32         .text
+00000a20 R_MIPS_32         .debug_frame
+00000a24 R_MIPS_32         .text
+00000a40 R_MIPS_32         .debug_frame
+00000a44 R_MIPS_32         .text
+00000a64 R_MIPS_32         .debug_frame
+00000a68 R_MIPS_32         .text
+00000a88 R_MIPS_32         .debug_frame
+00000a8c R_MIPS_32         .text
+00000aac R_MIPS_32         .debug_frame
+00000ab0 R_MIPS_32         .text
+00000acc R_MIPS_32         .debug_frame
+00000ad0 R_MIPS_32         .text
+00000af0 R_MIPS_32         .debug_frame
+00000af4 R_MIPS_32         .text
+00000b10 R_MIPS_32         .debug_frame
+00000b14 R_MIPS_32         .text
+00000b34 R_MIPS_32         .debug_frame
+00000b38 R_MIPS_32         .text
+00000b54 R_MIPS_32         .debug_frame
+00000b58 R_MIPS_32         .text
+00000b78 R_MIPS_32         .debug_frame
+00000b7c R_MIPS_32         .text
+00000b9c R_MIPS_32         .debug_frame
+00000ba0 R_MIPS_32         .text
+00000bc0 R_MIPS_32         .debug_frame
+00000bc4 R_MIPS_32         .text
+00000be0 R_MIPS_32         .debug_frame
+00000be4 R_MIPS_32         .text
+00000c04 R_MIPS_32         .debug_frame
+00000c08 R_MIPS_32         .text
+00000c28 R_MIPS_32         .debug_frame
+00000c2c R_MIPS_32         .text
+00000c4c R_MIPS_32         .debug_frame
+00000c50 R_MIPS_32         .text
+00000c74 R_MIPS_32         .debug_frame
+00000c78 R_MIPS_32         .text
+00000c98 R_MIPS_32         .debug_frame
+00000c9c R_MIPS_32         .text
+00000cbc R_MIPS_32         .debug_frame
+00000cc0 R_MIPS_32         .text
+00000ce0 R_MIPS_32         .debug_frame
+00000ce4 R_MIPS_32         .text
+00000d00 R_MIPS_32         .debug_frame
+00000d04 R_MIPS_32         .text
+00000d24 R_MIPS_32         .debug_frame
+00000d28 R_MIPS_32         .text
+00000d48 R_MIPS_32         .debug_frame
+00000d4c R_MIPS_32         .text
+00000d6c R_MIPS_32         .debug_frame
+00000d70 R_MIPS_32         .text
+00000d90 R_MIPS_32         .debug_frame
+00000d94 R_MIPS_32         .text
+00000db4 R_MIPS_32         .debug_frame
+00000db8 R_MIPS_32         .text
+00000dd8 R_MIPS_32         .debug_frame
+00000ddc R_MIPS_32         .text
+00000dfc R_MIPS_32         .debug_frame
+00000e00 R_MIPS_32         .text
+00000e20 R_MIPS_32         .debug_frame
+00000e24 R_MIPS_32         .text
+00000e44 R_MIPS_32         .debug_frame
+00000e48 R_MIPS_32         .text
+00000e68 R_MIPS_32         .debug_frame
+00000e6c R_MIPS_32         .text
+00000e8c R_MIPS_32         .debug_frame
+00000e90 R_MIPS_32         .text
+00000eb0 R_MIPS_32         .debug_frame
+00000eb4 R_MIPS_32         .text
+00000ed4 R_MIPS_32         .debug_frame
+00000ed8 R_MIPS_32         .text
+00000ef8 R_MIPS_32         .debug_frame
+00000efc R_MIPS_32         .text
+00000f1c R_MIPS_32         .debug_frame
+00000f20 R_MIPS_32         .text
+00000f40 R_MIPS_32         .debug_frame
+00000f44 R_MIPS_32         .text
+00000f68 R_MIPS_32         .debug_frame
+00000f6c R_MIPS_32         .text
+00000f8c R_MIPS_32         .debug_frame
+00000f90 R_MIPS_32         .text
+00000fb0 R_MIPS_32         .debug_frame
+00000fb4 R_MIPS_32         .text
+00000fd4 R_MIPS_32         .debug_frame
+00000fd8 R_MIPS_32         .text
+00000ff4 R_MIPS_32         .debug_frame
+00000ff8 R_MIPS_32         .text
+00001018 R_MIPS_32         .debug_frame
+0000101c R_MIPS_32         .text
+00001038 R_MIPS_32         .debug_frame
+0000103c R_MIPS_32         .text
+0000105c R_MIPS_32         .debug_frame
+00001060 R_MIPS_32         .text
+0000107c R_MIPS_32         .debug_frame
+00001080 R_MIPS_32         .text
+000010a0 R_MIPS_32         .debug_frame
+000010a4 R_MIPS_32         .text
+000010c0 R_MIPS_32         .debug_frame
+000010c4 R_MIPS_32         .text
+000010e4 R_MIPS_32         .debug_frame
+000010e8 R_MIPS_32         .text
+00001108 R_MIPS_32         .debug_frame
+0000110c R_MIPS_32         .text
+0000112c R_MIPS_32         .debug_frame
+00001130 R_MIPS_32         .text
+00001150 R_MIPS_32         .debug_frame
+00001154 R_MIPS_32         .text
+00001174 R_MIPS_32         .debug_frame
+00001178 R_MIPS_32         .text
+00001198 R_MIPS_32         .debug_frame
+0000119c R_MIPS_32         .text
+000011b8 R_MIPS_32         .debug_frame
+000011bc R_MIPS_32         .text
+000011dc R_MIPS_32         .debug_frame
+000011e0 R_MIPS_32         .text
+000011fc R_MIPS_32         .debug_frame
+00001200 R_MIPS_32         .text
+00001220 R_MIPS_32         .debug_frame
+00001224 R_MIPS_32         .text
+00001244 R_MIPS_32         .debug_frame
+00001248 R_MIPS_32         .text
+00001268 R_MIPS_32         .debug_frame
+0000126c R_MIPS_32         .text
+00001288 R_MIPS_32         .debug_frame
+0000128c R_MIPS_32         .text
+000012ac R_MIPS_32         .debug_frame
+000012b0 R_MIPS_32         .text
+000012cc R_MIPS_32         .debug_frame
+000012d0 R_MIPS_32         .text
+000012f0 R_MIPS_32         .debug_frame
+000012f4 R_MIPS_32         .text
+00001314 R_MIPS_32         .debug_frame
+00001318 R_MIPS_32         .text
+00001338 R_MIPS_32         .debug_frame
+0000133c R_MIPS_32         .text
+0000135c R_MIPS_32         .debug_frame
+00001360 R_MIPS_32         .text
+00001380 R_MIPS_32         .debug_frame
+00001384 R_MIPS_32         .text
+000013a4 R_MIPS_32         .debug_frame
+000013a8 R_MIPS_32         .text
+000013c8 R_MIPS_32         .debug_frame
+000013cc R_MIPS_32         .text
+000013e8 R_MIPS_32         .debug_frame
+000013ec R_MIPS_32         .text
+0000140c R_MIPS_32         .debug_frame
+00001410 R_MIPS_32         .text
+00001430 R_MIPS_32         .debug_frame
+00001434 R_MIPS_32         .text
+00001454 R_MIPS_32         .debug_frame
+00001458 R_MIPS_32         .text
+0000147c R_MIPS_32         .debug_frame
+00001480 R_MIPS_32         .text
+000014a0 R_MIPS_32         .debug_frame
+000014a4 R_MIPS_32         .text
+000014c0 R_MIPS_32         .debug_frame
+000014c4 R_MIPS_32         .text
+000014e0 R_MIPS_32         .debug_frame
+000014e4 R_MIPS_32         .text
+00001500 R_MIPS_32         .debug_frame
+00001504 R_MIPS_32         .text
+00001520 R_MIPS_32         .debug_frame
+00001524 R_MIPS_32         .text
+00001540 R_MIPS_32         .debug_frame
+00001544 R_MIPS_32         .text
+00001560 R_MIPS_32         .debug_frame
+00001564 R_MIPS_32         .text
+00001580 R_MIPS_32         .debug_frame
+00001584 R_MIPS_32         .text
+000015a0 R_MIPS_32         .debug_frame
+000015a4 R_MIPS_32         .text
+000015c0 R_MIPS_32         .debug_frame
+000015c4 R_MIPS_32         .text
+000015e4 R_MIPS_32         .debug_frame
+000015e8 R_MIPS_32         .text
+00001608 R_MIPS_32         .debug_frame
+0000160c R_MIPS_32         .text
+0000162c R_MIPS_32         .debug_frame
+00001630 R_MIPS_32         .text
+00001650 R_MIPS_32         .debug_frame
+00001654 R_MIPS_32         .text
+00001670 R_MIPS_32         .debug_frame
+00001674 R_MIPS_32         .text
+00001694 R_MIPS_32         .debug_frame
+00001698 R_MIPS_32         .text
+000016b4 R_MIPS_32         .debug_frame
+000016b8 R_MIPS_32         .text
+000016d8 R_MIPS_32         .debug_frame
+000016dc R_MIPS_32         .text.nolibc_raise
+000016fc R_MIPS_32         .debug_frame
+00001700 R_MIPS_32         .text
+00001720 R_MIPS_32         .debug_frame
+00001724 R_MIPS_32         .text
+00001744 R_MIPS_32         .debug_frame
+00001748 R_MIPS_32         .text
+00001768 R_MIPS_32         .debug_frame
+0000176c R_MIPS_32         .text
+0000178c R_MIPS_32         .debug_frame
+00001790 R_MIPS_32         .text
+000017b0 R_MIPS_32         .debug_frame
+000017b4 R_MIPS_32         .text
+000017d4 R_MIPS_32         .debug_frame
+000017d8 R_MIPS_32         .text
+000017f8 R_MIPS_32         .debug_frame
+000017fc R_MIPS_32         .text
+0000181c R_MIPS_32         .debug_frame
+00001820 R_MIPS_32         .text
+00001840 R_MIPS_32         .debug_frame
+00001844 R_MIPS_32         .text
+00001864 R_MIPS_32         .debug_frame
+00001868 R_MIPS_32         .text
+00001888 R_MIPS_32         .debug_frame
+0000188c R_MIPS_32         .text
+000018ac R_MIPS_32         .debug_frame
+000018b0 R_MIPS_32         .text.nolibc_memmove
+000018d0 R_MIPS_32         .debug_frame
+000018d4 R_MIPS_32         .text.nolibc_memcpy
+000018f4 R_MIPS_32         .debug_frame
+000018f8 R_MIPS_32         .text.nolibc_memset
+00001918 R_MIPS_32         .debug_frame
+0000191c R_MIPS_32         .text
+0000193c R_MIPS_32         .debug_frame
+00001940 R_MIPS_32         .text
+00001960 R_MIPS_32         .debug_frame
+00001964 R_MIPS_32         .text
+00001984 R_MIPS_32         .debug_frame
+00001988 R_MIPS_32         .text
+000019a8 R_MIPS_32         .debug_frame
+000019ac R_MIPS_32         .text.nolibc_strlen
+000019c8 R_MIPS_32         .debug_frame
+000019cc R_MIPS_32         .text
+000019ec R_MIPS_32         .debug_frame
+000019f0 R_MIPS_32         .text
+00001a10 R_MIPS_32         .debug_frame
+00001a14 R_MIPS_32         .text
+00001a34 R_MIPS_32         .debug_frame
+00001a38 R_MIPS_32         .text
+00001a58 R_MIPS_32         .debug_frame
+00001a5c R_MIPS_32         .text
+00001a7c R_MIPS_32         .debug_frame
+00001a80 R_MIPS_32         .text
+00001aa0 R_MIPS_32         .debug_frame
+00001aa4 R_MIPS_32         .text
+00001ac4 R_MIPS_32         .debug_frame
+00001ac8 R_MIPS_32         .text
+00001ae8 R_MIPS_32         .debug_frame
+00001aec R_MIPS_32         .text
+00001b0c R_MIPS_32         .debug_frame
+00001b10 R_MIPS_32         .text
+00001b30 R_MIPS_32         .debug_frame
+00001b34 R_MIPS_32         .text
+00001b50 R_MIPS_32         .debug_frame
+00001b54 R_MIPS_32         .text
+00001b70 R_MIPS_32         .debug_frame
+00001b74 R_MIPS_32         .text.nolibc_abort
+00001b8c R_MIPS_32         .debug_frame
+00001b90 R_MIPS_32         .text
+00001bb0 R_MIPS_32         .debug_frame
+00001bb4 R_MIPS_32         .text
+00001bd4 R_MIPS_32         .debug_frame
+00001bd8 R_MIPS_32         .text
+00001bf8 R_MIPS_32         .debug_frame
+00001bfc R_MIPS_32         .text
+00001c1c R_MIPS_32         .debug_frame
+00001c20 R_MIPS_32         .text
+00001c40 R_MIPS_32         .debug_frame
+00001c44 R_MIPS_32         .text
+00001c64 R_MIPS_32         .debug_frame
+00001c68 R_MIPS_32         .text
+00001c88 R_MIPS_32         .debug_frame
+00001c8c R_MIPS_32         .text
+00001cac R_MIPS_32         .debug_frame
+00001cb0 R_MIPS_32         .text
+00001cd0 R_MIPS_32         .debug_frame
+00001cd4 R_MIPS_32         .text
+00001cf4 R_MIPS_32         .debug_frame
+00001cf8 R_MIPS_32         .text
+00001d18 R_MIPS_32         .debug_frame
+00001d1c R_MIPS_32         .text
+00001d3c R_MIPS_32         .debug_frame
+00001d40 R_MIPS_32         .text
+00001d60 R_MIPS_32         .debug_frame
+00001d64 R_MIPS_32         .text
+00001d94 R_MIPS_32         .debug_frame
+00001d98 R_MIPS_32         .text
+00001db8 R_MIPS_32         .debug_frame
+00001dbc R_MIPS_32         .text
+00001ddc R_MIPS_32         .debug_frame
+00001de0 R_MIPS_32         .text
+00001e00 R_MIPS_32         .debug_frame
+00001e04 R_MIPS_32         .text
+00001e24 R_MIPS_32         .debug_frame
+00001e28 R_MIPS_32         .text
+00001e48 R_MIPS_32         .debug_frame
+00001e4c R_MIPS_32         .text
+00001e6c R_MIPS_32         .debug_frame
+00001e70 R_MIPS_32         .text
+00001e8c R_MIPS_32         .debug_frame
+00001e90 R_MIPS_32         .text
+00001eb0 R_MIPS_32         .debug_frame
+00001eb4 R_MIPS_32         .text
+00001ed0 R_MIPS_32         .debug_frame
+00001ed4 R_MIPS_32         .text
+00001ef0 R_MIPS_32         .debug_frame
+00001ef4 R_MIPS_32         .text
+00001f14 R_MIPS_32         .debug_frame
+00001f18 R_MIPS_32         .text
+00001f38 R_MIPS_32         .debug_frame
+00001f3c R_MIPS_32         .text
+00001f5c R_MIPS_32         .debug_frame
+00001f60 R_MIPS_32         .text
+00001f80 R_MIPS_32         .debug_frame
+00001f84 R_MIPS_32         .text
+00001fa4 R_MIPS_32         .debug_frame
+00001fa8 R_MIPS_32         .text
+00001fc8 R_MIPS_32         .debug_frame
+00001fcc R_MIPS_32         .text
+00001fec R_MIPS_32         .debug_frame
+00001ff0 R_MIPS_32         .text
+00002010 R_MIPS_32         .debug_frame
+00002014 R_MIPS_32         .text
+00002034 R_MIPS_32         .debug_frame
+00002038 R_MIPS_32         .text
+00002058 R_MIPS_32         .debug_frame
+0000205c R_MIPS_32         .text
+00002080 R_MIPS_32         .debug_frame
+00002084 R_MIPS_32         .text
+000020a4 R_MIPS_32         .debug_frame
+000020a8 R_MIPS_32         .text
+000020c8 R_MIPS_32         .debug_frame
+000020cc R_MIPS_32         .text
+000020ec R_MIPS_32         .debug_frame
+000020f0 R_MIPS_32         .text
+00002110 R_MIPS_32         .debug_frame
+00002114 R_MIPS_32         .text
+00002134 R_MIPS_32         .debug_frame
+00002138 R_MIPS_32         .text
+00002158 R_MIPS_32         .debug_frame
+0000215c R_MIPS_32         .text
+0000217c R_MIPS_32         .debug_frame
+00002180 R_MIPS_32         .text
+000021a0 R_MIPS_32         .debug_frame
+000021a4 R_MIPS_32         .text
+000021c4 R_MIPS_32         .debug_frame
+000021c8 R_MIPS_32         .text
+000021e8 R_MIPS_32         .debug_frame
+000021ec R_MIPS_32         .text
+0000220c R_MIPS_32         .debug_frame
+00002210 R_MIPS_32         .text
+00002230 R_MIPS_32         .debug_frame
+00002234 R_MIPS_32         .text
+00002258 R_MIPS_32         .debug_frame
+0000225c R_MIPS_32         .text
+0000227c R_MIPS_32         .debug_frame
+00002280 R_MIPS_32         .text
+000022a0 R_MIPS_32         .debug_frame
+000022a4 R_MIPS_32         .text
+000022c0 R_MIPS_32         .debug_frame
+000022c4 R_MIPS_32         .text
+000022e4 R_MIPS_32         .debug_frame
+000022e8 R_MIPS_32         .text
+00002304 R_MIPS_32         .debug_frame
+00002308 R_MIPS_32         .text
+00002324 R_MIPS_32         .debug_frame
+00002328 R_MIPS_32         .text
+00002348 R_MIPS_32         .debug_frame
+0000234c R_MIPS_32         .text
+0000236c R_MIPS_32         .debug_frame
+00002370 R_MIPS_32         .text
+00002394 R_MIPS_32         .debug_frame
+00002398 R_MIPS_32         .text
+000023bc R_MIPS_32         .debug_frame
+000023c0 R_MIPS_32         .text
+000023e0 R_MIPS_32         .debug_frame
+000023e4 R_MIPS_32         .text
+00002404 R_MIPS_32         .debug_frame
+00002408 R_MIPS_32         .text
+00002428 R_MIPS_32         .debug_frame
+0000242c R_MIPS_32         .text
+
+

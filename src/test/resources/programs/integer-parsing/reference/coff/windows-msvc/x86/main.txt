@@ -1,0 +1,391 @@
+
+Dump of file C:\Users\jblbe\Documents\Workspace\ghidra-delinker-extension\src\test\resources\programs\integer-parsing\reference\coff\windows-msvc\x86\main.obj
+
+File Type: COFF OBJECT
+
+FILE HEADER VALUES
+             14C machine (x86)
+               7 number of sections
+        69EC797F time date stamp Sat Apr 25 10:21:19 2026
+             CBD file pointer to symbol table
+              1A number of symbols
+               0 size of optional header
+               0 characteristics
+
+SECTION HEADER #1
+.drectve name
+       0 physical address
+       0 virtual address
+      2F size of raw data
+     12C file pointer to raw data (0000012C to 0000015A)
+       0 file pointer to relocation table
+       0 file pointer to line numbers
+       0 number of relocations
+       0 number of line numbers
+  100A00 flags
+         Info
+         Remove
+         1 byte align
+
+RAW DATA #1
+  00000000: 20 20 20 2F 44 45 46 41 55 4C 54 4C 49 42 3A 22     /DEFAULTLIB:"
+  00000010: 4C 49 42 43 4D 54 22 20 2F 44 45 46 41 55 4C 54  LIBCMT" /DEFAULT
+  00000020: 4C 49 42 3A 22 4F 4C 44 4E 41 4D 45 53 22 20     LIB:"OLDNAMES" 
+
+   Linker Directives
+   -----------------
+   /DEFAULTLIB:LIBCMT
+   /DEFAULTLIB:OLDNAMES
+
+SECTION HEADER #2
+.debug$S name
+       0 physical address
+       0 virtual address
+     8C4 size of raw data
+     15B file pointer to raw data (0000015B to 00000A1E)
+     A1F file pointer to relocation table
+       0 file pointer to line numbers
+       E number of relocations
+       0 number of line numbers
+42100040 flags
+         Initialized Data
+         Discardable
+         1 byte align
+         Read Only
+
+RAW DATA #2
+  00000000: 04 00 00 00 F1 00 00 00 D6 00 00 00 98 00 01 11  ....ñ...Ö.......
+  00000010: 00 00 00 00 43 3A 5C 55 73 65 72 73 5C 6A 62 6C  ....C:\Users\jbl
+  00000020: 62 65 5C 44 6F 63 75 6D 65 6E 74 73 5C 57 6F 72  be\Documents\Wor
+  00000030: 6B 73 70 61 63 65 5C 67 68 69 64 72 61 2D 64 65  kspace\ghidra-de
+  00000040: 6C 69 6E 6B 65 72 2D 65 78 74 65 6E 73 69 6F 6E  linker-extension
+  00000050: 5C 73 72 63 5C 74 65 73 74 5C 72 65 73 6F 75 72  \src\test\resour
+  00000060: 63 65 73 5C 70 72 6F 67 72 61 6D 73 5C 69 6E 74  ces\programs\int
+  00000070: 65 67 65 72 2D 70 61 72 73 69 6E 67 5C 72 65 66  eger-parsing\ref
+  00000080: 65 72 65 6E 63 65 5C 63 6F 66 66 5C 77 69 6E 64  erence\coff\wind
+  00000090: 6F 77 73 2D 6D 73 76 63 5C 78 38 36 5C 6D 61 69  ows-msvc\x86\mai
+  000000A0: 6E 2E 6F 62 6A 00 3A 00 3C 11 00 20 00 00 07 00  n.obj.:.<.. ....
+  000000B0: 13 00 2C 00 99 89 00 00 13 00 2C 00 99 89 00 00  ..,.......,.....
+  000000C0: 4D 69 63 72 6F 73 6F 66 74 20 28 52 29 20 4F 70  Microsoft (R) Op
+  000000D0: 74 69 6D 69 7A 69 6E 67 20 43 6F 6D 70 69 6C 65  timizing Compile
+  000000E0: 72 00 00 00 F5 00 00 00 24 00 00 00 00 00 00 00  r...õ...$.......
+  000000F0: 00 00 00 00 3C 00 00 00 04 00 00 00 04 00 00 00  ....<...........
+  00000100: 00 00 00 00 63 03 00 00 04 00 00 00 04 00 00 00  ....c...........
+  00000110: F1 00 00 00 77 00 00 00 33 00 47 11 00 00 00 00  ñ...w...3.G.....
+  00000120: 00 00 00 00 00 00 00 00 3C 00 00 00 04 00 00 00  ........<.......
+  00000130: 38 00 00 00 2B 10 00 00 00 00 00 00 00 00 01 70  8...+..........p
+  00000140: 61 72 73 65 5F 64 65 63 69 6D 61 6C 00 1C 00 12  arse_decimal....
+  00000150: 10 04 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+  00000160: 00 00 00 00 00 00 00 00 82 12 00 0C 00 0B 11 08  ................
+  00000170: 00 00 00 3C 10 00 00 73 00 10 00 0B 11 FC FF FF  ...<...s.....üÿÿ
+  00000180: FF 75 00 00 00 76 61 6C 75 65 00 02 00 4F 11 00  ÿu...value...O..
+  00000190: F2 00 00 00 58 00 00 00 00 00 00 00 00 00 00 00  ò...X...........
+  000001A0: 3C 00 00 00 50 00 00 00 08 00 00 00 4C 00 00 00  <...P.......L...
+  000001B0: 00 00 00 00 0B 00 00 80 04 00 00 00 0C 00 00 80  ................
+  000001C0: 0B 00 00 00 0E 00 00 80 15 00 00 00 0F 00 00 80  ................
+  000001D0: 2A 00 00 00 10 00 00 80 33 00 00 00 11 00 00 80  *.......3.......
+  000001E0: 35 00 00 00 13 00 00 80 38 00 00 00 14 00 00 80  5.......8.......
+  000001F0: F5 00 00 00 24 00 00 00 00 00 00 00 00 00 00 00  õ...$...........
+  00000200: 60 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  `...............
+  00000210: 63 03 00 00 03 00 00 00 04 00 00 00 F1 00 00 00  c...........ñ...
+  00000220: 4E 00 00 00 2A 00 47 11 00 00 00 00 00 00 00 00  N...*.G.........
+  00000230: 00 00 00 00 60 00 00 00 03 00 00 00 5E 00 00 00  ....`.......^...
+  00000240: 2C 10 00 00 00 00 00 00 00 00 01 6D 61 69 6E 00  ,..........main.
+  00000250: 1C 00 12 10 00 00 00 00 00 00 00 00 00 00 00 00  ................
+  00000260: 00 00 00 00 00 00 00 00 00 00 00 82 12 00 02 00  ................
+  00000270: 4F 11 00 00 F2 00 00 00 68 00 00 00 00 00 00 00  O...ò...h.......
+  00000280: 00 00 00 00 60 00 00 00 50 00 00 00 0A 00 00 00  ....`...P.......
+  00000290: 5C 00 00 00 00 00 00 00 16 00 00 80 03 00 00 00  \...............
+  000002A0: 17 00 00 80 14 00 00 00 18 00 00 80 1B 00 00 00  ................
+  000002B0: 1A 00 00 80 2D 00 00 00 1B 00 00 80 34 00 00 00  ....-.......4...
+  000002C0: 1D 00 00 80 48 00 00 00 1E 00 00 80 4F 00 00 00  ....H.......O...
+  000002D0: 21 00 00 80 5C 00 00 00 22 00 00 80 5E 00 00 00  !...\..."...^...
+  000002E0: 23 00 00 80 F1 00 00 00 B3 00 00 00 15 00 0D 11  #...ñ...³.......
+  000002F0: 71 10 00 00 00 00 00 00 00 00 73 5F 64 69 67 69  q.........s_digi
+  00000300: 74 73 00 1F 00 0D 11 66 10 00 00 00 00 00 00 00  ts.....f........
+  00000310: 00 73 5F 61 73 63 69 69 5F 64 69 67 69 74 5F 62  .s_ascii_digit_b
+  00000320: 69 61 73 00 0E 00 08 11 21 00 00 00 77 63 68 61  ias.....!...wcha
+  00000330: 72 5F 74 00 0E 00 08 11 70 04 00 00 76 61 5F 6C  r_t.....p...va_l
+  00000340: 69 73 74 00 10 00 08 11 05 10 00 00 5F 6C 6F 63  ist........._loc
+  00000350: 61 6C 65 5F 74 00 0B 00 08 11 13 10 00 00 46 49  ale_t.........FI
+  00000360: 4C 45 00 0D 00 08 11 75 00 00 00 73 69 7A 65 5F  LE.....u...size_
+  00000370: 74 00 0D 00 08 11 13 10 00 00 5F 69 6F 62 75 66  t........._iobuf
+  00000380: 00 1C 00 08 11 0F 10 00 00 5F 5F 63 72 74 5F 6C  .........__crt_l
+  00000390: 6F 63 61 6C 65 5F 70 6F 69 6E 74 65 72 73 00 00  ocale_pointers..
+  000003A0: F4 00 00 00 68 01 00 00 01 00 00 00 20 03 A1 0B  ô...h....... .¡.
+  000003B0: BF 46 67 B3 AA DA 38 0A 6B 80 DF 85 3F 9F BD DC  ¿Fg³ªÚ8.k.ß.?.½Ü
+  000003C0: 3C C6 91 CA 57 38 9B 3B 67 59 F1 19 E5 15 00 00  <Æ.ÊW8.;gYñ.å...
+  000003D0: 53 00 00 00 20 03 A7 E1 00 62 43 20 A8 E0 12 38  S... .§á.bC ¨à.8
+  000003E0: 90 C5 00 8B CB 22 81 C1 27 3C A7 CE 5B B1 D2 97  .Å..Ë".Á'<§Î[±Ò.
+  000003F0: F9 87 FD BE 79 A0 00 00 AB 00 00 00 20 03 AD 0A  ù.ý¾y...«... .­.
+  00000400: 8C 92 E2 75 4F D1 9C 18 DD 75 79 DC 6D 26 E0 BA  ..âuOÑ..ÝuyÜm&àº
+  00000410: 71 34 0E 24 8E 5A 1C 95 D2 B4 74 E5 BC 6E 00 00  q4.$.Z..Ò´tå¼n..
+  00000420: 1F 01 00 00 20 03 06 CB AB 3A 50 13 06 FD D9 17  .... ..Ë«:P..ýÙ.
+  00000430: 6A 00 A8 3E 5B B9 2E A4 D7 86 3C FD 66 63 55 74  j.¨>[¹.¤×.<ýfcUt
+  00000440: 35 27 CF 99 ED C6 00 00 68 01 00 00 20 03 82 2E  5'Ï.íÆ..h... ...
+  00000450: 50 3B 81 DD 7B 3D 7D F9 3C A2 2F CE D3 67 2A 51  P;.Ý{=}ù<¢/ÎÓg*Q
+  00000460: 54 48 4F D4 20 54 D5 94 1E 61 9B CF 6C BC 00 00  THOÔ TÕ..a.Ïl¼..
+  00000470: B3 01 00 00 20 03 A2 FE 91 17 DC 26 40 E2 43 F9  ³... .¢þ..Ü&@âCù
+  00000480: 1F A9 4E 1D 05 FC 35 08 32 18 C2 A6 7A 44 6D B9  .©N..ü5.2.Â¦zDm¹
+  00000490: E3 4C EC E7 79 B5 00 00 20 02 00 00 20 03 CD A0  ãLìçyµ.. ... .Í.
+  000004A0: 64 59 CA 38 68 18 00 CE 5E 98 70 3C 66 53 4C 74  dYÊ8h..Î^.p<fSLt
+  000004B0: A8 03 AA 65 2B D4 BC 2B 34 07 DD 45 ED 46 00 00  ¨.ªe+Ô¼+4.ÝEíF..
+  000004C0: 87 02 00 00 20 03 1E A9 A2 E3 2A 6F F2 98 AD 79  .... ..©¢ã*oò.­y
+  000004D0: 04 61 0C C7 10 28 CA A9 B1 72 39 9A 57 9C A9 0A  .a.Ç.(Ê©±r9.W.©.
+  000004E0: 12 0D 1B 1A EC 12 00 00 F9 02 00 00 20 03 20 0B  ....ì...ù... . .
+  000004F0: 49 C2 EF D2 6B C7 A9 2E 9D FA 3B 84 7C C6 12 B2  IÂïÒkÇ©..ú;.|Æ.²
+  00000500: 37 DF F5 C7 29 1D 9F 90 1D 39 B4 A5 E5 2E 00 00  7ßõÇ)....9´¥å...
+  00000510: F3 00 00 00 9C 03 00 00 00 43 3A 5C 50 72 6F 67  ó........C:\Prog
+  00000520: 72 61 6D 20 46 69 6C 65 73 20 28 78 38 36 29 5C  ram Files (x86)\
+  00000530: 57 69 6E 64 6F 77 73 20 4B 69 74 73 5C 31 30 5C  Windows Kits\10\
+  00000540: 69 6E 63 6C 75 64 65 5C 31 30 2E 30 2E 32 36 31  include\10.0.261
+  00000550: 30 30 2E 30 5C 75 63 72 74 5C 63 6F 72 65 63 72  00.0\ucrt\corecr
+  00000560: 74 5F 77 73 74 64 69 6F 2E 68 00 43 3A 5C 50 72  t_wstdio.h.C:\Pr
+  00000570: 6F 67 72 61 6D 20 46 69 6C 65 73 20 28 78 38 36  ogram Files (x86
+  00000580: 29 5C 57 69 6E 64 6F 77 73 20 4B 69 74 73 5C 31  )\Windows Kits\1
+  00000590: 30 5C 69 6E 63 6C 75 64 65 5C 31 30 2E 30 2E 32  0\include\10.0.2
+  000005A0: 36 31 30 30 2E 30 5C 75 63 72 74 5C 63 6F 72 65  6100.0\ucrt\core
+  000005B0: 63 72 74 5F 73 74 64 69 6F 5F 63 6F 6E 66 69 67  crt_stdio_config
+  000005C0: 2E 68 00 43 3A 5C 55 73 65 72 73 5C 6A 62 6C 62  .h.C:\Users\jblb
+  000005D0: 65 5C 44 6F 63 75 6D 65 6E 74 73 5C 57 6F 72 6B  e\Documents\Work
+  000005E0: 73 70 61 63 65 5C 67 68 69 64 72 61 2D 64 65 6C  space\ghidra-del
+  000005F0: 69 6E 6B 65 72 2D 65 78 74 65 6E 73 69 6F 6E 5C  inker-extension\
+  00000600: 73 72 63 5C 74 65 73 74 5C 72 65 73 6F 75 72 63  src\test\resourc
+  00000610: 65 73 5C 70 72 6F 67 72 61 6D 73 5C 69 6E 74 65  es\programs\inte
+  00000620: 67 65 72 2D 70 61 72 73 69 6E 67 5C 73 72 63 5C  ger-parsing\src\
+  00000630: 6D 61 69 6E 2E 63 00 43 3A 5C 50 72 6F 67 72 61  main.c.C:\Progra
+  00000640: 6D 20 46 69 6C 65 73 20 28 78 38 36 29 5C 57 69  m Files (x86)\Wi
+  00000650: 6E 64 6F 77 73 20 4B 69 74 73 5C 31 30 5C 69 6E  ndows Kits\10\in
+  00000660: 63 6C 75 64 65 5C 31 30 2E 30 2E 32 36 31 30 30  clude\10.0.26100
+  00000670: 2E 30 5C 75 63 72 74 5C 73 74 64 69 6F 2E 68 00  .0\ucrt\stdio.h.
+  00000680: 43 3A 5C 50 72 6F 67 72 61 6D 20 46 69 6C 65 73  C:\Program Files
+  00000690: 20 28 78 38 36 29 5C 57 69 6E 64 6F 77 73 20 4B   (x86)\Windows K
+  000006A0: 69 74 73 5C 31 30 5C 69 6E 63 6C 75 64 65 5C 31  its\10\include\1
+  000006B0: 30 2E 30 2E 32 36 31 30 30 2E 30 5C 75 63 72 74  0.0.26100.0\ucrt
+  000006C0: 5C 63 6F 72 65 63 72 74 2E 68 00 43 3A 5C 50 72  \corecrt.h.C:\Pr
+  000006D0: 6F 67 72 61 6D 20 46 69 6C 65 73 20 28 78 38 36  ogram Files (x86
+  000006E0: 29 5C 4D 69 63 72 6F 73 6F 66 74 20 56 69 73 75  )\Microsoft Visu
+  000006F0: 61 6C 20 53 74 75 64 69 6F 5C 32 30 32 32 5C 42  al Studio\2022\B
+  00000700: 75 69 6C 64 54 6F 6F 6C 73 5C 56 43 5C 54 6F 6F  uildTools\VC\Too
+  00000710: 6C 73 5C 4D 53 56 43 5C 31 34 2E 34 34 2E 33 35  ls\MSVC\14.44.35
+  00000720: 32 30 37 5C 69 6E 63 6C 75 64 65 5C 76 63 72 75  207\include\vcru
+  00000730: 6E 74 69 6D 65 2E 68 00 43 3A 5C 50 72 6F 67 72  ntime.h.C:\Progr
+  00000740: 61 6D 20 46 69 6C 65 73 20 28 78 38 36 29 5C 4D  am Files (x86)\M
+  00000750: 69 63 72 6F 73 6F 66 74 20 56 69 73 75 61 6C 20  icrosoft Visual 
+  00000760: 53 74 75 64 69 6F 5C 32 30 32 32 5C 42 75 69 6C  Studio\2022\Buil
+  00000770: 64 54 6F 6F 6C 73 5C 56 43 5C 54 6F 6F 6C 73 5C  dTools\VC\Tools\
+  00000780: 4D 53 56 43 5C 31 34 2E 34 34 2E 33 35 32 30 37  MSVC\14.44.35207
+  00000790: 5C 69 6E 63 6C 75 64 65 5C 73 61 6C 2E 68 00 43  \include\sal.h.C
+  000007A0: 3A 5C 50 72 6F 67 72 61 6D 20 46 69 6C 65 73 20  :\Program Files 
+  000007B0: 28 78 38 36 29 5C 4D 69 63 72 6F 73 6F 66 74 20  (x86)\Microsoft 
+  000007C0: 56 69 73 75 61 6C 20 53 74 75 64 69 6F 5C 32 30  Visual Studio\20
+  000007D0: 32 32 5C 42 75 69 6C 64 54 6F 6F 6C 73 5C 56 43  22\BuildTools\VC
+  000007E0: 5C 54 6F 6F 6C 73 5C 4D 53 56 43 5C 31 34 2E 34  \Tools\MSVC\14.4
+  000007F0: 34 2E 33 35 32 30 37 5C 69 6E 63 6C 75 64 65 5C  4.35207\include\
+  00000800: 63 6F 6E 63 75 72 72 65 6E 63 79 73 61 6C 2E 68  concurrencysal.h
+  00000810: 00 43 3A 5C 50 72 6F 67 72 61 6D 20 46 69 6C 65  .C:\Program File
+  00000820: 73 20 28 78 38 36 29 5C 4D 69 63 72 6F 73 6F 66  s (x86)\Microsof
+  00000830: 74 20 56 69 73 75 61 6C 20 53 74 75 64 69 6F 5C  t Visual Studio\
+  00000840: 32 30 32 32 5C 42 75 69 6C 64 54 6F 6F 6C 73 5C  2022\BuildTools\
+  00000850: 56 43 5C 54 6F 6F 6C 73 5C 4D 53 56 43 5C 31 34  VC\Tools\MSVC\14
+  00000860: 2E 34 34 2E 33 35 32 30 37 5C 69 6E 63 6C 75 64  .44.35207\includ
+  00000870: 65 5C 76 61 64 65 66 73 2E 68 00 24 54 30 20 24  e\vadefs.h.$T0 $
+  00000880: 65 62 70 20 3D 20 24 65 69 70 20 24 54 30 20 34  ebp = $eip $T0 4
+  00000890: 20 2B 20 5E 20 3D 20 24 65 62 70 20 24 54 30 20   + ^ = $ebp $T0 
+  000008A0: 5E 20 3D 20 24 65 73 70 20 24 54 30 20 38 20 2B  ^ = $esp $T0 8 +
+  000008B0: 20 3D 20 00 F1 00 00 00 08 00 00 00 06 00 4C 11   = .ñ.........L.
+  000008C0: 4A 10 00 00                                      J...
+
+RELOCATIONS #2
+                                                Symbol    Symbol
+ Offset    Type              Applied To         Index     Name
+ --------  ----------------  -----------------  --------  ------
+ 000000EC  DIR32NB                    00000000        10  _parse_decimal
+ 00000138  SECREL                     00000000        10  _parse_decimal
+ 0000013C  SECTION                        0000        10  _parse_decimal
+ 00000198  SECREL                     00000000        10  _parse_decimal
+ 0000019C  SECTION                        0000        10  _parse_decimal
+ 000001F8  DIR32NB                    00000000        11  _main
+ 00000244  SECREL                     00000000        11  _main
+ 00000248  SECTION                        0000        11  _main
+ 0000027C  SECREL                     00000000        11  _main
+ 00000280  SECTION                        0000        11  _main
+ 000002F4  SECREL                     00000000         9  _s_digits
+ 000002F8  SECTION                        0000         9  _s_digits
+ 0000030B  SECREL                     00000000         C  _s_ascii_digit_bias
+ 0000030F  SECTION                        0000         C  _s_ascii_digit_bias
+
+SECTION HEADER #3
+.debug$T name
+       0 physical address
+       0 virtual address
+      B0 size of raw data
+     AAB file pointer to raw data (00000AAB to 00000B5A)
+       0 file pointer to relocation table
+       0 file pointer to line numbers
+       0 number of relocations
+       0 number of line numbers
+42100040 flags
+         Initialized Data
+         Discardable
+         1 byte align
+         Read Only
+
+RAW DATA #3
+  00000000: 04 00 00 00 AA 00 15 15 F9 8B 78 9E 25 D7 A4 4A  ....ª...ù.x.%×¤J
+  00000010: A4 D4 C6 03 97 5E 26 FC 02 00 00 00 43 3A 5C 55  ¤ÔÆ..^&ü....C:\U
+  00000020: 73 65 72 73 5C 6A 62 6C 62 65 5C 44 6F 63 75 6D  sers\jblbe\Docum
+  00000030: 65 6E 74 73 5C 57 6F 72 6B 73 70 61 63 65 5C 67  ents\Workspace\g
+  00000040: 68 69 64 72 61 2D 64 65 6C 69 6E 6B 65 72 2D 65  hidra-delinker-e
+  00000050: 78 74 65 6E 73 69 6F 6E 5C 73 72 63 5C 74 65 73  xtension\src\tes
+  00000060: 74 5C 72 65 73 6F 75 72 63 65 73 5C 70 72 6F 67  t\resources\prog
+  00000070: 72 61 6D 73 5C 69 6E 74 65 67 65 72 2D 70 61 72  rams\integer-par
+  00000080: 73 69 6E 67 5C 72 65 66 65 72 65 6E 63 65 5C 63  sing\reference\c
+  00000090: 6F 66 66 5C 77 69 6E 64 6F 77 73 2D 6D 73 76 63  off\windows-msvc
+  000000A0: 5C 78 38 36 5C 6D 61 69 6E 2E 70 64 62 00 F2 F1  \x86\main.pdb.òñ
+
+SECTION HEADER #4
+  .rdata name
+       0 physical address
+       0 virtual address
+       4 size of raw data
+     B5B file pointer to raw data (00000B5B to 00000B5E)
+     B5F file pointer to relocation table
+       0 file pointer to line numbers
+       1 number of relocations
+       0 number of line numbers
+40300040 flags
+         Initialized Data
+         4 byte align
+         Read Only
+
+RAW DATA #4
+  00000000: 40 FF FF FF                                      @ÿÿÿ
+
+RELOCATIONS #4
+                                                Symbol    Symbol
+ Offset    Type              Applied To         Index     Name
+ --------  ----------------  -----------------  --------  ------
+ 00000000  DIR32                      FFFFFF40         9  _s_digits
+
+SECTION HEADER #5
+.text$mn name
+       0 physical address
+       0 virtual address
+      A0 size of raw data
+     B69 file pointer to raw data (00000B69 to 00000C08)
+     C09 file pointer to relocation table
+       0 file pointer to line numbers
+       9 number of relocations
+       0 number of line numbers
+60500020 flags
+         Code
+         16 byte align
+         Execute Read
+
+RAW DATA #5
+  00000000: 55 8B EC 51 C7 45 FC 00 00 00 00 8B 45 08 0F BE  U.ìQÇEü.....E..¾
+  00000010: 08 85 C9 74 20 6B 55 FC 0A 8B 45 08 0F B6 08 A1  ..Ét kUü..E..¶.¡
+  00000020: 00 00 00 00 03 14 88 89 55 FC 8B 4D 08 83 C1 01  ........Uü.M..Á.
+  00000030: 89 4D 08 EB D6 8B 45 FC 8B E5 5D C3 CC CC CC CC  .M.ëÖ.Eü.å]ÃÌÌÌÌ
+  00000040: 55 8B EC 68 00 00 00 00 E8 00 00 00 00 83 C4 04  U.ìh....è.....Ä.
+  00000050: 85 C0 74 07 B8 01 00 00 00 EB 43 68 00 00 00 00  .Àt.¸....ëCh....
+  00000060: E8 00 00 00 00 83 C4 04 83 F8 7B 74 07 B8 02 00  è.....Ä..ø{t.¸..
+  00000070: 00 00 EB 2A 68 00 00 00 00 E8 00 00 00 00 83 C4  ..ë*h....è.....Ä
+  00000080: 04 3D FF FF 00 00 74 07 B8 03 00 00 00 EB 0F 68  .=ÿÿ..t.¸....ë.h
+  00000090: 00 00 00 00 E8 00 00 00 00 83 C4 04 33 C0 5D C3  ....è.....Ä.3À]Ã
+
+RELOCATIONS #5
+                                                Symbol    Symbol
+ Offset    Type              Applied To         Index     Name
+ --------  ----------------  -----------------  --------  ------
+ 00000020  DIR32                      00000000         C  _s_ascii_digit_bias
+ 00000044  DIR32                      00000000        14  $SG10026
+ 00000049  REL32                      00000000        10  _parse_decimal
+ 0000005C  DIR32                      00000000        15  $SG10028
+ 00000061  REL32                      00000000        10  _parse_decimal
+ 00000075  DIR32                      00000000        16  $SG10030
+ 0000007A  REL32                      00000000        10  _parse_decimal
+ 00000090  DIR32                      00000000        17  $SG10031
+ 00000095  REL32                      00000000         F  _puts
+
+SECTION HEADER #6
+   .data name
+       0 physical address
+       0 virtual address
+      22 size of raw data
+     C63 file pointer to raw data (00000C63 to 00000C84)
+       0 file pointer to relocation table
+       0 file pointer to line numbers
+       0 number of relocations
+       0 number of line numbers
+C0300040 flags
+         Initialized Data
+         4 byte align
+         Read Write
+
+RAW DATA #6
+  00000000: 30 00 00 00 31 32 33 00 36 35 35 33 35 00 00 00  0...123.65535...
+  00000010: 41 6C 6C 20 74 65 73 74 73 20 70 61 73 73 65 64  All tests passed
+  00000020: 2E 00                                            ..
+
+SECTION HEADER #7
+ .chks64 name
+       0 physical address
+       0 virtual address
+      38 size of raw data
+     C85 file pointer to raw data (00000C85 to 00000CBC)
+       0 file pointer to relocation table
+       0 file pointer to line numbers
+       0 number of relocations
+       0 number of line numbers
+     A00 flags
+         Info
+         Remove
+         (no align specified)
+
+RAW DATA #7
+  00000000: 23 07 66 15 27 1A BF 1A A9 80 88 05 8F 68 DF 98  #.f.'.¿.©....hß.
+  00000010: D5 20 37 FE 99 B2 93 B6 17 B1 A2 CE AD 46 3C 15  Õ 7þ.².¶.±¢Î­F<.
+  00000020: F3 00 33 E9 DF B3 F3 11 C4 F6 11 C0 01 2A 4E B9  ó.3éß³ó.Äö.À.*N¹
+  00000030: 00 00 00 00 00 00 00 00                          ........
+
+COFF SYMBOL TABLE
+000 01048999 ABS    notype       Static       | @comp.id
+001 80010191 ABS    notype       Static       | @feat.00
+002 00000003 ABS    notype       Static       | @vol.md
+003 00000000 SECT1  notype       Static       | .drectve
+    Section length   2F, #relocs    0, #linenums    0, checksum        0
+005 00000000 SECT2  notype       Static       | .debug$S
+    Section length  8C4, #relocs    E, #linenums    0, checksum        0
+007 00000000 SECT3  notype       Static       | .debug$T
+    Section length   B0, #relocs    0, #linenums    0, checksum        0
+009 00000000 UNDEF  notype       External     | _s_digits
+00A 00000000 SECT4  notype       Static       | .rdata
+    Section length    4, #relocs    1, #linenums    0, checksum 9BAA7E2F
+00C 00000000 SECT4  notype       External     | _s_ascii_digit_bias
+00D 00000000 SECT5  notype       Static       | .text$mn
+    Section length   A0, #relocs    9, #linenums    0, checksum C6769F33
+00F 00000000 UNDEF  notype ()    External     | _puts
+010 00000000 SECT5  notype ()    External     | _parse_decimal
+011 00000040 SECT5  notype ()    External     | _main
+012 00000000 SECT6  notype       Static       | .data
+    Section length   22, #relocs    0, #linenums    0, checksum 9D83E410
+014 00000000 SECT6  notype       Static       | $SG10026
+015 00000004 SECT6  notype       Static       | $SG10028
+016 00000008 SECT6  notype       Static       | $SG10030
+017 00000010 SECT6  notype       Static       | $SG10031
+018 00000000 SECT7  notype       Static       | .chks64
+    Section length   38, #relocs    0, #linenums    0, checksum        0
+
+String Table Size = 0x31 bytes
+
+  Summary
+
+          38 .chks64
+          22 .data
+         8C4 .debug$S
+          B0 .debug$T
+          2F .drectve
+           4 .rdata
+          A0 .text$mn

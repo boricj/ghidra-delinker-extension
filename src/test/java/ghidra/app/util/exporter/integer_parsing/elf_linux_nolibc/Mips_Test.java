@@ -11,25 +11,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package ghidra.app.util.exporter.integerparsing.elf_linux_nolibc;
+package ghidra.app.util.exporter.integer_parsing.elf_linux_nolibc;
 
 import static net.boricj.bft.elf.ElfSection.SHN_UNDEF;
-import static net.boricj.bft.elf.constants.ElfClass.ELFCLASS64;
-import static net.boricj.bft.elf.constants.ElfData.ELFDATA2LSB;
-import static net.boricj.bft.elf.constants.ElfMachine.EM_X86_64;
-import static net.boricj.bft.elf.constants.ElfSectionNames._RELA;
+import static net.boricj.bft.elf.constants.ElfClass.ELFCLASS32;
+import static net.boricj.bft.elf.constants.ElfData.ELFDATA2MSB;
+import static net.boricj.bft.elf.constants.ElfMachine.EM_MIPS;
+import static net.boricj.bft.elf.constants.ElfSectionNames._REL;
 import static net.boricj.bft.elf.constants.ElfSectionNames._RODATA;
 import static net.boricj.bft.elf.constants.ElfSectionNames._SYMTAB;
 import static net.boricj.bft.elf.constants.ElfSectionNames._TEXT;
 import static net.boricj.bft.elf.constants.ElfSymbolBinding.STB_GLOBAL;
+import static net.boricj.bft.elf.constants.ElfSymbolBinding.STB_LOCAL;
 import static net.boricj.bft.elf.constants.ElfSymbolType.STT_FUNC;
 import static net.boricj.bft.elf.constants.ElfSymbolType.STT_NOTYPE;
 import static net.boricj.bft.elf.constants.ElfSymbolType.STT_OBJECT;
+import static net.boricj.bft.elf.constants.ElfSymbolType.STT_SECTION;
 import static net.boricj.bft.elf.constants.ElfSymbolVisibility.STV_DEFAULT;
 import static net.boricj.bft.elf.constants.ElfType.ET_REL;
-import static net.boricj.bft.elf.machines.amd64.ElfRelocationType_amd64.R_X86_64_32S;
-import static net.boricj.bft.elf.machines.amd64.ElfRelocationType_amd64.R_X86_64_64;
-import static net.boricj.bft.elf.machines.amd64.ElfRelocationType_amd64.R_X86_64_PC32;
+import static net.boricj.bft.elf.machines.mips.ElfRelocationType_Mips.R_MIPS_26;
+import static net.boricj.bft.elf.machines.mips.ElfRelocationType_Mips.R_MIPS_32;
+import static net.boricj.bft.elf.machines.mips.ElfRelocationType_Mips.R_MIPS_HI16;
+import static net.boricj.bft.elf.machines.mips.ElfRelocationType_Mips.R_MIPS_LO16;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -47,17 +50,17 @@ import net.boricj.bft.elf.ElfFile;
 import net.boricj.bft.elf.ElfHeader;
 import net.boricj.bft.elf.ElfSectionTable;
 import net.boricj.bft.elf.sections.ElfProgBits;
-import net.boricj.bft.elf.sections.ElfRelaTable;
+import net.boricj.bft.elf.sections.ElfRelTable;
 import net.boricj.bft.elf.sections.ElfSymbolTable;
 
-public class X86_64_Test extends DelinkerIntegrationTest {
+public class Mips_Test extends DelinkerIntegrationTest {
 
 	private static final File main_file = new File(
-		"src/test/resources/programs/integer-parsing/reference/elf/linux-nolibc/x86_64/main.o");
+		"src/test/resources/programs/integer-parsing/reference/elf/linux-nolibc/mips/main.o");
 
 	@Override
 	protected String getProgramName() {
-		return "src/test/resources/programs/integer-parsing/reference/elf/linux-nolibc/x86_64/integer-parsing.elf.gzf";
+		return "src/test/resources/programs/integer-parsing/reference/elf/linux-nolibc/mips/integer-parsing.elf.gzf";
 	}
 
 	@Test
@@ -69,6 +72,8 @@ public class X86_64_Test extends DelinkerIntegrationTest {
 		ElfSectionTable expectedSections = expected.getSections();
 		var expected_text = findSectionByName(expectedSections, _TEXT, ElfProgBits.class);
 		var expected_rodata = findSectionByName(expectedSections, _RODATA, ElfProgBits.class);
+		var expected_rodata_str1_4 =
+			findSectionByName(expectedSections, _RODATA + ".str1.4", ElfProgBits.class);
 
 		// Actual file.
 		AddressSetView set = findProgramModule("Object Files", "main.o");
@@ -77,15 +82,18 @@ public class X86_64_Test extends DelinkerIntegrationTest {
 
 		// ELF header.
 		ElfHeader actualHeader = actual.getHeader();
-		assertHeader(actualHeader, ELFCLASS64, ELFDATA2LSB, ET_REL, EM_X86_64);
+		assertHeader(actualHeader, ELFCLASS32, ELFDATA2MSB, ET_REL, EM_MIPS);
 
 		ElfSectionTable actualSections = actual.getSections();
 		var actual_symtab = findSectionByName(actualSections, _SYMTAB, ElfSymbolTable.class);
 		var actual_text = findSectionByName(actualSections, _TEXT, ElfProgBits.class);
-		var actual_rela_text = findSectionByName(actualSections, _RELA + _TEXT, ElfRelaTable.class);
+		var actual_rel_text = findSectionByName(actualSections, _REL + _TEXT, ElfRelTable.class);
 		var actual_rodata = findSectionByName(actualSections, _RODATA, ElfProgBits.class);
-		var actual_rela_rodata =
-			findSectionByName(actualSections, _RELA + _RODATA, ElfRelaTable.class);
+		var actual_rel_rodata =
+			findSectionByName(actualSections, _REL + _RODATA, ElfRelTable.class);
+
+		int actual_text_index = sectionNumber(actualSections, actual_text);
+		int actual_rodata_index = sectionNumber(actualSections, actual_rodata);
 
 		// .text section flags.
 		assertTrue(actual_text.getFlags().isAlloc());
@@ -97,44 +105,63 @@ public class X86_64_Test extends DelinkerIntegrationTest {
 		assertFalse(actual_rodata.getFlags().isWrite());
 		assertFalse(actual_rodata.getFlags().isExecInstr());
 
-		// Key symbols.
-		assertSymbol(actual_symtab, 1, 0x00000000, "parse_decimal", 0x51,
+		// .text symbols.
+		assertSymbol(actual_symtab, actual_text_index, 0x00000000, 0,
+			STT_SECTION, STV_DEFAULT, STB_LOCAL);
+		assertSymbol(actual_symtab, actual_text_index, 0x00000000, "parse_decimal", 0x90,
 			STT_FUNC, STV_DEFAULT, STB_GLOBAL);
-		assertSymbol(actual_symtab, 1, 0x00000051, "main", 0x58,
+		assertSymbol(actual_symtab, actual_text_index, 0x00000090, "main", 0xb8,
 			STT_FUNC, STV_DEFAULT, STB_GLOBAL);
-		assertSymbol(actual_symtab, 2, 0x00000002, "s_ascii_digit_bias", 0x8,
+
+		// .rodata symbols.
+		assertSymbol(actual_symtab, actual_rodata_index, 0x00000000, 0,
+			STT_SECTION, STV_DEFAULT, STB_LOCAL);
+		assertSymbol(actual_symtab, actual_rodata_index, 0x00000000, "s_ascii_digit_bias", 0x4,
 			STT_OBJECT, STV_DEFAULT, STB_GLOBAL);
+
+		// Undefined symbols.
 		assertSymbol(actual_symtab, SHN_UNDEF, 0x00000000, "puts", 0,
 			STT_NOTYPE, STV_DEFAULT, STB_GLOBAL);
 		assertSymbol(actual_symtab, SHN_UNDEF, 0x00000000, "s_digits", 0,
 			STT_NOTYPE, STV_DEFAULT, STB_GLOBAL);
 
 		// .text relocations.
-		assertRela(actual_rela_text, 0x00000020, R_X86_64_32S, "s_digits", -0xc0);
-		assertRela(actual_rela_text, 0x00000056, R_X86_64_32S, "s_0_00407046", 0);
-		assertRela(actual_rela_text, 0x0000006b, R_X86_64_32S, "s_123_004070c8", 0);
-		assertRela(actual_rela_text, 0x00000081, R_X86_64_32S, "s_65535_004070cc", 0);
-		assertRela(actual_rela_text, 0x00000099, R_X86_64_32S, "s_All_tests_passed._004070d2", 0);
-		assertRela(actual_rela_text, 0x0000009e, R_X86_64_PC32, "puts", -4);
-		assertEquals(6, actual_rela_text.size());
+		assertRels(actual_rel_text,
+			new Rel(0x00000034, R_MIPS_HI16, "s_digits"),
+			new Rel(0x00000038, R_MIPS_LO16, "s_digits"));
+		assertRels(actual_rel_text,
+			new Rel(0x000000a0, R_MIPS_HI16, "s_0_00408d58"),
+			new Rel(0x000000a4, R_MIPS_LO16, "s_0_00408d58"));
+		assertRel(actual_rel_text, 0x000000a8, R_MIPS_26, "parse_decimal");
+		assertRels(actual_rel_text,
+			new Rel(0x000000c4, R_MIPS_HI16, "s_123_00408dc0"),
+			new Rel(0x000000c8, R_MIPS_LO16, "s_123_00408dc0"));
+		assertRel(actual_rel_text, 0x000000cc, R_MIPS_26, "parse_decimal");
+		assertRels(actual_rel_text,
+			new Rel(0x000000f0, R_MIPS_HI16, "s_65535_00408dc4"),
+			new Rel(0x000000f4, R_MIPS_LO16, "s_65535_00408dc4"));
+		assertRel(actual_rel_text, 0x000000f8, R_MIPS_26, "parse_decimal");
+		assertRels(actual_rel_text,
+			new Rel(0x0000011c, R_MIPS_HI16, "s_All_tests_passed._00408dcc"),
+			new Rel(0x00000120, R_MIPS_LO16, "s_All_tests_passed._00408dcc"));
+		assertRel(actual_rel_text, 0x00000124, R_MIPS_26, "puts");
+		assertEquals(14, actual_rel_text.size());
 
 		// .rodata relocations.
-		assertRela(actual_rela_rodata, 0x00000002, R_X86_64_64, "s_digits", -0xc0);
-		assertEquals(1, actual_rela_rodata.size());
+		assertRel(actual_rel_rodata, 0x00000000, R_MIPS_32, "s_digits");
+		assertEquals(1, actual_rel_rodata.size());
 
 		// .text bytes.
-		assertSectionBytes(expected_text, 0x5684, actual_text, 0, actual_text.getBytes().length,
-			new Patch(0x0000005b,
-				new byte[] { (byte) 0xa1, (byte) 0xff, (byte) 0xff, (byte) 0xff }),
-			new Patch(0x00000070,
-				new byte[] { (byte) 0x8c, (byte) 0xff, (byte) 0xff, (byte) 0xff }),
-			new Patch(0x00000086, new byte[] { 0x76, (byte) 0xff, (byte) 0xff, (byte) 0xff }),
-			new Patch(0x0000009e, new byte[] { 0x00, 0x00, 0x00, 0x00 }));
+		assertSectionBytes(expected_text, 0x00008824,
+			actual_text, 0x00000000, (int) actual_text.getSize(),
+			new Patch(0x00000124, new byte[] { 0x0c, 0x00, 0x00, 0x00 }));
 
 		// .rodata bytes.
-		assertSectionBytes(expected_rodata, 0x00000046,
-			actual_rodata, 0x00000000, 0x2);
-		assertSectionBytes(expected_rodata, 0x000000c8,
-			actual_rodata, 0x0000000a, (int) actual_rodata.getSize() - 0x0a);
+		assertSectionBytes(expected_rodata, 0x00000028,
+			actual_rodata, 0x00000000, 0x8);
+		assertSectionBytes(expected_rodata_str1_4, 0x0000000c,
+			actual_rodata, 0x00000008, 0x4);
+		assertSectionBytes(expected_rodata_str1_4, 0x00000074,
+			actual_rodata, 0x0000000c, 0x20);
 	}
 }

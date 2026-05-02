@@ -11,11 +11,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package ghidra.app.util.exporter.asciitable.coff_windows;
+package ghidra.app.util.exporter.ascii_table.coff_windows;
 
 import static net.boricj.bft.coff.constants.CoffStorageClass.IMAGE_SYM_CLASS_EXTERNAL;
-import static net.boricj.bft.coff.machines.amd64.CoffRelocationType_amd64.IMAGE_REL_AMD64_ADDR64;
-import static net.boricj.bft.coff.machines.amd64.CoffRelocationType_amd64.IMAGE_REL_AMD64_REL32;
+import static net.boricj.bft.coff.machines.i386.CoffRelocationType_i386.IMAGE_REL_I386_DIR32;
+import static net.boricj.bft.coff.machines.i386.CoffRelocationType_i386.IMAGE_REL_I386_REL32;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -35,18 +35,18 @@ import net.boricj.bft.coff.CoffSymbolTable;
 import net.boricj.bft.coff.constants.CoffMachine;
 import net.boricj.bft.coff.sections.CoffBytes;
 
-public class X64_Test extends DelinkerIntegrationTest {
+public class X86_Test extends DelinkerIntegrationTest {
 	private static final File main_file =
 		new File(
-			"src/test/resources/programs/ascii-table/reference/coff/windows-msvc/x64/main.obj");
+			"src/test/resources/programs/ascii-table/reference/coff/windows-msvc/x86/main.obj");
 
 	private static final File openbsd_ctype_file =
 		new File(
-			"src/test/resources/programs/ascii-table/reference/coff/windows-msvc/x64/openbsd_ctype.obj");
+			"src/test/resources/programs/ascii-table/reference/coff/windows-msvc/x86/openbsd_ctype.obj");
 
 	@Override
 	protected String getProgramName() {
-		return "src/test/resources/programs/ascii-table/reference/coff/windows-msvc/x64/ascii-table.exe.gzf";
+		return "src/test/resources/programs/ascii-table/reference/coff/windows-msvc/x86/ascii-table.exe.gzf";
 	}
 
 	@Test
@@ -65,7 +65,7 @@ public class X64_Test extends DelinkerIntegrationTest {
 		CoffFile actual = new CoffFile.Parser(new FileInputStream(exportedFile)).parse();
 
 		// COFF header.
-		assertHeader(actual.getHeader(), CoffMachine.IMAGE_FILE_MACHINE_AMD64);
+		assertHeader(actual.getHeader(), CoffMachine.IMAGE_FILE_MACHINE_I386);
 
 		CoffSectionTable actualSections = actual.getSections();
 		var actual_text = findSectionByName(actualSections, ".text", CoffBytes.class);
@@ -97,94 +97,94 @@ public class X64_Test extends DelinkerIntegrationTest {
 		assertFalse(actual_data.getCharacteristics().isMemExecute());
 
 		// Defined symbols.
-		assertSymbol(actual_symtab, actual_text_index, 0x00000000, "print_number",
+		assertSymbol(actual_symtab, actual_text_index, 0x00000000, "_print_number",
 			IMAGE_SYM_CLASS_EXTERNAL);
-		assertSymbol(actual_symtab, actual_text_index, 0x00000080, "print_ascii_entry",
+		assertSymbol(actual_symtab, actual_text_index, 0x00000070, "_print_ascii_entry",
 			IMAGE_SYM_CLASS_EXTERNAL);
-		assertSymbol(actual_symtab, actual_text_index, 0x00000160, "main",
+		assertSymbol(actual_symtab, actual_text_index, 0x00000120, "_main",
 			IMAGE_SYM_CLASS_EXTERNAL);
-		assertSymbol(actual_symtab, actual_rdata_index, 0x00000000, "NUM_ASCII_PROPERTIES",
+		assertSymbol(actual_symtab, actual_rdata_index, 0x00000000, "_NUM_ASCII_PROPERTIES",
 			IMAGE_SYM_CLASS_EXTERNAL);
-		assertSymbol(actual_symtab, actual_rdata_index, 0x00000010, "s_ascii_properties",
+		assertSymbol(actual_symtab, actual_rdata_index, 0x00000008, "_s_ascii_properties",
 			IMAGE_SYM_CLASS_EXTERNAL);
-		assertSymbol(actual_symtab, actual_data_index, 0x00000000, "COLUMNS",
+		assertSymbol(actual_symtab, actual_data_index, 0x00000000, "_COLUMNS",
 			IMAGE_SYM_CLASS_EXTERNAL);
 
 		// Undefined symbols.
-		assertUndefined(actual_symtab, "openbsd_isalnum");
-		assertUndefined(actual_symtab, "openbsd_isalpha");
-		assertUndefined(actual_symtab, "openbsd_iscntrl");
-		assertUndefined(actual_symtab, "openbsd_isdigit");
-		assertUndefined(actual_symtab, "openbsd_isgraph");
-		assertUndefined(actual_symtab, "openbsd_islower");
-		assertUndefined(actual_symtab, "openbsd_isprint");
-		assertUndefined(actual_symtab, "openbsd_ispunct");
-		assertUndefined(actual_symtab, "openbsd_isspace");
-		assertUndefined(actual_symtab, "openbsd_isupper");
-		assertUndefined(actual_symtab, "putchar");
+		assertUndefined(actual_symtab, "_openbsd_isalnum");
+		assertUndefined(actual_symtab, "_openbsd_isalpha");
+		assertUndefined(actual_symtab, "_openbsd_iscntrl");
+		assertUndefined(actual_symtab, "_openbsd_isdigit");
+		assertUndefined(actual_symtab, "_openbsd_isgraph");
+		assertUndefined(actual_symtab, "_openbsd_islower");
+		assertUndefined(actual_symtab, "_openbsd_isprint");
+		assertUndefined(actual_symtab, "_openbsd_ispunct");
+		assertUndefined(actual_symtab, "_openbsd_isspace");
+		assertUndefined(actual_symtab, "_openbsd_isupper");
+		assertUndefined(actual_symtab, "_putchar");
 
 		// .text relocations.
-		assertRel(actual_rel_text, actual_symtab, 0x00000053,
-			IMAGE_REL_AMD64_REL32, "putchar");
-		assertRel(actual_rel_text, actual_symtab, 0x00000064,
-			IMAGE_REL_AMD64_REL32, "putchar");
-		assertRel(actual_rel_text, actual_symtab, 0x0000009a,
-			IMAGE_REL_AMD64_REL32, "print_number");
+		assertRel(actual_rel_text, actual_symtab, 0x00000047,
+			IMAGE_REL_I386_REL32, "_putchar");
+		assertRel(actual_rel_text, actual_symtab, 0x00000058,
+			IMAGE_REL_I386_REL32, "_putchar");
+		assertRel(actual_rel_text, actual_symtab, 0x0000007c,
+			IMAGE_REL_I386_REL32, "_print_number");
+		assertRel(actual_rel_text, actual_symtab, 0x00000086,
+			IMAGE_REL_I386_REL32, "_putchar");
+		assertRel(actual_rel_text, actual_symtab, 0x00000093,
+			IMAGE_REL_I386_REL32, "_openbsd_isgraph");
 		assertRel(actual_rel_text, actual_symtab, 0x000000a4,
-			IMAGE_REL_AMD64_REL32, "putchar");
+			IMAGE_REL_I386_REL32, "_putchar");
 		assertRel(actual_rel_text, actual_symtab, 0x000000b0,
-			IMAGE_REL_AMD64_REL32, "openbsd_isgraph");
-		assertRel(actual_rel_text, actual_symtab, 0x000000c0,
-			IMAGE_REL_AMD64_REL32, "putchar");
-		assertRel(actual_rel_text, actual_symtab, 0x000000cd,
-			IMAGE_REL_AMD64_REL32, "putchar");
-		assertRel(actual_rel_text, actual_symtab, 0x000000d8,
-			IMAGE_REL_AMD64_REL32, "putchar");
-		assertRel(actual_rel_text, actual_symtab, 0x00000132,
-			IMAGE_REL_AMD64_REL32, "putchar");
-		assertRel(actual_rel_text, actual_symtab, 0x0000013f,
-			IMAGE_REL_AMD64_REL32, "putchar");
+			IMAGE_REL_I386_REL32, "_putchar");
+		assertRel(actual_rel_text, actual_symtab, 0x000000ba,
+			IMAGE_REL_I386_REL32, "_putchar");
+		assertRel(actual_rel_text, actual_symtab, 0x00000103,
+			IMAGE_REL_I386_REL32, "_putchar");
+		assertRel(actual_rel_text, actual_symtab, 0x0000010f,
+			IMAGE_REL_I386_REL32, "_putchar");
+		assertRel(actual_rel_text, actual_symtab, 0x00000147,
+			IMAGE_REL_I386_DIR32, "_COLUMNS");
+		assertRel(actual_rel_text, actual_symtab, 0x00000154,
+			IMAGE_REL_I386_DIR32, "_COLUMNS");
+		assertRel(actual_rel_text, actual_symtab, 0x00000164,
+			IMAGE_REL_I386_DIR32, "_COLUMNS");
+		assertRel(actual_rel_text, actual_symtab, 0x00000170,
+			IMAGE_REL_I386_DIR32, "_NUM_ASCII_PROPERTIES");
+		assertRel(actual_rel_text, actual_symtab, 0x00000176,
+			IMAGE_REL_I386_DIR32, "_s_ascii_properties");
+		assertRel(actual_rel_text, actual_symtab, 0x00000180,
+			IMAGE_REL_I386_REL32, "_print_ascii_entry");
 		assertRel(actual_rel_text, actual_symtab, 0x0000018d,
-			IMAGE_REL_AMD64_REL32, "COLUMNS");
-		assertRel(actual_rel_text, actual_symtab, 0x0000019e,
-			IMAGE_REL_AMD64_REL32, "COLUMNS");
-		assertRel(actual_rel_text, actual_symtab, 0x000001b1,
-			IMAGE_REL_AMD64_REL32, "COLUMNS");
-		assertRel(actual_rel_text, actual_symtab, 0x000001c0,
-			IMAGE_REL_AMD64_REL32, "NUM_ASCII_PROPERTIES");
-		assertRel(actual_rel_text, actual_symtab, 0x000001c7,
-			IMAGE_REL_AMD64_REL32, "s_ascii_properties");
-		assertRel(actual_rel_text, actual_symtab, 0x000001d1,
-			IMAGE_REL_AMD64_REL32, "print_ascii_entry");
-		assertRel(actual_rel_text, actual_symtab, 0x000001dc,
-			IMAGE_REL_AMD64_REL32, "COLUMNS");
-		assertRel(actual_rel_text, actual_symtab, 0x000001e4,
-			IMAGE_REL_AMD64_REL32, "COLUMNS");
-		assertRel(actual_rel_text, actual_symtab, 0x00000205,
-			IMAGE_REL_AMD64_REL32, "putchar");
+			IMAGE_REL_I386_DIR32, "_COLUMNS");
+		assertRel(actual_rel_text, actual_symtab, 0x00000192,
+			IMAGE_REL_I386_DIR32, "_COLUMNS");
+		assertRel(actual_rel_text, actual_symtab, 0x000001b2,
+			IMAGE_REL_I386_REL32, "_putchar");
 		assertEquals(19, actual_rel_text.size());
 
 		// .rdata relocations.
+		assertRel(actual_rel_rdata, actual_symtab, 0x00000008,
+			IMAGE_REL_I386_DIR32, "_openbsd_isgraph");
 		assertRel(actual_rel_rdata, actual_symtab, 0x00000010,
-			IMAGE_REL_AMD64_ADDR64, "openbsd_isgraph");
+			IMAGE_REL_I386_DIR32, "_openbsd_isprint");
+		assertRel(actual_rel_rdata, actual_symtab, 0x00000018,
+			IMAGE_REL_I386_DIR32, "_openbsd_iscntrl");
 		assertRel(actual_rel_rdata, actual_symtab, 0x00000020,
-			IMAGE_REL_AMD64_ADDR64, "openbsd_isprint");
+			IMAGE_REL_I386_DIR32, "_openbsd_isspace");
+		assertRel(actual_rel_rdata, actual_symtab, 0x00000028,
+			IMAGE_REL_I386_DIR32, "_openbsd_ispunct");
 		assertRel(actual_rel_rdata, actual_symtab, 0x00000030,
-			IMAGE_REL_AMD64_ADDR64, "openbsd_iscntrl");
+			IMAGE_REL_I386_DIR32, "_openbsd_isalnum");
+		assertRel(actual_rel_rdata, actual_symtab, 0x00000038,
+			IMAGE_REL_I386_DIR32, "_openbsd_isalpha");
 		assertRel(actual_rel_rdata, actual_symtab, 0x00000040,
-			IMAGE_REL_AMD64_ADDR64, "openbsd_isspace");
+			IMAGE_REL_I386_DIR32, "_openbsd_isdigit");
+		assertRel(actual_rel_rdata, actual_symtab, 0x00000048,
+			IMAGE_REL_I386_DIR32, "_openbsd_isupper");
 		assertRel(actual_rel_rdata, actual_symtab, 0x00000050,
-			IMAGE_REL_AMD64_ADDR64, "openbsd_ispunct");
-		assertRel(actual_rel_rdata, actual_symtab, 0x00000060,
-			IMAGE_REL_AMD64_ADDR64, "openbsd_isalnum");
-		assertRel(actual_rel_rdata, actual_symtab, 0x00000070,
-			IMAGE_REL_AMD64_ADDR64, "openbsd_isalpha");
-		assertRel(actual_rel_rdata, actual_symtab, 0x00000080,
-			IMAGE_REL_AMD64_ADDR64, "openbsd_isdigit");
-		assertRel(actual_rel_rdata, actual_symtab, 0x00000090,
-			IMAGE_REL_AMD64_ADDR64, "openbsd_isupper");
-		assertRel(actual_rel_rdata, actual_symtab, 0x000000a0,
-			IMAGE_REL_AMD64_ADDR64, "openbsd_islower");
+			IMAGE_REL_I386_DIR32, "_openbsd_islower");
 		assertEquals(10, actual_rel_rdata.size());
 
 		// Section bytes.
@@ -208,7 +208,7 @@ public class X64_Test extends DelinkerIntegrationTest {
 		CoffFile actual = new CoffFile.Parser(new FileInputStream(exportedFile)).parse();
 
 		// COFF header.
-		assertHeader(actual.getHeader(), CoffMachine.IMAGE_FILE_MACHINE_AMD64);
+		assertHeader(actual.getHeader(), CoffMachine.IMAGE_FILE_MACHINE_I386);
 
 		CoffSectionTable actualSections = actual.getSections();
 		var actual_text = findSectionByName(actualSections, ".text", CoffBytes.class);
@@ -232,54 +232,54 @@ public class X64_Test extends DelinkerIntegrationTest {
 		assertFalse(actual_rdata.getCharacteristics().isMemWrite());
 
 		// Defined symbols.
-		assertSymbol(actual_symtab, actual_text_index, 0x00000000, "openbsd_isalnum",
+		assertSymbol(actual_symtab, actual_text_index, 0x00000000, "_openbsd_isalnum",
 			IMAGE_SYM_CLASS_EXTERNAL);
-		assertSymbol(actual_symtab, actual_text_index, 0x00000040, "openbsd_isalpha",
+		assertSymbol(actual_symtab, actual_text_index, 0x00000030, "_openbsd_isalpha",
 			IMAGE_SYM_CLASS_EXTERNAL);
-		assertSymbol(actual_symtab, actual_text_index, 0x00000080, "openbsd_iscntrl",
+		assertSymbol(actual_symtab, actual_text_index, 0x00000060, "_openbsd_iscntrl",
 			IMAGE_SYM_CLASS_EXTERNAL);
-		assertSymbol(actual_symtab, actual_text_index, 0x000000c0, "openbsd_isdigit",
+		assertSymbol(actual_symtab, actual_text_index, 0x00000090, "_openbsd_isdigit",
 			IMAGE_SYM_CLASS_EXTERNAL);
-		assertSymbol(actual_symtab, actual_text_index, 0x00000100, "openbsd_isgraph",
+		assertSymbol(actual_symtab, actual_text_index, 0x000000c0, "_openbsd_isgraph",
 			IMAGE_SYM_CLASS_EXTERNAL);
-		assertSymbol(actual_symtab, actual_text_index, 0x00000140, "openbsd_islower",
+		assertSymbol(actual_symtab, actual_text_index, 0x000000f0, "_openbsd_islower",
 			IMAGE_SYM_CLASS_EXTERNAL);
-		assertSymbol(actual_symtab, actual_text_index, 0x00000180, "openbsd_isprint",
+		assertSymbol(actual_symtab, actual_text_index, 0x00000120, "_openbsd_isprint",
 			IMAGE_SYM_CLASS_EXTERNAL);
-		assertSymbol(actual_symtab, actual_text_index, 0x000001c0, "openbsd_ispunct",
+		assertSymbol(actual_symtab, actual_text_index, 0x00000150, "_openbsd_ispunct",
 			IMAGE_SYM_CLASS_EXTERNAL);
-		assertSymbol(actual_symtab, actual_text_index, 0x00000200, "openbsd_isspace",
+		assertSymbol(actual_symtab, actual_text_index, 0x00000180, "_openbsd_isspace",
 			IMAGE_SYM_CLASS_EXTERNAL);
-		assertSymbol(actual_symtab, actual_text_index, 0x00000240, "openbsd_isupper",
+		assertSymbol(actual_symtab, actual_text_index, 0x000001b0, "_openbsd_isupper",
 			IMAGE_SYM_CLASS_EXTERNAL);
-		assertSymbol(actual_symtab, actual_text_index, 0x00000280, "openbsd_isxdigit",
+		assertSymbol(actual_symtab, actual_text_index, 0x000001e0, "_openbsd_isxdigit",
 			IMAGE_SYM_CLASS_EXTERNAL);
-		assertSymbol(actual_symtab, actual_rdata_index, 0x00000000, "_openbsd_ctype_",
+		assertSymbol(actual_symtab, actual_rdata_index, 0x00000000, "__openbsd_ctype_",
 			IMAGE_SYM_CLASS_EXTERNAL);
 
 		// .text relocations.
-		assertRel(actual_rel_text, actual_symtab, 0x0000001b,
-			IMAGE_REL_AMD64_REL32, "_openbsd_ctype_");
-		assertRel(actual_rel_text, actual_symtab, 0x0000005b,
-			IMAGE_REL_AMD64_REL32, "_openbsd_ctype_");
-		assertRel(actual_rel_text, actual_symtab, 0x0000009b,
-			IMAGE_REL_AMD64_REL32, "_openbsd_ctype_");
-		assertRel(actual_rel_text, actual_symtab, 0x000000db,
-			IMAGE_REL_AMD64_REL32, "_openbsd_ctype_");
-		assertRel(actual_rel_text, actual_symtab, 0x0000011b,
-			IMAGE_REL_AMD64_REL32, "_openbsd_ctype_");
-		assertRel(actual_rel_text, actual_symtab, 0x0000015b,
-			IMAGE_REL_AMD64_REL32, "_openbsd_ctype_");
-		assertRel(actual_rel_text, actual_symtab, 0x0000019b,
-			IMAGE_REL_AMD64_REL32, "_openbsd_ctype_");
-		assertRel(actual_rel_text, actual_symtab, 0x000001db,
-			IMAGE_REL_AMD64_REL32, "_openbsd_ctype_");
-		assertRel(actual_rel_text, actual_symtab, 0x0000021b,
-			IMAGE_REL_AMD64_REL32, "_openbsd_ctype_");
-		assertRel(actual_rel_text, actual_symtab, 0x0000025b,
-			IMAGE_REL_AMD64_REL32, "_openbsd_ctype_");
-		assertRel(actual_rel_text, actual_symtab, 0x0000029b,
-			IMAGE_REL_AMD64_REL32, "_openbsd_ctype_");
+		assertRel(actual_rel_text, actual_symtab, 0x0000001a,
+			IMAGE_REL_I386_DIR32, "__openbsd_ctype_");
+		assertRel(actual_rel_text, actual_symtab, 0x0000004a,
+			IMAGE_REL_I386_DIR32, "__openbsd_ctype_");
+		assertRel(actual_rel_text, actual_symtab, 0x0000007a,
+			IMAGE_REL_I386_DIR32, "__openbsd_ctype_");
+		assertRel(actual_rel_text, actual_symtab, 0x000000aa,
+			IMAGE_REL_I386_DIR32, "__openbsd_ctype_");
+		assertRel(actual_rel_text, actual_symtab, 0x000000da,
+			IMAGE_REL_I386_DIR32, "__openbsd_ctype_");
+		assertRel(actual_rel_text, actual_symtab, 0x0000010a,
+			IMAGE_REL_I386_DIR32, "__openbsd_ctype_");
+		assertRel(actual_rel_text, actual_symtab, 0x0000013a,
+			IMAGE_REL_I386_DIR32, "__openbsd_ctype_");
+		assertRel(actual_rel_text, actual_symtab, 0x0000016a,
+			IMAGE_REL_I386_DIR32, "__openbsd_ctype_");
+		assertRel(actual_rel_text, actual_symtab, 0x0000019a,
+			IMAGE_REL_I386_DIR32, "__openbsd_ctype_");
+		assertRel(actual_rel_text, actual_symtab, 0x000001ca,
+			IMAGE_REL_I386_DIR32, "__openbsd_ctype_");
+		assertRel(actual_rel_text, actual_symtab, 0x000001fa,
+			IMAGE_REL_I386_DIR32, "__openbsd_ctype_");
 		assertEquals(11, actual_rel_text.size());
 
 		// Section bytes.

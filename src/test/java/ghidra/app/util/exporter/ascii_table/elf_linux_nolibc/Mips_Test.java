@@ -11,7 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package ghidra.app.util.exporter.asciitable.elf_linux_nolibc;
+package ghidra.app.util.exporter.ascii_table.elf_linux_nolibc;
 
 import static net.boricj.bft.elf.ElfSection.SHN_UNDEF;
 import static net.boricj.bft.elf.constants.ElfClass.ELFCLASS32;

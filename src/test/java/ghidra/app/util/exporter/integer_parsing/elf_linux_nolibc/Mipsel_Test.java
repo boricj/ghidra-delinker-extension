@@ -11,11 +11,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package ghidra.app.util.exporter.integerparsing.elf_linux_nolibc;
+package ghidra.app.util.exporter.integer_parsing.elf_linux_nolibc;
 
 import static net.boricj.bft.elf.ElfSection.SHN_UNDEF;
 import static net.boricj.bft.elf.constants.ElfClass.ELFCLASS32;
-import static net.boricj.bft.elf.constants.ElfData.ELFDATA2MSB;
+import static net.boricj.bft.elf.constants.ElfData.ELFDATA2LSB;
 import static net.boricj.bft.elf.constants.ElfMachine.EM_MIPS;
 import static net.boricj.bft.elf.constants.ElfSectionNames._REL;
 import static net.boricj.bft.elf.constants.ElfSectionNames._RODATA;
@@ -53,14 +53,14 @@ import net.boricj.bft.elf.sections.ElfProgBits;
 import net.boricj.bft.elf.sections.ElfRelTable;
 import net.boricj.bft.elf.sections.ElfSymbolTable;
 
-public class Mips_Test extends DelinkerIntegrationTest {
+public class Mipsel_Test extends DelinkerIntegrationTest {
 
 	private static final File main_file = new File(
-		"src/test/resources/programs/integer-parsing/reference/elf/linux-nolibc/mips/main.o");
+		"src/test/resources/programs/integer-parsing/reference/elf/linux-nolibc/mipsel/main.o");
 
 	@Override
 	protected String getProgramName() {
-		return "src/test/resources/programs/integer-parsing/reference/elf/linux-nolibc/mips/integer-parsing.elf.gzf";
+		return "src/test/resources/programs/integer-parsing/reference/elf/linux-nolibc/mipsel/integer-parsing.elf.gzf";
 	}
 
 	@Test
@@ -82,7 +82,7 @@ public class Mips_Test extends DelinkerIntegrationTest {
 
 		// ELF header.
 		ElfHeader actualHeader = actual.getHeader();
-		assertHeader(actualHeader, ELFCLASS32, ELFDATA2MSB, ET_REL, EM_MIPS);
+		assertHeader(actualHeader, ELFCLASS32, ELFDATA2LSB, ET_REL, EM_MIPS);
 
 		ElfSectionTable actualSections = actual.getSections();
 		var actual_symtab = findSectionByName(actualSections, _SYMTAB, ElfSymbolTable.class);
@@ -116,7 +116,7 @@ public class Mips_Test extends DelinkerIntegrationTest {
 		// .rodata symbols.
 		assertSymbol(actual_symtab, actual_rodata_index, 0x00000000, 0,
 			STT_SECTION, STV_DEFAULT, STB_LOCAL);
-		assertSymbol(actual_symtab, actual_rodata_index, 0x00000000, "s_ascii_digit_bias", 0x4,
+		assertSymbol(actual_symtab, actual_rodata_index, 0x00000000, "s_ascii_digit_bias", 4,
 			STT_OBJECT, STV_DEFAULT, STB_GLOBAL);
 
 		// Undefined symbols.
@@ -130,20 +130,20 @@ public class Mips_Test extends DelinkerIntegrationTest {
 			new Rel(0x00000034, R_MIPS_HI16, "s_digits"),
 			new Rel(0x00000038, R_MIPS_LO16, "s_digits"));
 		assertRels(actual_rel_text,
-			new Rel(0x000000a0, R_MIPS_HI16, "s_0_00408d58"),
-			new Rel(0x000000a4, R_MIPS_LO16, "s_0_00408d58"));
+			new Rel(0x000000a0, R_MIPS_HI16, "s_0_00408d68"),
+			new Rel(0x000000a4, R_MIPS_LO16, "s_0_00408d68"));
 		assertRel(actual_rel_text, 0x000000a8, R_MIPS_26, "parse_decimal");
 		assertRels(actual_rel_text,
-			new Rel(0x000000c4, R_MIPS_HI16, "s_123_00408dc0"),
-			new Rel(0x000000c8, R_MIPS_LO16, "s_123_00408dc0"));
+			new Rel(0x000000c4, R_MIPS_HI16, "s_123_00408dd0"),
+			new Rel(0x000000c8, R_MIPS_LO16, "s_123_00408dd0"));
 		assertRel(actual_rel_text, 0x000000cc, R_MIPS_26, "parse_decimal");
 		assertRels(actual_rel_text,
-			new Rel(0x000000f0, R_MIPS_HI16, "s_65535_00408dc4"),
-			new Rel(0x000000f4, R_MIPS_LO16, "s_65535_00408dc4"));
+			new Rel(0x000000f0, R_MIPS_HI16, "s_65535_00408dd4"),
+			new Rel(0x000000f4, R_MIPS_LO16, "s_65535_00408dd4"));
 		assertRel(actual_rel_text, 0x000000f8, R_MIPS_26, "parse_decimal");
 		assertRels(actual_rel_text,
-			new Rel(0x0000011c, R_MIPS_HI16, "s_All_tests_passed._00408dcc"),
-			new Rel(0x00000120, R_MIPS_LO16, "s_All_tests_passed._00408dcc"));
+			new Rel(0x0000011c, R_MIPS_HI16, "s_All_tests_passed._00408ddc"),
+			new Rel(0x00000120, R_MIPS_LO16, "s_All_tests_passed._00408ddc"));
 		assertRel(actual_rel_text, 0x00000124, R_MIPS_26, "puts");
 		assertEquals(14, actual_rel_text.size());
 
@@ -152,9 +152,8 @@ public class Mips_Test extends DelinkerIntegrationTest {
 		assertEquals(1, actual_rel_rodata.size());
 
 		// .text bytes.
-		assertSectionBytes(expected_text, 0x00008824,
-			actual_text, 0x00000000, (int) actual_text.getSize(),
-			new Patch(0x00000124, new byte[] { 0x0c, 0x00, 0x00, 0x00 }));
+		assertSectionBytes(expected_text, 0x8834, actual_text, 0, actual_text.getBytes().length,
+			new Patch(0x00000124, new byte[] { 0x00, 0x00, 0x00, 0x0c }));
 
 		// .rodata bytes.
 		assertSectionBytes(expected_rodata, 0x00000028,

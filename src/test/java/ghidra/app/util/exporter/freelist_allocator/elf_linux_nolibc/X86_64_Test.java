@@ -11,7 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package ghidra.app.util.exporter.freelistallocator.elf_linux_nolibc;
+package ghidra.app.util.exporter.freelist_allocator.elf_linux_nolibc;
 
 import static net.boricj.bft.elf.constants.ElfClass.ELFCLASS64;
 import static net.boricj.bft.elf.constants.ElfData.ELFDATA2LSB;

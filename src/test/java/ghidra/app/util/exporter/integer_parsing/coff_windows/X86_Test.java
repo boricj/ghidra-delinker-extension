@@ -11,12 +11,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package ghidra.app.util.exporter.integerparsing.coff_windows;
+package ghidra.app.util.exporter.integer_parsing.coff_windows;
 
 import static net.boricj.bft.coff.constants.CoffStorageClass.IMAGE_SYM_CLASS_EXTERNAL;
 import static net.boricj.bft.coff.constants.CoffStorageClass.IMAGE_SYM_CLASS_STATIC;
-import static net.boricj.bft.coff.machines.amd64.CoffRelocationType_amd64.IMAGE_REL_AMD64_ADDR64;
-import static net.boricj.bft.coff.machines.amd64.CoffRelocationType_amd64.IMAGE_REL_AMD64_REL32;
+import static net.boricj.bft.coff.machines.i386.CoffRelocationType_i386.IMAGE_REL_I386_DIR32;
+import static net.boricj.bft.coff.machines.i386.CoffRelocationType_i386.IMAGE_REL_I386_REL32;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -36,14 +36,14 @@ import net.boricj.bft.coff.CoffSymbolTable;
 import net.boricj.bft.coff.constants.CoffMachine;
 import net.boricj.bft.coff.sections.CoffBytes;
 
-public class X64_Test extends DelinkerIntegrationTest {
+public class X86_Test extends DelinkerIntegrationTest {
 
 	private static final File main_file = new File(
-		"src/test/resources/programs/integer-parsing/reference/coff/windows-msvc/x64/main.obj");
+		"src/test/resources/programs/integer-parsing/reference/coff/windows-msvc/x86/main.obj");
 
 	@Override
 	protected String getProgramName() {
-		return "src/test/resources/programs/integer-parsing/reference/coff/windows-msvc/x64/integer-parsing.exe.gzf";
+		return "src/test/resources/programs/integer-parsing/reference/coff/windows-msvc/x86/integer-parsing.exe.gzf";
 	}
 
 	@Test
@@ -62,7 +62,7 @@ public class X64_Test extends DelinkerIntegrationTest {
 		CoffFile actual = new CoffFile.Parser(new FileInputStream(exportedFile)).parse();
 
 		// COFF header.
-		assertHeader(actual.getHeader(), CoffMachine.IMAGE_FILE_MACHINE_AMD64);
+		assertHeader(actual.getHeader(), CoffMachine.IMAGE_FILE_MACHINE_I386);
 
 		CoffSectionTable actualSections = actual.getSections();
 		var actual_text = findSectionByName(actualSections, ".text", CoffBytes.class);
@@ -96,53 +96,53 @@ public class X64_Test extends DelinkerIntegrationTest {
 		// Defined symbols.
 		assertSymbol(actual_symtab, actual_text_index, 0x00000000, ".text",
 			IMAGE_SYM_CLASS_STATIC);
-		assertSymbol(actual_symtab, actual_text_index, 0x00000000, "parse_decimal",
+		assertSymbol(actual_symtab, actual_text_index, 0x00000000, "_parse_decimal",
 			IMAGE_SYM_CLASS_EXTERNAL);
-		assertSymbol(actual_symtab, actual_text_index, 0x00000060, "main",
+		assertSymbol(actual_symtab, actual_text_index, 0x00000040, "_main",
 			IMAGE_SYM_CLASS_EXTERNAL);
 		assertSymbol(actual_symtab, actual_rdata_index, 0x00000000, ".rdata",
 			IMAGE_SYM_CLASS_STATIC);
-		assertSymbol(actual_symtab, actual_rdata_index, 0x00000000, "s_ascii_digit_bias",
+		assertSymbol(actual_symtab, actual_rdata_index, 0x00000000, "_s_ascii_digit_bias",
 			IMAGE_SYM_CLASS_EXTERNAL);
 		assertSymbol(actual_symtab, actual_data_index, 0x00000000, ".data",
 			IMAGE_SYM_CLASS_STATIC);
-		assertSymbol(actual_symtab, actual_data_index, 0x00000000, "s_0_14009c000",
+		assertSymbol(actual_symtab, actual_data_index, 0x00000000, "s_0_0047a000",
 			IMAGE_SYM_CLASS_STATIC);
-		assertSymbol(actual_symtab, actual_data_index, 0x00000004, "s_123_14009c004",
+		assertSymbol(actual_symtab, actual_data_index, 0x00000004, "s_123_0047a004",
 			IMAGE_SYM_CLASS_STATIC);
-		assertSymbol(actual_symtab, actual_data_index, 0x00000008, "s_65535_14009c008",
+		assertSymbol(actual_symtab, actual_data_index, 0x00000008, "s_65535_0047a008",
 			IMAGE_SYM_CLASS_STATIC);
-		assertSymbol(actual_symtab, actual_data_index, 0x00000010, "s_All_tests_passed._14009c010",
+		assertSymbol(actual_symtab, actual_data_index, 0x00000010, "s_All_tests_passed._0047a010",
 			IMAGE_SYM_CLASS_STATIC);
 
 		// Undefined symbols.
-		assertUndefined(actual_symtab, "puts");
-		assertUndefined(actual_symtab, "s_digits");
+		assertUndefined(actual_symtab, "_puts");
+		assertUndefined(actual_symtab, "_s_digits");
 
 		// .text relocations.
-		assertRel(actual_rel_text, actual_symtab, 0x0000002b,
-			IMAGE_REL_AMD64_REL32, "s_ascii_digit_bias");
-		assertRel(actual_rel_text, actual_symtab, 0x00000067,
-			IMAGE_REL_AMD64_REL32, "s_0_14009c000");
-		assertRel(actual_rel_text, actual_symtab, 0x0000006c,
-			IMAGE_REL_AMD64_REL32, "parse_decimal");
-		assertRel(actual_rel_text, actual_symtab, 0x0000007e,
-			IMAGE_REL_AMD64_REL32, "s_123_14009c004");
-		assertRel(actual_rel_text, actual_symtab, 0x00000083,
-			IMAGE_REL_AMD64_REL32, "parse_decimal");
-		assertRel(actual_rel_text, actual_symtab, 0x00000096,
-			IMAGE_REL_AMD64_REL32, "s_65535_14009c008");
-		assertRel(actual_rel_text, actual_symtab, 0x0000009b,
-			IMAGE_REL_AMD64_REL32, "parse_decimal");
-		assertRel(actual_rel_text, actual_symtab, 0x000000b0,
-			IMAGE_REL_AMD64_REL32, "s_All_tests_passed._14009c010");
-		assertRel(actual_rel_text, actual_symtab, 0x000000b5,
-			IMAGE_REL_AMD64_REL32, "puts");
+		assertRel(actual_rel_text, actual_symtab, 0x00000020,
+			IMAGE_REL_I386_DIR32, "_s_ascii_digit_bias");
+		assertRel(actual_rel_text, actual_symtab, 0x00000044,
+			IMAGE_REL_I386_DIR32, "s_0_0047a000");
+		assertRel(actual_rel_text, actual_symtab, 0x00000049,
+			IMAGE_REL_I386_REL32, "_parse_decimal");
+		assertRel(actual_rel_text, actual_symtab, 0x0000005c,
+			IMAGE_REL_I386_DIR32, "s_123_0047a004");
+		assertRel(actual_rel_text, actual_symtab, 0x00000061,
+			IMAGE_REL_I386_REL32, "_parse_decimal");
+		assertRel(actual_rel_text, actual_symtab, 0x00000075,
+			IMAGE_REL_I386_DIR32, "s_65535_0047a008");
+		assertRel(actual_rel_text, actual_symtab, 0x0000007a,
+			IMAGE_REL_I386_REL32, "_parse_decimal");
+		assertRel(actual_rel_text, actual_symtab, 0x00000090,
+			IMAGE_REL_I386_DIR32, "s_All_tests_passed._0047a010");
+		assertRel(actual_rel_text, actual_symtab, 0x00000095,
+			IMAGE_REL_I386_REL32, "_puts");
 		assertEquals(9, actual_rel_text.size());
 
 		// .rdata relocations.
 		assertRel(actual_rel_rdata, actual_symtab, 0x00000000,
-			IMAGE_REL_AMD64_ADDR64, "s_digits");
+			IMAGE_REL_I386_DIR32, "_s_digits");
 		assertEquals(1, actual_rel_rdata.size());
 
 		// Section bytes.

@@ -11,15 +11,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package ghidra.app.util.exporter.asciitable.elf_linux_nolibc;
+package ghidra.app.util.exporter.ascii_table.elf_linux_nolibc;
 
-import static net.boricj.bft.elf.constants.ElfClass.ELFCLASS32;
-import static net.boricj.bft.elf.constants.ElfData.ELFDATA2LSB;
-import static net.boricj.bft.elf.constants.ElfMachine.EM_386;
-import static net.boricj.bft.elf.constants.ElfType.ET_REL;
 import static net.boricj.bft.elf.ElfSection.SHN_UNDEF;
+import static net.boricj.bft.elf.constants.ElfClass.ELFCLASS64;
+import static net.boricj.bft.elf.constants.ElfData.ELFDATA2LSB;
+import static net.boricj.bft.elf.constants.ElfMachine.EM_X86_64;
 import static net.boricj.bft.elf.constants.ElfSectionNames._DATA;
-import static net.boricj.bft.elf.constants.ElfSectionNames._REL;
+import static net.boricj.bft.elf.constants.ElfSectionNames._RELA;
 import static net.boricj.bft.elf.constants.ElfSectionNames._RODATA;
 import static net.boricj.bft.elf.constants.ElfSectionNames._SYMTAB;
 import static net.boricj.bft.elf.constants.ElfSectionNames._TEXT;
@@ -30,8 +29,10 @@ import static net.boricj.bft.elf.constants.ElfSymbolType.STT_NOTYPE;
 import static net.boricj.bft.elf.constants.ElfSymbolType.STT_OBJECT;
 import static net.boricj.bft.elf.constants.ElfSymbolType.STT_SECTION;
 import static net.boricj.bft.elf.constants.ElfSymbolVisibility.STV_DEFAULT;
-import static net.boricj.bft.elf.machines.i386.ElfRelocationType_i386.R_386_32;
-import static net.boricj.bft.elf.machines.i386.ElfRelocationType_i386.R_386_PC32;
+import static net.boricj.bft.elf.constants.ElfType.ET_REL;
+import static net.boricj.bft.elf.machines.amd64.ElfRelocationType_amd64.R_X86_64_32S;
+import static net.boricj.bft.elf.machines.amd64.ElfRelocationType_amd64.R_X86_64_64;
+import static net.boricj.bft.elf.machines.amd64.ElfRelocationType_amd64.R_X86_64_PC32;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -49,20 +50,21 @@ import net.boricj.bft.elf.ElfFile;
 import net.boricj.bft.elf.ElfHeader;
 import net.boricj.bft.elf.ElfSectionTable;
 import net.boricj.bft.elf.sections.ElfProgBits;
-import net.boricj.bft.elf.sections.ElfRelTable;
+import net.boricj.bft.elf.sections.ElfRelaTable;
 import net.boricj.bft.elf.sections.ElfSymbolTable;
 
-public class I686_Test extends DelinkerIntegrationTest {
+public class X86_64_Test extends DelinkerIntegrationTest {
 	private static final File main_file =
-		new File("src/test/resources/programs/ascii-table/reference/elf/linux-nolibc/i686/main.o");
+		new File(
+			"src/test/resources/programs/ascii-table/reference/elf/linux-nolibc/x86_64/main.o");
 
 	private static final File openbsd_ctype_file =
 		new File(
-			"src/test/resources/programs/ascii-table/reference/elf/linux-nolibc/i686/openbsd_ctype.o");
+			"src/test/resources/programs/ascii-table/reference/elf/linux-nolibc/x86_64/openbsd_ctype.o");
 
 	@Override
 	protected String getProgramName() {
-		return "src/test/resources/programs/ascii-table/reference/elf/linux-nolibc/i686/ascii-table.elf.gzf";
+		return "src/test/resources/programs/ascii-table/reference/elf/linux-nolibc/x86_64/ascii-table.elf.gzf";
 	}
 
 	@Test
@@ -82,15 +84,15 @@ public class I686_Test extends DelinkerIntegrationTest {
 
 		// ELF header.
 		ElfHeader actualHeader = actual.getHeader();
-		assertHeader(actualHeader, ELFCLASS32, ELFDATA2LSB, ET_REL, EM_386);
+		assertHeader(actualHeader, ELFCLASS64, ELFDATA2LSB, ET_REL, EM_X86_64);
 
 		ElfSectionTable actualSections = actual.getSections();
 		var actual_symtab = findSectionByName(actualSections, _SYMTAB, ElfSymbolTable.class);
 		var actual_text = findSectionByName(actualSections, _TEXT, ElfProgBits.class);
-		var actual_rel_text = findSectionByName(actualSections, _REL + _TEXT, ElfRelTable.class);
+		var actual_rela_text = findSectionByName(actualSections, _RELA + _TEXT, ElfRelaTable.class);
 		var actual_rodata = findSectionByName(actualSections, _RODATA, ElfProgBits.class);
-		var actual_rel_rodata =
-			findSectionByName(actualSections, _REL + _RODATA, ElfRelTable.class);
+		var actual_rela_rodata =
+			findSectionByName(actualSections, _RELA + _RODATA, ElfRelaTable.class);
 		var actual_data = findSectionByName(actualSections, _DATA, ElfProgBits.class);
 
 		int actual_text_index = sectionNumber(actualSections, actual_text);
@@ -115,11 +117,11 @@ public class I686_Test extends DelinkerIntegrationTest {
 		// .text symbols.
 		assertSymbol(actual_symtab, actual_text_index, 0x00000000, 0, STT_SECTION, STV_DEFAULT,
 			STB_LOCAL);
-		assertSymbol(actual_symtab, actual_text_index, 0x00000000, "print_number", 98, STT_FUNC,
+		assertSymbol(actual_symtab, actual_text_index, 0x00000000, "print_number", 99, STT_FUNC,
 			STV_DEFAULT, STB_GLOBAL);
-		assertSymbol(actual_symtab, actual_text_index, 0x00000062, "print_ascii_entry", 201,
+		assertSymbol(actual_symtab, actual_text_index, 0x00000063, "print_ascii_entry", 186,
 			STT_FUNC, STV_DEFAULT, STB_GLOBAL);
-		assertSymbol(actual_symtab, actual_text_index, 0x0000012b, "main", 188, STT_FUNC,
+		assertSymbol(actual_symtab, actual_text_index, 0x0000011d, "main", 160, STT_FUNC,
 			STV_DEFAULT, STB_GLOBAL);
 
 		// .rodata symbols.
@@ -127,7 +129,7 @@ public class I686_Test extends DelinkerIntegrationTest {
 			STB_LOCAL);
 		assertSymbol(actual_symtab, actual_rodata_index, 0x00000000, "NUM_ASCII_PROPERTIES", 4,
 			STT_OBJECT, STV_DEFAULT, STB_GLOBAL);
-		assertSymbol(actual_symtab, actual_rodata_index, 0x00000010, "s_ascii_properties", 80,
+		assertSymbol(actual_symtab, actual_rodata_index, 0x00000004, "s_ascii_properties", 160,
 			STT_OBJECT, STV_DEFAULT, STB_GLOBAL);
 
 		// .data symbols.
@@ -161,65 +163,67 @@ public class I686_Test extends DelinkerIntegrationTest {
 			STV_DEFAULT, STB_GLOBAL);
 
 		// .text relocations.
-		assertRel(actual_rel_text, 0x0000003c, R_386_PC32, "putchar");
-		assertRel(actual_rel_text, 0x0000004d, R_386_PC32, "putchar");
-		assertRel(actual_rel_text, 0x0000007e, R_386_PC32, "putchar");
-		assertRel(actual_rel_text, 0x0000008e, R_386_PC32, "openbsd_isgraph");
-		assertRel(actual_rel_text, 0x000000a2, R_386_PC32, "putchar");
-		assertRel(actual_rel_text, 0x000000b1, R_386_PC32, "putchar");
-		assertRel(actual_rel_text, 0x000000be, R_386_PC32, "putchar");
-		assertRel(actual_rel_text, 0x00000105, R_386_PC32, "putchar");
-		assertRel(actual_rel_text, 0x00000114, R_386_PC32, "putchar");
-		assertRel(actual_rel_text, 0x0000014a, R_386_32, "COLUMNS");
-		assertRel(actual_rel_text, 0x00000159, R_386_32, "COLUMNS");
-		assertRel(actual_rel_text, 0x0000016e, R_386_32, "COLUMNS");
-		assertRel(actual_rel_text, 0x0000018f, R_386_32, "s_ascii_properties");
-		assertRel(actual_rel_text, 0x0000019e, R_386_32, "COLUMNS");
-		assertRel(actual_rel_text, 0x000001a9, R_386_32, "COLUMNS");
-		assertRel(actual_rel_text, 0x000001c5, R_386_PC32, "putchar");
-		assertEquals(16, actual_rel_text.size());
+		assertRela(actual_rela_text, 0x000000000042, R_X86_64_PC32, "putchar", -4);
+		assertRela(actual_rela_text, 0x000000000051, R_X86_64_PC32, "putchar", -4);
+		assertRela(actual_rela_text, 0x000000000088, R_X86_64_PC32, "putchar", -4);
+		assertRela(actual_rela_text, 0x000000000093, R_X86_64_PC32, "openbsd_isgraph", -4);
+		assertRela(actual_rela_text, 0x0000000000a2, R_X86_64_PC32, "putchar", -4);
+		assertRela(actual_rela_text, 0x0000000000ae, R_X86_64_PC32, "putchar", -4);
+		assertRela(actual_rela_text, 0x0000000000b8, R_X86_64_PC32, "putchar", -4);
+		assertRela(actual_rela_text, 0x0000000000fd, R_X86_64_PC32, "putchar", -4);
+		assertRela(actual_rela_text, 0x000000000109, R_X86_64_PC32, "putchar", -4);
+		assertRela(actual_rela_text, 0x000000000130, R_X86_64_PC32, "COLUMNS", -4);
+		assertRela(actual_rela_text, 0x00000000013f, R_X86_64_PC32, "COLUMNS", -4);
+		assertRela(actual_rela_text, 0x000000000154, R_X86_64_PC32, "COLUMNS", -4);
+		assertRela(actual_rela_text, 0x000000000171, R_X86_64_32S, "s_ascii_properties", 0);
+		assertRela(actual_rela_text, 0x00000000017e, R_X86_64_PC32, "COLUMNS", -4);
+		assertRela(actual_rela_text, 0x00000000018a, R_X86_64_PC32, "COLUMNS", -4);
+		assertRela(actual_rela_text, 0x0000000001a4, R_X86_64_PC32, "putchar", -4);
+		assertEquals(16, actual_rela_text.size());
 
 		// .rodata relocations.
-		assertRel(actual_rel_rodata, 0x00000010, R_386_32, "openbsd_isgraph");
-		assertRel(actual_rel_rodata, 0x00000018, R_386_32, "openbsd_isprint");
-		assertRel(actual_rel_rodata, 0x00000020, R_386_32, "openbsd_iscntrl");
-		assertRel(actual_rel_rodata, 0x00000028, R_386_32, "openbsd_isspace");
-		assertRel(actual_rel_rodata, 0x00000030, R_386_32, "openbsd_ispunct");
-		assertRel(actual_rel_rodata, 0x00000038, R_386_32, "openbsd_isalnum");
-		assertRel(actual_rel_rodata, 0x00000040, R_386_32, "openbsd_isalpha");
-		assertRel(actual_rel_rodata, 0x00000048, R_386_32, "openbsd_isdigit");
-		assertRel(actual_rel_rodata, 0x00000050, R_386_32, "openbsd_isupper");
-		assertRel(actual_rel_rodata, 0x00000058, R_386_32, "openbsd_islower");
-		assertEquals(10, actual_rel_rodata.size());
+		assertRela(actual_rela_rodata, 0x00000004, R_X86_64_64, "openbsd_isgraph", 0);
+		assertRela(actual_rela_rodata, 0x00000014, R_X86_64_64, "openbsd_isprint", 0);
+		assertRela(actual_rela_rodata, 0x00000024, R_X86_64_64, "openbsd_iscntrl", 0);
+		assertRela(actual_rela_rodata, 0x00000034, R_X86_64_64, "openbsd_isspace", 0);
+		assertRela(actual_rela_rodata, 0x00000044, R_X86_64_64, "openbsd_ispunct", 0);
+		assertRela(actual_rela_rodata, 0x00000054, R_X86_64_64, "openbsd_isalnum", 0);
+		assertRela(actual_rela_rodata, 0x00000064, R_X86_64_64, "openbsd_isalpha", 0);
+		assertRela(actual_rela_rodata, 0x00000074, R_X86_64_64, "openbsd_isdigit", 0);
+		assertRela(actual_rela_rodata, 0x00000084, R_X86_64_64, "openbsd_isupper", 0);
+		assertRela(actual_rela_rodata, 0x00000094, R_X86_64_64, "openbsd_islower", 0);
+		assertEquals(10, actual_rela_rodata.size());
 
 		// .text bytes.
-		assertSectionBytes(expected_text, 0x00004078, actual_text, 0x00000000, 0x0001e7,
-			new Patch(0x0000003c,
-				new byte[] { (byte) 0xfc, (byte) 0xff, (byte) 0xff, (byte) 0xff }),
-			new Patch(0x0000004d,
-				new byte[] { (byte) 0xfc, (byte) 0xff, (byte) 0xff, (byte) 0xff }),
-			new Patch(0x00000074,
-				new byte[] { (byte) 0x88, (byte) 0xff, (byte) 0xff, (byte) 0xff }),
+		assertSectionBytes(expected_text, 0x00005684, actual_text, 0x00000000, 0x0001bd,
+			new Patch(0x00000042,
+				new byte[] { (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00 }),
+			new Patch(0x00000051,
+				new byte[] { (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00 }),
 			new Patch(0x0000007e,
-				new byte[] { (byte) 0xfc, (byte) 0xff, (byte) 0xff, (byte) 0xff }),
+				new byte[] { (byte) 0x7e, (byte) 0xff, (byte) 0xff, (byte) 0xff }),
+			new Patch(0x00000088,
+				new byte[] { (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00 }),
 			new Patch(0x000000a2,
-				new byte[] { (byte) 0xfc, (byte) 0xff, (byte) 0xff, (byte) 0xff }),
-			new Patch(0x000000b1,
-				new byte[] { (byte) 0xfc, (byte) 0xff, (byte) 0xff, (byte) 0xff }),
-			new Patch(0x000000be,
-				new byte[] { (byte) 0xfc, (byte) 0xff, (byte) 0xff, (byte) 0xff }),
-			new Patch(0x00000105,
-				new byte[] { (byte) 0xfc, (byte) 0xff, (byte) 0xff, (byte) 0xff }),
-			new Patch(0x00000114,
-				new byte[] { (byte) 0xfc, (byte) 0xff, (byte) 0xff, (byte) 0xff }),
-			new Patch(0x00000195,
-				new byte[] { (byte) 0xc9, (byte) 0xfe, (byte) 0xff, (byte) 0xff }),
-			new Patch(0x000001c5,
-				new byte[] { (byte) 0xfc, (byte) 0xff, (byte) 0xff, (byte) 0xff }));
+				new byte[] { (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00 }),
+			new Patch(0x000000ae,
+				new byte[] { (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00 }),
+			new Patch(0x000000b8,
+				new byte[] { (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00 }),
+			new Patch(0x000000fd,
+				new byte[] { (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00 }),
+			new Patch(0x00000109,
+				new byte[] { (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00 }),
+			new Patch(0x00000178,
+				new byte[] { (byte) 0xe7, (byte) 0xfe, (byte) 0xff, (byte) 0xff }),
+			new Patch(0x000001a4,
+				new byte[] { (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00 }),
+			new Patch(0x000001ae,
+				new byte[] { (byte) 0xfc, (byte) 0x7f, (byte) 0x0f, (byte) 0x8e }));
 
 		// .rodata bytes.
-		assertSectionBytes(expected_rodata, 0x00000090,
-			actual_rodata, 0x00000000, 0x60);
+		assertSectionBytes(expected_rodata, 0x000000bc,
+			actual_rodata, 0x00000000, 0xa4);
 
 		// .data bytes.
 		assertSectionBytes(expected_data, 0x00000000,
@@ -242,12 +246,12 @@ public class I686_Test extends DelinkerIntegrationTest {
 
 		// ELF header.
 		ElfHeader actualHeader = actual.getHeader();
-		assertHeader(actualHeader, ELFCLASS32, ELFDATA2LSB, ET_REL, EM_386);
+		assertHeader(actualHeader, ELFCLASS64, ELFDATA2LSB, ET_REL, EM_X86_64);
 
 		ElfSectionTable actualSections = actual.getSections();
 		var actual_symtab = findSectionByName(actualSections, _SYMTAB, ElfSymbolTable.class);
 		var actual_text = findSectionByName(actualSections, _TEXT, ElfProgBits.class);
-		var actual_rel_text = findSectionByName(actualSections, _REL + _TEXT, ElfRelTable.class);
+		var actual_rela_text = findSectionByName(actualSections, _RELA + _TEXT, ElfRelaTable.class);
 		var actual_rodata = findSectionByName(actualSections, _RODATA, ElfProgBits.class);
 
 		int actual_text_index = sectionNumber(actualSections, actual_text);
@@ -266,27 +270,27 @@ public class I686_Test extends DelinkerIntegrationTest {
 		// .text symbols.
 		assertSymbol(actual_symtab, actual_text_index, 0x00000000, 0, STT_SECTION, STV_DEFAULT,
 			STB_LOCAL);
-		assertSymbol(actual_symtab, actual_text_index, 0x00000000, "openbsd_isalnum", 41, STT_FUNC,
+		assertSymbol(actual_symtab, actual_text_index, 0x00000000, "openbsd_isalnum", 47, STT_FUNC,
 			STV_DEFAULT, STB_GLOBAL);
-		assertSymbol(actual_symtab, actual_text_index, 0x00000029, "openbsd_isalpha", 41, STT_FUNC,
+		assertSymbol(actual_symtab, actual_text_index, 0x0000002f, "openbsd_isalpha", 47, STT_FUNC,
 			STV_DEFAULT, STB_GLOBAL);
-		assertSymbol(actual_symtab, actual_text_index, 0x00000052, "openbsd_iscntrl", 41, STT_FUNC,
+		assertSymbol(actual_symtab, actual_text_index, 0x0000005e, "openbsd_iscntrl", 47, STT_FUNC,
 			STV_DEFAULT, STB_GLOBAL);
-		assertSymbol(actual_symtab, actual_text_index, 0x0000007b, "openbsd_isdigit", 41, STT_FUNC,
+		assertSymbol(actual_symtab, actual_text_index, 0x0000008d, "openbsd_isdigit", 47, STT_FUNC,
 			STV_DEFAULT, STB_GLOBAL);
-		assertSymbol(actual_symtab, actual_text_index, 0x000000a4, "openbsd_isgraph", 41, STT_FUNC,
+		assertSymbol(actual_symtab, actual_text_index, 0x000000bc, "openbsd_isgraph", 47, STT_FUNC,
 			STV_DEFAULT, STB_GLOBAL);
-		assertSymbol(actual_symtab, actual_text_index, 0x000000cd, "openbsd_islower", 41, STT_FUNC,
+		assertSymbol(actual_symtab, actual_text_index, 0x000000eb, "openbsd_islower", 47, STT_FUNC,
 			STV_DEFAULT, STB_GLOBAL);
-		assertSymbol(actual_symtab, actual_text_index, 0x000000f6, "openbsd_isprint", 43, STT_FUNC,
+		assertSymbol(actual_symtab, actual_text_index, 0x0000011a, "openbsd_isprint", 49, STT_FUNC,
 			STV_DEFAULT, STB_GLOBAL);
-		assertSymbol(actual_symtab, actual_text_index, 0x00000121, "openbsd_ispunct", 41, STT_FUNC,
+		assertSymbol(actual_symtab, actual_text_index, 0x0000014b, "openbsd_ispunct", 47, STT_FUNC,
 			STV_DEFAULT, STB_GLOBAL);
-		assertSymbol(actual_symtab, actual_text_index, 0x0000014a, "openbsd_isspace", 41, STT_FUNC,
+		assertSymbol(actual_symtab, actual_text_index, 0x0000017a, "openbsd_isspace", 47, STT_FUNC,
 			STV_DEFAULT, STB_GLOBAL);
-		assertSymbol(actual_symtab, actual_text_index, 0x00000173, "openbsd_isupper", 41, STT_FUNC,
+		assertSymbol(actual_symtab, actual_text_index, 0x000001a9, "openbsd_isupper", 47, STT_FUNC,
 			STV_DEFAULT, STB_GLOBAL);
-		assertSymbol(actual_symtab, actual_text_index, 0x0000019c, "openbsd_isxdigit", 41, STT_FUNC,
+		assertSymbol(actual_symtab, actual_text_index, 0x000001d8, "openbsd_isxdigit", 47, STT_FUNC,
 			STV_DEFAULT, STB_GLOBAL);
 
 		// .rodata symbols.
@@ -296,18 +300,18 @@ public class I686_Test extends DelinkerIntegrationTest {
 			STT_OBJECT, STV_DEFAULT, STB_GLOBAL);
 
 		// .rel.text relocations.
-		assertRel(actual_rel_text, 0x00000013, R_386_32, "_openbsd_ctype_");
-		assertRel(actual_rel_text, 0x0000003c, R_386_32, "_openbsd_ctype_");
-		assertRel(actual_rel_text, 0x00000065, R_386_32, "_openbsd_ctype_");
-		assertRel(actual_rel_text, 0x0000008e, R_386_32, "_openbsd_ctype_");
-		assertRel(actual_rel_text, 0x000000b7, R_386_32, "_openbsd_ctype_");
-		assertRel(actual_rel_text, 0x000000e0, R_386_32, "_openbsd_ctype_");
-		assertRel(actual_rel_text, 0x00000109, R_386_32, "_openbsd_ctype_");
-		assertRel(actual_rel_text, 0x00000134, R_386_32, "_openbsd_ctype_");
-		assertRel(actual_rel_text, 0x0000015d, R_386_32, "_openbsd_ctype_");
-		assertRel(actual_rel_text, 0x00000186, R_386_32, "_openbsd_ctype_");
-		assertRel(actual_rel_text, 0x000001af, R_386_32, "_openbsd_ctype_");
-		assertEquals(11, actual_rel_text.size());
+		assertRela(actual_rela_text, 0x00000019, R_X86_64_32S, "_openbsd_ctype_", 0);
+		assertRela(actual_rela_text, 0x00000048, R_X86_64_32S, "_openbsd_ctype_", 0);
+		assertRela(actual_rela_text, 0x00000077, R_X86_64_32S, "_openbsd_ctype_", 0);
+		assertRela(actual_rela_text, 0x000000a6, R_X86_64_32S, "_openbsd_ctype_", 0);
+		assertRela(actual_rela_text, 0x000000d5, R_X86_64_32S, "_openbsd_ctype_", 0);
+		assertRela(actual_rela_text, 0x00000104, R_X86_64_32S, "_openbsd_ctype_", 0);
+		assertRela(actual_rela_text, 0x00000133, R_X86_64_32S, "_openbsd_ctype_", 0);
+		assertRela(actual_rela_text, 0x00000164, R_X86_64_32S, "_openbsd_ctype_", 0);
+		assertRela(actual_rela_text, 0x00000193, R_X86_64_32S, "_openbsd_ctype_", 0);
+		assertRela(actual_rela_text, 0x000001c2, R_X86_64_32S, "_openbsd_ctype_", 0);
+		assertRela(actual_rela_text, 0x000001f1, R_X86_64_32S, "_openbsd_ctype_", 0);
+		assertEquals(11, actual_rela_text.size());
 
 		// .text bytes.
 		assertSectionBytes(expected_text, actual_text);

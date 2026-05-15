@@ -101,10 +101,11 @@ apply plugin: "jacoco"
 apply plugin: "com.diffplug.spotless"
 
 dependencies {
-	implementation "net.boricj:bft-base:0.6.0"
-	implementation "net.boricj:bft-coff:0.6.0"
-	implementation "net.boricj:bft-elf:0.6.0"
-	testImplementation "net.boricj:bft-base-tests:0.6.0"
+	implementation "net.boricj:bft-base:0.7.0"
+	implementation "net.boricj:bft-coff:0.7.0"
+	implementation "net.boricj:bft-elf:0.7.0"
+	implementation "net.boricj:bft-omf:0.7.0"
+	testImplementation "net.boricj:bft-base-tests:0.7.0"
 
 	testImplementation "junit:junit:4.12"
 	testRuntimeOnly "junit:junit:4.12"
@@ -168,3 +169,4 @@ tasks.withType(JavaCompile) {
 		options.compilerArgs.addAll(['--add-exports', it])
 	}
 }
+

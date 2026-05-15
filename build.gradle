@@ -94,6 +94,14 @@ tasks.register("installStandaloneDeps") {
 	dependsOn "installBinaryFileToolkit"
 }
 
+def isGhidraAtLeast = { int minMajor, int minMinor ->
+	def ghidraVer = (project.findProperty("ghidra_version") ?: "0").toString()
+	def ghidraVerParts = ghidraVer.tokenize('.')
+	int ghidraMajor = ghidraVerParts ? ghidraVerParts[0].toInteger() : 0
+	int ghidraMinor = (ghidraVerParts.size() > 1) ? ghidraVerParts[1].toInteger() : 0
+	return ghidraMajor > minMajor || (ghidraMajor == minMajor && ghidraMinor >= minMinor)
+}
+
 repositories {
 	mavenLocal()
 	mavenCentral()
@@ -128,6 +136,13 @@ dependencies {
 test {
 	// FIXME: Use @Isolated when junit gets sufficiently upgraded
 	forkEvery 1
+
+	// Prevents intermittent test-worker crashes when Ghidra tries to replace Java's serial filter factory.
+	if (isGhidraAtLeast(12, 1)) {
+		jvmArgs += [
+			"-Djdk.serialFilterFactory=ghidra.framework.remote.GhidraSerialFilterFactory"
+		]
+	}
 }
 
 jacocoTestReport {

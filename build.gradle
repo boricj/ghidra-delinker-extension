@@ -52,6 +52,19 @@ else {
 }
 //----------------------END "DO NOT MODIFY" SECTION-------------------------------
 
+// The buildconfig plugin registers the generated source directory with the main source set, but
+// Ghidra's buildExtension.gradle can cause the VS Code Java Language Server (Eclipse JDT LS) to
+// drop it from the Gradle tooling API model. Explicitly re-declaring it here ensures VS Code
+// always sees BuildConfig as a project source, not an unowned file.
+
+sourceSets {
+	main {
+		java {
+			srcDir layout.buildDirectory.dir("generated/sources/buildConfig/main")
+		}
+	}
+}
+
 // GitHub Maven Repositories require authentication for downloading artifacts.
 // This requires a GitHub token with the read:packages right, but GitHub actions
 // won't let workflows access a repository secret from a pull request. Therefore,

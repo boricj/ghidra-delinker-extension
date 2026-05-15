@@ -2,3 +2,4 @@ CodeRelocationSynthesizer
 CoffRelocationTableBuilder
 DataRelocationSynthesizer
 ElfRelocationTableBuilder
+OmfRelocationTableBuilder

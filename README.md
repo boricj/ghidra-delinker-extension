@@ -17,6 +17,7 @@ Matrix of supported instruction set architectures and object files:
 | ------------- | ---- | ------ | ---- |
 | COFF          | ✅ | ✅ | ❌ |
 | ELF           | ✅ | ✅ | ✅ |
+| OMF           | ❌ | ❌ | ❌ |
 
 ## Building (CLI)
 

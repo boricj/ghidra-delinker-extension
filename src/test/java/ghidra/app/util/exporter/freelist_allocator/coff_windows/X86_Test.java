@@ -35,6 +35,7 @@ import net.boricj.bft.coff.CoffSectionTable;
 import net.boricj.bft.coff.CoffSymbolTable;
 import net.boricj.bft.coff.constants.CoffMachine;
 import net.boricj.bft.coff.sections.CoffBytes;
+import net.boricj.bft.coff.sections.CoffUninitialized;
 
 public class X86_Test extends DelinkerIntegrationTest {
 	private static final File main_file =
@@ -55,6 +56,7 @@ public class X86_Test extends DelinkerIntegrationTest {
 		var expected_text = findSectionByName(expectedSections, ".text$mn", CoffBytes.class);
 		var expected_rdata = findSectionByName(expectedSections, ".rdata", CoffBytes.class);
 		var expected_data = findSectionByName(expectedSections, ".data", CoffBytes.class);
+		// NOTE: MSVC does not emit a .bss section; _s_heap is an external undefined symbol instead.
 
 		// Actual file.
 		AddressSetView set = findProgramModule("Object Files", "main.obj");
@@ -68,6 +70,7 @@ public class X86_Test extends DelinkerIntegrationTest {
 		var actual_text = findSectionByName(actualSections, ".text", CoffBytes.class);
 		var actual_rdata = findSectionByName(actualSections, ".rdata", CoffBytes.class);
 		var actual_data = findSectionByName(actualSections, ".data", CoffBytes.class);
+		var actual_bss = findSectionByName(actualSections, ".bss", CoffUninitialized.class);
 
 		CoffRelocationTable actual_rel_text = actual_text.getRelocations();
 		CoffRelocationTable actual_rel_rdata = actual_rdata.getRelocations();
@@ -76,6 +79,7 @@ public class X86_Test extends DelinkerIntegrationTest {
 		short actual_text_index = sectionNumber(actualSections, actual_text);
 		short actual_rdata_index = sectionNumber(actualSections, actual_rdata);
 		short actual_data_index = sectionNumber(actualSections, actual_data);
+		short actual_bss_index = sectionNumber(actualSections, actual_bss);
 
 		// Section flags.
 		assertTrue(actual_text.getCharacteristics().isCntCode());
@@ -92,6 +96,11 @@ public class X86_Test extends DelinkerIntegrationTest {
 		assertTrue(actual_data.getCharacteristics().isMemRead());
 		assertTrue(actual_data.getCharacteristics().isMemWrite());
 		assertFalse(actual_data.getCharacteristics().isMemExecute());
+
+		assertTrue(actual_bss.getCharacteristics().isCntUninitializedData());
+		assertTrue(actual_bss.getCharacteristics().isMemRead());
+		assertTrue(actual_bss.getCharacteristics().isMemWrite());
+		assertFalse(actual_bss.getCharacteristics().isMemExecute());
 
 		// .text symbols.
 		assertSymbol(actual_symtab, actual_text_index, 0x00000000, ".text",
@@ -121,6 +130,12 @@ public class X86_Test extends DelinkerIntegrationTest {
 		assertSymbol(actual_symtab, actual_data_index, 0x00000000, ".data",
 			IMAGE_SYM_CLASS_STATIC);
 		assertSymbol(actual_symtab, actual_data_index, 0x00000000, "$SG10690",
+			IMAGE_SYM_CLASS_EXTERNAL);
+
+		// .bss symbols.
+		assertSymbol(actual_symtab, actual_bss_index, 0x00000000, ".bss",
+			IMAGE_SYM_CLASS_STATIC);
+		assertSymbol(actual_symtab, actual_bss_index, 0x00000000, "_s_heap",
 			IMAGE_SYM_CLASS_EXTERNAL);
 
 		// .text relocations.
@@ -244,5 +259,8 @@ public class X86_Test extends DelinkerIntegrationTest {
 
 		// .data bytes.
 		assertSectionBytes(expected_data, actual_data);
+
+		// .bss bytes.
+		assertEquals(0x180L, actual_bss.getVirtualSize());
 	}
 }

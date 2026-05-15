@@ -24,7 +24,9 @@
 				"-Dsun.java2d.uiScale=1",
 				"-Dsun.java2d.xrender=true",
 				"-showversion",
-				"-Xshare:off"
+				"-Xshare:off",
+				"-Duser.language=en",
+				"-Duser.country=US"
 			]
 		},
 		{

@@ -14,15 +14,18 @@
 package ghidra;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.junit.After;
 import org.junit.Before;
@@ -78,6 +81,15 @@ import net.boricj.bft.elf.sections.ElfProgBits;
 import net.boricj.bft.elf.sections.ElfRelTable;
 import net.boricj.bft.elf.sections.ElfRelaTable;
 import net.boricj.bft.elf.sections.ElfSymbolTable;
+import net.boricj.bft.omf.OmfFile;
+import net.boricj.bft.omf.OmfSegmentData;
+import net.boricj.bft.omf.OmfRecord;
+import net.boricj.bft.omf.records.OmfRecordExtdef;
+import net.boricj.bft.omf.records.OmfRecordPubdef;
+import net.boricj.bft.omf.records.OmfRecordFixupp.FixupEntry;
+import net.boricj.bft.omf.records.OmfRecordFixupp.TargetMethod;
+import net.boricj.bft.omf.records.OmfRecordGrpdef;
+import net.boricj.bft.omf.records.OmfRecordSegdef;
 import utility.application.ApplicationLayout;
 
 public abstract class DelinkerIntegrationTest extends AbstractProgramBasedTest {
@@ -397,6 +409,205 @@ public abstract class DelinkerIntegrationTest extends AbstractProgramBasedTest {
 	public static void assertSectionBytes(ElfProgBits expected, ElfProgBits actual) {
 		byte[] expectedBytes = expected.getBytes();
 		byte[] actualBytes = actual.getBytes();
+		TestUtils.assertArrayEquals(expectedBytes, actualBytes);
+	}
+
+	//
+	// OMF helper methods.
+	//
+
+	public record OmfFixupDescriptor(int offset, int locationType, boolean segmentRelative,
+			String targetName) {
+		public OmfFixupDescriptor(int offset, boolean segmentRelative, String targetName) {
+			this(offset, -1, segmentRelative, targetName);
+		}
+	}
+
+	public static OmfRecordSegdef findSegmentByName(OmfFile file, String segmentName) {
+		for (OmfRecord record : file.getElements()) {
+			if (record instanceof OmfRecordSegdef segdef &&
+				Objects.equals(segdef.getSegmentName(), segmentName)) {
+				return segdef;
+			}
+		}
+		assertTrue("Missing segment: " + segmentName, false);
+		return null;
+	}
+
+	public static void assertSegdefIsDwordPublicUse32(OmfFile file, String segmentName) {
+		OmfRecordSegdef segdef = findSegmentByName(file, segmentName);
+		int attributes = segdef.getAttributes();
+
+		int alignmentCode = (attributes >> 5) & 0x07;
+		int combineCode = (attributes >> 2) & 0x07;
+		boolean isBigSegment = (attributes & 0x02) != 0;
+		boolean isUse32 = (attributes & 0x01) != 0;
+
+		assertEquals(5, alignmentCode);
+		assertEquals(2, combineCode);
+		assertEquals(false, isBigSegment);
+		assertEquals(true, isUse32);
+	}
+
+	public static OmfSegmentData segmentDataByName(OmfFile file, String segmentName) {
+		return OmfSegmentData.parse(file, findSegmentByName(file, segmentName));
+	}
+
+	public static void assertPublicSymbol(OmfFile file, String segmentName, String symbolName,
+			long offset) {
+		// Scan PUBDEF records for the symbol
+		OmfRecordSegdef targetSegment = findSegmentByName(file, segmentName);
+		boolean found = false;
+		for (OmfRecord record : file.getElements()) {
+			if (record instanceof OmfRecordPubdef pubdef && pubdef.getSegment() == targetSegment) {
+				if (pubdef.getSymbols()
+						.stream()
+						.anyMatch(sym -> sym.name().equals(symbolName) && sym.offset() == offset)) {
+					found = true;
+					break;
+				}
+			}
+		}
+		assertTrue("Missing public symbol: " + symbolName + " @ " + segmentName + ":" +
+			Long.toHexString(offset), found);
+	}
+
+	public static List<String> externalSymbolNames(OmfFile file) {
+		// Scan EXTDEF records for external symbol names
+		List<String> names = new ArrayList<>();
+		for (OmfRecord record : file.getElements()) {
+			if (record instanceof OmfRecordExtdef extdef) {
+				for (var extdefEntry : extdef.getElements()) {
+					names.add(extdefEntry.name());
+				}
+			}
+		}
+		return names;
+	}
+
+	public static void assertExternalSymbol(OmfFile file, String symbolName) {
+		assertTrue("Missing external symbol: " + symbolName,
+			externalSymbolNames(file).contains(symbolName));
+	}
+
+	public static List<OmfFixupDescriptor> omfFixupSpecs(OmfFile file, String segmentName) {
+		OmfSegmentData segmentData = segmentDataByName(file, segmentName);
+		List<String> extdefs = externalSymbolNames(file);
+		List<OmfFixupDescriptor> fixups = new java.util.ArrayList<>();
+
+		for (OmfSegmentData.FixupAtOffset fixupAtOffset : segmentData.getFixups()) {
+			FixupEntry entry = fixupAtOffset.entry();
+			assertFalse("Thread-based target fixups are not expected in this test",
+				entry.isTargetFromThread());
+			assertFalse("Thread-based frame fixups are not expected in this test",
+				entry.isFrameFromThread());
+
+			fixups.add(new OmfFixupDescriptor(
+				fixupAtOffset.segmentOffset(),
+				entry.getLocationType(),
+				entry.isSegmentRelative(),
+				resolveOmfTargetName(file, extdefs, entry)));
+		}
+
+		fixups.sort(java.util.Comparator
+				.comparingInt(OmfFixupDescriptor::offset)
+				.thenComparingInt(OmfFixupDescriptor::locationType)
+				.thenComparing(OmfFixupDescriptor::segmentRelative)
+				.thenComparing(OmfFixupDescriptor::targetName));
+		return fixups;
+	}
+
+	public static void assertOmfFixup(List<OmfFixupDescriptor> fixups, int offset,
+			boolean segmentRelative, String targetName) {
+		boolean found = fixups.stream()
+				.anyMatch(fixup -> fixup.offset() == offset &&
+					fixup.segmentRelative() == segmentRelative &&
+					Objects.equals(fixup.targetName(), targetName));
+		assertTrue("Missing OMF fixup: offset=0x" + Integer.toHexString(offset) +
+			", segmentRelative=" + segmentRelative + ", target=" + targetName, found);
+	}
+
+	public static void assertOmfFixups(List<OmfFixupDescriptor> fixups,
+			OmfFixupDescriptor... expectedFixups) {
+		for (OmfFixupDescriptor expectedFixup : expectedFixups) {
+			assertOmfFixup(fixups, expectedFixup.offset(), expectedFixup.segmentRelative(),
+				expectedFixup.targetName());
+		}
+		assertEquals(expectedFixups.length, fixups.size());
+	}
+
+	private static String resolveOmfTargetName(OmfFile file, List<String> extdefs,
+			FixupEntry entry) {
+		TargetMethod method = entry.getTargetMethodEnum();
+		Integer datum = entry.getTargetDatum();
+		assertTrue("Fixup target datum is required", datum != null);
+
+		if (method == TargetMethod.EXTDEF_INDEX) {
+			int extIndex = datum.intValue() - 1;
+			assertTrue("EXTDEF index out of range: " + datum,
+				extIndex >= 0 && extIndex < extdefs.size());
+			return "E:" + extdefs.get(extIndex);
+		}
+		if (method == TargetMethod.SEGDEF_INDEX) {
+			String segName = getOmfSegmentByIndex(file, datum.intValue()).getSegmentName();
+			return "S:" + normalizeOmfSegmentName(segName);
+		}
+		if (method == TargetMethod.GRPDEF_INDEX) {
+			return "G:" + getOmfGroupByIndex(file, datum.intValue()).getGroupName();
+		}
+		return "F:" + datum;
+	}
+
+	private static OmfRecordSegdef getOmfSegmentByIndex(OmfFile file, int index) {
+		int current = 1;
+		for (OmfRecord record : file.getElements()) {
+			if (record instanceof OmfRecordSegdef segdef) {
+				if (current == index) {
+					return segdef;
+				}
+				current++;
+			}
+		}
+		throw new IndexOutOfBoundsException("SEGDEF index out of range: " + index);
+	}
+
+	private static OmfRecordGrpdef getOmfGroupByIndex(OmfFile file, int index) {
+		int current = 1;
+		for (OmfRecord record : file.getElements()) {
+			if (record instanceof OmfRecordGrpdef grpdef) {
+				if (current == index) {
+					return grpdef;
+				}
+				current++;
+			}
+		}
+		throw new IndexOutOfBoundsException("GRPDEF index out of range: " + index);
+	}
+
+	private static String normalizeOmfSegmentName(String segmentName) {
+		String normalized = segmentName;
+		if (normalized.startsWith("_")) {
+			normalized = normalized.substring(1);
+		}
+		if (normalized.startsWith(".")) {
+			normalized = normalized.substring(1);
+		}
+		return normalized.toLowerCase();
+	}
+
+	public static void assertSegmentBytes(OmfSegmentData expected, OmfSegmentData actual) {
+		TestUtils.assertArrayEquals(expected.getBytes(), actual.getBytes());
+	}
+
+	public static void assertSegmentBytes(OmfSegmentData expected, int expectedOffset,
+			OmfSegmentData actual, int actualOffset, int length, Patch... patches) {
+		byte[] expectedBytes = new byte[length];
+		System.arraycopy(expected.getBytes(), expectedOffset, expectedBytes, 0, length);
+		for (Patch patch : patches) {
+			System.arraycopy(patch.bytes(), 0, expectedBytes, patch.offset(), patch.bytes().length);
+		}
+		byte[] actualBytes = new byte[length];
+		System.arraycopy(actual.getBytes(), actualOffset, actualBytes, 0, length);
 		TestUtils.assertArrayEquals(expectedBytes, actualBytes);
 	}
 }

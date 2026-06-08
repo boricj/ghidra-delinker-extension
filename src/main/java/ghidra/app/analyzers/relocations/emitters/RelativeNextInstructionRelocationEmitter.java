@@ -56,8 +56,9 @@ public abstract class RelativeNextInstructionRelocationEmitter
 		Address address = instruction.getAddress().add(match.getOffset());
 		long addend = address.getUnsignedOffset() - target.getAddress().getUnsignedOffset() +
 			match.getValue();
+		int trailingBytes = instruction.getLength() - match.getOffset() - match.getSize();
 
 		relocationTable.addRelativePC(address, match.getSize(), match.getBitmask(),
-			target.getDestination(), addend);
+			target.getDestination(), addend, trailingBytes);
 	}
 }

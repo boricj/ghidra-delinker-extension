@@ -223,6 +223,14 @@ public class RelocationTable {
 		return (RelocationRelativePC) add(rel);
 	}
 
+	public RelocationRelativePC addRelativePC(Address address, int width, long bitmask,
+			Address target, long addend, int trailingBytes) {
+		RelocationRelativePC rel =
+			new RelocationRelativePC(this, address, width, bitmask, target, addend, true,
+				trailingBytes);
+		return (RelocationRelativePC) add(rel);
+	}
+
 	public RelocationRelativeSymbol addRelativeSymbol(Address address, int width, Address target,
 			long addend, String relativetarget) {
 		RelocationRelativeSymbol rel = new RelocationRelativeSymbol(this, address, width,

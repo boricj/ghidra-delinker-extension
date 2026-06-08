@@ -88,19 +88,42 @@ public class X86_64_CoffRelocationTableBuilder implements CoffRelocationTableBui
 		DataConverter dc = LittleEndianDataConverter.INSTANCE;
 		int width = relocation.getWidth();
 		long bitmask = relocation.getBitmask();
-		long value = relocation.getAddend() + width;
+		int trailingBytes = relocation.getTrailingBytes();
 
-		CoffRelocationType type;
-		if (width == 4 && bitmask == 0xffffffffL) {
-			type = CoffRelocationType_amd64.IMAGE_REL_AMD64_REL32;
-		}
-		else {
+		// MSVC encodes a RIP-relative field that is not the last operand (e.g. it is
+		// followed by an immediate) as IMAGE_REL_AMD64_REL32_N, whose reference point is
+		// the end of the instruction. The stored field is the bare symbol-relative addend;
+		// adding back width + trailingBytes cancels the next-instruction bias folded into
+		// the addend by the emitter, leaving exactly that value.
+		CoffRelocationType type = relativePcType(trailingBytes);
+		long value = relocation.getAddend() + width + trailingBytes;
+
+		if (width != 4 || bitmask != 0xffffffffL || type == null) {
 			logUnknownRelocation(relTable.getSection(), relocation, log);
 			return;
 		}
 
 		patchBytes(bytes, addressSet, dc, relocation, value);
 		emit(relTable, addressSet, relocation, type, symbol);
+	}
+
+	private static CoffRelocationType relativePcType(int trailingBytes) {
+		switch (trailingBytes) {
+			case 0:
+				return CoffRelocationType_amd64.IMAGE_REL_AMD64_REL32;
+			case 1:
+				return CoffRelocationType_amd64.IMAGE_REL_AMD64_REL32_1;
+			case 2:
+				return CoffRelocationType_amd64.IMAGE_REL_AMD64_REL32_2;
+			case 3:
+				return CoffRelocationType_amd64.IMAGE_REL_AMD64_REL32_3;
+			case 4:
+				return CoffRelocationType_amd64.IMAGE_REL_AMD64_REL32_4;
+			case 5:
+				return CoffRelocationType_amd64.IMAGE_REL_AMD64_REL32_5;
+			default:
+				return null;
+		}
 	}
 
 	private void emit(CoffRelocationTable relTable, AddressSetView addressSetView,

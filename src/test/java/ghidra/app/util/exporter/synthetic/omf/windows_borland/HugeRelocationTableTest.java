@@ -11,7 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package ghidra.app.util.exporter.omf;
+package ghidra.app.util.exporter.synthetic.omf.windows_borland;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -37,12 +37,12 @@ import net.boricj.bft.omf.records.OmfRecordPubdef;
 import net.boricj.bft.omf.records.OmfRecordPubdef.PublicSymbol;
 import net.boricj.bft.omf.records.OmfRecordSegdef;
 
-public class OMF_I386_huge_relocation_table_Test extends DelinkerIntegrationTest {
+public class HugeRelocationTableTest extends DelinkerIntegrationTest {
 	private static final int MAX_FIXUP_ENTRIES_PER_RECORD = 254;
 
 	@Override
 	protected String getProgramName() {
-		return "src/test/resources/omf/huge-relocation-table.obj.gzf";
+		return "src/test/resources/synthetic/omf/windows-borland/huge-relocation-table.obj.gzf";
 	}
 
 	@Test

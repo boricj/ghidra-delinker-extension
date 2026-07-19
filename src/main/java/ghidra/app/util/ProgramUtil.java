@@ -38,7 +38,7 @@ import ghidra.program.model.listing.Instruction;
 import ghidra.program.model.listing.Program;
 import ghidra.program.model.mem.MemoryAccessException;
 import ghidra.program.model.mem.MemoryBlock;
-import ghidra.program.model.relocobj.Relocation;
+import ghidra.program.model.relocobj.RelocationGroup;
 import ghidra.program.model.relocobj.RelocationTable;
 import ghidra.program.model.symbol.SymbolTable;
 import ghidra.util.DataConverter;
@@ -76,12 +76,6 @@ public abstract class ProgramUtil {
 		return bytes;
 	}
 
-	public static void patchBytes(byte[] buffer, AddressSetView addressSet, DataConverter dc,
-			Relocation relocation, long value) {
-		patchBytes(buffer, addressSet, relocation.getAddress(), dc, relocation.getWidth(),
-			relocation.getBitmask(), value);
-	}
-
 	public static void patchBytes(byte[] buffer, AddressSetView addressSet, Address address,
 			DataConverter dc, int width, long bitmask, long value) {
 		checkBitmaskContiguous(width, bitmask);
@@ -106,7 +100,7 @@ public abstract class ProgramUtil {
 		if (bitcount != (1 + highestOneBit - lowestOneBit)) {
 			throw new IllegalArgumentException("bitmask isn't contiguous");
 		}
-		if (highestOneBit > width * 8) {
+		if (highestOneBit >= width * 8) {
 			throw new IllegalArgumentException("bitmask wider than relocation width");
 		}
 	}
@@ -163,15 +157,23 @@ public abstract class ProgramUtil {
 		RelocationTable relocationTable = RelocationTable.get(program);
 
 		Set<Address> externalRelocationTargets = StreamSupport.stream(
-			Spliterators.spliteratorUnknownSize(relocationTable.getRelocations(), 0), false)
-				.filter(r -> fileSet.contains(r.getAddress()) && !fileSet.contains(r.getTarget()))
-				.map(r -> r.getTarget())
+			Spliterators.spliteratorUnknownSize(relocationTable.getRelocationGroups(), 0), false)
+				.filter(group -> containsEntryInSet(group, fileSet) &&
+					!fileSet.contains(group.getTarget()))
+				.map(group -> group.getTarget())
 				.collect(Collectors.toSet());
 
 		return StreamSupport
 				.stream(symbolTable.getAllSymbols(true).spliterator(), false)
 				.filter(symbol -> externalRelocationTargets.contains(symbol.getAddress()))
 				.collect(new SymbolInformationCollector(symbolNamePreference));
+	}
+
+	private static boolean containsEntryInSet(RelocationGroup group, AddressSetView fileSet) {
+		return group.getGangs()
+				.stream()
+				.flatMap(gang -> gang.getEntries().stream())
+				.anyMatch(entry -> fileSet.contains(entry.address()));
 	}
 
 	public static <T> boolean checkDuplicateSymbols(Stream<T> symbols,

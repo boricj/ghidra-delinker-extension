@@ -55,11 +55,13 @@ class RelocationProvider extends ComponentProviderAdapter {
 	@Override
 	public void componentShown() {
 		tableModel.setProgram(currentProgram);
+		contextChanged();
 	}
 
 	@Override
 	public void componentHidden() {
 		tableModel.setProgram(null);
+		contextChanged();
 	}
 
 	/**
@@ -73,6 +75,7 @@ class RelocationProvider extends ComponentProviderAdapter {
 		tableModel.addTableModelListener(e -> {
 			int rowCount = tableModel.getRowCount();
 			setSubTitle(rowCount + " rows");
+			contextChanged();
 		});
 
 		threadedPanel = new GhidraThreadedTablePanel<>(tableModel);
@@ -85,7 +88,11 @@ class RelocationProvider extends ComponentProviderAdapter {
 		table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		table.setAutoResizeMode(JTable.AUTO_RESIZE_NEXT_COLUMN);
 
-		table.getSelectionModel().addListSelectionListener(e -> contextChanged());
+		table.getSelectionModel().addListSelectionListener(e -> {
+			if (!e.getValueIsAdjusting()) {
+				contextChanged();
+			}
+		});
 
 		ToolTipManager.sharedInstance().registerComponent(table);
 
@@ -102,6 +109,7 @@ class RelocationProvider extends ComponentProviderAdapter {
 		if (isVisible()) {
 			tableModel.setProgram(currentProgram);
 		}
+		contextChanged();
 	}
 
 	GhidraTable getTable() {

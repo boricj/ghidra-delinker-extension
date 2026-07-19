@@ -58,7 +58,7 @@ public abstract class RelativeNextInstructionRelocationEmitter
 			match.getValue();
 		int trailingBytes = instruction.getLength() - match.getOffset() - match.getSize();
 
-		relocationTable.addRelativePC(address, match.getSize(), match.getBitmask(),
-			target.getDestination(), addend, trailingBytes);
+		relocationTable.addRelativePCGroup(address, match.getSize(), match.getBitmask(),
+			target.getDestination(), addend, true, trailingBytes);
 	}
 }

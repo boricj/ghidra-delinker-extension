@@ -17,6 +17,7 @@ import ghidra.app.analyzers.RelocationTableSynthesizerAnalyzer;
 import ghidra.app.analyzers.relocations.synthesizers.DataRelocationSynthesizer;
 import ghidra.app.analyzers.relocations.utils.RelocationTarget;
 import ghidra.app.util.importer.MessageLog;
+import ghidra.app.util.ProgramUtil;
 import ghidra.program.model.address.Address;
 import ghidra.program.model.listing.Data;
 import ghidra.program.model.listing.Program;
@@ -44,7 +45,8 @@ public class AbsoluteDataRelocationSynthesizer implements DataRelocationSynthesi
 		if (target != null) {
 			RelocationTarget finalTarget = analyzer.getFinalRelocationTarget(target);
 
-			relocationTable.addAbsolute(fromAddress, pointer.getLength(),
+			relocationTable.addAbsoluteGroup(fromAddress, pointer.getLength(),
+				ProgramUtil.getBitmask(pointer.getLength()),
 				finalTarget.getDestination(), finalTarget.getOffset());
 
 			return true;

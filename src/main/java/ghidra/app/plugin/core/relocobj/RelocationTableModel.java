@@ -24,8 +24,12 @@ import ghidra.framework.plugintool.ServiceProvider;
 import ghidra.program.model.address.Address;
 import ghidra.program.model.listing.Program;
 import ghidra.program.model.mem.MemoryBlock;
-import ghidra.program.model.relocobj.Relocation;
+import ghidra.program.model.relocobj.RelocationEntry;
+import ghidra.program.model.relocobj.RelocationGang;
+import ghidra.program.model.relocobj.RelocationGroup;
+import ghidra.program.model.relocobj.RelocationTable.RelocationLocation;
 import ghidra.program.model.relocobj.RelocationTable;
+import ghidra.program.model.relocobj.RelocationTypeTag;
 import ghidra.program.model.symbol.Symbol;
 import ghidra.util.datastruct.Accumulator;
 import ghidra.util.exception.CancelledException;
@@ -40,7 +44,7 @@ class RelocationTableModel extends AddressBasedTableModel<RelocationRowObject> {
 
 			@Override
 			public int compare(RelocationRowObject o1, RelocationRowObject o2) {
-				int c = o1.relocation.getAddress().compareTo(o2.relocation.getAddress());
+				int c = o1.address.compareTo(o2.address);
 				if (c == 0) {
 					c = o1.relocationIndex - o2.relocationIndex;
 				}
@@ -105,17 +109,31 @@ class RelocationTableModel extends AddressBasedTableModel<RelocationRowObject> {
 
 		int relocationIndex = 0;
 		RelocationTable relocationTable = RelocationTable.get(getProgram());
-		Iterator<Relocation> iterator = relocationTable.getRelocations();
-		while (iterator.hasNext()) {
-			Relocation r = iterator.next();
-			accumulator.add(new RelocationRowObject(r, ++relocationIndex));
+			Iterator<RelocationGroup> groupIterator = relocationTable.getRelocationGroups();
+			while (groupIterator.hasNext()) {
+				RelocationGroup group = groupIterator.next();
+				for (int gangIndex = 0; gangIndex < group.getGangs().size(); gangIndex++) {
+					RelocationGang gang = group.getGangs().get(gangIndex);
+				String typeName = relocationTypeName(gang.getRelocationType());
+				for (int entryIndex = 0; entryIndex < gang.getEntries().size(); entryIndex++) {
+					RelocationEntry entry = gang.getEntries().get(entryIndex);
+					long addend = group.getAddend() + entry.localAddend();
+					accumulator.add(new RelocationRowObject(++relocationIndex, entry.address(),
+						group.getTarget(), typeName, addend,
+						new RelocationLocation(group.getGroupId(), gangIndex, entryIndex)));
+				}
+			}
 		}
+	}
+
+	private static String relocationTypeName(RelocationTypeTag relocationType) {
+		return relocationType.toString();
 	}
 
 	@Override
 	public Address getAddress(int row) {
 		RelocationRowObject rowObject = filteredData.get(row);
-		return rowObject.relocation.getAddress();
+		return rowObject.address;
 	}
 
 	//==================================================================================================
@@ -124,11 +142,20 @@ class RelocationTableModel extends AddressBasedTableModel<RelocationRowObject> {
 
 	static class RelocationRowObject {
 		final int relocationIndex;
-		final Relocation relocation;
+		final Address address;
+		final Address target;
+		final String relocationTypeName;
+		final long addend;
+		final RelocationLocation location;
 
-		public RelocationRowObject(Relocation r, int relocationIndex) {
+		public RelocationRowObject(int relocationIndex, Address address, Address target,
+				String relocationTypeName, long addend, RelocationLocation location) {
 			this.relocationIndex = relocationIndex;
-			this.relocation = r;
+			this.address = address;
+			this.target = target;
+			this.relocationTypeName = relocationTypeName;
+			this.addend = addend;
+			this.location = location;
 		}
 	}
 
@@ -143,7 +170,7 @@ class RelocationTableModel extends AddressBasedTableModel<RelocationRowObject> {
 		public String getValue(RelocationRowObject rowObject, Settings settings, Program program,
 				ServiceProvider serviceProvider) throws IllegalArgumentException {
 			MemoryBlock memoryBlock =
-				program.getMemory().getBlock(rowObject.relocation.getAddress());
+				program.getMemory().getBlock(rowObject.address);
 			return memoryBlock != null ? memoryBlock.getName() : "(none)";
 		}
 	}
@@ -158,7 +185,7 @@ class RelocationTableModel extends AddressBasedTableModel<RelocationRowObject> {
 		@Override
 		public String getValue(RelocationRowObject rowObject, Settings settings, Program program,
 				ServiceProvider serviceProvider) throws IllegalArgumentException {
-			return rowObject.relocation.getClass().getSimpleName().substring(10);
+			return rowObject.relocationTypeName;
 		}
 	}
 
@@ -172,7 +199,7 @@ class RelocationTableModel extends AddressBasedTableModel<RelocationRowObject> {
 		@Override
 		public String getValue(RelocationRowObject rowObject, Settings settings, Program program,
 				ServiceProvider serviceProvider) throws IllegalArgumentException {
-			Address target = rowObject.relocation.getTarget();
+			Address target = rowObject.target;
 			Symbol symbol = program.getSymbolTable().getPrimarySymbol(target);
 			return symbol != null ? symbol.getName(true) : "(none)";
 		}
@@ -188,7 +215,7 @@ class RelocationTableModel extends AddressBasedTableModel<RelocationRowObject> {
 		@Override
 		public String getValue(RelocationRowObject rowObject, Settings settings, Program program,
 				ServiceProvider serviceProvider) throws IllegalArgumentException {
-			long addend = rowObject.relocation.getAddend();
+			long addend = rowObject.addend;
 			return Long.toString(addend);
 		}
 	}
@@ -203,7 +230,7 @@ class RelocationTableModel extends AddressBasedTableModel<RelocationRowObject> {
 		@Override
 		public Address getValue(RelocationRowObject rowObject, Settings settings, Program program,
 				ServiceProvider serviceProvider) throws IllegalArgumentException {
-			return rowObject.relocation.getTarget();
+			return rowObject.target;
 		}
 	}
 }

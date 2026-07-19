@@ -59,9 +59,14 @@ import ghidra.program.model.listing.Program;
 import ghidra.program.model.mem.Memory;
 import ghidra.program.model.mem.MemoryAccessException;
 import ghidra.program.model.mem.MemoryBlock;
-import ghidra.program.model.relocobj.Relocation;
+import ghidra.program.model.relocobj.RelocationEntry;
+import ghidra.program.model.relocobj.RelocationExpressionKind;
+import ghidra.program.model.relocobj.RelocationGang;
+import ghidra.program.model.relocobj.RelocationGroup;
 import ghidra.program.model.relocobj.RelocationTable;
 import ghidra.program.model.symbol.Symbol;
+import ghidra.program.model.symbol.Reference;
+import ghidra.program.model.symbol.ReferenceManager;
 import ghidra.util.classfinder.ClassSearcher;
 import ghidra.util.task.TaskMonitor;
 import ghidra_delinker_extension.BuildConfig;
@@ -118,7 +123,7 @@ public class ElfRelocatableObjectExporter extends Exporter {
 	private AddressSetView fileSet;
 
 	private RelocationTable relocationTable;
-	private Predicate<Relocation> predicateRelocation;
+	private Predicate<RelocationGroup> predicateRelocation;
 	private Predicate<Symbol> predicateVisibility;
 	private Map<Address, ElfSymbol> symbolsByAddress;
 	private List<Section> sections;
@@ -160,6 +165,8 @@ public class ElfRelocatableObjectExporter extends Exporter {
 		Map.entry(ElfMachine.EM_NONE, "(none)"),
 		Map.entry(ElfMachine.EM_386, "i386"),
 		Map.entry(ElfMachine.EM_X86_64, "x86_64"),
+		Map.entry(ElfMachine.EM_PPC, "powerpc"),
+		Map.entry(ElfMachine.EM_PPC64, "powerpc64"),
 		Map.entry(ElfMachine.EM_MIPS, "MIPS")));
 
 	private static final Map<ElfSectionType, String> ELF_RELOCATION_TABLE_TYPES =
@@ -196,6 +203,8 @@ public class ElfRelocatableObjectExporter extends Exporter {
 	private static final Map<ProcessorInfo, ElfMachine> GHIDRA_TO_ELF_MACHINES = Map.ofEntries(
 		Map.entry(new ProcessorInfo("x86", 4), ElfMachine.EM_386),
 		Map.entry(new ProcessorInfo("x86", 8), ElfMachine.EM_X86_64),
+		Map.entry(new ProcessorInfo("PowerPC", 4), ElfMachine.EM_PPC),
+		Map.entry(new ProcessorInfo("PowerPC", 8), ElfMachine.EM_PPC64),
 		Map.entry(new ProcessorInfo("MIPS", 4), ElfMachine.EM_MIPS),
 		Map.entry(new ProcessorInfo("MIPS", 8), ElfMachine.EM_MIPS),
 		Map.entry(new ProcessorInfo("MIPS-R5900", 4), ElfMachine.EM_MIPS),
@@ -205,6 +214,8 @@ public class ElfRelocatableObjectExporter extends Exporter {
 		Map.ofEntries(
 			Map.entry(new ProcessorInfo("x86", 4), ElfSectionType.SHT_REL),
 			Map.entry(new ProcessorInfo("x86", 8), ElfSectionType.SHT_RELA),
+			Map.entry(new ProcessorInfo("PowerPC", 4), ElfSectionType.SHT_RELA),
+			Map.entry(new ProcessorInfo("PowerPC", 8), ElfSectionType.SHT_RELA),
 			Map.entry(new ProcessorInfo("MIPS", 4), ElfSectionType.SHT_REL),
 			Map.entry(new ProcessorInfo("MIPS", 8), ElfSectionType.SHT_REL),
 			Map.entry(new ProcessorInfo("MIPS-R5900", 4), ElfSectionType.SHT_REL),
@@ -335,6 +346,7 @@ public class ElfRelocatableObjectExporter extends Exporter {
 		private byte[] bytes;
 
 		private ElfSection section;
+		private ElfSymbol sectionSymbol;
 		private ElfSection relSection;
 
 		public Section(MemoryBlock memoryBlock, AddressSetView sectionSet) {
@@ -373,7 +385,7 @@ public class ElfRelocatableObjectExporter extends Exporter {
 		}
 
 		public void addSymbols() {
-			symtab.addSection(section);
+			sectionSymbol = symtab.addSection(section);
 
 			ProgramUtil
 					.getSectionSymbols(program, sectionSet, symbolNamePreference)
@@ -394,6 +406,16 @@ public class ElfRelocatableObjectExporter extends Exporter {
 						symbolsByAddress.put(address, sym);
 					});
 		}
+
+				private ElfSymbol addFallbackSymbol(Symbol symbol, Address address) {
+					String name = symbol.getName();
+					ElfSymbolType type = determineSymbolType(symbol);
+					ElfSymbolBinding binding = determineSymbolBinding(symbol);
+					long offset = ProgramUtil.getOffsetWithinAddressSet(sectionSet, address);
+					long size = determineSymbolSize(symbol);
+
+					return symtab.addDefined(name, offset, size, type, binding, section);
+				}
 
 		private ElfSymbolType determineSymbolType(Symbol symbol) {
 			Object obj = symbol.getObject();
@@ -438,11 +460,16 @@ public class ElfRelocatableObjectExporter extends Exporter {
 				throw new IllegalStateException();
 			}
 
-			List<Relocation> relocations = new ArrayList<>();
-			relocationTable.getRelocations(sectionSet, predicateRelocation)
-					.forEachRemaining(relocations::add);
+			List<RelocationGroup> groups = new ArrayList<>();
+			relocationTable.getRelocationGroups(sectionSet, predicateRelocation)
+					.forEachRemaining(group -> {
+						RelocationGroup filtered = filterGroup(group);
+						if (filtered != null) {
+							groups.add(filtered);
+						}
+					});
 
-			if (relocations.isEmpty()) {
+			if (groups.isEmpty()) {
 				return;
 			}
 
@@ -453,12 +480,105 @@ public class ElfRelocatableObjectExporter extends Exporter {
 				return;
 			}
 
-			Map<Relocation, ElfSymbol> relocationsToSymbols = relocations.stream()
-					.collect(Collectors.toMap(r -> r, r -> symbolsByAddress.get(r.getTarget())));
+			Map<RelocationGroup, ElfSymbol> groupsToSymbols = new HashMap<>();
+			for (RelocationGroup group : groups) {
+				groupsToSymbols.put(group, resolveRelocationSymbol(group.getTarget()));
+			}
 
-			relSection = builder.build(elf, symtab, section, bytes, sectionSet, relocations,
-				relocationsToSymbols, log);
+			relSection = builder.buildGroups(elf, symtab, section, bytes, sectionSet, groups,
+				groupsToSymbols, log);
 			elf.getSections().add(relSection);
+		}
+
+		private RelocationGroup filterGroup(RelocationGroup group) {
+			List<RelocationGang> gangs = new ArrayList<>();
+			RelocationExpressionKind kind = group.getExpression().getKind();
+			for (RelocationGang gang : group.getGangs()) {
+				List<RelocationEntry> entries = gang.getEntries()
+						.stream()
+						.filter(entry -> shouldKeepEntry(kind, entry.address()))
+						.toList();
+				if (!entries.isEmpty()) {
+					gangs.add(
+						new RelocationGang(gang.getRelocationType(), gang.getWidth(), gang.getBitmask(),
+							entries));
+				}
+			}
+
+			if (gangs.isEmpty()) {
+				return null;
+			}
+
+			return new RelocationGroup(group.getGroupId(), group.getExpression(), group.getTarget(),
+				group.getAddend(), gangs);
+		}
+
+			private ElfSymbol resolveRelocationSymbol(Address target) {
+				ElfSymbol symbol = symbolsByAddress.get(target);
+				if (symbol != null) {
+					return symbol;
+				}
+
+				Symbol primarySymbol = program.getSymbolTable().getPrimarySymbol(target);
+				if (primarySymbol != null) {
+					for (Section section : sections) {
+						if (section.sectionSet.contains(target)) {
+							symbol = section.addFallbackSymbol(primarySymbol, target);
+							symbolsByAddress.put(target, symbol);
+							return symbol;
+						}
+					}
+
+					symbol = symtab.addUndefined(primarySymbol.getName());
+					symbolsByAddress.put(target, symbol);
+					return symbol;
+				}
+
+				for (Section section : sections) {
+					if (section.sectionSet.contains(target)) {
+						return section.sectionSymbol;
+					}
+				}
+
+				String name = target.toString();
+				symbol = symtab.addUndefined(name);
+				symbolsByAddress.put(target, symbol);
+				return symbol;
+			}
+
+		private boolean shouldKeepEntry(RelocationExpressionKind kind, Address address) {
+			if (kind != RelocationExpressionKind.PC_RELATIVE) {
+				return true;
+			}
+
+			if (!trimSuperfluousRelativePC || !relocationTable.isTransparentRelativePC(address)) {
+				return true;
+			}
+
+			ReferenceManager referenceManager = program.getReferenceManager();
+			CodeUnit codeUnit = program.getListing().getCodeUnitContaining(address);
+			if (codeUnit == null) {
+				return true;
+			}
+
+			Address fromAddress = codeUnit.getAddress();
+			var fromRange = fileSet.getRangeContaining(fromAddress);
+			if (fromRange == null) {
+				return true;
+			}
+
+			for (Reference reference : referenceManager.getReferencesFrom(fromAddress)) {
+				if (!reference.isPrimary()) {
+					continue;
+				}
+
+				Address toAddress = reference.getToAddress();
+				if (!fromRange.contains(toAddress)) {
+					return true;
+				}
+			}
+
+			return false;
 		}
 
 		private ElfRelocationTableBuilder findRelocationTableBuilder() {
@@ -484,6 +604,7 @@ public class ElfRelocatableObjectExporter extends Exporter {
 
 			return builder;
 		}
+
 	}
 
 	@Override
@@ -593,7 +714,7 @@ public class ElfRelocatableObjectExporter extends Exporter {
 		predicateRelocation = r -> true;
 
 		if (trimSuperfluousRelativePC) {
-			Predicate<Relocation> predicate = new TrimSuperfluousRelativePC(program, fileSet);
+			Predicate<RelocationGroup> predicate = new TrimSuperfluousRelativePC(program, fileSet);
 			predicateRelocation = predicateRelocation.and(predicate);
 		}
 	}

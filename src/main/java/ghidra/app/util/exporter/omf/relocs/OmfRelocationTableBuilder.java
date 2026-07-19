@@ -20,7 +20,9 @@ import ghidra.app.util.importer.MessageLog;
 import ghidra.program.model.address.Address;
 import ghidra.program.model.address.AddressSetView;
 import ghidra.program.model.lang.Language;
-import ghidra.program.model.relocobj.Relocation;
+import ghidra.program.model.relocobj.RelocationEntry;
+import ghidra.program.model.relocobj.RelocationGang;
+import ghidra.program.model.relocobj.RelocationGroup;
 import ghidra.util.classfinder.ExtensionPoint;
 import net.boricj.bft.omf.records.OmfRecordFixupp.FixupEntry;
 import net.boricj.bft.omf.records.OmfRecordSegdef;
@@ -67,7 +69,7 @@ public interface OmfRelocationTableBuilder extends ExtensionPoint {
 	 * @return list of FIXUPP semantics paired with their absolute segment offsets
 	 */
 	List<FixupAtOffset> build(OmfRecordSegdef segment, Map<Address, Integer> addressToExtdefIndex,
-			byte[] bytes, AddressSetView addressSet, List<Relocation> relocations,
+			byte[] bytes, AddressSetView addressSet, List<RelocationGroup> relocations,
 			List<SegmentMapping> segmentMappings, MessageLog log);
 
 	/**
@@ -85,11 +87,12 @@ public interface OmfRelocationTableBuilder extends ExtensionPoint {
 	 * @param relocation the relocation
 	 * @param log the message log
 	 */
-	static void logUnknownRelocation(OmfRecordSegdef segment, Relocation relocation,
+	static void logUnknownRelocation(OmfRecordSegdef segment, RelocationGroup group,
+			RelocationGang gang, RelocationEntry entry,
 			MessageLog log) {
-		String name = relocation.getClass().getSimpleName();
-		String msg = String.format("Unknown relocation %s width %d bitmask %d at %s", name,
-			relocation.getWidth(), relocation.getBitmask(), relocation.getAddress());
+		String msg = String.format("Unknown grouped relocation %s type=%s width=%d bitmask=%d at %s",
+			group.getExpression().getKind(), gang.getRelocationType(), gang.getWidth(),
+			gang.getBitmask(), entry.address());
 		log.appendMsg(segment.getSegmentName(), msg);
 	}
 }

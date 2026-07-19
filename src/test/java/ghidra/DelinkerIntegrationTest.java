@@ -199,7 +199,7 @@ public abstract class DelinkerIntegrationTest extends AbstractProgramBasedTest {
 
 	public record Patch(int offset, byte[] bytes) {}
 
-	public record Rel(int offset, Object type, String symbol) {}
+	public record Rel(int offset, Object type, Object symbol) {}
 
 	public File exportObjectFile(AddressSetView set, Exporter exporter, List<Option> options)
 			throws Exception {
@@ -284,6 +284,54 @@ public abstract class DelinkerIntegrationTest extends AbstractProgramBasedTest {
 		assertEquals(symbolName, symtab.get(rel.getSymbolTableIndex()).getName());
 	}
 
+	public static void assertRels(CoffRelocationTable table, CoffSymbolTable symtab,
+			Rel... expected) {
+		var actual = table.getElements();
+		assertTrue(actual.size() >= expected.length);
+
+		for (int start = 0; start <= actual.size() - expected.length; start++) {
+			boolean matches = true;
+
+			for (int i = 0; i < expected.length; i++) {
+				CoffRel rel = actual.get(start + i);
+				Rel exp = expected[i];
+
+				if (rel.getVirtualAddress() != exp.offset() || !rel.getType().equals(exp.type())) {
+					matches = false;
+					break;
+				}
+
+				if (exp.symbol() instanceof String expectedSymbolName) {
+					assertTrue(rel.getSymbolTableIndex() >= 0);
+					assertTrue(rel.getSymbolTableIndex() < symtab.getElements().size());
+					String actualSymbol = symtab.get(rel.getSymbolTableIndex()).getName();
+					if (!expectedSymbolName.equals(actualSymbol)) {
+						matches = false;
+						break;
+					}
+				}
+				else if (exp.symbol() instanceof Integer expectedSymbolTableIndex) {
+					if (rel.getSymbolTableIndex() != expectedSymbolTableIndex.intValue()) {
+						matches = false;
+						break;
+					}
+				}
+				else if (exp.symbol() != null) {
+					assertTrue("Unsupported COFF symbol matcher type: " + exp.symbol().getClass(),
+						false);
+					matches = false;
+					break;
+				}
+			}
+
+			if (matches) {
+				return;
+			}
+		}
+
+		assertTrue("Expected COFF relocations were not found in any contiguous range", false);
+	}
+
 	public static void assertSectionBytes(CoffBytes expected, int expectedOffset, CoffBytes actual,
 			int actualOffset, int length, Patch... patches) {
 		byte[] expectedBytes = new byte[length];
@@ -360,23 +408,55 @@ public abstract class DelinkerIntegrationTest extends AbstractProgramBasedTest {
 	}
 
 	public static void assertRels(ElfRelTable table, Rel... expected) {
-		var actual = table.stream()
-				.map(r -> new Rel((int) r.getOffset(), r.getType(), r.getSymbol().getName()))
-				.toList();
+		var actual = table.stream().toList();
+		var symbols = table.getSymbolTable().stream().toList();
 		assertTrue(actual.size() >= expected.length);
 
-		var expectedCounts = new HashMap<Rel, Integer>();
-		for (var rel : expected) {
-			expectedCounts.merge(rel, 1, Integer::sum);
-		}
-
 		for (int start = 0; start <= actual.size() - expected.length; start++) {
-			var windowCounts = new HashMap<Rel, Integer>();
-			for (int i = start; i < start + expected.length; i++) {
-				windowCounts.merge(actual.get(i), 1, Integer::sum);
+			boolean[] used = new boolean[expected.length];
+			boolean allMatched = true;
+
+			for (Rel exp : expected) {
+				boolean matched = false;
+
+				for (int i = 0; i < expected.length; i++) {
+					if (used[i]) {
+						continue;
+					}
+
+					var rel = actual.get(start + i);
+					if (rel.getOffset() != exp.offset() || !rel.getType().equals(exp.type())) {
+						continue;
+					}
+
+					if (exp.symbol() instanceof String expectedSymbolName) {
+						if (!expectedSymbolName.equals(rel.getSymbol().getName())) {
+							continue;
+						}
+					}
+					else if (exp.symbol() instanceof Integer expectedSymbolIndex) {
+						if (symbols.indexOf(rel.getSymbol()) != expectedSymbolIndex.intValue()) {
+							continue;
+						}
+					}
+					else if (exp.symbol() != null) {
+						assertTrue(
+							"Unsupported ELF symbol matcher type: " + exp.symbol().getClass(),
+							false);
+					}
+
+					used[i] = true;
+					matched = true;
+					break;
+				}
+
+				if (!matched) {
+					allMatched = false;
+					break;
+				}
 			}
 
-			if (windowCounts.equals(expectedCounts)) {
+			if (allMatched) {
 				return;
 			}
 		}

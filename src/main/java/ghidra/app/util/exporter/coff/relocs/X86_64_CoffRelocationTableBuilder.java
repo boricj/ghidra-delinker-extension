@@ -22,9 +22,10 @@ import java.util.Map;
 
 import ghidra.app.util.importer.MessageLog;
 import ghidra.program.model.address.AddressSetView;
-import ghidra.program.model.relocobj.Relocation;
-import ghidra.program.model.relocobj.RelocationAbsolute;
-import ghidra.program.model.relocobj.RelocationRelativePC;
+import ghidra.program.model.relocobj.RelocationEntry;
+import ghidra.program.model.relocobj.RelocationExpressionKind;
+import ghidra.program.model.relocobj.RelocationGang;
+import ghidra.program.model.relocobj.RelocationGroup;
 import ghidra.util.DataConverter;
 import ghidra.util.LittleEndianDataConverter;
 import net.boricj.bft.coff.CoffRelocationTable;
@@ -36,75 +37,59 @@ import net.boricj.bft.coff.constants.CoffRelocationType;
 import net.boricj.bft.coff.machines.amd64.CoffRelocationType_amd64;
 
 public class X86_64_CoffRelocationTableBuilder implements CoffRelocationTableBuilder {
+	public boolean supportsGroupedRelocations() {
+		return true;
+	}
+
 	@Override
-	public void build(CoffSymbolTable symtab, CoffSection section,
-			byte[] bytes, AddressSetView addressSet, List<Relocation> relocations,
-			Map<Relocation, CoffSymbol> relocationsToSymbols, MessageLog log) {
+	public void buildGroups(CoffSymbolTable symtab, CoffSection section, byte[] bytes,
+			AddressSetView addressSet, List<RelocationGroup> groups,
+			Map<RelocationGroup, CoffSymbol> groupsToSymbols, MessageLog log) {
 		CoffRelocationTable relTable = section.getRelocations();
 
-		for (Relocation relocation : relocations) {
-			CoffSymbol symbol = relocationsToSymbols.get(relocation);
-
-			if (relocation instanceof RelocationAbsolute) {
-				process(relTable, bytes, addressSet, (RelocationAbsolute) relocation, symbol, log);
-			}
-			else if (relocation instanceof RelocationRelativePC) {
-				process(relTable, bytes, addressSet, (RelocationRelativePC) relocation, symbol,
-					log);
-			}
-			else {
-				logUnknownRelocation(relTable.getSection(), relocation, log);
+		for (RelocationGroup group : groups) {
+			CoffSymbol symbol = groupsToSymbols.get(group);
+			for (RelocationGang gang : group.getGangs()) {
+				for (RelocationEntry entry : gang.getEntries()) {
+					process(relTable, bytes, addressSet, group, gang, entry, symbol, log);
+				}
 			}
 		}
 	}
 
-	private void process(CoffRelocationTable relTable, byte[] bytes,
-			AddressSetView addressSet, RelocationAbsolute relocation,
-			CoffSymbol symbol, MessageLog log) {
+	private void process(CoffRelocationTable relTable, byte[] bytes, AddressSetView addressSet,
+			RelocationGroup group, RelocationGang gang, RelocationEntry entry, CoffSymbol symbol,
+			MessageLog log) {
 		DataConverter dc = LittleEndianDataConverter.INSTANCE;
-		int width = relocation.getWidth();
-		long bitmask = relocation.getBitmask();
-		long value = relocation.getAddend();
+		int width = gang.getWidth();
+		long bitmask = gang.getBitmask();
+		long value = group.getAddend() + entry.localAddend();
 
-		CoffRelocationType type;
-		if (width == 4 && bitmask == 0xffffffff) {
-			type = CoffRelocationType_amd64.IMAGE_REL_AMD64_ADDR32;
+		RelocationExpressionKind kind = group.getExpression().getKind();
+		CoffRelocationType type = null;
+		if (kind == RelocationExpressionKind.ABSOLUTE) {
+			if (width == 4 && bitmask == 0xffffffffL) {
+				type = CoffRelocationType_amd64.IMAGE_REL_AMD64_ADDR32;
+			}
+			else if (width == 8 && bitmask == 0xffffffffffffffffL) {
+				type = CoffRelocationType_amd64.IMAGE_REL_AMD64_ADDR64;
+			}
 		}
-		else if (width == 8 && bitmask == 0xffffffffffffffffL) {
-			type = CoffRelocationType_amd64.IMAGE_REL_AMD64_ADDR64;
+		else if (kind == RelocationExpressionKind.PC_RELATIVE) {
+			if (width == 4 && bitmask == 0xffffffffL) {
+				int trailingBytes = Math.toIntExact(entry.localAddend());
+				type = relativePcType(trailingBytes);
+				value = group.getAddend() + width + trailingBytes;
+			}
 		}
-		else {
-			logUnknownRelocation(relTable.getSection(), relocation, log);
+
+		if (type == null) {
+			logUnknownRelocation(relTable.getSection(), group, gang, entry, log);
 			return;
 		}
 
-		patchBytes(bytes, addressSet, dc, relocation, value);
-		emit(relTable, addressSet, relocation, type, symbol);
-	}
-
-	private void process(CoffRelocationTable relTable, byte[] bytes,
-			AddressSetView addressSet, RelocationRelativePC relocation,
-			CoffSymbol symbol, MessageLog log) {
-		DataConverter dc = LittleEndianDataConverter.INSTANCE;
-		int width = relocation.getWidth();
-		long bitmask = relocation.getBitmask();
-		int trailingBytes = relocation.getTrailingBytes();
-
-		// MSVC encodes a RIP-relative field that is not the last operand (e.g. it is
-		// followed by an immediate) as IMAGE_REL_AMD64_REL32_N, whose reference point is
-		// the end of the instruction. The stored field is the bare symbol-relative addend;
-		// adding back width + trailingBytes cancels the next-instruction bias folded into
-		// the addend by the emitter, leaving exactly that value.
-		CoffRelocationType type = relativePcType(trailingBytes);
-		long value = relocation.getAddend() + width + trailingBytes;
-
-		if (width != 4 || bitmask != 0xffffffffL || type == null) {
-			logUnknownRelocation(relTable.getSection(), relocation, log);
-			return;
-		}
-
-		patchBytes(bytes, addressSet, dc, relocation, value);
-		emit(relTable, addressSet, relocation, type, symbol);
+		patchBytes(bytes, addressSet, entry.address(), dc, width, bitmask, value);
+		emit(relTable, addressSet, entry.address(), type, symbol);
 	}
 
 	private static CoffRelocationType relativePcType(int trailingBytes) {
@@ -127,8 +112,9 @@ public class X86_64_CoffRelocationTableBuilder implements CoffRelocationTableBui
 	}
 
 	private void emit(CoffRelocationTable relTable, AddressSetView addressSetView,
-			Relocation relocation, CoffRelocationType type, CoffSymbol symbol) {
-		int offset = (int) getOffsetWithinAddressSet(addressSetView, relocation.getAddress());
+			ghidra.program.model.address.Address address, CoffRelocationType type,
+			CoffSymbol symbol) {
+		int offset = (int) getOffsetWithinAddressSet(addressSetView, address);
 
 		relTable.add(offset, symbol, type);
 	}

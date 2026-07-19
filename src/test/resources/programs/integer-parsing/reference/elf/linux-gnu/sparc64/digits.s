@@ -1,0 +1,223 @@
+	.file	"digits.c"
+	.section	.ctf,"",@progbits
+.Lctf0:
+	.uahalf	0xdff2
+	.byte	0x4
+	.byte	0x2
+	.uaword	0
+	.uaword	0
+	.uaword	0x20
+	.uaword	0
+	.uaword	0
+	.uaword	0x4
+	.uaword	0x4
+	.uaword	0x8
+	.uaword	0x8
+	.uaword	0x10
+	.uaword	0x60
+	.uaword	0x9a
+	.uaword	0x5
+	.uaword	0x17
+	.uaword	0x17
+	.uaword	0x5
+	.uaword	0x1
+	.uaword	0x6000000
+	.uaword	0x4
+	.uaword	0x1000020
+	.uaword	0
+	.uaword	0x32000000
+	.uaword	0x1
+	.uaword	0x5
+	.uaword	0x6000000
+	.uaword	0x8
+	.uaword	0x40
+	.uaword	0
+	.uaword	0x12000000
+	.uaword	0
+	.uaword	0x2
+	.uaword	0x3
+	.uaword	0xa
+	.uaword	0
+	.uaword	0x32000000
+	.uaword	0x4
+	.asciz	""
+	.asciz	"int"
+	.asciz	"long unsigned int"
+	.asciz	"s_digits"
+	.asciz	"/mnt/c/Users/jblbe/Documents/Workspace/ghidra-delinker-extension/src/test/resources/programs/integer-parsing/src/digits.c"
+	.section	".text"
+.Ltext0:
+	.cfi_sections	.debug_frame
+	.file 1 "src/digits.c"
+	.global s_digits
+	.section	".rodata"
+	.align 4
+	.type	s_digits, #object
+	.size	s_digits, 40
+s_digits:
+	.long	0
+	.long	1
+	.long	2
+	.long	3
+	.long	4
+	.long	5
+	.long	6
+	.long	7
+	.long	8
+	.long	9
+	.section	".text"
+.Letext0:
+	.section	.debug_info,"",@progbits
+.Ldebug_info0:
+	.uaword	0x58
+	.uahalf	0x4
+	.uaword	.Ldebug_abbrev0
+	.byte	0x8
+	.uleb128 0x1
+	.uaword	.LASF1
+	.byte	0xc
+	.uaword	.LASF2
+	.uaword	.LASF3
+	.uaword	.Ldebug_line0
+	.uleb128 0x2
+	.uaword	0x40
+	.uaword	0x2d
+	.uleb128 0x3
+	.uaword	0x32
+	.byte	0x9
+	.byte	0
+	.uleb128 0x4
+	.uaword	0x1d
+	.uleb128 0x5
+	.byte	0x8
+	.byte	0x7
+	.uaword	.LASF0
+	.uleb128 0x6
+	.byte	0x4
+	.byte	0x5
+	.asciz	"int"
+	.uleb128 0x4
+	.uaword	0x39
+	.uleb128 0x7
+	.uaword	.LASF4
+	.byte	0x1
+	.byte	0x1
+	.byte	0xb
+	.uaword	0x2d
+	.uleb128 0x9
+	.byte	0x3
+	.uaxword	s_digits
+	.byte	0
+	.section	.debug_abbrev,"",@progbits
+.Ldebug_abbrev0:
+	.uleb128 0x1
+	.uleb128 0x11
+	.byte	0x1
+	.uleb128 0x25
+	.uleb128 0xe
+	.uleb128 0x13
+	.uleb128 0xb
+	.uleb128 0x3
+	.uleb128 0xe
+	.uleb128 0x1b
+	.uleb128 0xe
+	.uleb128 0x10
+	.uleb128 0x17
+	.byte	0
+	.byte	0
+	.uleb128 0x2
+	.uleb128 0x1
+	.byte	0x1
+	.uleb128 0x49
+	.uleb128 0x13
+	.uleb128 0x1
+	.uleb128 0x13
+	.byte	0
+	.byte	0
+	.uleb128 0x3
+	.uleb128 0x21
+	.byte	0
+	.uleb128 0x49
+	.uleb128 0x13
+	.uleb128 0x2f
+	.uleb128 0xb
+	.byte	0
+	.byte	0
+	.uleb128 0x4
+	.uleb128 0x26
+	.byte	0
+	.uleb128 0x49
+	.uleb128 0x13
+	.byte	0
+	.byte	0
+	.uleb128 0x5
+	.uleb128 0x24
+	.byte	0
+	.uleb128 0xb
+	.uleb128 0xb
+	.uleb128 0x3e
+	.uleb128 0xb
+	.uleb128 0x3
+	.uleb128 0xe
+	.byte	0
+	.byte	0
+	.uleb128 0x6
+	.uleb128 0x24
+	.byte	0
+	.uleb128 0xb
+	.uleb128 0xb
+	.uleb128 0x3e
+	.uleb128 0xb
+	.uleb128 0x3
+	.uleb128 0x8
+	.byte	0
+	.byte	0
+	.uleb128 0x7
+	.uleb128 0x34
+	.byte	0
+	.uleb128 0x3
+	.uleb128 0xe
+	.uleb128 0x3a
+	.uleb128 0xb
+	.uleb128 0x3b
+	.uleb128 0xb
+	.uleb128 0x39
+	.uleb128 0xb
+	.uleb128 0x49
+	.uleb128 0x13
+	.uleb128 0x3f
+	.uleb128 0x19
+	.uleb128 0x2
+	.uleb128 0x18
+	.byte	0
+	.byte	0
+	.byte	0
+	.section	.debug_aranges,"",@progbits
+	.uaword	0x1c
+	.uahalf	0x2
+	.uaword	.Ldebug_info0
+	.byte	0x8
+	.byte	0
+	.uahalf	0
+	.uahalf	0
+	.uaxword	0
+	.uaxword	0
+	.section	.debug_line,"",@progbits
+.Ldebug_line0:
+	.section	.debug_str,"MS",@progbits,1
+.LASF3:
+	.asciz	"/mnt/c/Users/jblbe/Documents/Workspace/ghidra-delinker-extension/src/test/resources/programs/integer-parsing"
+.LASF5:
+	.asciz	"unknown"
+.LASF4:
+	.asciz	"s_digits"
+.LASF2:
+	.asciz	"src/digits.c"
+.LASF6:
+	.asciz	"void"
+.LASF0:
+	.asciz	"long unsigned int"
+.LASF1:
+	.asciz	"GNU C17 12.2.0 -mcpu=v9 -gdwarf-4 -gctf"
+	.ident	"GCC: (Debian 12.2.0-13) 12.2.0"
+	.section	.note.GNU-stack,"",@progbits

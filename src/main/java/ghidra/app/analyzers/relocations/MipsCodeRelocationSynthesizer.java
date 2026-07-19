@@ -51,7 +51,7 @@ import ghidra.program.model.listing.Instruction;
 import ghidra.program.model.listing.Listing;
 import ghidra.program.model.listing.Program;
 import ghidra.program.model.mem.MemoryAccessException;
-import ghidra.program.model.relocobj.RelocationHighPair;
+import ghidra.program.model.relocobj.RelocationGroup;
 import ghidra.program.model.relocobj.RelocationTable;
 import ghidra.program.model.symbol.FlowType;
 import ghidra.program.model.symbol.Reference;
@@ -131,7 +131,7 @@ public class MipsCodeRelocationSynthesizer
 				logBranchDelaySlotWithHI16(address, getMessageLog());
 			}
 
-			relocationTable.addMIPS26(address, target.getAddress(), addend);
+			relocationTable.addMIPS26Group(address, target.getDestination(), addend);
 		}
 
 		private long computeAddend(Instruction instruction, OperandMatch match,
@@ -279,9 +279,11 @@ public class MipsCodeRelocationSynthesizer
 			}
 
 			RelocationTable relocationTable = getRelocationTable();
-			RelocationHighPair hiRel =
-				relocationTable.addHighPair(hi16.getAddress(), 4, 0xFFFF, target.getAddress());
-			relocationTable.addLowPair(lo16.getAddress(), 4, 0xFFFF, hiRel, lo16addend);
+			RelocationGroup hiGroup =
+				relocationTable.addHighPairGroup(hi16.getAddress(), 4, 0xFFFF,
+					target.getDestination());
+			relocationTable.addLowPairGroup(hiGroup.getGroupId(), lo16.getAddress(), 4, 0xFFFF,
+				lo16addend);
 			return true;
 		}
 
@@ -431,9 +433,8 @@ public class MipsCodeRelocationSynthesizer
 				isTransparent = false;
 			}
 
-			relocationTable.addRelativePC(address, match.getSize(), match.getBitmask(),
-				target.getAddress(),
-				addend, isTransparent);
+			relocationTable.addRelativePCGroup(address, match.getSize(), match.getBitmask(),
+				target.getDestination(), addend, isTransparent, 0);
 		}
 
 		@Override

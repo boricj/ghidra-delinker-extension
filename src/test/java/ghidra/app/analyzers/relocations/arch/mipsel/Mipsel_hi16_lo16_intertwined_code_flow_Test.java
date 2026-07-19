@@ -13,10 +13,12 @@
  */
 package ghidra.app.analyzers.relocations.arch.mipsel;
 
-import static org.junit.Assert.assertArrayEquals;
+import static ghidra.program.model.relocobj.RelocationGroupAssertions.assertGroups;
+import static ghidra.program.model.relocobj.RelocationGroupAssertions.entry;
+import static ghidra.program.model.relocobj.RelocationGroupAssertions.gang;
+import static ghidra.program.model.relocobj.RelocationGroupAssertions.group;
 import static org.junit.Assert.assertTrue;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -27,11 +29,10 @@ import ghidra.app.analyzers.RelocationTableSynthesizerAnalyzer;
 import ghidra.app.util.importer.MessageLog;
 import ghidra.program.model.address.AddressSetView;
 import ghidra.program.model.listing.Program;
-import ghidra.program.model.relocobj.ExpectRelocationHighPair;
-import ghidra.program.model.relocobj.ExpectRelocationLowPair;
-import ghidra.program.model.relocobj.ExpectRelocationRelativePC;
-import ghidra.program.model.relocobj.Relocation;
+import ghidra.program.model.relocobj.RelocationExpressionKind;
+import ghidra.program.model.relocobj.RelocationGroupAssertions.ExpectedGroup;
 import ghidra.program.model.relocobj.RelocationTable;
+import ghidra.program.model.relocobj.RelocationTypeTag;
 import ghidra.util.task.TaskMonitor;
 
 public class Mipsel_hi16_lo16_intertwined_code_flow_Test extends DelinkerIntegrationTest {
@@ -43,20 +44,17 @@ public class Mipsel_hi16_lo16_intertwined_code_flow_Test extends DelinkerIntegra
 		Map.entry("HELLO_WORLD", 0x10020),
 		Map.entry("GOODBYE_WORLD", 0x1002e));
 
-	private static final List<Relocation> EXPECTED_RELOCATIONS = List.of(
-		// .rel.text
-		new ExpectRelocationRelativePC(0x00010000, 4, 0xffff, TARGET_SYMBOLS.get("LAB_00010014"),
-			-4),
-		// 00000004  00000205 R_MIPS_HI16       00000000   .data
-		new ExpectRelocationHighPair(0x00010004, 4, 0xffff, TARGET_SYMBOLS.get("HELLO_WORLD")),
-		// 00000008  00000205 R_MIPS_HI16       00000000   .data
-		new ExpectRelocationHighPair(0x00010008, 4, 0xffff, TARGET_SYMBOLS.get("GOODBYE_WORLD")),
-		new ExpectRelocationRelativePC(0x0001000c, 4, 0xffff, TARGET_SYMBOLS.get("LAB_00010018"),
-			-4),
-		// 00000010  00000206 R_MIPS_LO16       00000000   .data
-		new ExpectRelocationLowPair(0x00010010, 4, 0xffff, TARGET_SYMBOLS.get("GOODBYE_WORLD"), 0),
-		// 00000014  00000206 R_MIPS_LO16       00000000   .data
-		new ExpectRelocationLowPair(0x00010014, 4, 0xffff, TARGET_SYMBOLS.get("HELLO_WORLD"), 0));
+	private static final List<ExpectedGroup> EXPECTED_GROUPS = List.of(
+		group(RelocationExpressionKind.PC_RELATIVE, TARGET_SYMBOLS.get("LAB_00010014"), -4,
+			gang(RelocationTypeTag.PC_RELATIVE, 4, 0xffff, entry(0x00010000, 0))),
+		group(RelocationExpressionKind.ABSOLUTE, TARGET_SYMBOLS.get("HELLO_WORLD"), 0,
+			gang(RelocationTypeTag.HIGH_PAIR, 4, 0xffff, entry(0x00010004, 0)),
+			gang(RelocationTypeTag.LOW_PAIR, 4, 0xffff, entry(0x00010014, 0))),
+		group(RelocationExpressionKind.ABSOLUTE, TARGET_SYMBOLS.get("GOODBYE_WORLD"), 0,
+			gang(RelocationTypeTag.HIGH_PAIR, 4, 0xffff, entry(0x00010008, 0)),
+			gang(RelocationTypeTag.LOW_PAIR, 4, 0xffff, entry(0x00010010, 0))),
+		group(RelocationExpressionKind.PC_RELATIVE, TARGET_SYMBOLS.get("LAB_00010018"), -4,
+			gang(RelocationTypeTag.PC_RELATIVE, 4, 0xffff, entry(0x0001000c, 0))));
 
 	@Override
 	protected String getProgramName() {
@@ -73,9 +71,6 @@ public class Mipsel_hi16_lo16_intertwined_code_flow_Test extends DelinkerIntegra
 		assertTrue(analyzer.added(program, set, TaskMonitor.DUMMY, log));
 
 		RelocationTable relocationTable = RelocationTable.get(program);
-		List<Relocation> actualRelocations = new ArrayList<>();
-		relocationTable.getRelocations(set).forEachRemaining(actualRelocations::add);
-
-		assertArrayEquals(EXPECTED_RELOCATIONS.toArray(), actualRelocations.toArray());
+		assertGroups(relocationTable, set, EXPECTED_GROUPS);
 	}
 }

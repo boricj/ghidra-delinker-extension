@@ -1,0 +1,484 @@
+ main
+
+ Timestamp is 69e90387 (Wed Apr 22 13:21:11 2026)
+
+ Preferred load address is 82000000
+
+ Start         Length     Name                   Class
+ 0001:00000000 000000c0H .idata$5                DATA
+ 0001:000000c0 00001a20H .rdata                  DATA
+ 0001:00001ae0 00000092H .rdata$debug            DATA
+ 0001:00001b78 000001a4H .xdata                  DATA
+ 0002:00000000 00000360H .pdata                  DATA
+ 0003:00000000 0000689cH .text                   CODE
+ 0003:0000689c 000002b0H .xidata                 CODE
+ 0003:00006b4c 00000000H .xedata                 CODE
+ 0004:00000000 00000004H .CRT$RIA                DATA
+ 0004:00000004 00000004H .CRT$RII20              DATA
+ 0004:00000008 00000004H .CRT$RIZ                DATA
+ 0004:0000000c 00000004H .CRT$XCA                DATA
+ 0004:00000010 00000004H .CRT$XCZ                DATA
+ 0004:00000014 00000004H .CRT$XIA                DATA
+ 0004:00000018 00000008H .CRT$XIC                DATA
+ 0004:00000020 00000004H .CRT$XIZ                DATA
+ 0004:00000024 00000004H .CRT$XPA                DATA
+ 0004:00000028 00000004H .CRT$XPXA               DATA
+ 0004:0000002c 00000004H .CRT$XPZ                DATA
+ 0004:00000030 00000004H .CRT$XTA                DATA
+ 0004:00000034 00000004H .CRT$XTZ                DATA
+ 0004:00000040 00000bd0H .data                   DATA
+ 0004:00000c20 0000041cH .bss                    DATA
+ 0005:00000000 00000028H .idata$2                DATA
+ 0005:00000028 00000014H .idata$3                DATA
+ 0005:0000003c 000000c0H .idata$4                DATA
+ 0005:000000fc 00000032H .idata$6                DATA
+ 0006:00000000 00000030H .XBLD$V                 DATA
+
+  Address         Publics by Value              Rva+Base       Lib:Object
+
+ 0000:00000000       ___safe_se_handler_count   00000000     <absolute>
+ 0000:00000000       ___safe_se_handler_table   00000000     <absolute>
+ 0001:00000000       __imp_XGetLanguage         82000400     XAPILIB:xam.xex@7978.0+1861.0
+ 0001:00000004       __imp_XGetAVPack           82000404     XAPILIB:xam.xex@7978.0+1861.0
+ 0001:00000008       __imp_XamTerminateTitle    82000408     XAPILIB:xam.xex@7978.0+1861.0
+ 0001:0000000c       __imp_XamShowMessageBoxUIEx 8200040c     XAPILIB:xam.xex@7978.0+1861.0
+ 0001:00000010       \177xam.xex@7978.0+1861_NULL_THUNK_DATA 82000410     XAPILIB:xam.xex@7978.0+1861.0
+ 0001:00000014       __imp___C_specific_handler 82000414     XBOXKRNL:xboxkrnl.exe@7978.0+1861.0
+ 0001:00000018       __imp_RtlEnterCriticalSection 82000418     XBOXKRNL:xboxkrnl.exe@7978.0+1861.0
+ 0001:0000001c       __imp_RtlLeaveCriticalSection 8200041c     XBOXKRNL:xboxkrnl.exe@7978.0+1861.0
+ 0001:00000020       __imp_KeBugCheck           82000420     XBOXKRNL:xboxkrnl.exe@7978.0+1861.0
+ 0001:00000024       __imp_TlsAlloc             82000424     XBOXKRNL:xboxkrnl.exe@7978.0+1861.0
+ 0001:00000028       __imp_TlsGetValue          82000428     XBOXKRNL:xboxkrnl.exe@7978.0+1861.0
+ 0001:0000002c       __imp_TlsSetValue          8200042c     XBOXKRNL:xboxkrnl.exe@7978.0+1861.0
+ 0001:00000030       __imp_TlsFree              82000430     XBOXKRNL:xboxkrnl.exe@7978.0+1861.0
+ 0001:00000034       __imp_RtlInitializeCriticalSectionAndSpinCount 82000434     XBOXKRNL:xboxkrnl.exe@7978.0+1861.0
+ 0001:00000038       __imp_NtClose              82000438     XBOXKRNL:xboxkrnl.exe@7978.0+1861.0
+ 0001:0000003c       __imp_NtCreateEvent        8200043c     XBOXKRNL:xboxkrnl.exe@7978.0+1861.0
+ 0001:00000040       __imp_ExGetXConfigSetting  82000440     XBOXKRNL:xboxkrnl.exe@7978.0+1861.0
+ 0001:00000044       __imp_XexCheckExecutablePrivilege 82000444     XBOXKRNL:xboxkrnl.exe@7978.0+1861.0
+ 0001:00000048       __imp_DbgPrint             82000448     XBOXKRNL:xboxkrnl.exe@7978.0+1861.0
+ 0001:0000004c       __imp_RtlInitAnsiString    8200044c     XBOXKRNL:xboxkrnl.exe@7978.0+1861.0
+ 0001:00000050       KeDebugMonitorData         82000450     XBOXKRNL:xboxkrnl.exe@7978.0+1861.0
+ 0001:00000050       __imp_KeDebugMonitorData   82000450     XBOXKRNL:xboxkrnl.exe@7978.0+1861.0
+ 0001:00000054       __imp_NtAllocateVirtualMemory 82000454     XBOXKRNL:xboxkrnl.exe@7978.0+1861.0
+ 0001:00000058       __imp_KeBugCheckEx         82000458     XBOXKRNL:xboxkrnl.exe@7978.0+1861.0
+ 0001:0000005c       __imp_KeGetCurrentProcessType 8200045c     XBOXKRNL:xboxkrnl.exe@7978.0+1861.0
+ 0001:00000060       __imp_NtFreeVirtualMemory  82000460     XBOXKRNL:xboxkrnl.exe@7978.0+1861.0
+ 0001:00000064       __imp_RtlCompareMemoryUlong 82000464     XBOXKRNL:xboxkrnl.exe@7978.0+1861.0
+ 0001:00000068       __imp_RtlInitializeCriticalSection 82000468     XBOXKRNL:xboxkrnl.exe@7978.0+1861.0
+ 0001:0000006c       __imp_NtQueryVirtualMemory 8200046c     XBOXKRNL:xboxkrnl.exe@7978.0+1861.0
+ 0001:00000070       __imp_RtlRaiseException    82000470     XBOXKRNL:xboxkrnl.exe@7978.0+1861.0
+ 0001:00000074       __imp_NtWaitForSingleObjectEx 82000474     XBOXKRNL:xboxkrnl.exe@7978.0+1861.0
+ 0001:00000078       __imp_NtWriteFile          82000478     XBOXKRNL:xboxkrnl.exe@7978.0+1861.0
+ 0001:0000007c       __imp_NtFlushBuffersFile   8200047c     XBOXKRNL:xboxkrnl.exe@7978.0+1861.0
+ 0001:00000080       ExLoadedCommandLine        82000480     XBOXKRNL:xboxkrnl.exe@7978.0+1861.0
+ 0001:00000080       __imp_ExLoadedCommandLine  82000480     XBOXKRNL:xboxkrnl.exe@7978.0+1861.0
+ 0001:00000084       __imp_RtlImageXexHeaderField 82000484     XBOXKRNL:xboxkrnl.exe@7978.0+1861.0
+ 0001:00000088       __imp_XexExecutableModuleHandle 82000488     XBOXKRNL:xboxkrnl.exe@7978.0+1861.0
+ 0001:00000088       XexExecutableModuleHandle  82000488     XBOXKRNL:xboxkrnl.exe@7978.0+1861.0
+ 0001:0000008c       __imp_HalReturnToFirmware  8200048c     XBOXKRNL:xboxkrnl.exe@7978.0+1861.0
+ 0001:00000090       __imp_RtlNtStatusToDosError 82000490     XBOXKRNL:xboxkrnl.exe@7978.0+1861.0
+ 0001:00000094       __imp_NtQueryFullAttributesFile 82000494     XBOXKRNL:xboxkrnl.exe@7978.0+1861.0
+ 0001:00000098       __imp_NtOpenFile           82000498     XBOXKRNL:xboxkrnl.exe@7978.0+1861.0
+ 0001:0000009c       __imp_NtSetInformationFile 8200049c     XBOXKRNL:xboxkrnl.exe@7978.0+1861.0
+ 0001:000000a0       __imp_NtQueryInformationFile 820004a0     XBOXKRNL:xboxkrnl.exe@7978.0+1861.0
+ 0001:000000a4       __imp_NtQueryVolumeInformationFile 820004a4     XBOXKRNL:xboxkrnl.exe@7978.0+1861.0
+ 0001:000000a8       __imp_NtQueryDirectoryFile 820004a8     XBOXKRNL:xboxkrnl.exe@7978.0+1861.0
+ 0001:000000ac       __imp_NtReadFileScatter    820004ac     XBOXKRNL:xboxkrnl.exe@7978.0+1861.0
+ 0001:000000b0       __imp_NtReadFile           820004b0     XBOXKRNL:xboxkrnl.exe@7978.0+1861.0
+ 0001:000000b4       __imp_NtCreateFile         820004b4     XBOXKRNL:xboxkrnl.exe@7978.0+1861.0
+ 0001:000000b8       __imp_NtDuplicateObject    820004b8     XBOXKRNL:xboxkrnl.exe@7978.0+1861.0
+ 0001:000000bc       \177xboxkrnl.exe@7978.0+1861_NULL_THUNK_DATA 820004bc     XBOXKRNL:xboxkrnl.exe@7978.0+1861.0
+ 0001:000000e0       NUM_ASCII_PROPERTIES       820004e0     main.obj
+ 0001:000000e8       s_ascii_properties         820004e8     main.obj
+ 0001:00000138       __newctype                 82000538     LIBCMT:ctype.obj
+ 0001:00000438       _wctype                    82000838     LIBCMT:ctype.obj
+ 0001:00000640       __newclmap                 82000a40     LIBCMT:ctype.obj
+ 0001:000007c0       __newcumap                 82000bc0     LIBCMT:ctype.obj
+ 0001:00000940       ??_C@_08JCCMCCIL@HH?3mm?3ss?$AA@ 82000d40     LIBCMT:strftime.obj
+ 0001:0000094c       ??_C@_0BE@CKGJFCPC@dddd?0?5MMMM?5dd?0?5yyyy?$AA@ 82000d4c     LIBCMT:strftime.obj
+ 0001:00000960       ??_C@_08BPBNCDIB@MM?1dd?1yy?$AA@ 82000d60     LIBCMT:strftime.obj
+ 0001:0000096c       ??_C@_02CJNFDJBF@PM?$AA@   82000d6c     LIBCMT:strftime.obj
+ 0001:00000970       ??_C@_02DEDBPAFC@AM?$AA@   82000d70     LIBCMT:strftime.obj
+ 0001:00000974       ??_C@_08EDHMEBNP@December?$AA@ 82000d74     LIBCMT:strftime.obj
+ 0001:00000980       ??_C@_08HCHEGEOA@November?$AA@ 82000d80     LIBCMT:strftime.obj
+ 0001:0000098c       ??_C@_07JJNFCEND@October?$AA@ 82000d8c     LIBCMT:strftime.obj
+ 0001:00000994       ??_C@_09BHHEALKD@September?$AA@ 82000d94     LIBCMT:strftime.obj
+ 0001:000009a0       ??_C@_06LBBHFDDG@August?$AA@ 82000da0     LIBCMT:strftime.obj
+ 0001:000009a8       ??_C@_04MIEPOIFP@July?$AA@ 82000da8     LIBCMT:strftime.obj
+ 0001:000009b0       ??_C@_04CNLMGBGM@June?$AA@ 82000db0     LIBCMT:strftime.obj
+ 0001:000009b8       ??_C@_05DMJDNLEJ@April?$AA@ 82000db8     LIBCMT:strftime.obj
+ 0001:000009c0       ??_C@_05HPCKOFNC@March?$AA@ 82000dc0     LIBCMT:strftime.obj
+ 0001:000009c8       ??_C@_08GNJGEPFN@February?$AA@ 82000dc8     LIBCMT:strftime.obj
+ 0001:000009d4       ??_C@_07CGJPFGJA@January?$AA@ 82000dd4     LIBCMT:strftime.obj
+ 0001:000009dc       ??_C@_03MKABNOCG@Dec?$AA@  82000ddc     LIBCMT:strftime.obj
+ 0001:000009e0       ??_C@_03JPJOFNIA@Nov?$AA@  82000de0     LIBCMT:strftime.obj
+ 0001:000009e4       ??_C@_03BMAOKBAD@Oct?$AA@  82000de4     LIBCMT:strftime.obj
+ 0001:000009e8       ??_C@_03GGCAPAJC@Sep?$AA@  82000de8     LIBCMT:strftime.obj
+ 0001:000009ec       ??_C@_03IFJFEIGA@Aug?$AA@  82000dec     LIBCMT:strftime.obj
+ 0001:000009f0       ??_C@_03LBGABGKK@Jul?$AA@  82000df0     LIBCMT:strftime.obj
+ 0001:000009f4       ??_C@_03IDFGHECI@Jun?$AA@  82000df4     LIBCMT:strftime.obj
+ 0001:000009f8       ??_C@_03CNMDKL@May?$AA@    82000df8     LIBCMT:strftime.obj
+ 0001:000009fc       ??_C@_03LEOLGMJP@Apr?$AA@  82000dfc     LIBCMT:strftime.obj
+ 0001:00000a00       ??_C@_03ODNJBKGA@Mar?$AA@  82000e00     LIBCMT:strftime.obj
+ 0001:00000a04       ??_C@_03HJBDCHOM@Feb?$AA@  82000e04     LIBCMT:strftime.obj
+ 0001:00000a08       ??_C@_03JIHJHPIE@Jan?$AA@  82000e08     LIBCMT:strftime.obj
+ 0001:00000a0c       ??_C@_08INBOOONO@Saturday?$AA@ 82000e0c     LIBCMT:strftime.obj
+ 0001:00000a18       ??_C@_06JECMNKMI@Friday?$AA@ 82000e18     LIBCMT:strftime.obj
+ 0001:00000a20       ??_C@_08HACCIKIA@Thursday?$AA@ 82000e20     LIBCMT:strftime.obj
+ 0001:00000a2c       ??_C@_09DLIGFAKA@Wednesday?$AA@ 82000e2c     LIBCMT:strftime.obj
+ 0001:00000a38       ??_C@_07BAAGCFCM@Tuesday?$AA@ 82000e38     LIBCMT:strftime.obj
+ 0001:00000a40       ??_C@_06JLEDEDGH@Monday?$AA@ 82000e40     LIBCMT:strftime.obj
+ 0001:00000a48       ??_C@_06OOPIFAJ@Sunday?$AA@ 82000e48     LIBCMT:strftime.obj
+ 0001:00000a50       ??_C@_03FEFJNEK@Sat?$AA@   82000e50     LIBCMT:strftime.obj
+ 0001:00000a54       ??_C@_03IDIOELNC@Fri?$AA@  82000e54     LIBCMT:strftime.obj
+ 0001:00000a58       ??_C@_03IOFIKPDN@Thu?$AA@  82000e58     LIBCMT:strftime.obj
+ 0001:00000a5c       ??_C@_03MHOMLAJA@Wed?$AA@  82000e5c     LIBCMT:strftime.obj
+ 0001:00000a60       ??_C@_03NAGEINEP@Tue?$AA@  82000e60     LIBCMT:strftime.obj
+ 0001:00000a64       ??_C@_03PDAGKDH@Mon?$AA@   82000e64     LIBCMT:strftime.obj
+ 0001:00000a68       ??_C@_03KOEHGMDN@Sun?$AA@  82000e68     LIBCMT:strftime.obj
+ 0001:00000a6c       __dnames                   82000e6c     LIBCMT:timeset.obj
+ 0001:00000a84       __mnames                   82000e84     LIBCMT:timeset.obj
+ 0001:00000aac       ??_C@_0P@GGKDKEEG@runtime?5error?5?$AA@ 82000eac     LIBCMT:crt0msg.obj
+ 0001:00000abc       ??_C@_01EEMJAFIK@?6?$AA@   82000ebc     LIBCMT:crt0msg.obj
+ 0001:00000ac0       ??_C@_0N@HLECBOKK@TLOSS?5error?6?$AA@ 82000ec0     LIBCMT:crt0msg.obj
+ 0001:00000ad0       ??_C@_0M@HDJFGCEL@SING?5error?6?$AA@ 82000ed0     LIBCMT:crt0msg.obj
+ 0001:00000adc       ??_C@_0O@KIGJDBC@DOMAIN?5error?6?$AA@ 82000edc     LIBCMT:crt0msg.obj
+ 0001:00000af0       ??_C@_0JJ@EHLNCKAH@R6034?6An?5application?5has?5made?5an@ 82000ef0     LIBCMT:crt0msg.obj
+ 0001:00000b90       ??_C@_0PF@DPHMCJHG@R6033?6?9?5Attempt?5to?5use?5MSIL?5code@ 82000f90     LIBCMT:crt0msg.obj
+ 0001:00000c88       ??_C@_0DB@EPBKACEI@R6032?6?9?5not?5enough?5space?5for?5loc@ 82001088     LIBCMT:crt0msg.obj
+ 0001:00000cc0       ??_C@_0GB@PENCOJEC@R6031?6?9?5Attempt?5to?5initialize?5th@ 820010c0     LIBCMT:crt0msg.obj
+ 0001:00000d24       ??_C@_0BN@IKJDJIOK@R6030?6?9?5CRT?5not?5initialized?6?$AA@ 82001124     LIBCMT:crt0msg.obj
+ 0001:00000d44       ??_C@_0CD@CBIHNGLM@R6028?6?9?5unable?5to?5initialize?5hea@ 82001144     LIBCMT:crt0msg.obj
+ 0001:00000d68       ??_C@_0DD@ELMNFFL@R6027?6?9?5not?5enough?5space?5for?5low@ 82001168     LIBCMT:crt0msg.obj
+ 0001:00000d9c       ??_C@_0DD@ECMPPDKJ@R6026?6?9?5not?5enough?5space?5for?5std@ 8200119c     LIBCMT:crt0msg.obj
+ 0001:00000dd0       ??_C@_0CE@BNOBCALH@R6025?6?9?5pure?5virtual?5function?5ca@ 820011d0     LIBCMT:crt0msg.obj
+ 0001:00000df4       ??_C@_0DD@KDOBPJEN@R6024?6?9?5not?5enough?5space?5for?5_on@ 820011f4     LIBCMT:crt0msg.obj
+ 0001:00000e28       ??_C@_0CH@IJNGNKLN@R6019?6?9?5unable?5to?5open?5console?5d@ 82001228     LIBCMT:crt0msg.obj
+ 0001:00000e50       ??_C@_0BP@BHAKIOHE@R6018?6?9?5unexpected?5heap?5error?6?$AA@ 82001250     LIBCMT:crt0msg.obj
+ 0001:00000e70       ??_C@_0CL@LODECPDF@R6017?6?9?5unexpected?5multithread?5l@ 82001270     LIBCMT:crt0msg.obj
+ 0001:00000e9c       ??_C@_0CK@NONBIDPM@R6016?6?9?5not?5enough?5space?5for?5thr@ 8200129c     LIBCMT:crt0msg.obj
+ 0001:00000ec8       ??_C@_0JE@GCAJEKJH@?6This?5application?5has?5requested?5@ 820012c8     LIBCMT:crt0msg.obj
+ 0001:00000f5c       ??_C@_0CK@DGPNILPC@R6009?6?9?5not?5enough?5space?5for?5env@ 8200135c     LIBCMT:crt0msg.obj
+ 0001:00000f88       ??_C@_0CI@MOMFHLKF@R6008?6?9?5not?5enough?5space?5for?5arg@ 82001388     LIBCMT:crt0msg.obj
+ 0001:00000fb0       ??_C@_0CL@GDCPDBDM@R6002?6?9?5floating?5point?5support?5n@ 820013b0     LIBCMT:crt0msg.obj
+ 0001:00000fe0       _XcptActTab                820013e0     LIBCMT:winxfltr.obj
+ 0001:00001ac8       ??_C@_0BI@IDEPEPLM@?$FLXAPI?5RETURN?5VALUE?$FN?5?$CFd?6?$AA@ 82001ec8     XAPILIB:xapi0.obj
+ 0003:00000000       print_number               82010000 f   main.obj
+ 0003:00000098       print_ascii_entry          82010098 f   main.obj
+ 0003:00000198       main                       82010198 f   main.obj
+ 0003:000002d8       isalpha                    820102d8 f i LIBCMT:_ctype.obj
+ 0003:000002f8       isupper                    820102f8 f i LIBCMT:_ctype.obj
+ 0003:00000318       islower                    82010318 f i LIBCMT:_ctype.obj
+ 0003:00000338       isdigit                    82010338 f i LIBCMT:_ctype.obj
+ 0003:00000358       isspace                    82010358 f i LIBCMT:_ctype.obj
+ 0003:00000378       ispunct                    82010378 f i LIBCMT:_ctype.obj
+ 0003:00000398       isalnum                    82010398 f i LIBCMT:_ctype.obj
+ 0003:000003b8       isprint                    820103b8 f i LIBCMT:_ctype.obj
+ 0003:000003d8       isgraph                    820103d8 f i LIBCMT:_ctype.obj
+ 0003:000003f8       iscntrl                    820103f8 f i LIBCMT:_ctype.obj
+ 0003:00000418       putchar                    82010418 f   LIBCMT:fputchar.obj
+ 0003:00000450       __pctype_func              82010450 f   LIBCMT:ctype.obj
+ 0003:00000468       putc                       82010468 f   LIBCMT:fputc.obj
+ 0003:00000690       __iob_func                 82010690 f   LIBCMT:_file.obj
+ 0003:000006a0       __initstdio                820106a0 f   LIBCMT:_file.obj
+ 0003:000007c8       __endstdio                 820107c8 f   LIBCMT:_file.obj
+ 0003:00000808       _lock_file                 82010808 f   LIBCMT:_file.obj
+ 0003:00000878       _lock_file2                82010878 f   LIBCMT:_file.obj
+ 0003:000008c8       _unlock_file               820108c8 f   LIBCMT:_file.obj
+ 0003:00000908       _unlock_file2              82010908 f   LIBCMT:_file.obj
+ 0003:00000930       __initmbctable             82010930 f   LIBCMT:mbctype.obj
+ 0003:00000960       _flsbuf                    82010960 f   LIBCMT:_flsbuf.obj
+ 0003:00000b38       _ioinit                    82010b38 f   LIBCMT:ioinit.obj
+ 0003:00000c08       _ioterm                    82010c08 f   LIBCMT:ioinit.obj
+ 0003:00000c68       _fileno                    82010c68 f   LIBCMT:fileno.obj
+ 0003:00000cc0       _initp_misc_invarg         82010cc0 f   LIBCMT:invarg.obj
+ 0003:00000cd0       _invalid_parameter         82010cd0 f   LIBCMT:invarg.obj
+ 0003:00000d18       _get_errno_from_oserr      82010d18 f   LIBCMT:dosmap.obj
+ 0003:00000d88       _errno                     82010d88 f   LIBCMT:dosmap.obj
+ 0003:00000dc0       __doserrno                 82010dc0 f   LIBCMT:dosmap.obj
+ 0003:00000df8       _dosmaperr                 82010df8 f   LIBCMT:dosmap.obj
+ 0003:00000e70       __savegprlr                82010e70 f   LIBCMT:crtgpr.obj
+ 0003:00000e70       __savegprlr_14             82010e70     LIBCMT:crtgpr.obj
+ 0003:00000e74       __savegprlr_15             82010e74     LIBCMT:crtgpr.obj
+ 0003:00000e78       __savegprlr_16             82010e78     LIBCMT:crtgpr.obj
+ 0003:00000e7c       __savegprlr_17             82010e7c     LIBCMT:crtgpr.obj
+ 0003:00000e80       __savegprlr_18             82010e80     LIBCMT:crtgpr.obj
+ 0003:00000e84       __savegprlr_19             82010e84     LIBCMT:crtgpr.obj
+ 0003:00000e88       __savegprlr_20             82010e88     LIBCMT:crtgpr.obj
+ 0003:00000e8c       __savegprlr_21             82010e8c     LIBCMT:crtgpr.obj
+ 0003:00000e90       __savegprlr_22             82010e90     LIBCMT:crtgpr.obj
+ 0003:00000e94       __savegprlr_23             82010e94     LIBCMT:crtgpr.obj
+ 0003:00000e98       __savegprlr_24             82010e98     LIBCMT:crtgpr.obj
+ 0003:00000e9c       __savegprlr_25             82010e9c     LIBCMT:crtgpr.obj
+ 0003:00000ea0       __savegprlr_26             82010ea0     LIBCMT:crtgpr.obj
+ 0003:00000ea4       __savegprlr_27             82010ea4     LIBCMT:crtgpr.obj
+ 0003:00000ea8       __savegprlr_28             82010ea8     LIBCMT:crtgpr.obj
+ 0003:00000eac       __savegprlr_29             82010eac     LIBCMT:crtgpr.obj
+ 0003:00000eb0       __savegprlr_30             82010eb0     LIBCMT:crtgpr.obj
+ 0003:00000eb4       __savegprlr_31             82010eb4     LIBCMT:crtgpr.obj
+ 0003:00000ec0       __restgprlr_14             82010ec0     LIBCMT:crtgpr.obj
+ 0003:00000ec0       __restgprlr                82010ec0 f   LIBCMT:crtgpr.obj
+ 0003:00000ec4       __restgprlr_15             82010ec4     LIBCMT:crtgpr.obj
+ 0003:00000ec8       __restgprlr_16             82010ec8     LIBCMT:crtgpr.obj
+ 0003:00000ecc       __restgprlr_17             82010ecc     LIBCMT:crtgpr.obj
+ 0003:00000ed0       __restgprlr_18             82010ed0     LIBCMT:crtgpr.obj
+ 0003:00000ed4       __restgprlr_19             82010ed4     LIBCMT:crtgpr.obj
+ 0003:00000ed8       __restgprlr_20             82010ed8     LIBCMT:crtgpr.obj
+ 0003:00000edc       __restgprlr_21             82010edc     LIBCMT:crtgpr.obj
+ 0003:00000ee0       __restgprlr_22             82010ee0     LIBCMT:crtgpr.obj
+ 0003:00000ee4       __restgprlr_23             82010ee4     LIBCMT:crtgpr.obj
+ 0003:00000ee8       __restgprlr_24             82010ee8     LIBCMT:crtgpr.obj
+ 0003:00000eec       __restgprlr_25             82010eec     LIBCMT:crtgpr.obj
+ 0003:00000ef0       __restgprlr_26             82010ef0     LIBCMT:crtgpr.obj
+ 0003:00000ef4       __restgprlr_27             82010ef4     LIBCMT:crtgpr.obj
+ 0003:00000ef8       __restgprlr_28             82010ef8     LIBCMT:crtgpr.obj
+ 0003:00000efc       __restgprlr_29             82010efc     LIBCMT:crtgpr.obj
+ 0003:00000f00       __restgprlr_30             82010f00     LIBCMT:crtgpr.obj
+ 0003:00000f04       __restgprlr_31             82010f04     LIBCMT:crtgpr.obj
+ 0003:00000f14       __C_ExecuteTerminationHandler 82010f14     LIBCMT:crtgpr.obj
+ 0003:00000f14       __C_ExecuteExceptionFilter 82010f14     LIBCMT:crtgpr.obj
+ 0003:00000f20       calloc                     82010f20 f   LIBCMT:calloc.obj
+ 0003:00000f88       free                       82010f88 f   LIBCMT:free.obj
+ 0003:00000ff0       _fcloseall                 82010ff0 f   LIBCMT:closeall.obj
+ 0003:000010d8       _xbox_fatal_exit           820110d8 f   LIBCMT:crt0dat.obj
+ 0003:000010d8       __crtExitProcess           820110d8 f   LIBCMT:crt0dat.obj
+ 0003:000010e0       _amsg_exit                 820110e0 f   LIBCMT:crt0dat.obj
+ 0003:00001128       _initterm                  82011128 f   LIBCMT:crt0dat.obj
+ 0003:00001350       _exit                      82011350 f   LIBCMT:crt0dat.obj
+ 0003:00001360       _cexit                     82011360 f   LIBCMT:crt0dat.obj
+ 0003:00001370       _init_pointers             82011370 f   LIBCMT:crt0dat.obj
+ 0003:000013d0       _flush                     820113d0 f   LIBCMT:fflush.obj
+ 0003:00001468       _fflush_nolock             82011468 f   LIBCMT:fflush.obj
+ 0003:000016c0       _flushall                  820116c0 f   LIBCMT:fflush.obj
+ 0003:000016c8       _mtinitlocks               820116c8 f   LIBCMT:mlock.obj
+ 0003:00001748       _mtdeletelocks             82011748 f   LIBCMT:mlock.obj
+ 0003:000017b8       _unlock                    820117b8 f   LIBCMT:mlock.obj
+ 0003:000017d8       _mtinitlocknum             820117d8 f   LIBCMT:mlock.obj
+ 0003:00001918       _lock                      82011918 f   LIBCMT:mlock.obj
+ 0003:00001978       malloc                     82011978 f   LIBCMT:malloc.obj
+ 0003:00001a40       memcpy                     82011a40 f   LIBCMT:memcpyp.obj
+ 0003:00001ec8       _blkmov                    82011ec8 f   LIBCMT:memcpyp.obj
+ 0003:00001f70       _lseeki64_nolock           82011f70 f   LIBCMT:lseeki64.obj
+ 0003:00002040       _lseeki64                  82012040 f   LIBCMT:lseeki64.obj
+ 0003:000021d8       _write_nolock              820121d8 f   LIBCMT:write.obj
+ 0003:00002438       _write                     82012438 f   LIBCMT:write.obj
+ 0003:000025c8       _getbuf                    820125c8 f   LIBCMT:_getbuf.obj
+ 0003:00002650       _isatty                    82012650 f   LIBCMT:isatty.obj
+ 0003:00002658       __crt_debugger_hook        82012658 f   LIBCMT:dbghook.obj
+ 0003:00002670       memset                     82012670 f   LIBCMT:memsetp.obj
+ 0003:00002710       _mtterm                    82012710 f   LIBCMT:tidtable.obj
+ 0003:00002758       _getptd_noexit             82012758 f   LIBCMT:tidtable.obj
+ 0003:00002828       _getptd                    82012828 f   LIBCMT:tidtable.obj
+ 0003:00002868       _freefls                   82012868 f   LIBCMT:tidtable.obj
+ 0003:00002928       _freeptd                   82012928 f   LIBCMT:tidtable.obj
+ 0003:00002998       _mtinit                    82012998 f   LIBCMT:tidtable.obj
+ 0003:00002a68       _calloc_impl               82012a68 f   LIBCMT:calloc_impl.obj
+ 0003:00002b40       _fclose_nolock             82012b40 f   LIBCMT:fclose.obj
+ 0003:00002bf8       fclose                     82012bf8 f   LIBCMT:fclose.obj
+ 0003:00002d08       _NMSG_WRITE                82012d08 f   LIBCMT:crt0msg.obj
+ 0003:00002d50       _FF_MSGBANNER              82012d50 f   LIBCMT:crt0msg.obj
+ 0003:00002d88       ?terminate@@YAXXZ          82012d88 f   LIBCMT:hooks.obj
+ 0003:00002de0       _initp_eh_hooks            82012de0 f   LIBCMT:hooks.obj
+ 0003:00002df8       _initp_misc_winxfltr       82012df8 f   LIBCMT:winxfltr.obj
+ 0003:00002e00       _initp_misc_purevirt       82012e00 f   LIBCMT:inithelp.obj
+ 0003:00002e10       _initp_misc_initcrit       82012e10 f   LIBCMT:initcrit.obj
+ 0003:00002e28       __crtInitCritSecAndSpinCount 82012e28 f   LIBCMT:initcrit.obj
+ 0003:00002ec0       _initp_heap_handler        82012ec0 f   LIBCMT:handler.obj
+ 0003:00002ed0       _callnewh                  82012ed0 f   LIBCMT:handler.obj
+ 0003:00002f20       _commit                    82012f20 f   LIBCMT:commit.obj
+ 0003:000030a8       _free_osfhnd               820130a8 f   LIBCMT:osfinfo.obj
+ 0003:00003140       _get_osfhandle             82013140 f   LIBCMT:osfinfo.obj
+ 0003:00003210       __lock_fhandle             82013210 f   LIBCMT:osfinfo.obj
+ 0003:00003310       _unlock_fhandle            82013310 f   LIBCMT:osfinfo.obj
+ 0003:00003338       _mtxthreadnotification     82013338 f   LIBCMT:thread.obj
+ 0003:000033a0       _close_nolock              820133a0 f   LIBCMT:close.obj
+ 0003:00003488       _close                     82013488 f   LIBCMT:close.obj
+ 0003:00003600       _freebuf                   82013600 f   LIBCMT:_freebuf.obj
+ 0003:00003668       XapiShowErrorAndWait       82013668 f   XAPILIB:xapi0.obj
+ 0003:00003720       XapiLookupString           82013720 f   XAPILIB:xapi0.obj
+ 0003:000037a0       XapiPAL50Incompatible      820137a0 f   XAPILIB:xapi0.obj
+ 0003:00003988       mainCRTStartup             82013988 f   XAPILIB:xapi0.obj
+ 0003:00003b68       OutputDebugStringA         82013b68 f   XAPILIB:outputdebugstring.obj
+ 0003:00003ba8       UnhandledExceptionFilter   82013ba8 f   XAPILIB:xthread.obj
+ 0003:00003c38       GetLastError               82013c38 f   XAPILIB:getlasterror.obj
+ 0003:00003c40       RtlpCreateUnCommittedRange 82013c40 f   XAPILIB:rtlheap.obj
+ 0003:00003e18       RtlpInsertUnCommittedPages 82013e18 f   XAPILIB:rtlheap.obj
+ 0003:00003f38       RtlpFindAndCommitPages     82013f38 f   XAPILIB:rtlheap.obj
+ 0003:000041c8       RtlpCoalesceFreeBlocks     820141c8 f   XAPILIB:rtlheap.obj
+ 0003:000045d0       RtlpInsertFreeBlock        820145d0 f   XAPILIB:rtlheap.obj
+ 0003:00004708       RtlpInitializeHeapSegment  82014708 f   XAPILIB:rtlheap.obj
+ 0003:00004870       RtlpExtendHeap             82014870 f   XAPILIB:rtlheap.obj
+ 0003:00004ab0       RtlpDeCommitFreeBlock      82014ab0 f   XAPILIB:rtlheap.obj
+ 0003:00004e18       RtlCreateHeap              82014e18 f   XAPILIB:rtlheap.obj
+ 0003:000053c8       RtlAllocateHeap            820153c8 f   XAPILIB:rtlheap.obj
+ 0003:00005c90       RtlFreeHeap                82015c90 f   XAPILIB:rtlheap.obj
+ 0003:00005f80       GetProcessHeap             82015f80 f   XAPILIB:getprocessheap.obj
+ 0003:00005f90       SetFilePointer             82015f90 f   XAPILIB:setfilepointer.obj
+ 0003:00006100       WriteFile                  82016100 f   XAPILIB:writefile.obj
+ 0003:00006228       SetLastError               82016228 f   XAPILIB:setlasterror.obj
+ 0003:00006230       GetCurrentThreadId         82016230 f   XAPILIB:getcurrentthreadid.obj
+ 0003:00006240       XapiCallThreadNotifyRoutines 82016240 f   XAPILIB:xregisterthreadnotifyroutine.obj
+ 0003:000062a8       XRegisterThreadNotifyRoutine 820162a8 f   XAPILIB:xregisterthreadnotifyroutine.obj
+ 0003:00006318       FlushFileBuffers           82016318 f   XAPILIB:flushfilebuffers.obj
+ 0003:00006358       CloseHandle                82016358 f   XAPILIB:closehandle.obj
+ 0003:000063a0       XGetOverlappedResult       820163a0 f   XAPILIB:xgetoverlappedresult.obj
+ 0003:00006438       GetCommandLineA            82016438 f   XAPILIB:cmdline.obj
+ 0003:00006448       _cinit                     82016448 f   XAPILIB:xapi0dat.obj
+ 0003:00006528       _rtinit                    82016528 f   XAPILIB:xapi0dat.obj
+ 0003:000065a0       XapiInitHeap               820165a0 f   XAPILIB:xapiinit.obj
+ 0003:00006670       XapiInitProcess            82016670 f   XAPILIB:xapiinit.obj
+ 0003:000066c8       RtlOutputDebugString       820166c8 f   XAPILIB:rtldbg.obj
+ 0003:000066d8       RtlSetLastError            820166d8 f   XAPILIB:rtlerror.obj
+ 0003:000066f0       RtlSetLastNTError          820166f0 f   XAPILIB:rtlerror.obj
+ 0003:00006728       RtlGetLastError            82016728 f   XAPILIB:rtlerror.obj
+ 0003:00006748       WaitForSingleObject        82016748 f   XAPILIB:waitforsingleobject.obj
+ 0003:00006750       RtlDebugPrintHelper        82016750 f   XAPILIB:rtldbghelp.obj
+ 0003:00006758       WaitForSingleObjectEx      82016758 f   XAPILIB:waitforsingleobjectex.obj
+ 0003:000067c0       XapiFormatTimeOut          820167c0 f   XAPILIB:xapiformattimeout.obj
+ 0003:000067e0       memmove                    820167e0 f   LIBCMT:memmovep.obj
+ 0003:0000689c       XamShowMessageBoxUIEx      8201689c f   XAPILIB:xam.xex@7978.0+1861.0
+ 0003:000068ac       XGetLanguage               820168ac f   XAPILIB:xam.xex@7978.0+1861.0
+ 0003:000068bc       XGetAVPack                 820168bc f   XAPILIB:xam.xex@7978.0+1861.0
+ 0003:000068cc       XamTerminateTitle          820168cc f   XAPILIB:xam.xex@7978.0+1861.0
+ 0003:000068dc       __C_specific_handler       820168dc f   XBOXKRNL:xboxkrnl.exe@7978.0+1861.0
+ 0003:000068ec       RtlEnterCriticalSection    820168ec f   XBOXKRNL:xboxkrnl.exe@7978.0+1861.0
+ 0003:000068fc       RtlLeaveCriticalSection    820168fc f   XBOXKRNL:xboxkrnl.exe@7978.0+1861.0
+ 0003:0000690c       KeBugCheck                 8201690c f   XBOXKRNL:xboxkrnl.exe@7978.0+1861.0
+ 0003:0000691c       TlsAlloc                   8201691c f   XBOXKRNL:xboxkrnl.exe@7978.0+1861.0
+ 0003:0000692c       TlsGetValue                8201692c f   XBOXKRNL:xboxkrnl.exe@7978.0+1861.0
+ 0003:0000693c       TlsSetValue                8201693c f   XBOXKRNL:xboxkrnl.exe@7978.0+1861.0
+ 0003:0000694c       TlsFree                    8201694c f   XBOXKRNL:xboxkrnl.exe@7978.0+1861.0
+ 0003:0000695c       RtlInitializeCriticalSectionAndSpinCount 8201695c f   XBOXKRNL:xboxkrnl.exe@7978.0+1861.0
+ 0003:0000696c       NtClose                    8201696c f   XBOXKRNL:xboxkrnl.exe@7978.0+1861.0
+ 0003:0000697c       NtCreateEvent              8201697c f   XBOXKRNL:xboxkrnl.exe@7978.0+1861.0
+ 0003:0000698c       ExGetXConfigSetting        8201698c f   XBOXKRNL:xboxkrnl.exe@7978.0+1861.0
+ 0003:0000699c       XexCheckExecutablePrivilege 8201699c f   XBOXKRNL:xboxkrnl.exe@7978.0+1861.0
+ 0003:000069ac       DbgPrint                   820169ac f   XBOXKRNL:xboxkrnl.exe@7978.0+1861.0
+ 0003:000069bc       RtlInitAnsiString          820169bc f   XBOXKRNL:xboxkrnl.exe@7978.0+1861.0
+ 0003:000069cc       NtAllocateVirtualMemory    820169cc f   XBOXKRNL:xboxkrnl.exe@7978.0+1861.0
+ 0003:000069dc       KeBugCheckEx               820169dc f   XBOXKRNL:xboxkrnl.exe@7978.0+1861.0
+ 0003:000069ec       KeGetCurrentProcessType    820169ec f   XBOXKRNL:xboxkrnl.exe@7978.0+1861.0
+ 0003:000069fc       NtFreeVirtualMemory        820169fc f   XBOXKRNL:xboxkrnl.exe@7978.0+1861.0
+ 0003:00006a0c       RtlCompareMemoryUlong      82016a0c f   XBOXKRNL:xboxkrnl.exe@7978.0+1861.0
+ 0003:00006a1c       RtlInitializeCriticalSection 82016a1c f   XBOXKRNL:xboxkrnl.exe@7978.0+1861.0
+ 0003:00006a2c       NtQueryVirtualMemory       82016a2c f   XBOXKRNL:xboxkrnl.exe@7978.0+1861.0
+ 0003:00006a3c       RtlRaiseException          82016a3c f   XBOXKRNL:xboxkrnl.exe@7978.0+1861.0
+ 0003:00006a4c       NtWaitForSingleObjectEx    82016a4c f   XBOXKRNL:xboxkrnl.exe@7978.0+1861.0
+ 0003:00006a5c       NtWriteFile                82016a5c f   XBOXKRNL:xboxkrnl.exe@7978.0+1861.0
+ 0003:00006a6c       NtFlushBuffersFile         82016a6c f   XBOXKRNL:xboxkrnl.exe@7978.0+1861.0
+ 0003:00006a7c       RtlImageXexHeaderField     82016a7c f   XBOXKRNL:xboxkrnl.exe@7978.0+1861.0
+ 0003:00006a8c       HalReturnToFirmware        82016a8c f   XBOXKRNL:xboxkrnl.exe@7978.0+1861.0
+ 0003:00006a9c       RtlNtStatusToDosError      82016a9c f   XBOXKRNL:xboxkrnl.exe@7978.0+1861.0
+ 0003:00006aac       NtQueryFullAttributesFile  82016aac f   XBOXKRNL:xboxkrnl.exe@7978.0+1861.0
+ 0003:00006abc       NtOpenFile                 82016abc f   XBOXKRNL:xboxkrnl.exe@7978.0+1861.0
+ 0003:00006acc       NtSetInformationFile       82016acc f   XBOXKRNL:xboxkrnl.exe@7978.0+1861.0
+ 0003:00006adc       NtQueryInformationFile     82016adc f   XBOXKRNL:xboxkrnl.exe@7978.0+1861.0
+ 0003:00006aec       NtQueryVolumeInformationFile 82016aec f   XBOXKRNL:xboxkrnl.exe@7978.0+1861.0
+ 0003:00006afc       NtQueryDirectoryFile       82016afc f   XBOXKRNL:xboxkrnl.exe@7978.0+1861.0
+ 0003:00006b0c       NtReadFileScatter          82016b0c f   XBOXKRNL:xboxkrnl.exe@7978.0+1861.0
+ 0003:00006b1c       NtReadFile                 82016b1c f   XBOXKRNL:xboxkrnl.exe@7978.0+1861.0
+ 0003:00006b2c       NtCreateFile               82016b2c f   XBOXKRNL:xboxkrnl.exe@7978.0+1861.0
+ 0003:00006b3c       NtDuplicateObject          82016b3c f   XBOXKRNL:xboxkrnl.exe@7978.0+1861.0
+ 0004:00000000       __xri_a                    82020000     XAPILIB:xapi0dat.obj
+ 0004:00000004       __pioinit                  82020004     LIBCMT:ioinit.obj
+ 0004:00000008       __xri_z                    82020008     XAPILIB:xapi0dat.obj
+ 0004:0000000c       __xc_a                     8202000c     XAPILIB:xapi0dat.obj
+ 0004:00000010       __xc_z                     82020010     XAPILIB:xapi0dat.obj
+ 0004:00000014       __xi_a                     82020014     XAPILIB:xapi0dat.obj
+ 0004:00000020       __xi_z                     82020020     XAPILIB:xapi0dat.obj
+ 0004:00000024       __xp_a                     82020024     LIBCMT:crt0init.obj
+ 0004:0000002c       __xp_z                     8202002c     LIBCMT:crt0init.obj
+ 0004:00000030       __xt_a                     82020030     LIBCMT:crt0init.obj
+ 0004:00000034       __xt_z                     82020034     LIBCMT:crt0init.obj
+ 0004:00000040       COLUMNS                    82020040     main.obj
+ 0004:00000044       _pctype                    82020044     LIBCMT:ctype.obj
+ 0004:00000048       _pwctype                   82020048     LIBCMT:ctype.obj
+ 0004:00000050       __clocalestr               82020050     LIBCMT:nlsdata2.obj
+ 0004:00000058       __initiallocinfo           82020058     LIBCMT:nlsdata2.obj
+ 0004:00000130       __ptlocinfo                82020130     LIBCMT:nlsdata2.obj
+ 0004:00000134       __lc_clike                 82020134     LIBCMT:nlsdata2.obj
+ 0004:00000138       __initiallocalestructinfo  82020138     LIBCMT:nlsdata2.obj
+ 0004:00000140       _iob                       82020140     LIBCMT:_file.obj
+ 0004:000003c0       _mbctype                   820203c0     LIBCMT:mbctype.obj
+ 0004:000004c8       _mbcasemap                 820204c8     LIBCMT:mbctype.obj
+ 0004:000005c8       __ptmbcinfo                820205c8     LIBCMT:mbctype.obj
+ 0004:000005d0       __lc_time_c                820205d0     LIBCMT:strftime.obj
+ 0004:00000688       __lc_time_curr             82020688     LIBCMT:strftime.obj
+ 0004:0000068c       __lconv_static_decimal     8202068c     LIBCMT:lconv.obj
+ 0004:00000690       __lconv_c                  82020690     LIBCMT:lconv.obj
+ 0004:000006c0       __lconv                    820206c0     LIBCMT:lconv.obj
+ 0004:000006c8       _pioterm                   820206c8     LIBCMT:ioinit.obj
+ 0004:000006d0       __badioinfo                820206d0     LIBCMT:ioinit.obj
+ 0004:00000890       _aexit_rtn                 82020890     LIBCMT:crt0dat.obj
+ 0004:000009c0       _timezone                  820209c0     LIBCMT:timeset.obj
+ 0004:000009c4       _daylight                  820209c4     LIBCMT:timeset.obj
+ 0004:000009c8       _dstbias                   820209c8     LIBCMT:timeset.obj
+ 0004:00000a50       _tzname                    82020a50     LIBCMT:timeset.obj
+ 0004:00000a70       __flsindex                 82020a70     LIBCMT:tidtable.obj
+ 0004:00000a74       __tlsindex                 82020a74     LIBCMT:tidtable.obj
+ 0004:00000b30       _First_FPE_Indx            82020b30     LIBCMT:winxfltr.obj
+ 0004:00000b34       _Num_FPE                   82020b34     LIBCMT:winxfltr.obj
+ 0004:00000b38       _XcptActTabSize            82020b38     LIBCMT:winxfltr.obj
+ 0004:00000b3c       _XcptActTabCount           82020b3c     LIBCMT:winxfltr.obj
+ 0004:00000b40       _lpdays                    82020b40     LIBCMT:days.obj
+ 0004:00000b74       _days                      82020b74     LIBCMT:days.obj
+ 0004:00000ba8       MmHeapSegmentReserve       82020ba8     XAPILIB:rtlheap.obj
+ 0004:00000bac       MmHeapSegmentCommit        82020bac     XAPILIB:rtlheap.obj
+ 0004:00000bb0       MmHeapDeCommitTotalFreeThreshold 82020bb0     XAPILIB:rtlheap.obj
+ 0004:00000bb4       MmHeapDeCommitFreeBlockThreshold 82020bb4     XAPILIB:rtlheap.obj
+ 0004:00000bb8       XapiProcessLock            82020bb8     XAPILIB:xregisterthreadnotifyroutine.obj
+ 0004:00000bd4       XapiThreadNotifyRoutineList 82020bd4     XAPILIB:xregisterthreadnotifyroutine.obj
+ 0004:00000bdc       _defaultFileIoHooks        82020bdc     XAPILIB:fileiohooks.obj
+ 0004:00000c0c       _fileIoHooks               82020c0c     XAPILIB:fileiohooks.obj
+ 0004:00000c20       __lc_handle                82020c20     LIBCMT:nlsdata2.obj
+ 0004:00000c38       __lc_codepage              82020c38     LIBCMT:nlsdata2.obj
+ 0004:00000c3c       __lc_collate_cp            82020c3c     LIBCMT:nlsdata2.obj
+ 0004:00000c40       _cflush                    82020c40     LIBCMT:_file.obj
+ 0004:00000c44       __mbulinfo                 82020c44     LIBCMT:mbctype.obj
+ 0004:00000c50       __initialmbcinfo           82020c50     LIBCMT:mbctype.obj
+ 0004:00000c54       __mbcodepage               82020c54     LIBCMT:mbctype.obj
+ 0004:00000c58       __ismbcodepage             82020c58     LIBCMT:mbctype.obj
+ 0004:00000c5c       __mblcid                   82020c5c     LIBCMT:mbctype.obj
+ 0004:00000c60       __lconv_static_null        82020c60     LIBCMT:lconv.obj
+ 0004:00000c64       _umaskval                  82020c64     LIBCMT:crt0dat.obj
+ 0004:00000c68       _exitflag                  82020c68     LIBCMT:crt0dat.obj
+ 0004:00000c6c       _C_Termination_Done        82020c6c     LIBCMT:crt0dat.obj
+ 0004:00000c70       _C_Exit_Done               82020c70     LIBCMT:crt0dat.obj
+ 0004:00000ec4       ?__pInconsistency@@3P6AXXZA 82020ec4     LIBCMT:hooks.obj
+ 0004:00000ec8       __pPurecall                82020ec8     LIBCMT:inithelp.obj
+ 0004:00000ed0       ?_pnhHeap@@3P6AHI@ZA       82020ed0     LIBCMT:handler.obj
+ 0004:00000ed4       _newmode                   82020ed4     LIBCMT:_newmode.obj
+ 0004:00000ed8       _CRTCallExitThread         82020ed8     XAPILIB:callexitthread.obj
+ 0004:00000edc       _CRTCommandLineArgs        82020edc     XAPILIB:callexitthread.obj
+ 0004:00000ee0       _FPmtterm                  82020ee0     <common>
+ 0004:00000ee4       _FPmtinit                  82020ee4     <common>
+ 0004:00000ee8       _debugger_hook_dummy       82020ee8     <common>
+ 0004:00000eec       __onexitend                82020eec     <common>
+ 0004:00000ef0       __onexitbegin              82020ef0     <common>
+ 0004:00000ef4       __mbctype_initialized      82020ef4     <common>
+ 0004:00000ef8       _FPinit                    82020ef8     <common>
+ 0004:00000efc       __pInvalidArgHandler       82020efc     <common>
+ 0004:00000f00       _nhandle                   82020f00     <common>
+ 0004:00000f20       __pioinfo                  82020f20     <common>
+ 0004:00001020       __piob                     82021020     <common>
+ 0004:00001024       _nstream                   82021024     <common>
+ 0004:00001028       XapiProcessHeap            82021028     <common>
+ 0004:0000102c       __@@_PchSym_@00@UcvmlmUmleAIUxlivUkirezgvUxlivoryhUcigoUczkrRezmroozUlyqUcylcUcigokxsOlyq@xrtlForXapiVanilla 8202102c     <common>
+ 0004:00001030       __@@_PchSym_@00@UcvmlmUmleAIUxlivUkirezgvUcgoUczkrUorycUlyqUcylcUczkrkxsOlyq@xapilib 82021030     <common>
+ 0004:00001034       NtGlobalFlag               82021034     <common>
+ 0004:00001038       XapiCurrentTopLevelFilter  82021038     <common>
+ 0005:00000000       __IMPORT_DESCRIPTOR_xam.xex@7978.0+1861 82030000     XAPILIB:xam.xex@7978.0+1861.0
+ 0005:00000014       __IMPORT_DESCRIPTOR_xboxkrnl.exe@7978.0+1861 82030014     XBOXKRNL:xboxkrnl.exe@7978.0+1861.0
+ 0005:00000028       __NULL_IMPORT_DESCRIPTOR   82030028     XAPILIB:xam.xex@7978.0+1861.0
+ 0006:00000000       __CrtBuildNumber           82040000     LIBCMT:_ctype.obj
+ 0006:00000010       XapiBuildNumber            82040010     XAPILIB:xapipch.obj
+ 0006:00000020       XboxKrnlBuildNumber        82040020     XBOXKRNL:bldnum.obj
+
+ entry point at        0003:00003988
+
+ Static symbols
+
+ 0003:00000f14       $$$00003                   82010f14 f   LIBCMT:crtgpr.obj
+ 0003:00001188       doexit                     82011188 f   LIBCMT:crt0dat.obj
+ 0003:000014e8       flsall                     820114e8 f   LIBCMT:fflush.obj

@@ -1,0 +1,135 @@
+
+/mnt/c/Users/jblbe/Documents/Workspace/ghidra-delinker-extension/src/test/resources/programs/integer-parsing/reference/elf/linux-gnu/i686/main.o:     file format elf32-i386
+/mnt/c/Users/jblbe/Documents/Workspace/ghidra-delinker-extension/src/test/resources/programs/integer-parsing/reference/elf/linux-gnu/i686/main.o
+architecture: i386, flags 0x00000011:
+HAS_RELOC, HAS_SYMS
+start address 0x00000000
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .group        00000008  00000000  00000000  00000034  2**2
+                  CONTENTS, READONLY, GROUP, LINK_ONCE_DISCARD
+  1 .group        00000008  00000000  00000000  0000003c  2**2
+                  CONTENTS, READONLY, GROUP, LINK_ONCE_DISCARD
+  2 .text         000000ed  00000000  00000000  00000044  2**0
+                  CONTENTS, ALLOC, LOAD, RELOC, READONLY, CODE
+  3 .data         00000000  00000000  00000000  00000131  2**0
+                  CONTENTS, ALLOC, LOAD, DATA
+  4 .bss          00000000  00000000  00000000  00000131  2**0
+                  ALLOC
+  5 .ctf          000002ea  00000000  00000000  00000131  2**0
+                  CONTENTS, READONLY
+  6 .data.rel.ro  00000004  00000000  00000000  0000041c  2**2
+                  CONTENTS, ALLOC, LOAD, RELOC, DATA
+  7 .rodata       0000001e  00000000  00000000  00000420  2**0
+                  CONTENTS, ALLOC, LOAD, READONLY, DATA
+  8 .text.__x86.get_pc_thunk.cx 00000004  00000000  00000000  0000043e  2**0
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+  9 .text.__x86.get_pc_thunk.bx 00000004  00000000  00000000  00000442  2**0
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+ 10 .debug_info   00000121  00000000  00000000  00000446  2**0
+                  CONTENTS, RELOC, READONLY, DEBUGGING, OCTETS
+ 11 .debug_abbrev 000000ea  00000000  00000000  00000567  2**0
+                  CONTENTS, READONLY, DEBUGGING, OCTETS
+ 12 .debug_aranges 00000020  00000000  00000000  00000651  2**0
+                  CONTENTS, RELOC, READONLY, DEBUGGING, OCTETS
+ 13 .debug_line   000000b3  00000000  00000000  00000671  2**0
+                  CONTENTS, RELOC, READONLY, DEBUGGING, OCTETS
+ 14 .debug_str    0000019f  00000000  00000000  00000724  2**0
+                  CONTENTS, READONLY, DEBUGGING, OCTETS
+ 15 .comment      00000020  00000000  00000000  000008c3  2**0
+                  CONTENTS, READONLY
+ 16 .note.GNU-stack 00000000  00000000  00000000  000008e3  2**0
+                  CONTENTS, READONLY
+ 17 .eh_frame     00000098  00000000  00000000  000008e4  2**2
+                  CONTENTS, ALLOC, LOAD, RELOC, READONLY, DATA
+SYMBOL TABLE:
+00000000 l    df *ABS*	00000000 main.c
+00000000 l    d  .text	00000000 .text
+00000000 l    d  .rodata	00000000 .rodata
+00000000 l    d  .text.__x86.get_pc_thunk.cx	00000000 .text.__x86.get_pc_thunk.cx
+00000000 l    d  .text.__x86.get_pc_thunk.bx	00000000 .text.__x86.get_pc_thunk.bx
+00000000 l    d  .debug_info	00000000 .debug_info
+00000000 l    d  .debug_abbrev	00000000 .debug_abbrev
+00000000 l    d  .debug_line	00000000 .debug_line
+00000000 l    d  .debug_str	00000000 .debug_str
+00000000 g     O .data.rel.ro	00000004 s_ascii_digit_bias
+00000000         *UND*	00000000 s_digits
+00000000 g     F .text	00000060 parse_decimal
+00000000 g     F .text.__x86.get_pc_thunk.cx	00000000 .hidden __x86.get_pc_thunk.cx
+00000000         *UND*	00000000 _GLOBAL_OFFSET_TABLE_
+00000060 g     F .text	0000008d main
+00000000 g     F .text.__x86.get_pc_thunk.bx	00000000 .hidden __x86.get_pc_thunk.bx
+00000000         *UND*	00000000 puts
+
+
+RELOCATION RECORDS FOR [.text]:
+OFFSET   TYPE              VALUE
+00000008 R_386_PC32        __x86.get_pc_thunk.cx
+0000000e R_386_GOTPC       _GLOBAL_OFFSET_TABLE_
+0000002b R_386_GOT32X      s_digits
+00000070 R_386_PC32        __x86.get_pc_thunk.bx
+00000076 R_386_GOTPC       _GLOBAL_OFFSET_TABLE_
+0000007c R_386_GOTOFF      .rodata
+00000082 R_386_PC32        parse_decimal
+00000096 R_386_GOTOFF      .rodata
+0000009c R_386_PC32        parse_decimal
+000000b1 R_386_GOTOFF      .rodata
+000000b7 R_386_PC32        parse_decimal
+000000d1 R_386_GOTOFF      .rodata
+000000d7 R_386_PLT32       puts
+
+
+RELOCATION RECORDS FOR [.data.rel.ro]:
+OFFSET   TYPE              VALUE
+00000000 R_386_32          s_digits
+
+
+RELOCATION RECORDS FOR [.debug_info]:
+OFFSET   TYPE              VALUE
+00000006 R_386_32          .debug_abbrev
+0000000c R_386_32          .debug_str
+00000011 R_386_32          .debug_str
+00000015 R_386_32          .debug_str
+00000019 R_386_32          .text
+00000021 R_386_32          .debug_line
+00000028 R_386_32          .debug_str
+0000002f R_386_32          .debug_str
+0000003b R_386_32          .debug_str
+00000042 R_386_32          .debug_str
+00000049 R_386_32          .debug_str
+00000050 R_386_32          .debug_str
+00000057 R_386_32          .debug_str
+0000006a R_386_32          .debug_str
+00000071 R_386_32          .debug_str
+00000078 R_386_32          .debug_str
+00000092 R_386_32          .debug_str
+0000009e R_386_32          .debug_str
+000000ab R_386_32          s_ascii_digit_bias
+000000bb R_386_32          .debug_str
+000000d8 R_386_32          .debug_str
+000000e3 R_386_32          .text
+000000ee R_386_32          .debug_str
+000000f9 R_386_32          .text
+00000111 R_386_32          .debug_str
+
+
+RELOCATION RECORDS FOR [.debug_aranges]:
+OFFSET   TYPE              VALUE
+00000006 R_386_32          .debug_info
+00000010 R_386_32          .text
+
+
+RELOCATION RECORDS FOR [.debug_line]:
+OFFSET   TYPE              VALUE
+00000058 R_386_32          .text
+
+
+RELOCATION RECORDS FOR [.eh_frame]:
+OFFSET   TYPE              VALUE
+00000020 R_386_PC32        .text
+00000044 R_386_PC32        .text
+00000078 R_386_PC32        .text.__x86.get_pc_thunk.cx
+0000008c R_386_PC32        .text.__x86.get_pc_thunk.bx
+
+

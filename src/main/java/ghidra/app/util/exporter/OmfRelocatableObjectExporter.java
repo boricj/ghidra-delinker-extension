@@ -49,7 +49,9 @@ import ghidra.program.model.listing.Program;
 import ghidra.program.model.mem.Memory;
 import ghidra.program.model.mem.MemoryAccessException;
 import ghidra.program.model.mem.MemoryBlock;
-import ghidra.program.model.relocobj.Relocation;
+import ghidra.program.model.relocobj.RelocationEntry;
+import ghidra.program.model.relocobj.RelocationGang;
+import ghidra.program.model.relocobj.RelocationGroup;
 import ghidra.program.model.relocobj.RelocationTable;
 import ghidra.program.model.symbol.Symbol;
 import ghidra.util.classfinder.ClassSearcher;
@@ -257,7 +259,7 @@ public class OmfRelocatableObjectExporter extends Exporter {
 	private Program program;
 	private AddressSetView fileSet;
 	private SymbolPreference symbolNamePreference;
-	private Predicate<Relocation> predicateRelocation;
+	private Predicate<RelocationGroup> predicateRelocation;
 	private Predicate<Symbol> predicateVisibility;
 	private boolean isDynamicSymbolLocal;
 	private boolean isSymbolInsideFunctionLocal;
@@ -464,10 +466,20 @@ public class OmfRelocatableObjectExporter extends Exporter {
 		}
 
 		for (SegmentInfo segInfo : segments) {
-			List<Relocation> segmentRelocations = new ArrayList<>();
-			relocationTable.getRelocations(segInfo.addressSet, predicateRelocation)
+			List<RelocationGroup> segmentRelocations = new ArrayList<>();
+			relocationTable.getRelocationGroups(segInfo.addressSet, predicateRelocation)
 					.forEachRemaining(segmentRelocations::add);
-			segmentRelocations.sort(Comparator.comparing(Relocation::getAddress));
+			segmentRelocations.sort(Comparator.comparing(g -> {
+				Address first = null;
+				for (RelocationGang gang : g.getGangs()) {
+					for (RelocationEntry entry : gang.getEntries()) {
+						if (first == null || entry.address().compareTo(first) < 0) {
+							first = entry.address();
+						}
+					}
+				}
+				return first;
+			}));
 
 			if (!segInfo.isInitialized()) {
 				if (!segmentRelocations.isEmpty()) {
@@ -716,7 +728,7 @@ public class OmfRelocatableObjectExporter extends Exporter {
 	}
 
 	private void emitSegmentChunks(OmfRelocationTableBuilder relocationBuilder,
-			SegmentInfo segInfo, byte[] bytes, List<Relocation> segmentRelocations,
+			SegmentInfo segInfo, byte[] bytes, List<RelocationGroup> segmentRelocations,
 			List<OmfRelocationTableBuilder.SegmentMapping> segmentMappings,
 			Map<Address, Integer> addressToExtdefIndex, OmfChunkingPolicy chunkingPolicy) {
 		OmfRecordSegdef segdef = segInfo.segment;
@@ -750,7 +762,9 @@ public class OmfRelocatableObjectExporter extends Exporter {
 	}
 
 	private void initializeRelocationPredicate() {
-		predicateRelocation = new TrimSuperfluousRelativePC(program, fileSet);
+		predicateRelocation = r -> true;
+		Predicate<RelocationGroup> predicate = new TrimSuperfluousRelativePC(program, fileSet);
+		predicateRelocation = predicateRelocation.and(predicate);
 	}
 
 	private void initializeSymbolVisibilityPredicate() {

@@ -18,7 +18,9 @@ import java.util.Map;
 
 import ghidra.app.util.importer.MessageLog;
 import ghidra.program.model.address.AddressSetView;
-import ghidra.program.model.relocobj.Relocation;
+import ghidra.program.model.relocobj.RelocationEntry;
+import ghidra.program.model.relocobj.RelocationGang;
+import ghidra.program.model.relocobj.RelocationGroup;
 import ghidra.util.classfinder.ExtensionPoint;
 import net.boricj.bft.coff.CoffSection;
 import net.boricj.bft.coff.CoffSymbolTable;
@@ -26,17 +28,18 @@ import net.boricj.bft.coff.CoffSymbolTable.CoffSymbol;
 import net.boricj.bft.coff.constants.CoffMachine;
 
 public interface CoffRelocationTableBuilder extends ExtensionPoint {
-	public void build(CoffSymbolTable symtab, CoffSection section, byte[] bytes,
-			AddressSetView addressSet, List<Relocation> relocations,
-			Map<Relocation, CoffSymbol> relocationsToSymbols, MessageLog log);
+	public void buildGroups(CoffSymbolTable symtab, CoffSection section, byte[] bytes,
+			AddressSetView addressSet, List<RelocationGroup> groups,
+			Map<RelocationGroup, CoffSymbol> groupsToSymbols, MessageLog log);
 
 	public boolean canBuild(CoffMachine machine);
 
-	public static void logUnknownRelocation(CoffSection section, Relocation relocation,
-			MessageLog log) {
-		String name = relocation.getClass().getSimpleName();
-		String msg = String.format("Unknown relocation %s width %d bitmask %d at %s", name,
-			relocation.getWidth(), relocation.getBitmask(), relocation.getAddress());
+	public static void logUnknownRelocation(CoffSection section, RelocationGroup group,
+			RelocationGang gang, RelocationEntry entry, MessageLog log) {
+		String msg = String.format(
+			"Unknown grouped relocation %s type=%s width=%d bitmask=%d at %s", 
+			group.getExpression().getKind(), gang.getRelocationType(), gang.getWidth(),
+			gang.getBitmask(), entry.address());
 		log.appendMsg(section.getName(), msg);
 	}
 }

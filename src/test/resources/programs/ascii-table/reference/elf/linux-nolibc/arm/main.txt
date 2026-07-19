@@ -1,0 +1,3316 @@
+
+/mnt/c/Users/jblbe/Documents/Workspace/ghidra-delinker-extension/src/test/resources/programs/ascii-table/reference/elf/linux-nolibc/arm/main.o:     file format elf32-littlearm
+/mnt/c/Users/jblbe/Documents/Workspace/ghidra-delinker-extension/src/test/resources/programs/ascii-table/reference/elf/linux-nolibc/arm/main.o
+architecture: armv7, flags 0x00000011:
+HAS_RELOC, HAS_SYMS
+start address 0x00000000
+private flags = 0x5000000: [Version5 EABI]
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .text         00004924  00000000  00000000  00000034  2**2
+                  CONTENTS, ALLOC, LOAD, RELOC, READONLY, CODE
+  1 .data         00000016  00000000  00000000  00004958  2**2
+                  CONTENTS, ALLOC, LOAD, DATA
+  2 .bss          00000028  00000000  00000000  00004970  2**2
+                  ALLOC
+  3 .ctf          000047a2  00000000  00000000  00004970  2**0
+                  CONTENTS, READONLY
+  4 .rodata       000000d4  00000000  00000000  00009114  2**2
+                  CONTENTS, ALLOC, LOAD, RELOC, READONLY, DATA
+  5 .text.nolibc_raise 00000020  00000000  00000000  000091e8  2**1
+                  CONTENTS, ALLOC, LOAD, RELOC, READONLY, CODE
+  6 .text.nolibc_memmove 0000005c  00000000  00000000  00009208  2**1
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+  7 .text.nolibc_memcpy 0000003e  00000000  00000000  00009264  2**1
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+  8 .text.nolibc_memset 00000036  00000000  00000000  000092a2  2**1
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+  9 .text.nolibc_strlen 0000002e  00000000  00000000  000092d8  2**1
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+ 10 .text.nolibc_abort 00000014  00000000  00000000  00009306  2**1
+                  CONTENTS, ALLOC, LOAD, RELOC, READONLY, CODE
+ 11 .data.nolibc_getopt 00000010  00000000  00000000  0000931c  2**2
+                  CONTENTS, ALLOC, LOAD, DATA
+ 12 .debug_info   00006f0c  00000000  00000000  0000932c  2**0
+                  CONTENTS, RELOC, READONLY, DEBUGGING, OCTETS
+ 13 .debug_abbrev 0000052d  00000000  00000000  00010238  2**0
+                  CONTENTS, READONLY, DEBUGGING, OCTETS
+ 14 .debug_aranges 00000050  00000000  00000000  00010765  2**0
+                  CONTENTS, RELOC, READONLY, DEBUGGING, OCTETS
+ 15 .debug_ranges 00000610  00000000  00000000  000107b5  2**0
+                  CONTENTS, RELOC, READONLY, DEBUGGING, OCTETS
+ 16 .debug_line   00002252  00000000  00000000  00010dc5  2**0
+                  CONTENTS, RELOC, READONLY, DEBUGGING, OCTETS
+ 17 .debug_str    000017f3  00000000  00000000  00013017  2**0
+                  CONTENTS, READONLY, DEBUGGING, OCTETS
+ 18 .comment      00000020  00000000  00000000  0001480a  2**0
+                  CONTENTS, READONLY
+ 19 .note.GNU-stack 00000000  00000000  00000000  0001482a  2**0
+                  CONTENTS, READONLY
+ 20 .debug_frame  00002730  00000000  00000000  0001482c  2**2
+                  CONTENTS, RELOC, READONLY, DEBUGGING, OCTETS
+ 21 .ARM.attributes 00000033  00000000  00000000  00016f5c  2**0
+                  CONTENTS, READONLY
+SYMBOL TABLE:
+00000000 l    df *ABS*	00000000 main.c
+00000000 l    d  .text	00000000 .text
+00000000 l    d  .data	00000000 .data
+00000000 l    d  .bss	00000000 .bss
+00000000 l    d  .ctf	00000000 .ctf
+000041ac l     F .text	0000000e __stack_chk_init
+000005e0 l     F .text	0000000e exit
+000000e6 l     F .text	00000028 sys_brk
+0000010e l     F .text	00000032 brk
+00000140 l     F .text	0000004e sbrk
+0000018e l     F .text	00000028 sys_chdir
+000001b6 l     F .text	00000034 chdir
+000001ea l     F .text	00000026 sys_fchdir
+00000210 l     F .text	00000034 fchdir
+00000244 l     F .text	00000036 sys_chmod
+0000027a l     F .text	00000038 chmod
+000002b2 l     F .text	0000003a sys_chown
+000002ec l     F .text	0000003c chown
+00000328 l     F .text	00000028 sys_chroot
+00000350 l     F .text	00000034 chroot
+00000384 l     F .text	00000026 sys_close
+000003aa l     F .text	00000034 close
+000003de l     F .text	00000026 sys_dup
+00000404 l     F .text	00000034 dup
+00000438 l     F .text	00000064 sys_dup2
+0000049c l     F .text	00000038 dup2
+000004d4 l     F .text	00000030 sys_dup3
+00000504 l     F .text	0000003c dup3
+00000540 l     F .text	00000034 sys_execve
+00000574 l     F .text	0000003c execve
+000005b0 l     F .text	00000022 sys_exit
+000005d2 l     F .text	0000000e _exit
+000005ee l     F .text	00000026 sys_fork
+00000614 l     F .text	00000030 fork
+00000644 l     F .text	0000001c sys_vfork
+00000660 l     F .text	00000030 vfork
+00000690 l     F .text	00000026 sys_fsync
+000006b6 l     F .text	00000034 fsync
+000006ea l     F .text	00000030 sys_getdents64
+0000071a l     F .text	0000003c getdents64
+00000756 l     F .text	0000001c sys_geteuid
+00000772 l     F .text	0000000e geteuid
+00000780 l     F .text	00000026 sys_getpgid
+000007a6 l     F .text	00000034 getpgid
+000007da l     F .text	00000010 sys_getpgrp
+000007ea l     F .text	0000000e getpgrp
+000007f8 l     F .text	0000001c sys_getpid
+00000814 l     F .text	0000000e getpid
+00000822 l     F .text	0000001c sys_getppid
+0000083e l     F .text	0000000e getppid
+0000084c l     F .text	0000001c sys_gettid
+00000868 l     F .text	0000000e gettid
+00000876 l     F .text	0000003c getpagesize
+0000101e l     F .text	00000060 getauxval
+000008b2 l     F .text	0000001c sys_getuid
+000008ce l     F .text	0000000e getuid
+000008dc l     F .text	0000002a sys_kill
+00000906 l     F .text	00000038 kill
+0000093e l     F .text	00000038 sys_link
+00000976 l     F .text	00000038 link
+000009ae l     F .text	0000003c sys_lseek
+000009ea l     F .text	0000004e lseek
+00000a38 l     F .text	00000034 sys_mkdir
+00000a6c l     F .text	00000038 mkdir
+00000aa4 l     F .text	00000028 sys_rmdir
+00000acc l     F .text	00000034 rmdir
+00000b00 l     F .text	00000038 sys_mknod
+00000b38 l     F .text	0000003c mknod
+00000b74 l     F .text	0000002e sys_pipe2
+00000ba2 l     F .text	00000038 pipe2
+00000bda l     F .text	0000001a pipe
+00000bf4 l     F .text	0000002e sys_pivot_root
+00000c22 l     F .text	00000038 pivot_root
+00000c5a l     F .text	00000032 sys_read
+00000c8c l     F .text	0000003c read
+00000cc8 l     F .text	0000001c sys_sched_yield
+00000ce4 l     F .text	00000030 sched_yield
+00000d14 l     F .text	0000002a sys_setpgid
+00000d3e l     F .text	00000038 setpgid
+00000d76 l     F .text	00000012 setpgrp
+00000d88 l     F .text	0000001c sys_setsid
+00000da4 l     F .text	00000030 setsid
+00000dd4 l     F .text	00000034 sys_symlink
+00000e08 l     F .text	00000038 symlink
+00000e40 l     F .text	00000028 sys_umask
+00000e68 l     F .text	00000018 umask
+00000e80 l     F .text	0000002c sys_umount2
+00000eac l     F .text	00000038 umount2
+00000ee4 l     F .text	00000030 sys_unlink
+00000f14 l     F .text	00000034 unlink
+00000f48 l     F .text	00000032 sys_write
+00000f7a l     F .text	0000003c write
+00000fb6 l     F .text	00000030 sys_memfd_create
+00000fe6 l     F .text	00000038 memfd_create
+0000107e l     F .text	00000034 sys_ioctl
+000010b2 l     F .text	00000056 sys_mmap
+00001108 l     F .text	0000004e mmap
+00001156 l     F .text	0000003a sys_mremap
+00001190 l     F .text	00000046 mremap
+000011d6 l     F .text	0000002e sys_munmap
+00001204 l     F .text	00000038 munmap
+0000123c l     F .text	0000003a sys_mount
+00001276 l     F .text	00000044 mount
+000012ba l     F .text	00000038 sys_prctl
+000012f2 l     F .text	00000044 prctl
+00001336 l     F .text	00000036 sys_getrandom
+0000136c l     F .text	0000003c getrandom
+000013a8 l     F .text	00000032 sys_reboot
+000013da l     F .text	00000046 reboot
+00001420 l     F .text	00000036 sys_prlimit64
+00001456 l     F .text	00000052 getrlimit
+000014a8 l     F .text	0000005a setrlimit
+00001502 l     F .text	00000038 sys_select
+0000153a l     F .text	00000044 select
+0000157e l     F .text	00000038 sys_statx
+000015b6 l     F .text	00000044 statx
+000015fa l     F .text	0000026e fstatat
+00001868 l     F .text	00000022 stat
+00000000 l    d  .rodata	00000000 .rodata
+00000000 l       .rodata	00000000 .LC0
+0000188a l     F .text	00000028 fstat
+000018b2 l     F .text	00000024 lstat
+000018d6 l     F .text	0000002e sys_gettimeofday
+00001904 l     F .text	00000038 gettimeofday
+0000193c l     F .text	0000002e sys_clock_getres
+0000196a l     F .text	00000038 clock_getres
+000019a2 l     F .text	0000002e sys_clock_gettime
+000019d0 l     F .text	00000038 clock_gettime
+00001a08 l     F .text	0000002e sys_clock_settime
+00001a36 l     F .text	00000038 clock_settime
+00001a6e l     F .text	00000036 sys_clock_nanosleep
+00001aa4 l     F .text	00000026 clock_nanosleep
+00001aca l     F .text	0000002a time
+00001af4 l     F .text	00000034 sys_timer_create
+00001b28 l     F .text	0000003c timer_create
+00001b64 l     F .text	00000028 sys_timer_delete
+00001b8c l     F .text	00000034 timer_delete
+00001bc0 l     F .text	0000002e sys_timer_gettime
+00001bee l     F .text	00000038 timer_gettime
+00001c26 l     F .text	00000036 sys_timer_settime
+00001c5c l     F .text	00000040 timer_settime
+00001c9c l     F .text	0000002c sys_timerfd_create
+00001cc8 l     F .text	00000038 timerfd_create
+00001d00 l     F .text	0000002e sys_timerfd_gettime
+00001d2e l     F .text	00000038 timerfd_gettime
+00001d66 l     F .text	00000036 sys_timerfd_settime
+00001d9c l     F .text	00000040 timerfd_settime
+00001ddc l     F .text	00000030 sys_readv
+00001e0c l     F .text	0000003c readv
+00001e48 l     F .text	00000030 sys_writev
+00001e78 l     F .text	0000003c writev
+00001eb4 l     F .text	00000028 sys_uname
+00001edc l     F .text	00000034 uname
+00001f10 l     F .text	00000038 sys_waitid
+00001f48 l     F .text	00000044 waitid
+00001f8c l     F .text	00000158 waitpid
+000020e4 l     F .text	0000001e wait
+00002102 l     F .text	00000020 isascii
+00002122 l     F .text	00000026 isblank
+00002148 l     F .text	00000026 iscntrl
+0000216e l     F .text	00000022 isdigit
+00002190 l     F .text	00000022 isgraph
+000021b2 l     F .text	00000022 islower
+000021d4 l     F .text	00000022 isprint
+000021f6 l     F .text	00000028 isspace
+0000221e l     F .text	00000022 isupper
+00002240 l     F .text	00000032 isxdigit
+00002272 l     F .text	0000002e isalpha
+000022a0 l     F .text	0000002e isalnum
+000022ce l     F .text	0000002e ispunct
+000022fc l     F .text	0000002c sys_setns
+00002328 l     F .text	00000038 setns
+00002360 l     F .text	00000028 sys_unshare
+00002388 l     F .text	00000034 unshare
+00000000 l    d  .text.nolibc_raise	00000000 .text.nolibc_raise
+000023bc l     F .text	00000036 sys_faccessat
+000023f2 l     F .text	00000040 faccessat
+00002432 l     F .text	00000022 access
+00002454 l     F .text	000000ac msleep
+00002500 l     F .text	00000044 sleep
+00002544 l     F .text	00000058 usleep
+0000259c l     F .text	0000003e tcsetpgrp
+000025da l     F .text	00000036 sys_openat
+00002610 l     F .text	00000062 openat
+00002672 l     F .text	00000036 sys_open
+000026a8 l     F .text	0000005e open
+00002706 l     F .text	0000004e memcmp
+00000000 l    d  .text.nolibc_memmove	00000000 .text.nolibc_memmove
+00000000 l    d  .text.nolibc_memcpy	00000000 .text.nolibc_memcpy
+00000000 l    d  .text.nolibc_memset	00000000 .text.nolibc_memset
+00002754 l     F .text	00000040 memchr
+00002794 l     F .text	00000038 strchr
+000027cc l     F .text	00000040 strcmp
+0000280c l     F .text	00000034 strcpy
+00000000 l    d  .text.nolibc_strlen	00000000 .text.nolibc_strlen
+00002840 l     F .text	00000038 strnlen
+00002878 l     F .text	00000044 strdup
+00002d3a l     F .text	00000066 malloc
+000028bc l     F .text	0000004e strndup
+0000290a l     F .text	00000076 strlcat
+00002980 l     F .text	00000074 strlcpy
+000029f4 l     F .text	0000005e strncat
+00002a52 l     F .text	00000050 strncmp
+00002aa2 l     F .text	00000046 strncpy
+00002ae8 l     F .text	0000003c strrchr
+00002b24 l     F .text	00000058 strstr
+00002b7c l     F .text	00000028 tolower
+00002ba4 l     F .text	00000028 toupper
+0000000c l     O .bss	00000015 itoa_buffer
+00000000 l    d  .text.nolibc_abort	00000000 .text.nolibc_abort
+00002bcc l     F .text	00000064 atol
+00002c30 l     F .text	00000018 atoi
+00002c48 l     F .text	0000002e free
+00002c76 l     F .text	000000c4 getenv
+00002da0 l     F .text	00000060 calloc
+00002e00 l     F .text	00000078 realloc
+00002e78 l     F .text	000000aa utoh_r
+00002f22 l     F .text	0000009c utoa_r
+00002fbe l     F .text	0000004a itoa_r
+00003008 l     F .text	000000a4 u64toh_r
+000030ac l     F .text	000000f2 u64toa_r
+0000319e l     F .text	00000058 i64toa_r
+00000004 l       .rodata	00000000 .LC1
+00000008 l       .rodata	00000000 .LC2
+0000000c l       .rodata	00000000 .LC3
+000031f6 l     F .text	0000027e __strtox
+00003474 l     F .text	0000003c strtol
+000034b0 l     F .text	0000003c strtoul
+000034ec l     F .text	0000003c strtoll
+00003528 l     F .text	0000003c strtoull
+00003564 l     F .text	0000003c strtoimax
+000035a0 l     F .text	0000003c strtoumax
+00000010 l     O .rodata	00000004 stdin
+00000014 l     O .rodata	00000004 stdout
+00000018 l     O .rodata	00000004 stderr
+000035dc l     F .text	00000030 fdopen
+0000360c l     F .text	0000007a fopen
+00003686 l     F .text	00000034 fileno
+000036ba l     F .text	00000032 fflush
+000036ec l     F .text	00000044 fclose
+00003730 l     F .text	00000030 fgetc
+00003760 l     F .text	00000014 getchar
+00003774 l     F .text	00000038 fputc
+000037ac l     F .text	0000001e putchar
+000037ca l     F .text	0000004e _fwrite
+00003818 l     F .text	00000048 fwrite
+00003860 l     F .text	00000026 fputs
+00003886 l     F .text	00000032 puts
+000038b8 l     F .text	00000072 fgets
+0000001c l       .rodata	00000000 .LC4
+00000024 l       .rodata	00000000 .LC5
+0000392a l     F .text	00000350 __nolibc_printf
+0000417c l     F .text	00000030 strerror
+00003c7a l     F .text	00000022 __nolibc_fprintf_cb
+00003c9c l     F .text	0000002e vfprintf
+00003cca l     F .text	00000022 vprintf
+00003cec l     F .text	0000002c fprintf
+00003d18 l     F .text	0000002e printf
+00003d46 l     F .text	00000036 vdprintf
+00003d7c l     F .text	0000002c dprintf
+00003da8 l     F .text	00000034 __nolibc_sprintf_cb
+00003ddc l     F .text	00000058 vsnprintf
+00003e34 l     F .text	00000030 snprintf
+00003e64 l     F .text	00000024 vsprintf
+00003e88 l     F .text	0000002c sprintf
+00003eb4 l     F .text	0000020c vsscanf
+000040c0 l     F .text	0000002c sscanf
+00000028 l       .rodata	00000000 .LC6
+0000002c l       .rodata	00000000 .LC7
+000040ec l     F .text	00000066 perror
+00004152 l     F .text	0000002a setvbuf
+00000004 l     O .data	00000012 buf.1
+000041ba l     F .text	0000002e fdopendir
+000041e8 l     F .text	0000002e opendir
+00004216 l     F .text	00000038 closedir
+0000424e l     F .text	00000112 readdir_r
+00000000 l    d  .data.nolibc_getopt	00000000 .data.nolibc_getopt
+0000003c l       .rodata	00000000 .LC8
+0000005c l       .rodata	00000000 .LC9
+00004360 l     F .text	00000360 getopt
+00000024 l     O .bss	00000004 __optpos.0
+000046c0 l     F .text	0000008c sys_poll
+0000474c l     F .text	0000003c poll
+00000000 l    d  .debug_info	00000000 .debug_info
+00000000 l    d  .debug_abbrev	00000000 .debug_abbrev
+00000000 l    d  .debug_aranges	00000000 .debug_aranges
+00000000 l    d  .debug_ranges	00000000 .debug_ranges
+00000000 l    d  .debug_line	00000000 .debug_line
+00000000 l    d  .debug_str	00000000 .debug_str
+00000000 l    d  .note.GNU-stack	00000000 .note.GNU-stack
+00000000 l    d  .debug_frame	00000000 .debug_frame
+00000000 l    d  .comment	00000000 .comment
+00000000 l    d  .ARM.attributes	00000000 .ARM.attributes
+00000000  w    O .bss	00000004 environ
+00000004  w    O .bss	00000004 _auxv
+00000000  w    F .text	000000de _start_c
+00000000  w      *UND*	00000000 __preinit_array_start
+00000000  w      *UND*	00000000 __preinit_array_end
+00000000  w      *UND*	00000000 __init_array_start
+00000000  w      *UND*	00000000 __init_array_end
+0000486c g     F .text	000000b8 main
+00000000  w      *UND*	00000000 __fini_array_end
+00000000  w      *UND*	00000000 __fini_array_start
+000000de  w    F .text	00000008 _start
+00000008  w    O .bss	00000004 errno
+00000000  w    F .text.nolibc_raise	00000020 raise
+00000000  w    F .text.nolibc_memmove	0000005c memmove
+00000000  w    F .text.nolibc_memcpy	0000003e memcpy
+00000000  w    F .text.nolibc_memset	00000036 memset
+00000000  w    F .text.nolibc_strlen	0000002e strlen
+00000000  w    F .text.nolibc_abort	00000014 abort
+00000000         *UND*	00000000 __aeabi_uidiv
+00000000  w    O .data.nolibc_getopt	00000004 optarg
+00000004  w    O .data.nolibc_getopt	00000004 optind
+00000008  w    O .data.nolibc_getopt	00000004 opterr
+0000000c  w    O .data.nolibc_getopt	00000004 optopt
+00000080 g     O .rodata	00000004 NUM_ASCII_PROPERTIES
+00000084 g     O .rodata	00000050 s_ascii_properties
+00000000         *UND*	00000000 openbsd_isgraph
+00000000         *UND*	00000000 openbsd_isprint
+00000000         *UND*	00000000 openbsd_iscntrl
+00000000         *UND*	00000000 openbsd_isspace
+00000000         *UND*	00000000 openbsd_ispunct
+00000000         *UND*	00000000 openbsd_isalnum
+00000000         *UND*	00000000 openbsd_isalpha
+00000000         *UND*	00000000 openbsd_isdigit
+00000000         *UND*	00000000 openbsd_isupper
+00000000         *UND*	00000000 openbsd_islower
+00000000 g     O .data	00000004 COLUMNS
+00004788 g     F .text	0000005a print_number
+000047e2 g     F .text	0000008a print_ascii_entry
+00000000         *UND*	00000000 __aeabi_idivmod
+00000000         *UND*	00000000 __aeabi_idiv
+
+
+RELOCATION RECORDS FOR [.text]:
+OFFSET   TYPE              VALUE
+00000024 R_ARM_THM_MOVW_ABS_NC  environ
+00000028 R_ARM_THM_MOVT_ABS  environ
+00000042 R_ARM_THM_MOVW_ABS_NC  _auxv
+00000046 R_ARM_THM_MOVT_ABS  _auxv
+0000004e R_ARM_THM_MOVW_ABS_NC  __preinit_array_start
+00000052 R_ARM_THM_MOVT_ABS  __preinit_array_start
+0000006e R_ARM_THM_MOVW_ABS_NC  __preinit_array_end
+00000072 R_ARM_THM_MOVT_ABS  __preinit_array_end
+0000007a R_ARM_THM_MOVW_ABS_NC  __init_array_start
+0000007e R_ARM_THM_MOVT_ABS  __init_array_start
+0000009a R_ARM_THM_MOVW_ABS_NC  __init_array_end
+0000009e R_ARM_THM_MOVT_ABS  __init_array_end
+000000ac R_ARM_THM_CALL    main
+000000b2 R_ARM_THM_MOVW_ABS_NC  __fini_array_end
+000000b6 R_ARM_THM_MOVT_ABS  __fini_array_end
+000000cc R_ARM_THM_MOVW_ABS_NC  __fini_array_start
+000000d0 R_ARM_THM_MOVT_ABS  __fini_array_start
+000000e0 R_ARM_THM_CALL    _start_c
+00000124 R_ARM_THM_MOVW_ABS_NC  errno
+00000128 R_ARM_THM_MOVT_ABS  errno
+00000176 R_ARM_THM_MOVW_ABS_NC  errno
+0000017a R_ARM_THM_MOVT_ABS  errno
+000001d0 R_ARM_THM_MOVW_ABS_NC  errno
+000001d4 R_ARM_THM_MOVT_ABS  errno
+0000022a R_ARM_THM_MOVW_ABS_NC  errno
+0000022e R_ARM_THM_MOVT_ABS  errno
+00000298 R_ARM_THM_MOVW_ABS_NC  errno
+0000029c R_ARM_THM_MOVT_ABS  errno
+0000030e R_ARM_THM_MOVW_ABS_NC  errno
+00000312 R_ARM_THM_MOVT_ABS  errno
+0000036a R_ARM_THM_MOVW_ABS_NC  errno
+0000036e R_ARM_THM_MOVT_ABS  errno
+000003c4 R_ARM_THM_MOVW_ABS_NC  errno
+000003c8 R_ARM_THM_MOVT_ABS  errno
+0000041e R_ARM_THM_MOVW_ABS_NC  errno
+00000422 R_ARM_THM_MOVT_ABS  errno
+000004ba R_ARM_THM_MOVW_ABS_NC  errno
+000004be R_ARM_THM_MOVT_ABS  errno
+00000526 R_ARM_THM_MOVW_ABS_NC  errno
+0000052a R_ARM_THM_MOVT_ABS  errno
+00000596 R_ARM_THM_MOVW_ABS_NC  errno
+0000059a R_ARM_THM_MOVT_ABS  errno
+0000062a R_ARM_THM_MOVW_ABS_NC  errno
+0000062e R_ARM_THM_MOVT_ABS  errno
+00000676 R_ARM_THM_MOVW_ABS_NC  errno
+0000067a R_ARM_THM_MOVT_ABS  errno
+000006d0 R_ARM_THM_MOVW_ABS_NC  errno
+000006d4 R_ARM_THM_MOVT_ABS  errno
+0000073c R_ARM_THM_MOVW_ABS_NC  errno
+00000740 R_ARM_THM_MOVT_ABS  errno
+000007c0 R_ARM_THM_MOVW_ABS_NC  errno
+000007c4 R_ARM_THM_MOVT_ABS  errno
+00000898 R_ARM_THM_MOVW_ABS_NC  errno
+0000089c R_ARM_THM_MOVT_ABS  errno
+00000924 R_ARM_THM_MOVW_ABS_NC  errno
+00000928 R_ARM_THM_MOVT_ABS  errno
+00000994 R_ARM_THM_MOVW_ABS_NC  errno
+00000998 R_ARM_THM_MOVT_ABS  errno
+00000a16 R_ARM_THM_MOVW_ABS_NC  errno
+00000a1a R_ARM_THM_MOVT_ABS  errno
+00000a8a R_ARM_THM_MOVW_ABS_NC  errno
+00000a8e R_ARM_THM_MOVT_ABS  errno
+00000ae6 R_ARM_THM_MOVW_ABS_NC  errno
+00000aea R_ARM_THM_MOVT_ABS  errno
+00000b5a R_ARM_THM_MOVW_ABS_NC  errno
+00000b5e R_ARM_THM_MOVT_ABS  errno
+00000bc0 R_ARM_THM_MOVW_ABS_NC  errno
+00000bc4 R_ARM_THM_MOVT_ABS  errno
+00000c40 R_ARM_THM_MOVW_ABS_NC  errno
+00000c44 R_ARM_THM_MOVT_ABS  errno
+00000cae R_ARM_THM_MOVW_ABS_NC  errno
+00000cb2 R_ARM_THM_MOVT_ABS  errno
+00000cfa R_ARM_THM_MOVW_ABS_NC  errno
+00000cfe R_ARM_THM_MOVT_ABS  errno
+00000d5c R_ARM_THM_MOVW_ABS_NC  errno
+00000d60 R_ARM_THM_MOVT_ABS  errno
+00000dba R_ARM_THM_MOVW_ABS_NC  errno
+00000dbe R_ARM_THM_MOVT_ABS  errno
+00000e26 R_ARM_THM_MOVW_ABS_NC  errno
+00000e2a R_ARM_THM_MOVT_ABS  errno
+00000eca R_ARM_THM_MOVW_ABS_NC  errno
+00000ece R_ARM_THM_MOVT_ABS  errno
+00000f2e R_ARM_THM_MOVW_ABS_NC  errno
+00000f32 R_ARM_THM_MOVT_ABS  errno
+00000f9c R_ARM_THM_MOVW_ABS_NC  errno
+00000fa0 R_ARM_THM_MOVT_ABS  errno
+00001004 R_ARM_THM_MOVW_ABS_NC  errno
+00001008 R_ARM_THM_MOVT_ABS  errno
+00001026 R_ARM_THM_MOVW_ABS_NC  _auxv
+0000102a R_ARM_THM_MOVT_ABS  _auxv
+0000113c R_ARM_THM_MOVW_ABS_NC  errno
+00001140 R_ARM_THM_MOVT_ABS  errno
+000011bc R_ARM_THM_MOVW_ABS_NC  errno
+000011c0 R_ARM_THM_MOVT_ABS  errno
+00001222 R_ARM_THM_MOVW_ABS_NC  errno
+00001226 R_ARM_THM_MOVT_ABS  errno
+000012a0 R_ARM_THM_MOVW_ABS_NC  errno
+000012a4 R_ARM_THM_MOVT_ABS  errno
+0000131c R_ARM_THM_MOVW_ABS_NC  errno
+00001320 R_ARM_THM_MOVT_ABS  errno
+0000138e R_ARM_THM_MOVW_ABS_NC  errno
+00001392 R_ARM_THM_MOVT_ABS  errno
+00001406 R_ARM_THM_MOVW_ABS_NC  errno
+0000140a R_ARM_THM_MOVT_ABS  errno
+0000147a R_ARM_THM_MOVW_ABS_NC  errno
+0000147e R_ARM_THM_MOVT_ABS  errno
+000014e8 R_ARM_THM_MOVW_ABS_NC  errno
+000014ec R_ARM_THM_MOVT_ABS  errno
+00001564 R_ARM_THM_MOVW_ABS_NC  errno
+00001568 R_ARM_THM_MOVT_ABS  errno
+000015e0 R_ARM_THM_MOVW_ABS_NC  errno
+000015e4 R_ARM_THM_MOVT_ABS  errno
+0000166a R_ARM_THM_MOVW_ABS_NC  errno
+0000166e R_ARM_THM_MOVT_ABS  errno
+0000189a R_ARM_THM_MOVW_ABS_NC  .LC0
+0000189e R_ARM_THM_MOVT_ABS  .LC0
+00001922 R_ARM_THM_MOVW_ABS_NC  errno
+00001926 R_ARM_THM_MOVT_ABS  errno
+00001988 R_ARM_THM_MOVW_ABS_NC  errno
+0000198c R_ARM_THM_MOVT_ABS  errno
+000019ee R_ARM_THM_MOVW_ABS_NC  errno
+000019f2 R_ARM_THM_MOVT_ABS  errno
+00001a54 R_ARM_THM_MOVW_ABS_NC  errno
+00001a58 R_ARM_THM_MOVT_ABS  errno
+00001b4a R_ARM_THM_MOVW_ABS_NC  errno
+00001b4e R_ARM_THM_MOVT_ABS  errno
+00001ba6 R_ARM_THM_MOVW_ABS_NC  errno
+00001baa R_ARM_THM_MOVT_ABS  errno
+00001c0c R_ARM_THM_MOVW_ABS_NC  errno
+00001c10 R_ARM_THM_MOVT_ABS  errno
+00001c82 R_ARM_THM_MOVW_ABS_NC  errno
+00001c86 R_ARM_THM_MOVT_ABS  errno
+00001ce6 R_ARM_THM_MOVW_ABS_NC  errno
+00001cea R_ARM_THM_MOVT_ABS  errno
+00001d4c R_ARM_THM_MOVW_ABS_NC  errno
+00001d50 R_ARM_THM_MOVT_ABS  errno
+00001dc2 R_ARM_THM_MOVW_ABS_NC  errno
+00001dc6 R_ARM_THM_MOVT_ABS  errno
+00001e2e R_ARM_THM_MOVW_ABS_NC  errno
+00001e32 R_ARM_THM_MOVT_ABS  errno
+00001e9a R_ARM_THM_MOVW_ABS_NC  errno
+00001e9e R_ARM_THM_MOVT_ABS  errno
+00001ef6 R_ARM_THM_MOVW_ABS_NC  errno
+00001efa R_ARM_THM_MOVT_ABS  errno
+00001f72 R_ARM_THM_MOVW_ABS_NC  errno
+00001f76 R_ARM_THM_MOVT_ABS  errno
+00001fa0 R_ARM_THM_MOVW_ABS_NC  errno
+00001fa4 R_ARM_THM_MOVT_ABS  errno
+00002038 R_ARM_ABS32       .text
+0000203c R_ARM_ABS32       .text
+00002040 R_ARM_ABS32       .text
+00002044 R_ARM_ABS32       .text
+00002048 R_ARM_ABS32       .text
+0000204c R_ARM_ABS32       .text
+00002050 R_ARM_ABS32       .text
+00002346 R_ARM_THM_MOVW_ABS_NC  errno
+0000234a R_ARM_THM_MOVT_ABS  errno
+000023a2 R_ARM_THM_MOVW_ABS_NC  errno
+000023a6 R_ARM_THM_MOVT_ABS  errno
+00002418 R_ARM_THM_MOVW_ABS_NC  errno
+0000241c R_ARM_THM_MOVT_ABS  errno
+000025c0 R_ARM_THM_MOVW_ABS_NC  errno
+000025c4 R_ARM_THM_MOVT_ABS  errno
+00002652 R_ARM_THM_MOVW_ABS_NC  errno
+00002656 R_ARM_THM_MOVT_ABS  errno
+000026e6 R_ARM_THM_MOVW_ABS_NC  errno
+000026ea R_ARM_THM_MOVT_ABS  errno
+00002882 R_ARM_THM_CALL    strlen
+000028ae R_ARM_THM_CALL    memcpy
+000028f2 R_ARM_THM_CALL    memcpy
+00002b30 R_ARM_THM_CALL    strlen
+00002b42 R_ARM_THM_CALL    strlen
+00002c7e R_ARM_THM_MOVW_ABS_NC  environ
+00002c82 R_ARM_THM_MOVT_ABS  environ
+00002cb2 R_ARM_THM_MOVW_ABS_NC  environ
+00002cb6 R_ARM_THM_MOVT_ABS  environ
+00002cda R_ARM_THM_MOVW_ABS_NC  environ
+00002cde R_ARM_THM_MOVT_ABS  environ
+00002cf6 R_ARM_THM_MOVW_ABS_NC  environ
+00002cfa R_ARM_THM_MOVT_ABS  environ
+00002d16 R_ARM_THM_MOVW_ABS_NC  environ
+00002d1a R_ARM_THM_MOVT_ABS  environ
+00002dc8 R_ARM_THM_CALL    __aeabi_uidiv
+00002de0 R_ARM_THM_MOVW_ABS_NC  errno
+00002de4 R_ARM_THM_MOVT_ABS  errno
+00002e5e R_ARM_THM_CALL    memcpy
+0000323c R_ARM_THM_MOVW_ABS_NC  errno
+00003240 R_ARM_THM_MOVT_ABS  errno
+000032c4 R_ARM_THM_MOVW_ABS_NC  .LC1
+000032c8 R_ARM_THM_MOVT_ABS  .LC1
+000032da R_ARM_THM_MOVW_ABS_NC  .LC2
+000032de R_ARM_THM_MOVT_ABS  .LC2
+00003302 R_ARM_THM_MOVW_ABS_NC  .LC3
+00003306 R_ARM_THM_MOVT_ABS  .LC3
+00003428 R_ARM_THM_MOVW_ABS_NC  errno
+0000342c R_ARM_THM_MOVT_ABS  errno
+000035ec R_ARM_THM_MOVW_ABS_NC  errno
+000035f0 R_ARM_THM_MOVT_ABS  errno
+00003640 R_ARM_THM_MOVW_ABS_NC  errno
+00003644 R_ARM_THM_MOVT_ABS  errno
+00003698 R_ARM_THM_MOVW_ABS_NC  errno
+0000369c R_ARM_THM_MOVT_ABS  errno
+000036cc R_ARM_THM_MOVW_ABS_NC  errno
+000036d0 R_ARM_THM_MOVT_ABS  errno
+000036fe R_ARM_THM_MOVW_ABS_NC  errno
+00003702 R_ARM_THM_MOVT_ABS  errno
+0000386c R_ARM_THM_CALL    strlen
+00003aa4 R_ARM_ABS32       .text
+00003aa8 R_ARM_ABS32       .text
+00003aac R_ARM_ABS32       .text
+00003ab0 R_ARM_ABS32       .text
+00003ab4 R_ARM_ABS32       .text
+00003ab8 R_ARM_ABS32       .text
+00003abc R_ARM_ABS32       .text
+00003ac0 R_ARM_ABS32       .text
+00003ac4 R_ARM_ABS32       .text
+00003ac8 R_ARM_ABS32       .text
+00003acc R_ARM_ABS32       .text
+00003ad0 R_ARM_ABS32       .text
+00003ad4 R_ARM_ABS32       .text
+00003ad8 R_ARM_ABS32       .text
+00003adc R_ARM_ABS32       .text
+00003ae0 R_ARM_ABS32       .text
+00003ae4 R_ARM_ABS32       .text
+00003ae8 R_ARM_ABS32       .text
+00003aec R_ARM_ABS32       .text
+00003b5e R_ARM_THM_MOVW_ABS_NC  .LC4
+00003b62 R_ARM_THM_MOVT_ABS  .LC4
+00003b72 R_ARM_THM_MOVW_ABS_NC  errno
+00003b76 R_ARM_THM_MOVT_ABS  errno
+00003bba R_ARM_THM_CALL    strlen
+00003c0a R_ARM_THM_MOVW_ABS_NC  .LC5
+00003c0e R_ARM_THM_MOVT_ABS  .LC5
+00003cb4 R_ARM_THM_MOVW_ABS_NC  __nolibc_fprintf_cb
+00003cb8 R_ARM_THM_MOVT_ABS  __nolibc_fprintf_cb
+00003dc2 R_ARM_THM_CALL    memcpy
+00003dfa R_ARM_THM_MOVW_ABS_NC  __nolibc_sprintf_cb
+00003dfe R_ARM_THM_MOVT_ABS  __nolibc_sprintf_cb
+00004016 R_ARM_THM_MOVW_ABS_NC  errno
+0000401a R_ARM_THM_MOVT_ABS  errno
+0000410a R_ARM_THM_MOVW_ABS_NC  .LC0
+0000410e R_ARM_THM_MOVT_ABS  .LC0
+00004120 R_ARM_THM_MOVW_ABS_NC  .LC6
+00004124 R_ARM_THM_MOVT_ABS  .LC6
+0000412a R_ARM_THM_MOVW_ABS_NC  .LC0
+0000412e R_ARM_THM_MOVT_ABS  .LC0
+00004132 R_ARM_THM_MOVW_ABS_NC  errno
+00004136 R_ARM_THM_MOVT_ABS  errno
+0000413e R_ARM_THM_MOVW_ABS_NC  .LC7
+00004142 R_ARM_THM_MOVT_ABS  .LC7
+00004196 R_ARM_THM_MOVW_ABS_NC  buf.1
+0000419a R_ARM_THM_MOVT_ABS  buf.1
+000041a8 R_ARM_ABS32       .data
+000041c8 R_ARM_THM_MOVW_ABS_NC  errno
+000041cc R_ARM_THM_MOVT_ABS  errno
+00004228 R_ARM_THM_MOVW_ABS_NC  errno
+0000422c R_ARM_THM_MOVT_ABS  errno
+0000436c R_ARM_THM_MOVW_ABS_NC  optind
+00004370 R_ARM_THM_MOVT_ABS  optind
+0000437a R_ARM_THM_MOVW_ABS_NC  __optpos.0
+0000437e R_ARM_THM_MOVT_ABS  __optpos.0
+00004386 R_ARM_THM_MOVW_ABS_NC  optind
+0000438a R_ARM_THM_MOVT_ABS  optind
+00004392 R_ARM_THM_MOVW_ABS_NC  optind
+00004396 R_ARM_THM_MOVT_ABS  optind
+000043a2 R_ARM_THM_MOVW_ABS_NC  optind
+000043a6 R_ARM_THM_MOVT_ABS  optind
+000043be R_ARM_THM_MOVW_ABS_NC  optind
+000043c2 R_ARM_THM_MOVT_ABS  optind
+000043de R_ARM_THM_MOVW_ABS_NC  optind
+000043e2 R_ARM_THM_MOVT_ABS  optind
+000043ea R_ARM_THM_MOVW_ABS_NC  optind
+000043ee R_ARM_THM_MOVT_ABS  optind
+000043fe R_ARM_THM_MOVW_ABS_NC  optarg
+00004402 R_ARM_THM_MOVT_ABS  optarg
+00004412 R_ARM_THM_MOVW_ABS_NC  optind
+00004416 R_ARM_THM_MOVT_ABS  optind
+00004432 R_ARM_THM_MOVW_ABS_NC  optind
+00004436 R_ARM_THM_MOVT_ABS  optind
+0000444c R_ARM_THM_MOVW_ABS_NC  optind
+00004450 R_ARM_THM_MOVT_ABS  optind
+00004466 R_ARM_THM_MOVW_ABS_NC  optind
+0000446a R_ARM_THM_MOVT_ABS  optind
+00004472 R_ARM_THM_MOVW_ABS_NC  optind
+00004476 R_ARM_THM_MOVT_ABS  optind
+00004482 R_ARM_THM_MOVW_ABS_NC  __optpos.0
+00004486 R_ARM_THM_MOVT_ABS  __optpos.0
+00004490 R_ARM_THM_MOVW_ABS_NC  __optpos.0
+00004494 R_ARM_THM_MOVT_ABS  __optpos.0
+0000449c R_ARM_THM_MOVW_ABS_NC  __optpos.0
+000044a0 R_ARM_THM_MOVT_ABS  __optpos.0
+000044a6 R_ARM_THM_MOVW_ABS_NC  optind
+000044aa R_ARM_THM_MOVT_ABS  optind
+000044b8 R_ARM_THM_MOVW_ABS_NC  __optpos.0
+000044bc R_ARM_THM_MOVT_ABS  __optpos.0
+000044c8 R_ARM_THM_MOVW_ABS_NC  optind
+000044cc R_ARM_THM_MOVT_ABS  optind
+000044da R_ARM_THM_MOVW_ABS_NC  __optpos.0
+000044de R_ARM_THM_MOVT_ABS  __optpos.0
+000044e8 R_ARM_THM_MOVW_ABS_NC  __optpos.0
+000044ec R_ARM_THM_MOVT_ABS  __optpos.0
+000044f4 R_ARM_THM_MOVW_ABS_NC  __optpos.0
+000044f8 R_ARM_THM_MOVT_ABS  __optpos.0
+000044fe R_ARM_THM_MOVW_ABS_NC  optind
+00004502 R_ARM_THM_MOVT_ABS  optind
+00004510 R_ARM_THM_MOVW_ABS_NC  __optpos.0
+00004514 R_ARM_THM_MOVT_ABS  __optpos.0
+00004522 R_ARM_THM_MOVW_ABS_NC  optind
+00004526 R_ARM_THM_MOVT_ABS  optind
+0000452e R_ARM_THM_MOVW_ABS_NC  optind
+00004532 R_ARM_THM_MOVT_ABS  optind
+00004538 R_ARM_THM_MOVW_ABS_NC  __optpos.0
+0000453c R_ARM_THM_MOVT_ABS  __optpos.0
+00004590 R_ARM_THM_MOVW_ABS_NC  optopt
+00004594 R_ARM_THM_MOVT_ABS  optopt
+000045a2 R_ARM_THM_MOVW_ABS_NC  opterr
+000045a6 R_ARM_THM_MOVT_ABS  opterr
+000045bc R_ARM_THM_MOVW_ABS_NC  .LC8
+000045c0 R_ARM_THM_MOVT_ABS  .LC8
+000045d8 R_ARM_THM_MOVW_ABS_NC  optarg
+000045dc R_ARM_THM_MOVT_ABS  optarg
+000045f2 R_ARM_THM_MOVW_ABS_NC  __optpos.0
+000045f6 R_ARM_THM_MOVT_ABS  __optpos.0
+00004600 R_ARM_THM_MOVW_ABS_NC  optind
+00004604 R_ARM_THM_MOVT_ABS  optind
+0000460c R_ARM_THM_MOVW_ABS_NC  optind
+00004610 R_ARM_THM_MOVT_ABS  optind
+00004620 R_ARM_THM_MOVW_ABS_NC  optarg
+00004624 R_ARM_THM_MOVT_ABS  optarg
+0000462a R_ARM_THM_MOVW_ABS_NC  __optpos.0
+0000462e R_ARM_THM_MOVT_ABS  __optpos.0
+00004638 R_ARM_THM_MOVW_ABS_NC  optarg
+0000463c R_ARM_THM_MOVT_ABS  optarg
+00004642 R_ARM_THM_MOVW_ABS_NC  __optpos.0
+00004646 R_ARM_THM_MOVT_ABS  __optpos.0
+0000464e R_ARM_THM_MOVW_ABS_NC  optarg
+00004652 R_ARM_THM_MOVT_ABS  optarg
+00004658 R_ARM_THM_MOVW_ABS_NC  __optpos.0
+0000465c R_ARM_THM_MOVT_ABS  __optpos.0
+00004664 R_ARM_THM_MOVW_ABS_NC  optind
+00004668 R_ARM_THM_MOVT_ABS  optind
+00004676 R_ARM_THM_MOVW_ABS_NC  optopt
+0000467a R_ARM_THM_MOVT_ABS  optopt
+0000468c R_ARM_THM_MOVW_ABS_NC  opterr
+00004690 R_ARM_THM_MOVT_ABS  opterr
+000046a6 R_ARM_THM_MOVW_ABS_NC  .LC9
+000046aa R_ARM_THM_MOVT_ABS  .LC9
+0000476e R_ARM_THM_MOVW_ABS_NC  errno
+00004772 R_ARM_THM_MOVT_ABS  errno
+000047f4 R_ARM_THM_CALL    print_number
+00004802 R_ARM_THM_CALL    openbsd_isgraph
+00004878 R_ARM_THM_MOVW_ABS_NC  COLUMNS
+0000487c R_ARM_THM_MOVT_ABS  COLUMNS
+00004888 R_ARM_THM_CALL    __aeabi_idivmod
+00004890 R_ARM_THM_MOVW_ABS_NC  COLUMNS
+00004894 R_ARM_THM_MOVT_ABS  COLUMNS
+0000489e R_ARM_THM_CALL    __aeabi_idiv
+000048aa R_ARM_THM_MOVW_ABS_NC  COLUMNS
+000048ae R_ARM_THM_MOVT_ABS  COLUMNS
+000048b8 R_ARM_THM_CALL    __aeabi_idiv
+000048cc R_ARM_THM_MOVW_ABS_NC  s_ascii_properties
+000048d0 R_ARM_THM_MOVT_ABS  s_ascii_properties
+000048d6 R_ARM_THM_CALL    print_ascii_entry
+000048da R_ARM_THM_MOVW_ABS_NC  COLUMNS
+000048de R_ARM_THM_MOVT_ABS  COLUMNS
+000048ea R_ARM_THM_CALL    __aeabi_idivmod
+000048f2 R_ARM_THM_MOVW_ABS_NC  COLUMNS
+000048f6 R_ARM_THM_MOVT_ABS  COLUMNS
+
+
+RELOCATION RECORDS FOR [.rodata]:
+OFFSET   TYPE              VALUE
+00000084 R_ARM_ABS32       openbsd_isgraph
+0000008c R_ARM_ABS32       openbsd_isprint
+00000094 R_ARM_ABS32       openbsd_iscntrl
+0000009c R_ARM_ABS32       openbsd_isspace
+000000a4 R_ARM_ABS32       openbsd_ispunct
+000000ac R_ARM_ABS32       openbsd_isalnum
+000000b4 R_ARM_ABS32       openbsd_isalpha
+000000bc R_ARM_ABS32       openbsd_isdigit
+000000c4 R_ARM_ABS32       openbsd_isupper
+000000cc R_ARM_ABS32       openbsd_islower
+
+
+RELOCATION RECORDS FOR [.text.nolibc_raise]:
+OFFSET   TYPE              VALUE
+00000008 R_ARM_THM_CALL    sys_getpid
+00000012 R_ARM_THM_CALL    sys_kill
+
+
+RELOCATION RECORDS FOR [.text.nolibc_abort]:
+OFFSET   TYPE              VALUE
+00000004 R_ARM_THM_CALL    sys_getpid
+0000000e R_ARM_THM_CALL    sys_kill
+
+
+RELOCATION RECORDS FOR [.debug_info]:
+OFFSET   TYPE              VALUE
+00000006 R_ARM_ABS32       .debug_abbrev
+0000000c R_ARM_ABS32       .debug_str
+00000011 R_ARM_ABS32       .debug_str
+00000015 R_ARM_ABS32       .debug_str
+00000019 R_ARM_ABS32       .debug_ranges
+00000021 R_ARM_ABS32       .debug_line
+00000028 R_ARM_ABS32       .debug_str
+0000002f R_ARM_ABS32       .debug_str
+00000036 R_ARM_ABS32       .debug_str
+0000003d R_ARM_ABS32       .debug_str
+00000042 R_ARM_ABS32       .debug_str
+00000050 R_ARM_ABS32       .debug_str
+00000061 R_ARM_ABS32       .debug_str
+0000006f R_ARM_ABS32       .debug_str
+00000074 R_ARM_ABS32       .debug_str
+00000082 R_ARM_ABS32       .debug_str
+00000087 R_ARM_ABS32       .debug_str
+00000093 R_ARM_ABS32       .debug_str
+000000a1 R_ARM_ABS32       .debug_str
+000000a8 R_ARM_ABS32       .debug_str
+000000b2 R_ARM_ABS32       .debug_str
+000000be R_ARM_ABS32       .debug_str
+000000ca R_ARM_ABS32       .debug_str
+000000d6 R_ARM_ABS32       .debug_str
+000000e2 R_ARM_ABS32       .debug_str
+000000ee R_ARM_ABS32       .debug_str
+000000fa R_ARM_ABS32       .debug_str
+00000106 R_ARM_ABS32       .debug_str
+00000112 R_ARM_ABS32       .debug_str
+0000011e R_ARM_ABS32       .debug_str
+0000012a R_ARM_ABS32       .debug_str
+00000136 R_ARM_ABS32       .debug_str
+00000142 R_ARM_ABS32       .debug_str
+0000014e R_ARM_ABS32       .debug_str
+0000015a R_ARM_ABS32       .debug_str
+00000166 R_ARM_ABS32       .debug_str
+00000172 R_ARM_ABS32       .debug_str
+0000017e R_ARM_ABS32       .debug_str
+0000018a R_ARM_ABS32       .debug_str
+000001a3 R_ARM_ABS32       .debug_str
+000001ad R_ARM_ABS32       .debug_str
+000001b9 R_ARM_ABS32       .debug_str
+000001c5 R_ARM_ABS32       .debug_str
+000001d1 R_ARM_ABS32       .debug_str
+000001dd R_ARM_ABS32       .debug_str
+000001e9 R_ARM_ABS32       .debug_str
+000001f5 R_ARM_ABS32       .debug_str
+00000201 R_ARM_ABS32       .debug_str
+0000020d R_ARM_ABS32       .debug_str
+00000219 R_ARM_ABS32       .debug_str
+00000225 R_ARM_ABS32       .debug_str
+00000231 R_ARM_ABS32       .debug_str
+0000023e R_ARM_ABS32       environ
+00000249 R_ARM_ABS32       .debug_str
+00000256 R_ARM_ABS32       _auxv
+00000291 R_ARM_ABS32       .debug_str
+0000029d R_ARM_ABS32       .debug_str
+000002a9 R_ARM_ABS32       .debug_str
+000002b5 R_ARM_ABS32       .debug_str
+000002dd R_ARM_ABS32       .debug_str
+000002e9 R_ARM_ABS32       .debug_str
+000002f5 R_ARM_ABS32       .debug_str
+00000302 R_ARM_ABS32       .debug_str
+0000030f R_ARM_ABS32       .debug_str
+0000031c R_ARM_ABS32       .debug_str
+0000032a R_ARM_ABS32       .debug_str
+00000338 R_ARM_ABS32       .debug_str
+00000345 R_ARM_ABS32       .debug_str
+00000352 R_ARM_ABS32       .debug_str
+0000035f R_ARM_ABS32       .debug_str
+0000036c R_ARM_ABS32       .debug_str
+00000379 R_ARM_ABS32       .debug_str
+00000386 R_ARM_ABS32       .debug_str
+00000393 R_ARM_ABS32       .debug_str
+000003a0 R_ARM_ABS32       .debug_str
+000003ad R_ARM_ABS32       .debug_str
+000003ba R_ARM_ABS32       .debug_str
+000003c7 R_ARM_ABS32       .debug_str
+000003d4 R_ARM_ABS32       .debug_str
+000003e1 R_ARM_ABS32       .debug_str
+000003ee R_ARM_ABS32       .debug_str
+000003fb R_ARM_ABS32       .debug_str
+00000408 R_ARM_ABS32       .debug_str
+00000415 R_ARM_ABS32       .debug_str
+00000422 R_ARM_ABS32       .debug_str
+0000042f R_ARM_ABS32       .debug_str
+0000043c R_ARM_ABS32       .debug_str
+00000449 R_ARM_ABS32       .debug_str
+00000456 R_ARM_ABS32       .debug_str
+00000463 R_ARM_ABS32       .debug_str
+00000491 R_ARM_ABS32       .debug_str
+0000049e R_ARM_ABS32       .debug_str
+000004ab R_ARM_ABS32       .debug_str
+000004b9 R_ARM_ABS32       .debug_str
+000004c6 R_ARM_ABS32       .debug_str
+000004d3 R_ARM_ABS32       .debug_str
+000004e6 R_ARM_ABS32       .debug_str
+000004f3 R_ARM_ABS32       .debug_str
+00000500 R_ARM_ABS32       .debug_str
+0000050e R_ARM_ABS32       .debug_str
+0000051b R_ARM_ABS32       .debug_str
+00000528 R_ARM_ABS32       .debug_str
+0000053b R_ARM_ABS32       .debug_str
+00000548 R_ARM_ABS32       .debug_str
+00000555 R_ARM_ABS32       .debug_str
+00000563 R_ARM_ABS32       .debug_str
+00000570 R_ARM_ABS32       .debug_str
+0000057d R_ARM_ABS32       .debug_str
+0000058a R_ARM_ABS32       .debug_str
+00000597 R_ARM_ABS32       .debug_str
+000005a4 R_ARM_ABS32       .debug_str
+000005ca R_ARM_ABS32       .debug_str
+000005d6 R_ARM_ABS32       .debug_str
+000005ec R_ARM_ABS32       .debug_str
+000005f8 R_ARM_ABS32       .debug_str
+0000060e R_ARM_ABS32       .debug_str
+0000061a R_ARM_ABS32       .debug_str
+00000627 R_ARM_ABS32       .debug_str
+00000634 R_ARM_ABS32       .debug_str
+00000641 R_ARM_ABS32       .debug_str
+0000064e R_ARM_ABS32       .debug_str
+0000065b R_ARM_ABS32       .debug_str
+00000668 R_ARM_ABS32       .debug_str
+00000675 R_ARM_ABS32       .debug_str
+00000682 R_ARM_ABS32       .debug_str
+0000068f R_ARM_ABS32       .debug_str
+0000069c R_ARM_ABS32       .debug_str
+000006a9 R_ARM_ABS32       .debug_str
+000006c9 R_ARM_ABS32       .debug_str
+000006d5 R_ARM_ABS32       .debug_str
+000006e1 R_ARM_ABS32       .debug_str
+000006f7 R_ARM_ABS32       .debug_str
+00000704 R_ARM_ABS32       .debug_str
+00000710 R_ARM_ABS32       .debug_str
+0000071d R_ARM_ABS32       .debug_str
+00000732 R_ARM_ABS32       .debug_str
+0000073f R_ARM_ABS32       .debug_str
+00000756 R_ARM_ABS32       .debug_str
+00000763 R_ARM_ABS32       .debug_str
+00000770 R_ARM_ABS32       .debug_str
+0000077d R_ARM_ABS32       .debug_str
+00000794 R_ARM_ABS32       .debug_str
+000007a1 R_ARM_ABS32       .debug_str
+000007ae R_ARM_ABS32       .debug_str
+000007c5 R_ARM_ABS32       .debug_str
+000007d2 R_ARM_ABS32       .debug_str
+000007df R_ARM_ABS32       .debug_str
+000007ec R_ARM_ABS32       .debug_str
+000007f9 R_ARM_ABS32       .debug_str
+00000810 R_ARM_ABS32       .debug_str
+0000081d R_ARM_ABS32       .debug_str
+0000082a R_ARM_ABS32       .debug_str
+00000851 R_ARM_ABS32       .debug_str
+0000085e R_ARM_ABS32       .debug_str
+00000875 R_ARM_ABS32       .debug_str
+00000882 R_ARM_ABS32       .debug_str
+0000088f R_ARM_ABS32       .debug_str
+000008a6 R_ARM_ABS32       .debug_str
+000008b2 R_ARM_ABS32       .debug_str
+000008be R_ARM_ABS32       .debug_str
+000008ca R_ARM_ABS32       .debug_str
+000008d6 R_ARM_ABS32       .debug_str
+000008ec R_ARM_ABS32       .debug_str
+00000909 R_ARM_ABS32       .debug_str
+0000092d R_ARM_ABS32       .debug_str
+0000093a R_ARM_ABS32       .debug_str
+00000947 R_ARM_ABS32       .debug_str
+00000955 R_ARM_ABS32       .debug_str
+00000962 R_ARM_ABS32       .debug_str
+0000096e R_ARM_ABS32       .debug_str
+00000986 R_ARM_ABS32       .debug_str
+00000992 R_ARM_ABS32       .debug_str
+0000099e R_ARM_ABS32       .debug_str
+000009aa R_ARM_ABS32       .debug_str
+000009c0 R_ARM_ABS32       .debug_str
+000009cd R_ARM_ABS32       .debug_str
+000009da R_ARM_ABS32       .debug_str
+000009e7 R_ARM_ABS32       .debug_str
+00000a03 R_ARM_ABS32       .debug_str
+00000a20 R_ARM_ABS32       .debug_str
+00000a36 R_ARM_ABS32       .debug_str
+00000a44 R_ARM_ABS32       .debug_str
+00000a6e R_ARM_ABS32       .debug_str
+00000a7b R_ARM_ABS32       .debug_str
+00000a88 R_ARM_ABS32       .debug_str
+00000aa6 R_ARM_ABS32       .debug_str
+00000ab4 R_ARM_ABS32       .debug_str
+00000ac2 R_ARM_ABS32       .debug_str
+00000ad0 R_ARM_ABS32       .debug_str
+00000ade R_ARM_ABS32       .debug_str
+00000aed R_ARM_ABS32       .debug_str
+00000afa R_ARM_ABS32       errno
+00000aff R_ARM_ABS32       .debug_str
+00000b0b R_ARM_ABS32       .debug_str
+00000b17 R_ARM_ABS32       .debug_str
+00000b22 R_ARM_ABS32       .debug_str
+00000b2f R_ARM_ABS32       .debug_str
+00000b3c R_ARM_ABS32       .debug_str
+00000b49 R_ARM_ABS32       .debug_str
+00000b56 R_ARM_ABS32       .debug_str
+00000b63 R_ARM_ABS32       .debug_str
+00000b70 R_ARM_ABS32       .debug_str
+00000b7d R_ARM_ABS32       .debug_str
+00000b8a R_ARM_ABS32       .debug_str
+00000b97 R_ARM_ABS32       .debug_str
+00000ba4 R_ARM_ABS32       .debug_str
+00000bb1 R_ARM_ABS32       .debug_str
+00000bbe R_ARM_ABS32       .debug_str
+00000bcb R_ARM_ABS32       .debug_str
+00000bd8 R_ARM_ABS32       .debug_str
+00000be5 R_ARM_ABS32       .debug_str
+00000bf2 R_ARM_ABS32       .debug_str
+00000c00 R_ARM_ABS32       .debug_str
+00000c0d R_ARM_ABS32       .debug_str
+00000c1a R_ARM_ABS32       .debug_str
+00000c2d R_ARM_ABS32       .debug_str
+00000c3a R_ARM_ABS32       .debug_str
+00000c47 R_ARM_ABS32       .debug_str
+00000c81 R_ARM_ABS32       .debug_str
+00000c8d R_ARM_ABS32       .debug_str
+00000c9a R_ARM_ABS32       .debug_str
+00000ca7 R_ARM_ABS32       .debug_str
+00000cca R_ARM_ABS32       .debug_str
+00000cd8 R_ARM_ABS32       .debug_str
+00000ce5 R_ARM_ABS32       .debug_str
+00000cf2 R_ARM_ABS32       .debug_str
+00000cff R_ARM_ABS32       .debug_str
+00000d0c R_ARM_ABS32       .debug_str
+00000d1a R_ARM_ABS32       .debug_str
+00000d29 R_ARM_ABS32       .debug_str
+00000d44 R_ARM_ABS32       .debug_str
+00000d63 R_ARM_ABS32       .debug_str
+00000d70 R_ARM_ABS32       .bss
+00000d75 R_ARM_ABS32       .debug_str
+00000d82 R_ARM_ABS32       .debug_str
+00000da0 R_ARM_ABS32       .debug_str
+00000dac R_ARM_ABS32       .debug_str
+00000db9 R_ARM_ABS32       .rodata
+00000dc9 R_ARM_ABS32       .debug_str
+00000dd6 R_ARM_ABS32       .rodata
+00000ddb R_ARM_ABS32       .debug_str
+00000de8 R_ARM_ABS32       .rodata
+00000ded R_ARM_ABS32       .debug_str
+00000e1e R_ARM_ABS32       .debug_str
+00000e2c R_ARM_ABS32       .debug_str
+00000e39 R_ARM_ABS32       .debug_str
+00000e60 R_ARM_ABS32       .debug_str
+00000e7a R_ARM_ABS32       .debug_str
+00000e87 R_ARM_ABS32       optarg
+00000e8c R_ARM_ABS32       .debug_str
+00000e99 R_ARM_ABS32       optind
+00000e9e R_ARM_ABS32       .debug_str
+00000eab R_ARM_ABS32       opterr
+00000eb0 R_ARM_ABS32       .debug_str
+00000ebd R_ARM_ABS32       optopt
+00000ec2 R_ARM_ABS32       .debug_str
+00000edb R_ARM_ABS32       .debug_str
+00000ee8 R_ARM_ABS32       .debug_str
+00000eff R_ARM_ABS32       .debug_str
+00000f0c R_ARM_ABS32       .debug_str
+00000f2f R_ARM_ABS32       .debug_str
+00000f40 R_ARM_ABS32       .debug_str
+00000f4d R_ARM_ABS32       NUM_ASCII_PROPERTIES
+00000f67 R_ARM_ABS32       .debug_str
+00000f74 R_ARM_ABS32       s_ascii_properties
+00000f79 R_ARM_ABS32       .debug_str
+00000f86 R_ARM_ABS32       COLUMNS
+00000f8b R_ARM_ABS32       .debug_str
+00000fa1 R_ARM_ABS32       .debug_str
+00000fb7 R_ARM_ABS32       .debug_str
+00000fcd R_ARM_ABS32       .debug_str
+00000fe3 R_ARM_ABS32       .debug_str
+00000ff9 R_ARM_ABS32       .debug_str
+0000100f R_ARM_ABS32       .debug_str
+00001025 R_ARM_ABS32       .debug_str
+0000103b R_ARM_ABS32       .debug_str
+00001051 R_ARM_ABS32       .debug_str
+00001067 R_ARM_ABS32       .debug_str
+0000106e R_ARM_ABS32       .debug_str
+0000108b R_ARM_ABS32       .debug_str
+00001096 R_ARM_ABS32       .text
+000010b2 R_ARM_ABS32       .text
+000010d5 R_ARM_ABS32       .debug_str
+000010e6 R_ARM_ABS32       .debug_str
+000010ed R_ARM_ABS32       .text
+000010fc R_ARM_ABS32       .debug_str
+0000110b R_ARM_ABS32       .debug_str
+0000111a R_ARM_ABS32       .debug_str
+00001136 R_ARM_ABS32       .text
+0000113f R_ARM_ABS32       .debug_str
+00001156 R_ARM_ABS32       .debug_str
+0000115d R_ARM_ABS32       .text
+00001188 R_ARM_ABS32       .text
+00001191 R_ARM_ABS32       .debug_str
+000011a2 R_ARM_ABS32       .debug_str
+000011ad R_ARM_ABS32       .text
+000011cb R_ARM_ABS32       .debug_str
+000011da R_ARM_ABS32       .debug_str
+000011e9 R_ARM_ABS32       .debug_ranges
+000011ee R_ARM_ABS32       .debug_str
+00001205 R_ARM_ABS32       .debug_str
+00001210 R_ARM_ABS32       .text
+0000122e R_ARM_ABS32       .debug_str
+0000123d R_ARM_ABS32       .debug_str
+00001259 R_ARM_ABS32       .text
+00001262 R_ARM_ABS32       .debug_str
+00001270 R_ARM_ABS32       .debug_str
+0000127e R_ARM_ABS32       .debug_str
+0000128c R_ARM_ABS32       .debug_str
+0000129a R_ARM_ABS32       .debug_str
+000012a8 R_ARM_ABS32       .debug_str
+000012b8 R_ARM_ABS32       .debug_str
+000012c3 R_ARM_ABS32       .text
+000012d2 R_ARM_ABS32       .debug_str
+000012e1 R_ARM_ABS32       .debug_str
+000012f0 R_ARM_ABS32       .debug_str
+000012ff R_ARM_ABS32       .debug_str
+0000130c R_ARM_ABS32       .bss
+00001338 R_ARM_ABS32       .debug_str
+0000134e R_ARM_ABS32       .debug_str
+00001359 R_ARM_ABS32       .text
+00001368 R_ARM_ABS32       .debug_str
+00001378 R_ARM_ABS32       .debug_str
+00001388 R_ARM_ABS32       .debug_str
+000013a9 R_ARM_ABS32       .debug_str
+0000140c R_ARM_ABS32       .debug_str
+00001417 R_ARM_ABS32       .text
+00001426 R_ARM_ABS32       .debug_str
+00001443 R_ARM_ABS32       .debug_str
+0000144e R_ARM_ABS32       .text
+0000145d R_ARM_ABS32       .debug_str
+0000147b R_ARM_ABS32       .debug_str
+00001486 R_ARM_ABS32       .text
+000014a4 R_ARM_ABS32       .debug_str
+000014ab R_ARM_ABS32       .text
+000014b6 R_ARM_ABS32       .debug_str
+000014c2 R_ARM_ABS32       .text
+000014d1 R_ARM_ABS32       .debug_str
+000014ef R_ARM_ABS32       .data
+00001505 R_ARM_ABS32       .debug_str
+00001511 R_ARM_ABS32       .text
+00001520 R_ARM_ABS32       .debug_str
+00001540 R_ARM_ABS32       .debug_str
+00001550 R_ARM_ABS32       .debug_str
+00001561 R_ARM_ABS32       .debug_str
+00001569 R_ARM_ABS32       .text
+00001589 R_ARM_ABS32       .debug_str
+00001595 R_ARM_ABS32       .text
+000015b4 R_ARM_ABS32       .debug_str
+000015c5 R_ARM_ABS32       .debug_str
+000015e6 R_ARM_ABS32       .debug_str
+000015f2 R_ARM_ABS32       .text
+00001611 R_ARM_ABS32       .debug_str
+00001621 R_ARM_ABS32       .debug_str
+00001631 R_ARM_ABS32       .debug_str
+00001641 R_ARM_ABS32       .debug_str
+00001651 R_ARM_ABS32       .debug_str
+00001661 R_ARM_ABS32       .debug_str
+00001671 R_ARM_ABS32       .debug_str
+00001681 R_ARM_ABS32       .debug_str
+00001691 R_ARM_ABS32       .debug_str
+00001699 R_ARM_ABS32       .text
+0000169f R_ARM_ABS32       .debug_str
+000016ab R_ARM_ABS32       .text
+000016db R_ARM_ABS32       .debug_str
+000016fc R_ARM_ABS32       .debug_str
+00001708 R_ARM_ABS32       .text
+00001737 R_ARM_ABS32       .debug_str
+00001748 R_ARM_ABS32       .debug_str
+00001754 R_ARM_ABS32       .text
+00001773 R_ARM_ABS32       .debug_str
+00001794 R_ARM_ABS32       .debug_str
+000017b5 R_ARM_ABS32       .debug_str
+000017c1 R_ARM_ABS32       .text
+000017e0 R_ARM_ABS32       .debug_str
+00001800 R_ARM_ABS32       .debug_str
+00001810 R_ARM_ABS32       .debug_str
+00001831 R_ARM_ABS32       .debug_str
+0000183d R_ARM_ABS32       .text
+0000184c R_ARM_ABS32       .debug_str
+0000186c R_ARM_ABS32       .debug_str
+0000187c R_ARM_ABS32       .debug_str
+0000188d R_ARM_ABS32       .debug_str
+00001899 R_ARM_ABS32       .text
+000018c8 R_ARM_ABS32       .debug_str
+000018e9 R_ARM_ABS32       .debug_str
+000018f5 R_ARM_ABS32       .text
+00001923 R_ARM_ABS32       .debug_str
+00001933 R_ARM_ABS32       .debug_str
+00001944 R_ARM_ABS32       .debug_str
+00001950 R_ARM_ABS32       .text
+00001970 R_ARM_ABS32       .debug_str
+00001991 R_ARM_ABS32       .debug_str
+0000199d R_ARM_ABS32       .text
+000019ac R_ARM_ABS32       .debug_str
+000019cd R_ARM_ABS32       .debug_str
+000019ee R_ARM_ABS32       .debug_str
+000019fa R_ARM_ABS32       .text
+00001a19 R_ARM_ABS32       .debug_str
+00001a2a R_ARM_ABS32       .debug_str
+00001a36 R_ARM_ABS32       .text
+00001a45 R_ARM_ABS32       .debug_str
+00001a65 R_ARM_ABS32       .debug_str
+00001a76 R_ARM_ABS32       .debug_str
+00001a82 R_ARM_ABS32       .text
+00001a91 R_ARM_ABS32       .debug_str
+00001ab1 R_ARM_ABS32       .debug_str
+00001ac2 R_ARM_ABS32       .debug_str
+00001acd R_ARM_ABS32       .text
+00001aeb R_ARM_ABS32       .debug_str
+00001b19 R_ARM_ABS32       .debug_str
+00001b28 R_ARM_ABS32       .debug_str
+00001b37 R_ARM_ABS32       .debug_str
+00001b60 R_ARM_ABS32       .debug_str
+00001b6f R_ARM_ABS32       .debug_str
+00001bad R_ARM_ABS32       .debug_str
+00001bbe R_ARM_ABS32       .debug_str
+00001bcf R_ARM_ABS32       .debug_str
+00001bd7 R_ARM_ABS32       .text
+00001bdc R_ARM_ABS32       .debug_str
+00001be4 R_ARM_ABS32       .text
+00001be9 R_ARM_ABS32       .text
+00001c05 R_ARM_ABS32       .debug_str
+00001c10 R_ARM_ABS32       .text
+00001c2c R_ARM_ABS32       .debug_str
+00001c3b R_ARM_ABS32       .debug_str
+00001c67 R_ARM_ABS32       .debug_str
+00001c72 R_ARM_ABS32       .text
+00001c8f R_ARM_ABS32       .debug_str
+00001c9a R_ARM_ABS32       .text
+00001cb6 R_ARM_ABS32       .debug_str
+00001cc6 R_ARM_ABS32       .debug_str
+00001cd1 R_ARM_ABS32       .text
+00001ced R_ARM_ABS32       .debug_str
+00001cfc R_ARM_ABS32       .debug_str
+00001d0b R_ARM_ABS32       .debug_str
+00001d1a R_ARM_ABS32       .debug_str
+00001d31 R_ARM_ABS32       .debug_str
+00001d3c R_ARM_ABS32       .text
+00001d5a R_ARM_ABS32       .debug_str
+00001d69 R_ARM_ABS32       .debug_str
+00001d96 R_ARM_ABS32       .debug_str
+00001da1 R_ARM_ABS32       .text
+00001dbe R_ARM_ABS32       .debug_str
+00001dc9 R_ARM_ABS32       .text
+00001de5 R_ARM_ABS32       .debug_str
+00001e03 R_ARM_ABS32       .debug_str
+00001e0e R_ARM_ABS32       .text
+00001e19 R_ARM_ABS32       .debug_str
+00001e24 R_ARM_ABS32       .text
+00001e33 R_ARM_ABS32       .debug_str
+00001e51 R_ARM_ABS32       .debug_str
+00001e5c R_ARM_ABS32       .text
+00001e6b R_ARM_ABS32       .debug_str
+00001e88 R_ARM_ABS32       .debug_str
+00001e93 R_ARM_ABS32       .text
+00001ea2 R_ARM_ABS32       .debug_str
+00001ebf R_ARM_ABS32       .debug_str
+00001eca R_ARM_ABS32       .text
+00001ed9 R_ARM_ABS32       .debug_str
+00001ef6 R_ARM_ABS32       .debug_str
+00001f01 R_ARM_ABS32       .text
+00001f10 R_ARM_ABS32       .debug_str
+00001f1f R_ARM_ABS32       .debug_str
+00001f2e R_ARM_ABS32       .debug_str
+00001f4c R_ARM_ABS32       .debug_str
+00001f57 R_ARM_ABS32       .text
+00001f74 R_ARM_ABS32       .debug_str
+00001f84 R_ARM_ABS32       .debug_str
+00001f90 R_ARM_ABS32       .text
+00001f9f R_ARM_ABS32       .debug_str
+00001faf R_ARM_ABS32       .debug_str
+00001fbf R_ARM_ABS32       .debug_str
+00001fd0 R_ARM_ABS32       .debug_str
+00001fdc R_ARM_ABS32       .text
+00001feb R_ARM_ABS32       .debug_str
+00001ffb R_ARM_ABS32       .debug_str
+0000200b R_ARM_ABS32       .debug_str
+0000201c R_ARM_ABS32       .debug_str
+00002028 R_ARM_ABS32       .text
+00002037 R_ARM_ABS32       .debug_str
+00002047 R_ARM_ABS32       .debug_str
+00002057 R_ARM_ABS32       .debug_str
+00002068 R_ARM_ABS32       .debug_str
+00002074 R_ARM_ABS32       .text
+00002083 R_ARM_ABS32       .debug_str
+00002093 R_ARM_ABS32       .debug_str
+000020a3 R_ARM_ABS32       .debug_str
+000020b4 R_ARM_ABS32       .debug_str
+000020c0 R_ARM_ABS32       .text
+000020cf R_ARM_ABS32       .debug_str
+000020df R_ARM_ABS32       .debug_str
+000020ef R_ARM_ABS32       .debug_str
+00002100 R_ARM_ABS32       .debug_str
+0000210c R_ARM_ABS32       .text
+0000211b R_ARM_ABS32       .debug_str
+0000212b R_ARM_ABS32       .debug_str
+0000213b R_ARM_ABS32       .debug_str
+0000214c R_ARM_ABS32       .debug_str
+00002158 R_ARM_ABS32       .text
+00002167 R_ARM_ABS32       .debug_str
+00002178 R_ARM_ABS32       .debug_str
+00002189 R_ARM_ABS32       .debug_str
+0000219a R_ARM_ABS32       .debug_str
+000021aa R_ARM_ABS32       .debug_str
+000021ba R_ARM_ABS32       .debug_str
+000021da R_ARM_ABS32       .debug_str
+000021fa R_ARM_ABS32       .debug_str
+0000220a R_ARM_ABS32       .debug_str
+00002231 R_ARM_ABS32       .text
+00002237 R_ARM_ABS32       .debug_str
+00002243 R_ARM_ABS32       .text
+00002261 R_ARM_ABS32       .debug_str
+00002292 R_ARM_ABS32       .debug_str
+0000229e R_ARM_ABS32       .text
+000022bc R_ARM_ABS32       .debug_str
+000022dd R_ARM_ABS32       .debug_str
+0000230e R_ARM_ABS32       .debug_str
+0000231a R_ARM_ABS32       .text
+00002338 R_ARM_ABS32       .debug_str
+00002358 R_ARM_ABS32       .debug_str
+00002378 R_ARM_ABS32       .text
+00002391 R_ARM_ABS32       .debug_str
+0000239d R_ARM_ABS32       .text
+000023bb R_ARM_ABS32       .debug_str
+000023ec R_ARM_ABS32       .debug_str
+000023f7 R_ARM_ABS32       .text
+00002414 R_ARM_ABS32       .debug_str
+00002432 R_ARM_ABS32       .debug_str
+00002460 R_ARM_ABS32       .debug_str
+0000246b R_ARM_ABS32       .text
+00002488 R_ARM_ABS32       .debug_str
+000024a6 R_ARM_ABS32       .debug_str
+000024c5 R_ARM_ABS32       .debug_str
+000024d0 R_ARM_ABS32       .text
+000024df R_ARM_ABS32       .debug_str
+000024ee R_ARM_ABS32       .debug_str
+000024fd R_ARM_ABS32       .debug_str
+0000250c R_ARM_ABS32       .debug_str
+0000252a R_ARM_ABS32       .text
+00002533 R_ARM_ABS32       .debug_str
+00002550 R_ARM_ABS32       .debug_str
+0000255b R_ARM_ABS32       .text
+0000256a R_ARM_ABS32       .debug_str
+00002579 R_ARM_ABS32       .debug_str
+00002596 R_ARM_ABS32       .debug_str
+000025a1 R_ARM_ABS32       .text
+000025bf R_ARM_ABS32       .debug_str
+000025cf R_ARM_ABS32       .debug_str
+000025da R_ARM_ABS32       .text
+000025e9 R_ARM_ABS32       .debug_str
+00002615 R_ARM_ABS32       .debug_str
+0000261c R_ARM_ABS32       .text
+0000263a R_ARM_ABS32       .debug_str
+00002649 R_ARM_ABS32       .text
+00002652 R_ARM_ABS32       .debug_str
+00002663 R_ARM_ABS32       .debug_str
+0000266e R_ARM_ABS32       .text
+0000268b R_ARM_ABS32       .debug_str
+00002696 R_ARM_ABS32       .text
+000026de R_ARM_ABS32       .debug_str
+000026e5 R_ARM_ABS32       .text.nolibc_abort
+000026f0 R_ARM_ABS32       .debug_str
+000026fc R_ARM_ABS32       .text
+0000271a R_ARM_ABS32       .debug_str
+00002726 R_ARM_ABS32       .text
+00002744 R_ARM_ABS32       .debug_str
+00002750 R_ARM_ABS32       .text
+0000275f R_ARM_ABS32       .debug_str
+0000276f R_ARM_ABS32       .debug_str
+0000277f R_ARM_ABS32       .debug_str
+0000278f R_ARM_ABS32       .debug_str
+000027a0 R_ARM_ABS32       .debug_str
+000027ac R_ARM_ABS32       .text
+000027e8 R_ARM_ABS32       .debug_str
+000027f4 R_ARM_ABS32       .text
+00002823 R_ARM_ABS32       .debug_str
+00002844 R_ARM_ABS32       .debug_str
+00002850 R_ARM_ABS32       .text
+0000287b R_ARM_ABS32       .debug_str
+00002899 R_ARM_ABS32       .debug_str
+000028aa R_ARM_ABS32       .debug_str
+000028b6 R_ARM_ABS32       .text
+000028e5 R_ARM_ABS32       .debug_str
+000028f5 R_ARM_ABS32       .debug_str
+00002906 R_ARM_ABS32       .debug_str
+00002911 R_ARM_ABS32       .text
+0000293e R_ARM_ABS32       .debug_str
+0000295d R_ARM_ABS32       .debug_str
+00002968 R_ARM_ABS32       .text
+00002995 R_ARM_ABS32       .debug_str
+000029b4 R_ARM_ABS32       .debug_str
+000029bf R_ARM_ABS32       .text
+000029dd R_ARM_ABS32       .debug_str
+00002a0b R_ARM_ABS32       .debug_str
+00002a16 R_ARM_ABS32       .text
+00002a53 R_ARM_ABS32       .debug_str
+00002a5e R_ARM_ABS32       .text
+00002a7c R_ARM_ABS32       .debug_str
+00002a9b R_ARM_ABS32       .debug_str
+00002aa6 R_ARM_ABS32       .text.nolibc_strlen
+00002ad4 R_ARM_ABS32       .debug_str
+00002adf R_ARM_ABS32       .text
+00002b1c R_ARM_ABS32       .debug_str
+00002b27 R_ARM_ABS32       .text
+00002b5d R_ARM_ABS32       .debug_str
+00002b6d R_ARM_ABS32       .debug_str
+00002b78 R_ARM_ABS32       .text
+00002ba2 R_ARM_ABS32       .debug_str
+00002bad R_ARM_ABS32       .text
+00002bf3 R_ARM_ABS32       .debug_str
+00002bfe R_ARM_ABS32       .text.nolibc_memset
+00002c46 R_ARM_ABS32       .debug_str
+00002c51 R_ARM_ABS32       .text.nolibc_memcpy
+00002c9d R_ARM_ABS32       .debug_str
+00002ca8 R_ARM_ABS32       .text.nolibc_memmove
+00002d03 R_ARM_ABS32       .debug_str
+00002d0e R_ARM_ABS32       .text
+00002d64 R_ARM_ABS32       .debug_str
+00002d6f R_ARM_ABS32       .text
+00002d7e R_ARM_ABS32       .debug_str
+00002d8d R_ARM_ABS32       .debug_str
+00002d9d R_ARM_ABS32       .debug_str
+00002dac R_ARM_ABS32       .text
+00002db9 R_ARM_ABS32       .debug_str
+00002dc9 R_ARM_ABS32       .debug_ranges
+00002dce R_ARM_ABS32       .debug_str
+00002ddf R_ARM_ABS32       .debug_str
+00002dea R_ARM_ABS32       .text
+00002df9 R_ARM_ABS32       .debug_str
+00002e08 R_ARM_ABS32       .debug_str
+00002e17 R_ARM_ABS32       .debug_str
+00002e26 R_ARM_ABS32       .text
+00002e2f R_ARM_ABS32       .debug_str
+00002e3d R_ARM_ABS32       .debug_str
+00002e4b R_ARM_ABS32       .debug_str
+00002e59 R_ARM_ABS32       .debug_str
+00002e67 R_ARM_ABS32       .debug_str
+00002e77 R_ARM_ABS32       .debug_str
+00002e82 R_ARM_ABS32       .text
+00002e91 R_ARM_ABS32       .debug_str
+00002ea0 R_ARM_ABS32       .debug_str
+00002eaf R_ARM_ABS32       .debug_str
+00002ebf R_ARM_ABS32       .debug_str
+00002ece R_ARM_ABS32       .text
+00002edb R_ARM_ABS32       .debug_str
+00002eeb R_ARM_ABS32       .debug_ranges
+00002ef0 R_ARM_ABS32       .debug_str
+00002f01 R_ARM_ABS32       .debug_str
+00002f0c R_ARM_ABS32       .text
+00002f1b R_ARM_ABS32       .debug_str
+00002f2a R_ARM_ABS32       .debug_str
+00002f39 R_ARM_ABS32       .debug_str
+00002f48 R_ARM_ABS32       .debug_str
+00002f57 R_ARM_ABS32       .text
+00002f60 R_ARM_ABS32       .debug_str
+00002f6e R_ARM_ABS32       .debug_str
+00002f7c R_ARM_ABS32       .debug_str
+00002f8a R_ARM_ABS32       .debug_str
+00002f98 R_ARM_ABS32       .debug_str
+00002fa8 R_ARM_ABS32       .debug_str
+00002fb3 R_ARM_ABS32       .text
+00002fdf R_ARM_ABS32       .debug_ranges
+00002fe4 R_ARM_ABS32       .debug_str
+00002ff5 R_ARM_ABS32       .debug_str
+00003000 R_ARM_ABS32       .text
+0000300f R_ARM_ABS32       .debug_str
+0000301e R_ARM_ABS32       .debug_str
+0000302e R_ARM_ABS32       .debug_str
+00003039 R_ARM_ABS32       .text
+00003048 R_ARM_ABS32       .debug_str
+00003057 R_ARM_ABS32       .debug_str
+00003067 R_ARM_ABS32       .debug_str
+00003072 R_ARM_ABS32       .text
+00003081 R_ARM_ABS32       .debug_str
+00003090 R_ARM_ABS32       .debug_str
+000030a0 R_ARM_ABS32       .debug_str
+000030ab R_ARM_ABS32       .text
+000030ba R_ARM_ABS32       .debug_str
+000030c9 R_ARM_ABS32       .debug_str
+000030d9 R_ARM_ABS32       .debug_str
+000030e4 R_ARM_ABS32       .text
+00003101 R_ARM_ABS32       .debug_str
+00003110 R_ARM_ABS32       .debug_str
+0000311f R_ARM_ABS32       .debug_str
+0000312e R_ARM_ABS32       .debug_ranges
+00003133 R_ARM_ABS32       .debug_str
+00003144 R_ARM_ABS32       .debug_str
+0000314f R_ARM_ABS32       .text
+0000316c R_ARM_ABS32       .debug_str
+0000317b R_ARM_ABS32       .debug_str
+0000318a R_ARM_ABS32       .debug_str
+00003199 R_ARM_ABS32       .text
+000031a2 R_ARM_ABS32       .debug_str
+000031b0 R_ARM_ABS32       .debug_str
+000031be R_ARM_ABS32       .debug_str
+000031cc R_ARM_ABS32       .debug_str
+000031da R_ARM_ABS32       .debug_str
+000031ea R_ARM_ABS32       .debug_str
+000031f5 R_ARM_ABS32       .text.nolibc_raise
+00003204 R_ARM_ABS32       .debug_str
+00003214 R_ARM_ABS32       .debug_str
+0000321f R_ARM_ABS32       .text
+0000322e R_ARM_ABS32       .debug_str
+0000323d R_ARM_ABS32       .debug_ranges
+00003242 R_ARM_ABS32       .debug_str
+00003253 R_ARM_ABS32       .debug_str
+0000325e R_ARM_ABS32       .text
+0000326d R_ARM_ABS32       .debug_str
+0000327c R_ARM_ABS32       .text
+00003285 R_ARM_ABS32       .debug_str
+00003293 R_ARM_ABS32       .debug_str
+000032a3 R_ARM_ABS32       .debug_str
+000032ae R_ARM_ABS32       .text
+000032cb R_ARM_ABS32       .debug_str
+000032da R_ARM_ABS32       .debug_ranges
+000032df R_ARM_ABS32       .debug_str
+000032f0 R_ARM_ABS32       .debug_str
+000032fb R_ARM_ABS32       .text
+00003318 R_ARM_ABS32       .debug_str
+00003327 R_ARM_ABS32       .text
+00003330 R_ARM_ABS32       .debug_str
+0000333e R_ARM_ABS32       .debug_str
+0000334c R_ARM_ABS32       .debug_str
+0000335c R_ARM_ABS32       .debug_str
+00003367 R_ARM_ABS32       .text
+00003384 R_ARM_ABS32       .debug_str
+0000338f R_ARM_ABS32       .text
+000033ac R_ARM_ABS32       .debug_str
+000033b7 R_ARM_ABS32       .text
+000033d4 R_ARM_ABS32       .debug_str
+000033df R_ARM_ABS32       .text
+000033fc R_ARM_ABS32       .debug_str
+00003407 R_ARM_ABS32       .text
+00003424 R_ARM_ABS32       .debug_str
+0000342f R_ARM_ABS32       .text
+0000344c R_ARM_ABS32       .debug_str
+00003457 R_ARM_ABS32       .text
+00003474 R_ARM_ABS32       .debug_str
+0000347f R_ARM_ABS32       .text
+0000349c R_ARM_ABS32       .debug_str
+000034a7 R_ARM_ABS32       .text
+000034c4 R_ARM_ABS32       .debug_str
+000034cf R_ARM_ABS32       .text
+000034ec R_ARM_ABS32       .debug_str
+000034f7 R_ARM_ABS32       .text
+00003514 R_ARM_ABS32       .debug_str
+0000351f R_ARM_ABS32       .text
+0000353c R_ARM_ABS32       .debug_str
+00003547 R_ARM_ABS32       .text
+00003564 R_ARM_ABS32       .debug_str
+0000356f R_ARM_ABS32       .text
+0000357e R_ARM_ABS32       .debug_str
+00003594 R_ARM_ABS32       .debug_str
+0000359f R_ARM_ABS32       .text
+000035be R_ARM_ABS32       .debug_str
+000035ce R_ARM_ABS32       .debug_str
+000035de R_ARM_ABS32       .debug_str
+000035fc R_ARM_ABS32       .debug_str
+0000361b R_ARM_ABS32       .debug_str
+00003626 R_ARM_ABS32       .text
+00003635 R_ARM_ABS32       .debug_str
+00003653 R_ARM_ABS32       .debug_str
+00003662 R_ARM_ABS32       .debug_str
+00003671 R_ARM_ABS32       .debug_ranges
+00003676 R_ARM_ABS32       .debug_str
+0000368d R_ARM_ABS32       .debug_str
+00003698 R_ARM_ABS32       .text
+000036a7 R_ARM_ABS32       .debug_str
+000036c5 R_ARM_ABS32       .debug_str
+000036d4 R_ARM_ABS32       .debug_str
+000036e3 R_ARM_ABS32       .debug_str
+000036f2 R_ARM_ABS32       .text
+000036fb R_ARM_ABS32       .debug_str
+00003709 R_ARM_ABS32       .debug_str
+00003717 R_ARM_ABS32       .debug_str
+00003725 R_ARM_ABS32       .debug_str
+00003733 R_ARM_ABS32       .debug_str
+00003741 R_ARM_ABS32       .debug_str
+00003757 R_ARM_ABS32       .debug_str
+00003762 R_ARM_ABS32       .text
+00003780 R_ARM_ABS32       .debug_ranges
+00003785 R_ARM_ABS32       .debug_str
+0000379c R_ARM_ABS32       .debug_str
+000037a7 R_ARM_ABS32       .text
+000037c5 R_ARM_ABS32       .text
+000037ce R_ARM_ABS32       .debug_str
+000037dc R_ARM_ABS32       .debug_str
+000037ec R_ARM_ABS32       .debug_str
+000037f7 R_ARM_ABS32       .text
+00003814 R_ARM_ABS32       .debug_str
+00003823 R_ARM_ABS32       .debug_str
+00003832 R_ARM_ABS32       .debug_ranges
+00003837 R_ARM_ABS32       .debug_str
+0000384e R_ARM_ABS32       .debug_str
+00003859 R_ARM_ABS32       .text
+00003876 R_ARM_ABS32       .debug_str
+00003885 R_ARM_ABS32       .debug_str
+00003894 R_ARM_ABS32       .text
+0000389d R_ARM_ABS32       .debug_str
+000038ab R_ARM_ABS32       .debug_str
+000038b9 R_ARM_ABS32       .debug_str
+000038c7 R_ARM_ABS32       .debug_str
+000038d7 R_ARM_ABS32       .debug_str
+000038e2 R_ARM_ABS32       .text
+000038ff R_ARM_ABS32       .debug_str
+0000390e R_ARM_ABS32       .debug_str
+0000391d R_ARM_ABS32       .debug_ranges
+00003922 R_ARM_ABS32       .debug_str
+00003933 R_ARM_ABS32       .debug_str
+0000393e R_ARM_ABS32       .text
+0000395b R_ARM_ABS32       .debug_str
+0000396a R_ARM_ABS32       .debug_str
+00003979 R_ARM_ABS32       .text
+00003982 R_ARM_ABS32       .debug_str
+00003990 R_ARM_ABS32       .debug_str
+0000399e R_ARM_ABS32       .debug_str
+000039ac R_ARM_ABS32       .debug_str
+000039bc R_ARM_ABS32       .debug_str
+000039c7 R_ARM_ABS32       .text
+000039e4 R_ARM_ABS32       .debug_str
+000039f3 R_ARM_ABS32       .debug_str
+00003a02 R_ARM_ABS32       .debug_str
+00003a11 R_ARM_ABS32       .debug_ranges
+00003a16 R_ARM_ABS32       .debug_str
+00003a33 R_ARM_ABS32       .debug_str
+00003a3e R_ARM_ABS32       .text
+00003a5b R_ARM_ABS32       .debug_str
+00003a6a R_ARM_ABS32       .debug_str
+00003a79 R_ARM_ABS32       .debug_str
+00003a88 R_ARM_ABS32       .text
+00003a91 R_ARM_ABS32       .debug_str
+00003a9f R_ARM_ABS32       .debug_str
+00003aad R_ARM_ABS32       .debug_str
+00003abb R_ARM_ABS32       .debug_str
+00003ac9 R_ARM_ABS32       .debug_str
+00003ad9 R_ARM_ABS32       .debug_str
+00003ae4 R_ARM_ABS32       .text
+00003b01 R_ARM_ABS32       .debug_str
+00003b10 R_ARM_ABS32       .debug_ranges
+00003b15 R_ARM_ABS32       .debug_str
+00003b26 R_ARM_ABS32       .debug_str
+00003b31 R_ARM_ABS32       .text
+00003b4e R_ARM_ABS32       .debug_str
+00003b5d R_ARM_ABS32       .text
+00003b66 R_ARM_ABS32       .debug_str
+00003b74 R_ARM_ABS32       .debug_str
+00003b82 R_ARM_ABS32       .debug_str
+00003b92 R_ARM_ABS32       .debug_str
+00003b9d R_ARM_ABS32       .text
+00003bac R_ARM_ABS32       .debug_str
+00003bbb R_ARM_ABS32       .debug_str
+00003bca R_ARM_ABS32       .debug_ranges
+00003bcf R_ARM_ABS32       .debug_str
+00003be0 R_ARM_ABS32       .debug_str
+00003beb R_ARM_ABS32       .text
+00003bfa R_ARM_ABS32       .debug_str
+00003c09 R_ARM_ABS32       .debug_str
+00003c18 R_ARM_ABS32       .text
+00003c21 R_ARM_ABS32       .debug_str
+00003c2f R_ARM_ABS32       .debug_str
+00003c3d R_ARM_ABS32       .debug_str
+00003c4d R_ARM_ABS32       .debug_str
+00003c58 R_ARM_ABS32       .text
+00003c67 R_ARM_ABS32       .debug_str
+00003c76 R_ARM_ABS32       .debug_str
+00003c85 R_ARM_ABS32       .debug_str
+00003c94 R_ARM_ABS32       .debug_str
+00003ca3 R_ARM_ABS32       .debug_ranges
+00003ca8 R_ARM_ABS32       .debug_str
+00003cb9 R_ARM_ABS32       .debug_str
+00003cc4 R_ARM_ABS32       .text
+00003cd3 R_ARM_ABS32       .debug_str
+00003ce2 R_ARM_ABS32       .debug_str
+00003cf1 R_ARM_ABS32       .debug_str
+00003d00 R_ARM_ABS32       .debug_str
+00003d0f R_ARM_ABS32       .text
+00003d18 R_ARM_ABS32       .debug_str
+00003d26 R_ARM_ABS32       .debug_str
+00003d34 R_ARM_ABS32       .debug_str
+00003d42 R_ARM_ABS32       .debug_str
+00003d50 R_ARM_ABS32       .debug_str
+00003d60 R_ARM_ABS32       .debug_str
+00003d6b R_ARM_ABS32       .text
+00003d7a R_ARM_ABS32       .debug_str
+00003d89 R_ARM_ABS32       .debug_str
+00003d98 R_ARM_ABS32       .debug_ranges
+00003d9d R_ARM_ABS32       .debug_str
+00003dae R_ARM_ABS32       .debug_str
+00003db9 R_ARM_ABS32       .text
+00003dc8 R_ARM_ABS32       .debug_str
+00003dd7 R_ARM_ABS32       .debug_str
+00003de6 R_ARM_ABS32       .text
+00003def R_ARM_ABS32       .debug_str
+00003dfd R_ARM_ABS32       .debug_str
+00003e0b R_ARM_ABS32       .debug_str
+00003e1b R_ARM_ABS32       .debug_str
+00003e26 R_ARM_ABS32       .text
+00003e35 R_ARM_ABS32       .debug_str
+00003e44 R_ARM_ABS32       .debug_ranges
+00003e49 R_ARM_ABS32       .debug_str
+00003e5a R_ARM_ABS32       .debug_str
+00003e65 R_ARM_ABS32       .text
+00003e74 R_ARM_ABS32       .debug_str
+00003e83 R_ARM_ABS32       .text
+00003e8c R_ARM_ABS32       .debug_str
+00003e9a R_ARM_ABS32       .debug_str
+00003eaa R_ARM_ABS32       .debug_str
+00003eb5 R_ARM_ABS32       .text
+00003ec4 R_ARM_ABS32       .debug_str
+00003ee2 R_ARM_ABS32       .debug_str
+00003ef1 R_ARM_ABS32       .debug_ranges
+00003ef6 R_ARM_ABS32       .debug_str
+00003f13 R_ARM_ABS32       .debug_str
+00003f1e R_ARM_ABS32       .text
+00003f2d R_ARM_ABS32       .debug_str
+00003f4b R_ARM_ABS32       .debug_str
+00003f5a R_ARM_ABS32       .text
+00003f63 R_ARM_ABS32       .debug_str
+00003f71 R_ARM_ABS32       .debug_str
+00003f7f R_ARM_ABS32       .debug_str
+00003f8d R_ARM_ABS32       .debug_str
+00003f9d R_ARM_ABS32       .debug_str
+00003fa8 R_ARM_ABS32       .text
+00003fb7 R_ARM_ABS32       .debug_str
+00003fdb R_ARM_ABS32       .debug_str
+00003fe6 R_ARM_ABS32       .text
+00003ff5 R_ARM_ABS32       .debug_str
+00004004 R_ARM_ABS32       .debug_str
+00004013 R_ARM_ABS32       .debug_str
+00004022 R_ARM_ABS32       .debug_str
+0000403e R_ARM_ABS32       .debug_str
+00004049 R_ARM_ABS32       .text
+00004058 R_ARM_ABS32       .debug_str
+00004067 R_ARM_ABS32       .debug_str
+00004076 R_ARM_ABS32       .debug_str
+00004085 R_ARM_ABS32       .debug_str
+00004094 R_ARM_ABS32       .text
+0000409d R_ARM_ABS32       .debug_str
+000040ab R_ARM_ABS32       .debug_str
+000040b9 R_ARM_ABS32       .debug_str
+000040c7 R_ARM_ABS32       .debug_str
+000040d5 R_ARM_ABS32       .debug_str
+000040e5 R_ARM_ABS32       .debug_str
+000040f0 R_ARM_ABS32       .text
+000040ff R_ARM_ABS32       .debug_str
+0000411c R_ARM_ABS32       .debug_ranges
+00004121 R_ARM_ABS32       .debug_str
+00004132 R_ARM_ABS32       .debug_str
+0000413d R_ARM_ABS32       .text
+0000414c R_ARM_ABS32       .debug_str
+00004169 R_ARM_ABS32       .text
+00004172 R_ARM_ABS32       .debug_str
+00004180 R_ARM_ABS32       .debug_str
+0000418e R_ARM_ABS32       .debug_str
+0000419e R_ARM_ABS32       .debug_str
+000041a9 R_ARM_ABS32       .text
+000041b8 R_ARM_ABS32       .debug_str
+000041d5 R_ARM_ABS32       .debug_ranges
+000041da R_ARM_ABS32       .debug_str
+000041eb R_ARM_ABS32       .debug_str
+000041f6 R_ARM_ABS32       .text
+00004205 R_ARM_ABS32       .debug_str
+00004222 R_ARM_ABS32       .text
+0000422b R_ARM_ABS32       .debug_str
+00004239 R_ARM_ABS32       .debug_str
+00004247 R_ARM_ABS32       .debug_str
+00004257 R_ARM_ABS32       .debug_str
+00004262 R_ARM_ABS32       .text
+00004271 R_ARM_ABS32       .debug_str
+0000428f R_ARM_ABS32       .debug_ranges
+00004294 R_ARM_ABS32       .debug_str
+000042a5 R_ARM_ABS32       .debug_str
+000042b0 R_ARM_ABS32       .text
+000042bf R_ARM_ABS32       .debug_str
+000042dd R_ARM_ABS32       .text
+000042e6 R_ARM_ABS32       .debug_str
+000042f4 R_ARM_ABS32       .debug_str
+00004302 R_ARM_ABS32       .debug_str
+00004312 R_ARM_ABS32       .debug_str
+0000431d R_ARM_ABS32       .text
+00004348 R_ARM_ABS32       .debug_ranges
+0000434d R_ARM_ABS32       .debug_str
+0000436a R_ARM_ABS32       .debug_str
+00004375 R_ARM_ABS32       .text
+000043a0 R_ARM_ABS32       .text
+000043a9 R_ARM_ABS32       .debug_str
+000043b7 R_ARM_ABS32       .debug_str
+000043c5 R_ARM_ABS32       .debug_str
+000043d5 R_ARM_ABS32       .debug_str
+000043e0 R_ARM_ABS32       .text
+000043ef R_ARM_ABS32       .debug_str
+00004414 R_ARM_ABS32       .debug_str
+0000441f R_ARM_ABS32       .text
+0000442e R_ARM_ABS32       .debug_str
+0000444d R_ARM_ABS32       .debug_str
+00004458 R_ARM_ABS32       .text
+00004467 R_ARM_ABS32       .debug_str
+00004486 R_ARM_ABS32       .debug_str
+00004491 R_ARM_ABS32       .text
+000044af R_ARM_ABS32       .debug_str
+000044cf R_ARM_ABS32       .debug_str
+000044df R_ARM_ABS32       .debug_str
+000044fe R_ARM_ABS32       .text
+00004507 R_ARM_ABS32       .debug_str
+00004518 R_ARM_ABS32       .debug_str
+00004523 R_ARM_ABS32       .text
+00004540 R_ARM_ABS32       .debug_str
+0000454f R_ARM_ABS32       .debug_str
+0000455e R_ARM_ABS32       .debug_str
+0000457c R_ARM_ABS32       .debug_ranges
+00004581 R_ARM_ABS32       .debug_str
+00004598 R_ARM_ABS32       .debug_str
+000045a3 R_ARM_ABS32       .text
+000045c0 R_ARM_ABS32       .debug_str
+000045cf R_ARM_ABS32       .debug_str
+000045de R_ARM_ABS32       .debug_str
+000045fc R_ARM_ABS32       .text
+00004605 R_ARM_ABS32       .debug_str
+00004613 R_ARM_ABS32       .debug_str
+00004621 R_ARM_ABS32       .debug_str
+0000462f R_ARM_ABS32       .debug_str
+0000463d R_ARM_ABS32       .debug_str
+0000464b R_ARM_ABS32       .debug_str
+0000465b R_ARM_ABS32       .debug_str
+00004666 R_ARM_ABS32       .text
+00004675 R_ARM_ABS32       .debug_str
+00004684 R_ARM_ABS32       .debug_str
+00004693 R_ARM_ABS32       .debug_str
+000046a2 R_ARM_ABS32       .debug_str
+000046b1 R_ARM_ABS32       .debug_str
+000046c0 R_ARM_ABS32       .debug_ranges
+000046c5 R_ARM_ABS32       .debug_str
+000046dc R_ARM_ABS32       .debug_str
+000046e7 R_ARM_ABS32       .text
+000046f6 R_ARM_ABS32       .debug_str
+00004705 R_ARM_ABS32       .debug_str
+00004714 R_ARM_ABS32       .debug_str
+00004723 R_ARM_ABS32       .debug_str
+00004732 R_ARM_ABS32       .debug_str
+00004741 R_ARM_ABS32       .text
+0000474a R_ARM_ABS32       .debug_str
+00004758 R_ARM_ABS32       .debug_str
+00004766 R_ARM_ABS32       .debug_str
+00004774 R_ARM_ABS32       .debug_str
+00004782 R_ARM_ABS32       .debug_str
+00004790 R_ARM_ABS32       .debug_str
+000047a0 R_ARM_ABS32       .debug_str
+000047ab R_ARM_ABS32       .text
+000047ba R_ARM_ABS32       .debug_str
+000047c9 R_ARM_ABS32       .debug_str
+000047d8 R_ARM_ABS32       .debug_str
+000047e7 R_ARM_ABS32       .text
+000047f0 R_ARM_ABS32       .debug_str
+00004807 R_ARM_ABS32       .debug_str
+00004812 R_ARM_ABS32       .text
+00004821 R_ARM_ABS32       .debug_str
+00004830 R_ARM_ABS32       .debug_str
+0000483f R_ARM_ABS32       .debug_str
+0000485d R_ARM_ABS32       .text
+00004866 R_ARM_ABS32       .debug_str
+0000487d R_ARM_ABS32       .debug_str
+00004888 R_ARM_ABS32       .text
+000048a6 R_ARM_ABS32       .debug_str
+000048b5 R_ARM_ABS32       .debug_str
+000048c4 R_ARM_ABS32       .debug_str
+000048d3 R_ARM_ABS32       .text
+000048dc R_ARM_ABS32       .debug_str
+000048ea R_ARM_ABS32       .debug_str
+000048f8 R_ARM_ABS32       .debug_str
+00004906 R_ARM_ABS32       .debug_str
+00004914 R_ARM_ABS32       .debug_str
+00004930 R_ARM_ABS32       .debug_str
+0000493b R_ARM_ABS32       .text
+00004959 R_ARM_ABS32       .debug_ranges
+0000495e R_ARM_ABS32       .debug_str
+0000496f R_ARM_ABS32       .debug_str
+0000497a R_ARM_ABS32       .text
+00004989 R_ARM_ABS32       .debug_str
+00004998 R_ARM_ABS32       .debug_str
+000049c5 R_ARM_ABS32       .text
+000049ce R_ARM_ABS32       .debug_str
+000049dc R_ARM_ABS32       .debug_str
+000049ea R_ARM_ABS32       .debug_str
+000049f8 R_ARM_ABS32       .debug_str
+00004a06 R_ARM_ABS32       .debug_str
+00004a16 R_ARM_ABS32       .debug_str
+00004a21 R_ARM_ABS32       .text
+00004a3f R_ARM_ABS32       .debug_str
+00004a4e R_ARM_ABS32       .debug_str
+00004a5d R_ARM_ABS32       .debug_ranges
+00004a62 R_ARM_ABS32       .debug_str
+00004a73 R_ARM_ABS32       .debug_str
+00004a7e R_ARM_ABS32       .text
+00004a9c R_ARM_ABS32       .debug_str
+00004aab R_ARM_ABS32       .debug_str
+00004aba R_ARM_ABS32       .text
+00004ac3 R_ARM_ABS32       .debug_str
+00004ad1 R_ARM_ABS32       .debug_str
+00004adf R_ARM_ABS32       .debug_str
+00004aed R_ARM_ABS32       .debug_str
+00004afd R_ARM_ABS32       .debug_str
+00004b08 R_ARM_ABS32       .text
+00004b17 R_ARM_ABS32       .debug_str
+00004b26 R_ARM_ABS32       .debug_str
+00004b35 R_ARM_ABS32       .debug_str
+00004b44 R_ARM_ABS32       .debug_str
+00004b53 R_ARM_ABS32       .debug_str
+00004b62 R_ARM_ABS32       .debug_ranges
+00004b67 R_ARM_ABS32       .debug_str
+00004b78 R_ARM_ABS32       .debug_str
+00004b83 R_ARM_ABS32       .text
+00004b92 R_ARM_ABS32       .debug_str
+00004ba1 R_ARM_ABS32       .debug_str
+00004bb0 R_ARM_ABS32       .debug_str
+00004bbf R_ARM_ABS32       .debug_str
+00004bce R_ARM_ABS32       .debug_str
+00004bdd R_ARM_ABS32       .text
+00004be6 R_ARM_ABS32       .debug_str
+00004bf4 R_ARM_ABS32       .debug_str
+00004c02 R_ARM_ABS32       .debug_str
+00004c10 R_ARM_ABS32       .debug_str
+00004c1e R_ARM_ABS32       .debug_str
+00004c2c R_ARM_ABS32       .debug_str
+00004c3c R_ARM_ABS32       .debug_str
+00004c47 R_ARM_ABS32       .text
+00004c83 R_ARM_ABS32       .debug_str
+00004c92 R_ARM_ABS32       .debug_str
+00004ca1 R_ARM_ABS32       .debug_ranges
+00004ca6 R_ARM_ABS32       .debug_str
+00004cb7 R_ARM_ABS32       .debug_str
+00004cc2 R_ARM_ABS32       .text
+00004cfe R_ARM_ABS32       .debug_str
+00004d0d R_ARM_ABS32       .debug_str
+00004d1c R_ARM_ABS32       .text
+00004d25 R_ARM_ABS32       .debug_str
+00004d33 R_ARM_ABS32       .debug_str
+00004d41 R_ARM_ABS32       .debug_str
+00004d4f R_ARM_ABS32       .debug_str
+00004d5d R_ARM_ABS32       .debug_str
+00004d6b R_ARM_ABS32       .debug_str
+00004d7b R_ARM_ABS32       .debug_str
+00004d86 R_ARM_ABS32       .text
+00004d95 R_ARM_ABS32       .debug_str
+00004da4 R_ARM_ABS32       .debug_str
+00004db3 R_ARM_ABS32       .debug_ranges
+00004db8 R_ARM_ABS32       .debug_str
+00004dc9 R_ARM_ABS32       .debug_str
+00004dd4 R_ARM_ABS32       .text
+00004de3 R_ARM_ABS32       .debug_str
+00004df2 R_ARM_ABS32       .debug_str
+00004e01 R_ARM_ABS32       .text
+00004e0a R_ARM_ABS32       .debug_str
+00004e18 R_ARM_ABS32       .debug_str
+00004e26 R_ARM_ABS32       .debug_str
+00004e36 R_ARM_ABS32       .debug_str
+00004e41 R_ARM_ABS32       .text
+00004e50 R_ARM_ABS32       .debug_str
+00004e5f R_ARM_ABS32       .debug_str
+00004e6e R_ARM_ABS32       .debug_str
+00004e7d R_ARM_ABS32       .debug_str
+00004e8c R_ARM_ABS32       .debug_str
+00004eab R_ARM_ABS32       .debug_str
+00004eb6 R_ARM_ABS32       .text
+00004ec5 R_ARM_ABS32       .debug_str
+00004ed4 R_ARM_ABS32       .debug_str
+00004ee3 R_ARM_ABS32       .debug_str
+00004ef2 R_ARM_ABS32       .debug_str
+00004f01 R_ARM_ABS32       .debug_str
+00004f10 R_ARM_ABS32       .text
+00004f19 R_ARM_ABS32       .debug_str
+00004f27 R_ARM_ABS32       .debug_str
+00004f35 R_ARM_ABS32       .debug_str
+00004f43 R_ARM_ABS32       .debug_str
+00004f51 R_ARM_ABS32       .debug_str
+00004f5f R_ARM_ABS32       .debug_str
+00004f6f R_ARM_ABS32       .debug_str
+00004f7a R_ARM_ABS32       .text
+00004f89 R_ARM_ABS32       .debug_str
+00004f98 R_ARM_ABS32       .debug_str
+00004fa7 R_ARM_ABS32       .debug_str
+00004fb6 R_ARM_ABS32       .debug_str
+00004fd3 R_ARM_ABS32       .debug_str
+00004ff2 R_ARM_ABS32       .debug_str
+00004ffd R_ARM_ABS32       .text
+0000500c R_ARM_ABS32       .debug_str
+0000501b R_ARM_ABS32       .debug_str
+0000502a R_ARM_ABS32       .debug_str
+00005039 R_ARM_ABS32       .debug_str
+00005056 R_ARM_ABS32       .debug_str
+00005072 R_ARM_ABS32       .text
+0000507b R_ARM_ABS32       .debug_str
+00005089 R_ARM_ABS32       .debug_str
+00005097 R_ARM_ABS32       .debug_str
+000050a5 R_ARM_ABS32       .debug_str
+000050b3 R_ARM_ABS32       .debug_str
+000050c1 R_ARM_ABS32       .debug_str
+000050cf R_ARM_ABS32       .debug_str
+000050df R_ARM_ABS32       .debug_str
+000050ea R_ARM_ABS32       .text
+00005125 R_ARM_ABS32       .text
+0000512e R_ARM_ABS32       .debug_str
+0000513c R_ARM_ABS32       .debug_str
+0000514a R_ARM_ABS32       .debug_str
+00005158 R_ARM_ABS32       .debug_str
+00005168 R_ARM_ABS32       .debug_str
+00005173 R_ARM_ABS32       .text
+00005182 R_ARM_ABS32       .debug_str
+00005191 R_ARM_ABS32       .debug_str
+000051b0 R_ARM_ABS32       .debug_str
+000051bc R_ARM_ABS32       .text
+000051cb R_ARM_ABS32       .debug_str
+000051db R_ARM_ABS32       .debug_str
+000051eb R_ARM_ABS32       .debug_ranges
+000051f0 R_ARM_ABS32       .debug_str
+00005202 R_ARM_ABS32       .debug_str
+0000520e R_ARM_ABS32       .text
+0000521d R_ARM_ABS32       .debug_str
+0000522d R_ARM_ABS32       .debug_str
+0000523d R_ARM_ABS32       .text
+00005246 R_ARM_ABS32       .debug_str
+00005255 R_ARM_ABS32       .debug_str
+00005264 R_ARM_ABS32       .debug_str
+00005275 R_ARM_ABS32       .debug_str
+00005281 R_ARM_ABS32       .text
+000052af R_ARM_ABS32       .debug_str
+000052bf R_ARM_ABS32       .debug_ranges
+000052c4 R_ARM_ABS32       .debug_str
+000052d6 R_ARM_ABS32       .debug_str
+000052e2 R_ARM_ABS32       .text
+00005310 R_ARM_ABS32       .debug_str
+00005320 R_ARM_ABS32       .text
+00005329 R_ARM_ABS32       .debug_str
+00005338 R_ARM_ABS32       .debug_str
+00005347 R_ARM_ABS32       .debug_str
+00005356 R_ARM_ABS32       .debug_str
+00005367 R_ARM_ABS32       .debug_str
+00005373 R_ARM_ABS32       .text
+00005382 R_ARM_ABS32       .debug_str
+00005392 R_ARM_ABS32       .debug_ranges
+00005397 R_ARM_ABS32       .debug_str
+000053a9 R_ARM_ABS32       .debug_str
+000053b5 R_ARM_ABS32       .text
+000053c4 R_ARM_ABS32       .debug_str
+000053d4 R_ARM_ABS32       .text
+000053dd R_ARM_ABS32       .debug_str
+000053ec R_ARM_ABS32       .debug_str
+000053fb R_ARM_ABS32       .debug_str
+0000540a R_ARM_ABS32       .debug_str
+0000541b R_ARM_ABS32       .debug_str
+00005427 R_ARM_ABS32       .text
+00005436 R_ARM_ABS32       .debug_str
+00005446 R_ARM_ABS32       .debug_str
+00005456 R_ARM_ABS32       .debug_ranges
+0000545b R_ARM_ABS32       .debug_str
+0000546d R_ARM_ABS32       .debug_str
+00005479 R_ARM_ABS32       .text
+00005488 R_ARM_ABS32       .debug_str
+00005498 R_ARM_ABS32       .debug_str
+000054a8 R_ARM_ABS32       .text
+000054b1 R_ARM_ABS32       .debug_str
+000054c0 R_ARM_ABS32       .debug_str
+000054cf R_ARM_ABS32       .debug_str
+000054e0 R_ARM_ABS32       .debug_str
+000054ec R_ARM_ABS32       .text
+000054fb R_ARM_ABS32       .debug_str
+0000550c R_ARM_ABS32       .debug_str
+00005518 R_ARM_ABS32       .text
+00005527 R_ARM_ABS32       .debug_str
+00005537 R_ARM_ABS32       .text
+00005540 R_ARM_ABS32       .debug_str
+0000554f R_ARM_ABS32       .debug_str
+00005560 R_ARM_ABS32       .debug_str
+0000556c R_ARM_ABS32       .text
+0000559b R_ARM_ABS32       .debug_ranges
+000055a0 R_ARM_ABS32       .debug_str
+000055b2 R_ARM_ABS32       .debug_str
+000055be R_ARM_ABS32       .text
+000055ed R_ARM_ABS32       .text
+000055f6 R_ARM_ABS32       .debug_str
+00005605 R_ARM_ABS32       .debug_str
+00005614 R_ARM_ABS32       .debug_str
+00005623 R_ARM_ABS32       .debug_str
+00005634 R_ARM_ABS32       .debug_str
+00005640 R_ARM_ABS32       .text
+0000564f R_ARM_ABS32       .debug_ranges
+00005654 R_ARM_ABS32       .debug_str
+00005666 R_ARM_ABS32       .debug_str
+00005672 R_ARM_ABS32       .text
+00005681 R_ARM_ABS32       .text
+0000568a R_ARM_ABS32       .debug_str
+00005699 R_ARM_ABS32       .debug_str
+000056aa R_ARM_ABS32       .debug_str
+000056b6 R_ARM_ABS32       .text
+000056c1 R_ARM_ABS32       .debug_str
+000056cd R_ARM_ABS32       .text
+000056ec R_ARM_ABS32       .debug_str
+000056fc R_ARM_ABS32       .debug_ranges
+00005701 R_ARM_ABS32       .debug_str
+00005713 R_ARM_ABS32       .debug_str
+0000571f R_ARM_ABS32       .text
+0000573e R_ARM_ABS32       .debug_str
+0000574e R_ARM_ABS32       .text
+00005757 R_ARM_ABS32       .debug_str
+00005766 R_ARM_ABS32       .debug_str
+00005775 R_ARM_ABS32       .debug_str
+00005786 R_ARM_ABS32       .debug_str
+00005792 R_ARM_ABS32       .text
+000057a1 R_ARM_ABS32       .debug_ranges
+000057a6 R_ARM_ABS32       .debug_str
+000057b8 R_ARM_ABS32       .debug_str
+000057c4 R_ARM_ABS32       .text
+000057d3 R_ARM_ABS32       .text
+000057dc R_ARM_ABS32       .debug_str
+000057eb R_ARM_ABS32       .debug_str
+000057fc R_ARM_ABS32       .debug_str
+00005808 R_ARM_ABS32       .text
+00005836 R_ARM_ABS32       .debug_str
+00005846 R_ARM_ABS32       .debug_ranges
+0000584b R_ARM_ABS32       .debug_str
+0000585d R_ARM_ABS32       .debug_str
+00005869 R_ARM_ABS32       .text
+00005897 R_ARM_ABS32       .debug_str
+000058a7 R_ARM_ABS32       .text
+000058b0 R_ARM_ABS32       .debug_str
+000058bf R_ARM_ABS32       .debug_str
+000058ce R_ARM_ABS32       .debug_str
+000058dd R_ARM_ABS32       .debug_str
+000058ee R_ARM_ABS32       .debug_str
+000058fa R_ARM_ABS32       .text
+00005929 R_ARM_ABS32       .debug_ranges
+0000592e R_ARM_ABS32       .debug_str
+00005940 R_ARM_ABS32       .debug_str
+0000594c R_ARM_ABS32       .text
+0000597b R_ARM_ABS32       .text
+00005984 R_ARM_ABS32       .debug_str
+00005993 R_ARM_ABS32       .debug_str
+000059a2 R_ARM_ABS32       .debug_str
+000059b3 R_ARM_ABS32       .debug_str
+000059bf R_ARM_ABS32       .text
+000059ce R_ARM_ABS32       .debug_str
+000059df R_ARM_ABS32       .debug_str
+000059eb R_ARM_ABS32       .text
+000059fa R_ARM_ABS32       .debug_str
+00005a0a R_ARM_ABS32       .debug_str
+00005a1a R_ARM_ABS32       .debug_ranges
+00005a1f R_ARM_ABS32       .debug_str
+00005a31 R_ARM_ABS32       .debug_str
+00005a3d R_ARM_ABS32       .text
+00005a4c R_ARM_ABS32       .debug_str
+00005a5c R_ARM_ABS32       .debug_str
+00005a6c R_ARM_ABS32       .text
+00005a75 R_ARM_ABS32       .debug_str
+00005a84 R_ARM_ABS32       .debug_str
+00005a93 R_ARM_ABS32       .debug_str
+00005aa4 R_ARM_ABS32       .debug_str
+00005ab0 R_ARM_ABS32       .text
+00005abf R_ARM_ABS32       .debug_str
+00005acf R_ARM_ABS32       .debug_str
+00005aef R_ARM_ABS32       .debug_ranges
+00005af4 R_ARM_ABS32       .debug_str
+00005b06 R_ARM_ABS32       .debug_str
+00005b12 R_ARM_ABS32       .text
+00005b21 R_ARM_ABS32       .debug_str
+00005b31 R_ARM_ABS32       .debug_str
+00005b51 R_ARM_ABS32       .text
+00005b5a R_ARM_ABS32       .debug_str
+00005b69 R_ARM_ABS32       .debug_str
+00005b78 R_ARM_ABS32       .debug_str
+00005b87 R_ARM_ABS32       .debug_str
+00005b96 R_ARM_ABS32       .debug_str
+00005ba7 R_ARM_ABS32       .debug_str
+00005bb3 R_ARM_ABS32       .text
+00005bc2 R_ARM_ABS32       .debug_str
+00005bd2 R_ARM_ABS32       .debug_ranges
+00005bd7 R_ARM_ABS32       .debug_str
+00005be9 R_ARM_ABS32       .debug_str
+00005bf5 R_ARM_ABS32       .text
+00005c04 R_ARM_ABS32       .debug_str
+00005c14 R_ARM_ABS32       .text
+00005c1d R_ARM_ABS32       .debug_str
+00005c2c R_ARM_ABS32       .debug_str
+00005c3d R_ARM_ABS32       .debug_str
+00005c49 R_ARM_ABS32       .text
+00005c58 R_ARM_ABS32       .debug_str
+00005c68 R_ARM_ABS32       .debug_str
+00005c78 R_ARM_ABS32       .debug_ranges
+00005c7d R_ARM_ABS32       .debug_str
+00005c8f R_ARM_ABS32       .debug_str
+00005c9b R_ARM_ABS32       .text
+00005caa R_ARM_ABS32       .debug_str
+00005cba R_ARM_ABS32       .debug_str
+00005cca R_ARM_ABS32       .text
+00005cd3 R_ARM_ABS32       .debug_str
+00005ce2 R_ARM_ABS32       .debug_str
+00005cf1 R_ARM_ABS32       .debug_str
+00005d00 R_ARM_ABS32       .debug_str
+00005d11 R_ARM_ABS32       .debug_str
+00005d1d R_ARM_ABS32       .text
+00005d3b R_ARM_ABS32       .debug_str
+00005d4b R_ARM_ABS32       .debug_str
+00005d5b R_ARM_ABS32       .debug_ranges
+00005d60 R_ARM_ABS32       .debug_str
+00005d72 R_ARM_ABS32       .debug_str
+00005d7e R_ARM_ABS32       .text
+00005d9c R_ARM_ABS32       .debug_str
+00005dac R_ARM_ABS32       .debug_str
+00005dbc R_ARM_ABS32       .text
+00005dc5 R_ARM_ABS32       .debug_str
+00005dd4 R_ARM_ABS32       .debug_str
+00005de3 R_ARM_ABS32       .debug_str
+00005df2 R_ARM_ABS32       .debug_str
+00005e03 R_ARM_ABS32       .debug_str
+00005e0f R_ARM_ABS32       .text
+00005e3e R_ARM_ABS32       .debug_ranges
+00005e43 R_ARM_ABS32       .debug_str
+00005e55 R_ARM_ABS32       .debug_str
+00005e61 R_ARM_ABS32       .text
+00005e90 R_ARM_ABS32       .text
+00005e99 R_ARM_ABS32       .debug_str
+00005ea8 R_ARM_ABS32       .debug_str
+00005eb7 R_ARM_ABS32       .debug_str
+00005ec6 R_ARM_ABS32       .debug_str
+00005ed5 R_ARM_ABS32       .debug_str
+00005ee4 R_ARM_ABS32       .debug_str
+00005ef5 R_ARM_ABS32       .debug_str
+00005f01 R_ARM_ABS32       .text
+00005f20 R_ARM_ABS32       .debug_str
+00005f30 R_ARM_ABS32       .debug_ranges
+00005f35 R_ARM_ABS32       .debug_str
+00005f47 R_ARM_ABS32       .debug_str
+00005f53 R_ARM_ABS32       .text
+00005f72 R_ARM_ABS32       .debug_str
+00005f82 R_ARM_ABS32       .text
+00005f8b R_ARM_ABS32       .debug_str
+00005f9a R_ARM_ABS32       .debug_str
+00005fa9 R_ARM_ABS32       .debug_str
+00005fba R_ARM_ABS32       .debug_str
+00005fc6 R_ARM_ABS32       .text
+00005fd1 R_ARM_ABS32       .debug_str
+00005fdd R_ARM_ABS32       .text
+00005fec R_ARM_ABS32       .text
+00005ff5 R_ARM_ABS32       .debug_str
+00006004 R_ARM_ABS32       .debug_str
+00006015 R_ARM_ABS32       .debug_str
+00006021 R_ARM_ABS32       .text
+00006030 R_ARM_ABS32       .debug_ranges
+00006035 R_ARM_ABS32       .debug_str
+00006047 R_ARM_ABS32       .debug_str
+00006053 R_ARM_ABS32       .text
+0000605e R_ARM_ABS32       .debug_str
+0000606a R_ARM_ABS32       .text
+00006079 R_ARM_ABS32       .text
+00006082 R_ARM_ABS32       .debug_str
+00006091 R_ARM_ABS32       .debug_str
+000060a2 R_ARM_ABS32       .debug_str
+000060ae R_ARM_ABS32       .text
+000060b9 R_ARM_ABS32       .debug_str
+000060c5 R_ARM_ABS32       .text
+000060d4 R_ARM_ABS32       .text
+000060dd R_ARM_ABS32       .debug_str
+000060ec R_ARM_ABS32       .debug_str
+000060fd R_ARM_ABS32       .debug_str
+00006109 R_ARM_ABS32       .text
+00006114 R_ARM_ABS32       .debug_str
+00006120 R_ARM_ABS32       .text
+0000612f R_ARM_ABS32       .text
+00006138 R_ARM_ABS32       .debug_str
+00006147 R_ARM_ABS32       .debug_str
+00006158 R_ARM_ABS32       .debug_str
+00006164 R_ARM_ABS32       .text
+0000616f R_ARM_ABS32       .debug_str
+0000617b R_ARM_ABS32       .text
+00006186 R_ARM_ABS32       .debug_str
+00006192 R_ARM_ABS32       .text
+000061b1 R_ARM_ABS32       .debug_ranges
+000061b6 R_ARM_ABS32       .debug_str
+000061c8 R_ARM_ABS32       .debug_str
+000061d4 R_ARM_ABS32       .text
+000061f3 R_ARM_ABS32       .text
+000061fc R_ARM_ABS32       .debug_str
+0000620b R_ARM_ABS32       .debug_str
+0000621c R_ARM_ABS32       .debug_str
+00006228 R_ARM_ABS32       .text
+00006233 R_ARM_ABS32       .debug_str
+0000623f R_ARM_ABS32       .text
+0000624e R_ARM_ABS32       .text
+00006257 R_ARM_ABS32       .debug_str
+00006266 R_ARM_ABS32       .debug_str
+00006277 R_ARM_ABS32       .debug_str
+00006283 R_ARM_ABS32       .text
+000062a1 R_ARM_ABS32       .debug_str
+000062b1 R_ARM_ABS32       .debug_str
+000062c1 R_ARM_ABS32       .debug_ranges
+000062c6 R_ARM_ABS32       .debug_str
+000062d8 R_ARM_ABS32       .debug_str
+000062e4 R_ARM_ABS32       .text
+00006302 R_ARM_ABS32       .debug_str
+00006312 R_ARM_ABS32       .debug_str
+00006322 R_ARM_ABS32       .text
+0000632b R_ARM_ABS32       .debug_str
+0000633a R_ARM_ABS32       .debug_str
+00006349 R_ARM_ABS32       .debug_str
+00006358 R_ARM_ABS32       .debug_str
+00006369 R_ARM_ABS32       .debug_str
+00006375 R_ARM_ABS32       .text
+00006393 R_ARM_ABS32       .debug_ranges
+00006398 R_ARM_ABS32       .debug_str
+000063aa R_ARM_ABS32       .debug_str
+000063b6 R_ARM_ABS32       .text
+000063d4 R_ARM_ABS32       .text
+000063dd R_ARM_ABS32       .debug_str
+000063ec R_ARM_ABS32       .debug_str
+000063fd R_ARM_ABS32       .debug_str
+00006409 R_ARM_ABS32       .text
+00006418 R_ARM_ABS32       .debug_ranges
+0000641d R_ARM_ABS32       .debug_str
+0000642f R_ARM_ABS32       .debug_str
+0000643b R_ARM_ABS32       .text
+0000644a R_ARM_ABS32       .text
+00006453 R_ARM_ABS32       .debug_str
+00006462 R_ARM_ABS32       .debug_str
+00006473 R_ARM_ABS32       .debug_str
+0000647f R_ARM_ABS32       .text
+0000648e R_ARM_ABS32       .debug_ranges
+00006493 R_ARM_ABS32       .debug_str
+000064a5 R_ARM_ABS32       .debug_str
+000064b1 R_ARM_ABS32       .text
+000064c0 R_ARM_ABS32       .text
+000064c9 R_ARM_ABS32       .debug_str
+000064d8 R_ARM_ABS32       .debug_str
+000064e7 R_ARM_ABS32       .debug_str
+000064f6 R_ARM_ABS32       .debug_str
+00006505 R_ARM_ABS32       .debug_str
+00006514 R_ARM_ABS32       .debug_str
+00006525 R_ARM_ABS32       .debug_str
+0000652d R_ARM_ABS32       .text
+0000653c R_ARM_ABS32       .debug_str
+0000654d R_ARM_ABS32       .debug_str
+00006555 R_ARM_ABS32       .text
+00006564 R_ARM_ABS32       .debug_str
+00006575 R_ARM_ABS32       .debug_str
+0000657d R_ARM_ABS32       .text
+0000658c R_ARM_ABS32       .debug_str
+0000659c R_ARM_ABS32       .text
+000065a5 R_ARM_ABS32       .debug_str
+000065b4 R_ARM_ABS32       .debug_str
+000065c5 R_ARM_ABS32       .debug_str
+000065d1 R_ARM_ABS32       .text
+000065e0 R_ARM_ABS32       .debug_str
+000065f0 R_ARM_ABS32       .debug_str
+00006600 R_ARM_ABS32       .debug_str
+00006610 R_ARM_ABS32       .debug_ranges
+00006615 R_ARM_ABS32       .debug_str
+00006627 R_ARM_ABS32       .debug_str
+00006633 R_ARM_ABS32       .text
+00006642 R_ARM_ABS32       .debug_str
+00006652 R_ARM_ABS32       .debug_str
+00006662 R_ARM_ABS32       .debug_str
+00006672 R_ARM_ABS32       .text
+0000667b R_ARM_ABS32       .debug_str
+0000668a R_ARM_ABS32       .debug_str
+00006699 R_ARM_ABS32       .debug_str
+000066a8 R_ARM_ABS32       .debug_str
+000066b9 R_ARM_ABS32       .debug_str
+000066c5 R_ARM_ABS32       .text
+000066f4 R_ARM_ABS32       .debug_str
+00006704 R_ARM_ABS32       .debug_ranges
+00006709 R_ARM_ABS32       .debug_str
+0000671b R_ARM_ABS32       .debug_str
+00006727 R_ARM_ABS32       .text
+00006756 R_ARM_ABS32       .debug_str
+00006766 R_ARM_ABS32       .text
+0000676f R_ARM_ABS32       .debug_str
+0000677e R_ARM_ABS32       .debug_str
+0000678d R_ARM_ABS32       .debug_str
+0000679c R_ARM_ABS32       .debug_str
+000067ad R_ARM_ABS32       .debug_str
+000067b9 R_ARM_ABS32       .text
+000067e8 R_ARM_ABS32       .debug_ranges
+000067ed R_ARM_ABS32       .debug_str
+000067ff R_ARM_ABS32       .debug_str
+0000680a R_ARM_ABS32       .text
+00006846 R_ARM_ABS32       .debug_str
+00006855 R_ARM_ABS32       .text
+00006862 R_ARM_ABS32       .debug_str
+00006871 R_ARM_ABS32       .debug_str
+00006880 R_ARM_ABS32       .debug_str
+00006890 R_ARM_ABS32       .text
+00006899 R_ARM_ABS32       .debug_str
+000068a8 R_ARM_ABS32       .debug_str
+000068b7 R_ARM_ABS32       .debug_str
+000068c6 R_ARM_ABS32       .debug_str
+000068e2 R_ARM_ABS32       .text
+000068ff R_ARM_ABS32       .debug_ranges
+00006904 R_ARM_ABS32       .debug_str
+00006915 R_ARM_ABS32       .debug_str
+00006920 R_ARM_ABS32       .text
+0000693d R_ARM_ABS32       .text
+00006946 R_ARM_ABS32       .debug_str
+00006954 R_ARM_ABS32       .debug_str
+00006964 R_ARM_ABS32       .debug_str
+0000696f R_ARM_ABS32       .text
+0000698c R_ARM_ABS32       .debug_ranges
+00006991 R_ARM_ABS32       .debug_str
+000069a2 R_ARM_ABS32       .debug_str
+000069ad R_ARM_ABS32       .text
+000069ca R_ARM_ABS32       .text
+000069d3 R_ARM_ABS32       .debug_str
+000069e1 R_ARM_ABS32       .debug_str
+000069f1 R_ARM_ABS32       .debug_str
+000069fc R_ARM_ABS32       .text
+00006a0b R_ARM_ABS32       .debug_str
+00006a1a R_ARM_ABS32       .debug_ranges
+00006a1f R_ARM_ABS32       .debug_str
+00006a30 R_ARM_ABS32       .debug_str
+00006a3b R_ARM_ABS32       .text
+00006a4a R_ARM_ABS32       .debug_str
+00006a59 R_ARM_ABS32       .text
+00006a62 R_ARM_ABS32       .debug_str
+00006a70 R_ARM_ABS32       .debug_str
+00006a80 R_ARM_ABS32       .debug_str
+00006a8b R_ARM_ABS32       .text
+00006a9a R_ARM_ABS32       .debug_str
+00006aa9 R_ARM_ABS32       .debug_str
+00006ab8 R_ARM_ABS32       .debug_str
+00006ac7 R_ARM_ABS32       .debug_ranges
+00006acc R_ARM_ABS32       .debug_str
+00006add R_ARM_ABS32       .debug_str
+00006ae8 R_ARM_ABS32       .text
+00006af7 R_ARM_ABS32       .debug_str
+00006b06 R_ARM_ABS32       .debug_str
+00006b15 R_ARM_ABS32       .debug_str
+00006b24 R_ARM_ABS32       .text
+00006b2d R_ARM_ABS32       .debug_str
+00006b3b R_ARM_ABS32       .debug_str
+00006b49 R_ARM_ABS32       .debug_str
+00006b57 R_ARM_ABS32       .debug_str
+00006b65 R_ARM_ABS32       .debug_str
+00006b73 R_ARM_ABS32       .debug_str
+00006b83 R_ARM_ABS32       .debug_str
+00006b8e R_ARM_ABS32       .text
+00006b9d R_ARM_ABS32       .debug_str
+00006bac R_ARM_ABS32       .debug_str
+00006bbb R_ARM_ABS32       .debug_ranges
+00006bc0 R_ARM_ABS32       .debug_str
+00006bd1 R_ARM_ABS32       .debug_str
+00006bdc R_ARM_ABS32       .text
+00006beb R_ARM_ABS32       .debug_str
+00006bfa R_ARM_ABS32       .debug_str
+00006c09 R_ARM_ABS32       .text
+00006c12 R_ARM_ABS32       .debug_str
+00006c20 R_ARM_ABS32       .debug_str
+00006c2e R_ARM_ABS32       .debug_str
+00006c3c R_ARM_ABS32       .debug_str
+00006c4a R_ARM_ABS32       .debug_str
+00006c5a R_ARM_ABS32       .debug_str
+00006c65 R_ARM_ABS32       .text
+00006c74 R_ARM_ABS32       .debug_str
+00006c83 R_ARM_ABS32       .debug_ranges
+00006c88 R_ARM_ABS32       .debug_str
+00006c99 R_ARM_ABS32       .debug_str
+00006ca4 R_ARM_ABS32       .text
+00006cb3 R_ARM_ABS32       .debug_str
+00006cc2 R_ARM_ABS32       .text
+00006ccb R_ARM_ABS32       .debug_str
+00006cd9 R_ARM_ABS32       .debug_str
+00006ce9 R_ARM_ABS32       .debug_str
+00006cf4 R_ARM_ABS32       .text
+00006d03 R_ARM_ABS32       .debug_str
+00006d12 R_ARM_ABS32       .debug_ranges
+00006d17 R_ARM_ABS32       .debug_str
+00006d28 R_ARM_ABS32       .debug_str
+00006d33 R_ARM_ABS32       .text
+00006d42 R_ARM_ABS32       .debug_str
+00006d51 R_ARM_ABS32       .text
+00006d5a R_ARM_ABS32       .debug_str
+00006d68 R_ARM_ABS32       .debug_str
+00006d78 R_ARM_ABS32       .debug_str
+00006d83 R_ARM_ABS32       .text
+00006dbc R_ARM_ABS32       .text
+00006dcb R_ARM_ABS32       .debug_str
+00006dea R_ARM_ABS32       .debug_str
+00006df5 R_ARM_ABS32       .text
+00006e04 R_ARM_ABS32       .debug_str
+00006e13 R_ARM_ABS32       .text
+00006e1c R_ARM_ABS32       .debug_str
+00006e2a R_ARM_ABS32       .debug_str
+00006e3a R_ARM_ABS32       .debug_str
+00006e41 R_ARM_ABS32       .text
+00006e4c R_ARM_ABS32       .debug_str
+00006e53 R_ARM_ABS32       .text
+00006e70 R_ARM_ABS32       .debug_str
+00006e7f R_ARM_ABS32       .debug_str
+00006e8e R_ARM_ABS32       .debug_str
+00006e9d R_ARM_ABS32       .debug_str
+00006eac R_ARM_ABS32       .debug_str
+00006ebb R_ARM_ABS32       .debug_str
+00006eca R_ARM_ABS32       .debug_str
+00006ed9 R_ARM_ABS32       .debug_str
+00006ee0 R_ARM_ABS32       .debug_str
+
+
+RELOCATION RECORDS FOR [.debug_aranges]:
+OFFSET   TYPE              VALUE
+00000006 R_ARM_ABS32       .debug_info
+00000010 R_ARM_ABS32       .text
+00000018 R_ARM_ABS32       .text.nolibc_raise
+00000020 R_ARM_ABS32       .text.nolibc_memmove
+00000028 R_ARM_ABS32       .text.nolibc_memcpy
+00000030 R_ARM_ABS32       .text.nolibc_memset
+00000038 R_ARM_ABS32       .text.nolibc_strlen
+00000040 R_ARM_ABS32       .text.nolibc_abort
+
+
+RELOCATION RECORDS FOR [.debug_ranges]:
+OFFSET   TYPE              VALUE
+00000000 R_ARM_ABS32       .text
+00000004 R_ARM_ABS32       .text
+00000008 R_ARM_ABS32       .text
+0000000c R_ARM_ABS32       .text
+00000018 R_ARM_ABS32       .text
+0000001c R_ARM_ABS32       .text
+00000020 R_ARM_ABS32       .text
+00000024 R_ARM_ABS32       .text
+00000030 R_ARM_ABS32       .text
+00000034 R_ARM_ABS32       .text
+00000038 R_ARM_ABS32       .text
+0000003c R_ARM_ABS32       .text
+00000048 R_ARM_ABS32       .text
+0000004c R_ARM_ABS32       .text
+00000050 R_ARM_ABS32       .text
+00000054 R_ARM_ABS32       .text
+00000060 R_ARM_ABS32       .text
+00000064 R_ARM_ABS32       .text
+00000068 R_ARM_ABS32       .text
+0000006c R_ARM_ABS32       .text
+00000078 R_ARM_ABS32       .text
+0000007c R_ARM_ABS32       .text
+00000080 R_ARM_ABS32       .text
+00000084 R_ARM_ABS32       .text
+00000090 R_ARM_ABS32       .text
+00000094 R_ARM_ABS32       .text
+00000098 R_ARM_ABS32       .text
+0000009c R_ARM_ABS32       .text
+000000a8 R_ARM_ABS32       .text
+000000ac R_ARM_ABS32       .text
+000000b0 R_ARM_ABS32       .text
+000000b4 R_ARM_ABS32       .text
+000000c0 R_ARM_ABS32       .text
+000000c4 R_ARM_ABS32       .text
+000000c8 R_ARM_ABS32       .text
+000000cc R_ARM_ABS32       .text
+000000d8 R_ARM_ABS32       .text
+000000dc R_ARM_ABS32       .text
+000000e0 R_ARM_ABS32       .text
+000000e4 R_ARM_ABS32       .text
+000000f0 R_ARM_ABS32       .text
+000000f4 R_ARM_ABS32       .text
+000000f8 R_ARM_ABS32       .text
+000000fc R_ARM_ABS32       .text
+00000108 R_ARM_ABS32       .text
+0000010c R_ARM_ABS32       .text
+00000110 R_ARM_ABS32       .text
+00000114 R_ARM_ABS32       .text
+00000120 R_ARM_ABS32       .text
+00000124 R_ARM_ABS32       .text
+00000128 R_ARM_ABS32       .text
+0000012c R_ARM_ABS32       .text
+00000138 R_ARM_ABS32       .text
+0000013c R_ARM_ABS32       .text
+00000140 R_ARM_ABS32       .text
+00000144 R_ARM_ABS32       .text
+00000150 R_ARM_ABS32       .text
+00000154 R_ARM_ABS32       .text
+00000158 R_ARM_ABS32       .text
+0000015c R_ARM_ABS32       .text
+00000168 R_ARM_ABS32       .text
+0000016c R_ARM_ABS32       .text
+00000170 R_ARM_ABS32       .text
+00000174 R_ARM_ABS32       .text
+00000180 R_ARM_ABS32       .text
+00000184 R_ARM_ABS32       .text
+00000188 R_ARM_ABS32       .text
+0000018c R_ARM_ABS32       .text
+00000198 R_ARM_ABS32       .text
+0000019c R_ARM_ABS32       .text
+000001a0 R_ARM_ABS32       .text
+000001a4 R_ARM_ABS32       .text
+000001b0 R_ARM_ABS32       .text
+000001b4 R_ARM_ABS32       .text
+000001b8 R_ARM_ABS32       .text
+000001bc R_ARM_ABS32       .text
+000001c8 R_ARM_ABS32       .text
+000001cc R_ARM_ABS32       .text
+000001d0 R_ARM_ABS32       .text
+000001d4 R_ARM_ABS32       .text
+000001e0 R_ARM_ABS32       .text
+000001e4 R_ARM_ABS32       .text
+000001e8 R_ARM_ABS32       .text
+000001ec R_ARM_ABS32       .text
+000001f8 R_ARM_ABS32       .text
+000001fc R_ARM_ABS32       .text
+00000200 R_ARM_ABS32       .text
+00000204 R_ARM_ABS32       .text
+00000210 R_ARM_ABS32       .text
+00000214 R_ARM_ABS32       .text
+00000218 R_ARM_ABS32       .text
+0000021c R_ARM_ABS32       .text
+00000228 R_ARM_ABS32       .text
+0000022c R_ARM_ABS32       .text
+00000230 R_ARM_ABS32       .text
+00000234 R_ARM_ABS32       .text
+00000240 R_ARM_ABS32       .text
+00000244 R_ARM_ABS32       .text
+00000248 R_ARM_ABS32       .text
+0000024c R_ARM_ABS32       .text
+00000258 R_ARM_ABS32       .text
+0000025c R_ARM_ABS32       .text
+00000260 R_ARM_ABS32       .text
+00000264 R_ARM_ABS32       .text
+00000270 R_ARM_ABS32       .text
+00000274 R_ARM_ABS32       .text
+00000278 R_ARM_ABS32       .text
+0000027c R_ARM_ABS32       .text
+00000288 R_ARM_ABS32       .text
+0000028c R_ARM_ABS32       .text
+00000290 R_ARM_ABS32       .text
+00000294 R_ARM_ABS32       .text
+000002a0 R_ARM_ABS32       .text
+000002a4 R_ARM_ABS32       .text
+000002a8 R_ARM_ABS32       .text
+000002ac R_ARM_ABS32       .text
+000002b8 R_ARM_ABS32       .text
+000002bc R_ARM_ABS32       .text
+000002c0 R_ARM_ABS32       .text
+000002c4 R_ARM_ABS32       .text
+000002d0 R_ARM_ABS32       .text
+000002d4 R_ARM_ABS32       .text
+000002d8 R_ARM_ABS32       .text
+000002dc R_ARM_ABS32       .text
+000002e8 R_ARM_ABS32       .text
+000002ec R_ARM_ABS32       .text
+000002f0 R_ARM_ABS32       .text
+000002f4 R_ARM_ABS32       .text
+00000300 R_ARM_ABS32       .text
+00000304 R_ARM_ABS32       .text
+00000308 R_ARM_ABS32       .text
+0000030c R_ARM_ABS32       .text
+00000318 R_ARM_ABS32       .text
+0000031c R_ARM_ABS32       .text
+00000320 R_ARM_ABS32       .text
+00000324 R_ARM_ABS32       .text
+00000330 R_ARM_ABS32       .text
+00000334 R_ARM_ABS32       .text
+00000338 R_ARM_ABS32       .text
+0000033c R_ARM_ABS32       .text
+00000348 R_ARM_ABS32       .text
+0000034c R_ARM_ABS32       .text
+00000350 R_ARM_ABS32       .text
+00000354 R_ARM_ABS32       .text
+00000360 R_ARM_ABS32       .text
+00000364 R_ARM_ABS32       .text
+00000368 R_ARM_ABS32       .text
+0000036c R_ARM_ABS32       .text
+00000378 R_ARM_ABS32       .text
+0000037c R_ARM_ABS32       .text
+00000380 R_ARM_ABS32       .text
+00000384 R_ARM_ABS32       .text
+00000390 R_ARM_ABS32       .text
+00000394 R_ARM_ABS32       .text
+00000398 R_ARM_ABS32       .text
+0000039c R_ARM_ABS32       .text
+000003a8 R_ARM_ABS32       .text
+000003ac R_ARM_ABS32       .text
+000003b0 R_ARM_ABS32       .text
+000003b4 R_ARM_ABS32       .text
+000003c0 R_ARM_ABS32       .text
+000003c4 R_ARM_ABS32       .text
+000003c8 R_ARM_ABS32       .text
+000003cc R_ARM_ABS32       .text
+000003d8 R_ARM_ABS32       .text
+000003dc R_ARM_ABS32       .text
+000003e0 R_ARM_ABS32       .text
+000003e4 R_ARM_ABS32       .text
+000003f0 R_ARM_ABS32       .text
+000003f4 R_ARM_ABS32       .text
+000003f8 R_ARM_ABS32       .text
+000003fc R_ARM_ABS32       .text
+00000408 R_ARM_ABS32       .text
+0000040c R_ARM_ABS32       .text
+00000410 R_ARM_ABS32       .text
+00000414 R_ARM_ABS32       .text
+00000420 R_ARM_ABS32       .text
+00000424 R_ARM_ABS32       .text
+00000428 R_ARM_ABS32       .text
+0000042c R_ARM_ABS32       .text
+00000438 R_ARM_ABS32       .text
+0000043c R_ARM_ABS32       .text
+00000440 R_ARM_ABS32       .text
+00000444 R_ARM_ABS32       .text
+00000450 R_ARM_ABS32       .text
+00000454 R_ARM_ABS32       .text
+00000458 R_ARM_ABS32       .text
+0000045c R_ARM_ABS32       .text
+00000468 R_ARM_ABS32       .text
+0000046c R_ARM_ABS32       .text
+00000470 R_ARM_ABS32       .text
+00000474 R_ARM_ABS32       .text
+00000480 R_ARM_ABS32       .text
+00000484 R_ARM_ABS32       .text
+00000488 R_ARM_ABS32       .text
+0000048c R_ARM_ABS32       .text
+00000498 R_ARM_ABS32       .text
+0000049c R_ARM_ABS32       .text
+000004a0 R_ARM_ABS32       .text
+000004a4 R_ARM_ABS32       .text
+000004b0 R_ARM_ABS32       .text
+000004b4 R_ARM_ABS32       .text
+000004b8 R_ARM_ABS32       .text
+000004bc R_ARM_ABS32       .text
+000004c8 R_ARM_ABS32       .text
+000004cc R_ARM_ABS32       .text
+000004d0 R_ARM_ABS32       .text
+000004d4 R_ARM_ABS32       .text
+000004e0 R_ARM_ABS32       .text
+000004e4 R_ARM_ABS32       .text
+000004e8 R_ARM_ABS32       .text
+000004ec R_ARM_ABS32       .text
+000004f8 R_ARM_ABS32       .text
+000004fc R_ARM_ABS32       .text
+00000500 R_ARM_ABS32       .text
+00000504 R_ARM_ABS32       .text
+00000510 R_ARM_ABS32       .text
+00000514 R_ARM_ABS32       .text
+00000518 R_ARM_ABS32       .text
+0000051c R_ARM_ABS32       .text
+00000528 R_ARM_ABS32       .text
+0000052c R_ARM_ABS32       .text
+00000530 R_ARM_ABS32       .text
+00000534 R_ARM_ABS32       .text
+00000540 R_ARM_ABS32       .text
+00000544 R_ARM_ABS32       .text
+00000548 R_ARM_ABS32       .text
+0000054c R_ARM_ABS32       .text
+00000558 R_ARM_ABS32       .text
+0000055c R_ARM_ABS32       .text
+00000560 R_ARM_ABS32       .text
+00000564 R_ARM_ABS32       .text
+00000570 R_ARM_ABS32       .text
+00000574 R_ARM_ABS32       .text
+00000578 R_ARM_ABS32       .text
+0000057c R_ARM_ABS32       .text
+00000588 R_ARM_ABS32       .text
+0000058c R_ARM_ABS32       .text
+00000590 R_ARM_ABS32       .text
+00000594 R_ARM_ABS32       .text
+000005a0 R_ARM_ABS32       .text
+000005a4 R_ARM_ABS32       .text
+000005a8 R_ARM_ABS32       .text
+000005ac R_ARM_ABS32       .text
+000005b8 R_ARM_ABS32       .text
+000005bc R_ARM_ABS32       .text
+000005c0 R_ARM_ABS32       .text
+000005c4 R_ARM_ABS32       .text
+000005d0 R_ARM_ABS32       .text
+000005d4 R_ARM_ABS32       .text
+000005d8 R_ARM_ABS32       .text.nolibc_raise
+000005dc R_ARM_ABS32       .text.nolibc_raise
+000005e0 R_ARM_ABS32       .text.nolibc_memmove
+000005e4 R_ARM_ABS32       .text.nolibc_memmove
+000005e8 R_ARM_ABS32       .text.nolibc_memcpy
+000005ec R_ARM_ABS32       .text.nolibc_memcpy
+000005f0 R_ARM_ABS32       .text.nolibc_memset
+000005f4 R_ARM_ABS32       .text.nolibc_memset
+000005f8 R_ARM_ABS32       .text.nolibc_strlen
+000005fc R_ARM_ABS32       .text.nolibc_strlen
+00000600 R_ARM_ABS32       .text.nolibc_abort
+00000604 R_ARM_ABS32       .text.nolibc_abort
+
+
+RELOCATION RECORDS FOR [.debug_line]:
+OFFSET   TYPE              VALUE
+000003c5 R_ARM_ABS32       .text
+00002152 R_ARM_ABS32       .text.nolibc_raise
+0000216b R_ARM_ABS32       .text.nolibc_memmove
+000021a5 R_ARM_ABS32       .text.nolibc_memcpy
+000021d7 R_ARM_ABS32       .text.nolibc_memset
+00002202 R_ARM_ABS32       .text.nolibc_strlen
+0000223e R_ARM_ABS32       .text.nolibc_abort
+
+
+RELOCATION RECORDS FOR [.debug_frame]:
+OFFSET   TYPE              VALUE
+00000014 R_ARM_ABS32       .debug_frame
+00000018 R_ARM_ABS32       .text
+00000034 R_ARM_ABS32       .debug_frame
+00000038 R_ARM_ABS32       .text
+00000044 R_ARM_ABS32       .debug_frame
+00000048 R_ARM_ABS32       .text
+0000006c R_ARM_ABS32       .debug_frame
+00000070 R_ARM_ABS32       .text
+00000090 R_ARM_ABS32       .debug_frame
+00000094 R_ARM_ABS32       .text
+000000b4 R_ARM_ABS32       .debug_frame
+000000b8 R_ARM_ABS32       .text
+000000dc R_ARM_ABS32       .debug_frame
+000000e0 R_ARM_ABS32       .text
+00000100 R_ARM_ABS32       .debug_frame
+00000104 R_ARM_ABS32       .text
+00000128 R_ARM_ABS32       .debug_frame
+0000012c R_ARM_ABS32       .text
+0000014c R_ARM_ABS32       .debug_frame
+00000150 R_ARM_ABS32       .text
+00000174 R_ARM_ABS32       .debug_frame
+00000178 R_ARM_ABS32       .text
+00000198 R_ARM_ABS32       .debug_frame
+0000019c R_ARM_ABS32       .text
+000001c0 R_ARM_ABS32       .debug_frame
+000001c4 R_ARM_ABS32       .text
+000001e4 R_ARM_ABS32       .debug_frame
+000001e8 R_ARM_ABS32       .text
+0000020c R_ARM_ABS32       .debug_frame
+00000210 R_ARM_ABS32       .text
+00000230 R_ARM_ABS32       .debug_frame
+00000234 R_ARM_ABS32       .text
+00000258 R_ARM_ABS32       .debug_frame
+0000025c R_ARM_ABS32       .text
+0000027c R_ARM_ABS32       .debug_frame
+00000280 R_ARM_ABS32       .text
+000002a4 R_ARM_ABS32       .debug_frame
+000002a8 R_ARM_ABS32       .text
+000002c8 R_ARM_ABS32       .debug_frame
+000002cc R_ARM_ABS32       .text
+000002f0 R_ARM_ABS32       .debug_frame
+000002f4 R_ARM_ABS32       .text
+00000314 R_ARM_ABS32       .debug_frame
+00000318 R_ARM_ABS32       .text
+0000033c R_ARM_ABS32       .debug_frame
+00000340 R_ARM_ABS32       .text
+00000360 R_ARM_ABS32       .debug_frame
+00000364 R_ARM_ABS32       .text
+00000388 R_ARM_ABS32       .debug_frame
+0000038c R_ARM_ABS32       .text
+000003ac R_ARM_ABS32       .debug_frame
+000003b0 R_ARM_ABS32       .text
+000003cc R_ARM_ABS32       .debug_frame
+000003d0 R_ARM_ABS32       .text
+000003ec R_ARM_ABS32       .debug_frame
+000003f0 R_ARM_ABS32       .text
+0000040c R_ARM_ABS32       .debug_frame
+00000410 R_ARM_ABS32       .text
+0000042c R_ARM_ABS32       .debug_frame
+00000430 R_ARM_ABS32       .text
+00000450 R_ARM_ABS32       .debug_frame
+00000454 R_ARM_ABS32       .text
+0000046c R_ARM_ABS32       .debug_frame
+00000470 R_ARM_ABS32       .text
+00000490 R_ARM_ABS32       .debug_frame
+00000494 R_ARM_ABS32       .text
+000004b8 R_ARM_ABS32       .debug_frame
+000004bc R_ARM_ABS32       .text
+000004dc R_ARM_ABS32       .debug_frame
+000004e0 R_ARM_ABS32       .text
+00000504 R_ARM_ABS32       .debug_frame
+00000508 R_ARM_ABS32       .text
+00000528 R_ARM_ABS32       .debug_frame
+0000052c R_ARM_ABS32       .text
+00000544 R_ARM_ABS32       .debug_frame
+00000548 R_ARM_ABS32       .text
+00000560 R_ARM_ABS32       .debug_frame
+00000564 R_ARM_ABS32       .text
+00000588 R_ARM_ABS32       .debug_frame
+0000058c R_ARM_ABS32       .text
+000005ac R_ARM_ABS32       .debug_frame
+000005b0 R_ARM_ABS32       .text
+000005c8 R_ARM_ABS32       .debug_frame
+000005cc R_ARM_ABS32       .text
+000005e4 R_ARM_ABS32       .debug_frame
+000005e8 R_ARM_ABS32       .text
+00000600 R_ARM_ABS32       .debug_frame
+00000604 R_ARM_ABS32       .text
+0000061c R_ARM_ABS32       .debug_frame
+00000620 R_ARM_ABS32       .text
+00000638 R_ARM_ABS32       .debug_frame
+0000063c R_ARM_ABS32       .text
+00000654 R_ARM_ABS32       .debug_frame
+00000658 R_ARM_ABS32       .text
+00000670 R_ARM_ABS32       .debug_frame
+00000674 R_ARM_ABS32       .text
+0000068c R_ARM_ABS32       .debug_frame
+00000690 R_ARM_ABS32       .text
+000006b0 R_ARM_ABS32       .debug_frame
+000006b4 R_ARM_ABS32       .text
+000006cc R_ARM_ABS32       .debug_frame
+000006d0 R_ARM_ABS32       .text
+000006e8 R_ARM_ABS32       .debug_frame
+000006ec R_ARM_ABS32       .text
+00000710 R_ARM_ABS32       .debug_frame
+00000714 R_ARM_ABS32       .text
+00000734 R_ARM_ABS32       .debug_frame
+00000738 R_ARM_ABS32       .text
+0000075c R_ARM_ABS32       .debug_frame
+00000760 R_ARM_ABS32       .text
+00000780 R_ARM_ABS32       .debug_frame
+00000784 R_ARM_ABS32       .text
+000007ac R_ARM_ABS32       .debug_frame
+000007b0 R_ARM_ABS32       .text
+000007d0 R_ARM_ABS32       .debug_frame
+000007d4 R_ARM_ABS32       .text
+000007f8 R_ARM_ABS32       .debug_frame
+000007fc R_ARM_ABS32       .text
+0000081c R_ARM_ABS32       .debug_frame
+00000820 R_ARM_ABS32       .text
+00000844 R_ARM_ABS32       .debug_frame
+00000848 R_ARM_ABS32       .text
+00000868 R_ARM_ABS32       .debug_frame
+0000086c R_ARM_ABS32       .text
+00000890 R_ARM_ABS32       .debug_frame
+00000894 R_ARM_ABS32       .text
+000008b4 R_ARM_ABS32       .debug_frame
+000008b8 R_ARM_ABS32       .text
+000008dc R_ARM_ABS32       .debug_frame
+000008e0 R_ARM_ABS32       .text
+00000900 R_ARM_ABS32       .debug_frame
+00000904 R_ARM_ABS32       .text
+00000924 R_ARM_ABS32       .debug_frame
+00000928 R_ARM_ABS32       .text
+0000094c R_ARM_ABS32       .debug_frame
+00000950 R_ARM_ABS32       .text
+00000970 R_ARM_ABS32       .debug_frame
+00000974 R_ARM_ABS32       .text
+00000998 R_ARM_ABS32       .debug_frame
+0000099c R_ARM_ABS32       .text
+000009bc R_ARM_ABS32       .debug_frame
+000009c0 R_ARM_ABS32       .text
+000009d8 R_ARM_ABS32       .debug_frame
+000009dc R_ARM_ABS32       .text
+000009fc R_ARM_ABS32       .debug_frame
+00000a00 R_ARM_ABS32       .text
+00000a24 R_ARM_ABS32       .debug_frame
+00000a28 R_ARM_ABS32       .text
+00000a48 R_ARM_ABS32       .debug_frame
+00000a4c R_ARM_ABS32       .text
+00000a64 R_ARM_ABS32       .debug_frame
+00000a68 R_ARM_ABS32       .text
+00000a80 R_ARM_ABS32       .debug_frame
+00000a84 R_ARM_ABS32       .text
+00000aa4 R_ARM_ABS32       .debug_frame
+00000aa8 R_ARM_ABS32       .text
+00000acc R_ARM_ABS32       .debug_frame
+00000ad0 R_ARM_ABS32       .text
+00000af0 R_ARM_ABS32       .debug_frame
+00000af4 R_ARM_ABS32       .text
+00000b18 R_ARM_ABS32       .debug_frame
+00000b1c R_ARM_ABS32       .text
+00000b3c R_ARM_ABS32       .debug_frame
+00000b40 R_ARM_ABS32       .text
+00000b64 R_ARM_ABS32       .debug_frame
+00000b68 R_ARM_ABS32       .text
+00000b88 R_ARM_ABS32       .debug_frame
+00000b8c R_ARM_ABS32       .text
+00000bb0 R_ARM_ABS32       .debug_frame
+00000bb4 R_ARM_ABS32       .text
+00000bd4 R_ARM_ABS32       .debug_frame
+00000bd8 R_ARM_ABS32       .text
+00000bfc R_ARM_ABS32       .debug_frame
+00000c00 R_ARM_ABS32       .text
+00000c20 R_ARM_ABS32       .debug_frame
+00000c24 R_ARM_ABS32       .text
+00000c48 R_ARM_ABS32       .debug_frame
+00000c4c R_ARM_ABS32       .text
+00000c6c R_ARM_ABS32       .debug_frame
+00000c70 R_ARM_ABS32       .text
+00000c94 R_ARM_ABS32       .debug_frame
+00000c98 R_ARM_ABS32       .text
+00000cbc R_ARM_ABS32       .debug_frame
+00000cc0 R_ARM_ABS32       .text
+00000ce8 R_ARM_ABS32       .debug_frame
+00000cec R_ARM_ABS32       .text
+00000d0c R_ARM_ABS32       .debug_frame
+00000d10 R_ARM_ABS32       .text
+00000d34 R_ARM_ABS32       .debug_frame
+00000d38 R_ARM_ABS32       .text
+00000d58 R_ARM_ABS32       .debug_frame
+00000d5c R_ARM_ABS32       .text
+00000d80 R_ARM_ABS32       .debug_frame
+00000d84 R_ARM_ABS32       .text
+00000da4 R_ARM_ABS32       .debug_frame
+00000da8 R_ARM_ABS32       .text
+00000dcc R_ARM_ABS32       .debug_frame
+00000dd0 R_ARM_ABS32       .text
+00000df0 R_ARM_ABS32       .debug_frame
+00000df4 R_ARM_ABS32       .text
+00000e18 R_ARM_ABS32       .debug_frame
+00000e1c R_ARM_ABS32       .text
+00000e3c R_ARM_ABS32       .debug_frame
+00000e40 R_ARM_ABS32       .text
+00000e64 R_ARM_ABS32       .debug_frame
+00000e68 R_ARM_ABS32       .text
+00000e88 R_ARM_ABS32       .debug_frame
+00000e8c R_ARM_ABS32       .text
+00000eb0 R_ARM_ABS32       .debug_frame
+00000eb4 R_ARM_ABS32       .text
+00000ed4 R_ARM_ABS32       .debug_frame
+00000ed8 R_ARM_ABS32       .text
+00000efc R_ARM_ABS32       .debug_frame
+00000f00 R_ARM_ABS32       .text
+00000f20 R_ARM_ABS32       .debug_frame
+00000f24 R_ARM_ABS32       .text
+00000f48 R_ARM_ABS32       .debug_frame
+00000f4c R_ARM_ABS32       .text
+00000f70 R_ARM_ABS32       .debug_frame
+00000f74 R_ARM_ABS32       .text
+00000f94 R_ARM_ABS32       .debug_frame
+00000f98 R_ARM_ABS32       .text
+00000fbc R_ARM_ABS32       .debug_frame
+00000fc0 R_ARM_ABS32       .text
+00000fe0 R_ARM_ABS32       .debug_frame
+00000fe4 R_ARM_ABS32       .text
+0000100c R_ARM_ABS32       .debug_frame
+00001010 R_ARM_ABS32       .text
+00001030 R_ARM_ABS32       .debug_frame
+00001034 R_ARM_ABS32       .text
+00001054 R_ARM_ABS32       .debug_frame
+00001058 R_ARM_ABS32       .text
+00001078 R_ARM_ABS32       .debug_frame
+0000107c R_ARM_ABS32       .text
+000010a0 R_ARM_ABS32       .debug_frame
+000010a4 R_ARM_ABS32       .text
+000010c4 R_ARM_ABS32       .debug_frame
+000010c8 R_ARM_ABS32       .text
+000010ec R_ARM_ABS32       .debug_frame
+000010f0 R_ARM_ABS32       .text
+00001110 R_ARM_ABS32       .debug_frame
+00001114 R_ARM_ABS32       .text
+00001138 R_ARM_ABS32       .debug_frame
+0000113c R_ARM_ABS32       .text
+0000115c R_ARM_ABS32       .debug_frame
+00001160 R_ARM_ABS32       .text
+00001184 R_ARM_ABS32       .debug_frame
+00001188 R_ARM_ABS32       .text
+000011a8 R_ARM_ABS32       .debug_frame
+000011ac R_ARM_ABS32       .text
+000011d0 R_ARM_ABS32       .debug_frame
+000011d4 R_ARM_ABS32       .text
+000011f4 R_ARM_ABS32       .debug_frame
+000011f8 R_ARM_ABS32       .text
+00001218 R_ARM_ABS32       .debug_frame
+0000121c R_ARM_ABS32       .text
+00001240 R_ARM_ABS32       .debug_frame
+00001244 R_ARM_ABS32       .text
+00001264 R_ARM_ABS32       .debug_frame
+00001268 R_ARM_ABS32       .text
+0000128c R_ARM_ABS32       .debug_frame
+00001290 R_ARM_ABS32       .text
+000012b0 R_ARM_ABS32       .debug_frame
+000012b4 R_ARM_ABS32       .text
+000012d8 R_ARM_ABS32       .debug_frame
+000012dc R_ARM_ABS32       .text
+000012fc R_ARM_ABS32       .debug_frame
+00001300 R_ARM_ABS32       .text
+00001324 R_ARM_ABS32       .debug_frame
+00001328 R_ARM_ABS32       .text
+00001348 R_ARM_ABS32       .debug_frame
+0000134c R_ARM_ABS32       .text
+00001370 R_ARM_ABS32       .debug_frame
+00001374 R_ARM_ABS32       .text
+00001394 R_ARM_ABS32       .debug_frame
+00001398 R_ARM_ABS32       .text
+000013bc R_ARM_ABS32       .debug_frame
+000013c0 R_ARM_ABS32       .text
+000013e0 R_ARM_ABS32       .debug_frame
+000013e4 R_ARM_ABS32       .text
+00001408 R_ARM_ABS32       .debug_frame
+0000140c R_ARM_ABS32       .text
+0000142c R_ARM_ABS32       .debug_frame
+00001430 R_ARM_ABS32       .text
+00001454 R_ARM_ABS32       .debug_frame
+00001458 R_ARM_ABS32       .text
+00001478 R_ARM_ABS32       .debug_frame
+0000147c R_ARM_ABS32       .text
+000014a0 R_ARM_ABS32       .debug_frame
+000014a4 R_ARM_ABS32       .text
+000014c4 R_ARM_ABS32       .debug_frame
+000014c8 R_ARM_ABS32       .text
+000014ec R_ARM_ABS32       .debug_frame
+000014f0 R_ARM_ABS32       .text
+00001510 R_ARM_ABS32       .debug_frame
+00001514 R_ARM_ABS32       .text
+00001538 R_ARM_ABS32       .debug_frame
+0000153c R_ARM_ABS32       .text
+0000155c R_ARM_ABS32       .debug_frame
+00001560 R_ARM_ABS32       .text
+00001584 R_ARM_ABS32       .debug_frame
+00001588 R_ARM_ABS32       .text
+000015a8 R_ARM_ABS32       .debug_frame
+000015ac R_ARM_ABS32       .text
+000015d0 R_ARM_ABS32       .debug_frame
+000015d4 R_ARM_ABS32       .text
+000015f8 R_ARM_ABS32       .debug_frame
+000015fc R_ARM_ABS32       .text
+00001620 R_ARM_ABS32       .debug_frame
+00001624 R_ARM_ABS32       .text
+00001648 R_ARM_ABS32       .debug_frame
+0000164c R_ARM_ABS32       .text
+00001670 R_ARM_ABS32       .debug_frame
+00001674 R_ARM_ABS32       .text
+00001698 R_ARM_ABS32       .debug_frame
+0000169c R_ARM_ABS32       .text
+000016c0 R_ARM_ABS32       .debug_frame
+000016c4 R_ARM_ABS32       .text
+000016e8 R_ARM_ABS32       .debug_frame
+000016ec R_ARM_ABS32       .text
+00001710 R_ARM_ABS32       .debug_frame
+00001714 R_ARM_ABS32       .text
+00001734 R_ARM_ABS32       .debug_frame
+00001738 R_ARM_ABS32       .text
+00001758 R_ARM_ABS32       .debug_frame
+0000175c R_ARM_ABS32       .text
+0000177c R_ARM_ABS32       .debug_frame
+00001780 R_ARM_ABS32       .text
+000017a0 R_ARM_ABS32       .debug_frame
+000017a4 R_ARM_ABS32       .text
+000017c8 R_ARM_ABS32       .debug_frame
+000017cc R_ARM_ABS32       .text
+000017ec R_ARM_ABS32       .debug_frame
+000017f0 R_ARM_ABS32       .text
+00001814 R_ARM_ABS32       .debug_frame
+00001818 R_ARM_ABS32       .text
+00001838 R_ARM_ABS32       .debug_frame
+0000183c R_ARM_ABS32       .text.nolibc_raise
+0000185c R_ARM_ABS32       .debug_frame
+00001860 R_ARM_ABS32       .text
+00001884 R_ARM_ABS32       .debug_frame
+00001888 R_ARM_ABS32       .text
+000018a8 R_ARM_ABS32       .debug_frame
+000018ac R_ARM_ABS32       .text
+000018cc R_ARM_ABS32       .debug_frame
+000018d0 R_ARM_ABS32       .text
+000018f4 R_ARM_ABS32       .debug_frame
+000018f8 R_ARM_ABS32       .text
+00001918 R_ARM_ABS32       .debug_frame
+0000191c R_ARM_ABS32       .text
+0000193c R_ARM_ABS32       .debug_frame
+00001940 R_ARM_ABS32       .text
+00001960 R_ARM_ABS32       .debug_frame
+00001964 R_ARM_ABS32       .text
+00001988 R_ARM_ABS32       .debug_frame
+0000198c R_ARM_ABS32       .text
+000019bc R_ARM_ABS32       .debug_frame
+000019c0 R_ARM_ABS32       .text
+000019e4 R_ARM_ABS32       .debug_frame
+000019e8 R_ARM_ABS32       .text
+00001a1c R_ARM_ABS32       .debug_frame
+00001a20 R_ARM_ABS32       .text
+00001a44 R_ARM_ABS32       .debug_frame
+00001a48 R_ARM_ABS32       .text.nolibc_memmove
+00001a6c R_ARM_ABS32       .debug_frame
+00001a70 R_ARM_ABS32       .text.nolibc_memcpy
+00001a94 R_ARM_ABS32       .debug_frame
+00001a98 R_ARM_ABS32       .text.nolibc_memset
+00001abc R_ARM_ABS32       .debug_frame
+00001ac0 R_ARM_ABS32       .text
+00001ae4 R_ARM_ABS32       .debug_frame
+00001ae8 R_ARM_ABS32       .text
+00001b0c R_ARM_ABS32       .debug_frame
+00001b10 R_ARM_ABS32       .text
+00001b34 R_ARM_ABS32       .debug_frame
+00001b38 R_ARM_ABS32       .text
+00001b5c R_ARM_ABS32       .debug_frame
+00001b60 R_ARM_ABS32       .text.nolibc_strlen
+00001b84 R_ARM_ABS32       .debug_frame
+00001b88 R_ARM_ABS32       .text
+00001bac R_ARM_ABS32       .debug_frame
+00001bb0 R_ARM_ABS32       .text
+00001bd0 R_ARM_ABS32       .debug_frame
+00001bd4 R_ARM_ABS32       .text
+00001bf4 R_ARM_ABS32       .debug_frame
+00001bf8 R_ARM_ABS32       .text
+00001c18 R_ARM_ABS32       .debug_frame
+00001c1c R_ARM_ABS32       .text
+00001c40 R_ARM_ABS32       .debug_frame
+00001c44 R_ARM_ABS32       .text
+00001c68 R_ARM_ABS32       .debug_frame
+00001c6c R_ARM_ABS32       .text
+00001c90 R_ARM_ABS32       .debug_frame
+00001c94 R_ARM_ABS32       .text
+00001cb8 R_ARM_ABS32       .debug_frame
+00001cbc R_ARM_ABS32       .text
+00001ce0 R_ARM_ABS32       .debug_frame
+00001ce4 R_ARM_ABS32       .text
+00001d04 R_ARM_ABS32       .debug_frame
+00001d08 R_ARM_ABS32       .text
+00001d2c R_ARM_ABS32       .debug_frame
+00001d30 R_ARM_ABS32       .text
+00001d54 R_ARM_ABS32       .debug_frame
+00001d58 R_ARM_ABS32       .text.nolibc_abort
+00001d70 R_ARM_ABS32       .debug_frame
+00001d74 R_ARM_ABS32       .text
+00001d98 R_ARM_ABS32       .debug_frame
+00001d9c R_ARM_ABS32       .text
+00001dbc R_ARM_ABS32       .debug_frame
+00001dc0 R_ARM_ABS32       .text
+00001de0 R_ARM_ABS32       .debug_frame
+00001de4 R_ARM_ABS32       .text
+00001e08 R_ARM_ABS32       .debug_frame
+00001e0c R_ARM_ABS32       .text
+00001e2c R_ARM_ABS32       .debug_frame
+00001e30 R_ARM_ABS32       .text
+00001e50 R_ARM_ABS32       .debug_frame
+00001e54 R_ARM_ABS32       .text
+00001e74 R_ARM_ABS32       .debug_frame
+00001e78 R_ARM_ABS32       .text
+00001ea4 R_ARM_ABS32       .debug_frame
+00001ea8 R_ARM_ABS32       .text
+00001ecc R_ARM_ABS32       .debug_frame
+00001ed0 R_ARM_ABS32       .text
+00001ef0 R_ARM_ABS32       .debug_frame
+00001ef4 R_ARM_ABS32       .text
+00001f18 R_ARM_ABS32       .debug_frame
+00001f1c R_ARM_ABS32       .text
+00001f50 R_ARM_ABS32       .debug_frame
+00001f54 R_ARM_ABS32       .text
+00001f78 R_ARM_ABS32       .debug_frame
+00001f7c R_ARM_ABS32       .text
+00001fac R_ARM_ABS32       .debug_frame
+00001fb0 R_ARM_ABS32       .text
+00001fd0 R_ARM_ABS32       .debug_frame
+00001fd4 R_ARM_ABS32       .text
+00001ff4 R_ARM_ABS32       .debug_frame
+00001ff8 R_ARM_ABS32       .text
+00002018 R_ARM_ABS32       .debug_frame
+0000201c R_ARM_ABS32       .text
+0000203c R_ARM_ABS32       .debug_frame
+00002040 R_ARM_ABS32       .text
+00002060 R_ARM_ABS32       .debug_frame
+00002064 R_ARM_ABS32       .text
+00002084 R_ARM_ABS32       .debug_frame
+00002088 R_ARM_ABS32       .text
+000020ac R_ARM_ABS32       .debug_frame
+000020b0 R_ARM_ABS32       .text
+000020d0 R_ARM_ABS32       .debug_frame
+000020d4 R_ARM_ABS32       .text
+000020f8 R_ARM_ABS32       .debug_frame
+000020fc R_ARM_ABS32       .text
+00002120 R_ARM_ABS32       .debug_frame
+00002124 R_ARM_ABS32       .text
+00002144 R_ARM_ABS32       .debug_frame
+00002148 R_ARM_ABS32       .text
+00002168 R_ARM_ABS32       .debug_frame
+0000216c R_ARM_ABS32       .text
+00002184 R_ARM_ABS32       .debug_frame
+00002188 R_ARM_ABS32       .text
+000021a8 R_ARM_ABS32       .debug_frame
+000021ac R_ARM_ABS32       .text
+000021cc R_ARM_ABS32       .debug_frame
+000021d0 R_ARM_ABS32       .text
+000021f0 R_ARM_ABS32       .debug_frame
+000021f4 R_ARM_ABS32       .text
+00002214 R_ARM_ABS32       .debug_frame
+00002218 R_ARM_ABS32       .text
+00002238 R_ARM_ABS32       .debug_frame
+0000223c R_ARM_ABS32       .text
+0000225c R_ARM_ABS32       .debug_frame
+00002260 R_ARM_ABS32       .text
+00002280 R_ARM_ABS32       .debug_frame
+00002284 R_ARM_ABS32       .text
+000022b4 R_ARM_ABS32       .debug_frame
+000022b8 R_ARM_ABS32       .text
+000022d8 R_ARM_ABS32       .debug_frame
+000022dc R_ARM_ABS32       .text
+000022fc R_ARM_ABS32       .debug_frame
+00002300 R_ARM_ABS32       .text
+00002320 R_ARM_ABS32       .debug_frame
+00002324 R_ARM_ABS32       .text
+00002358 R_ARM_ABS32       .debug_frame
+0000235c R_ARM_ABS32       .text
+00002394 R_ARM_ABS32       .debug_frame
+00002398 R_ARM_ABS32       .text
+000023b8 R_ARM_ABS32       .debug_frame
+000023bc R_ARM_ABS32       .text
+000023f0 R_ARM_ABS32       .debug_frame
+000023f4 R_ARM_ABS32       .text
+00002414 R_ARM_ABS32       .debug_frame
+00002418 R_ARM_ABS32       .text
+00002438 R_ARM_ABS32       .debug_frame
+0000243c R_ARM_ABS32       .text
+0000246c R_ARM_ABS32       .debug_frame
+00002470 R_ARM_ABS32       .text
+00002490 R_ARM_ABS32       .debug_frame
+00002494 R_ARM_ABS32       .text
+000024c8 R_ARM_ABS32       .debug_frame
+000024cc R_ARM_ABS32       .text
+000024f0 R_ARM_ABS32       .debug_frame
+000024f4 R_ARM_ABS32       .text
+00002528 R_ARM_ABS32       .debug_frame
+0000252c R_ARM_ABS32       .text
+0000254c R_ARM_ABS32       .debug_frame
+00002550 R_ARM_ABS32       .text
+00002574 R_ARM_ABS32       .debug_frame
+00002578 R_ARM_ABS32       .text
+0000259c R_ARM_ABS32       .debug_frame
+000025a0 R_ARM_ABS32       .text
+000025bc R_ARM_ABS32       .debug_frame
+000025c0 R_ARM_ABS32       .text
+000025e4 R_ARM_ABS32       .debug_frame
+000025e8 R_ARM_ABS32       .text
+00002608 R_ARM_ABS32       .debug_frame
+0000260c R_ARM_ABS32       .text
+0000262c R_ARM_ABS32       .debug_frame
+00002630 R_ARM_ABS32       .text
+00002654 R_ARM_ABS32       .debug_frame
+00002658 R_ARM_ABS32       .text
+0000267c R_ARM_ABS32       .debug_frame
+00002680 R_ARM_ABS32       .text
+000026a4 R_ARM_ABS32       .debug_frame
+000026a8 R_ARM_ABS32       .text
+000026c8 R_ARM_ABS32       .debug_frame
+000026cc R_ARM_ABS32       .text
+000026ec R_ARM_ABS32       .debug_frame
+000026f0 R_ARM_ABS32       .text
+00002710 R_ARM_ABS32       .debug_frame
+00002714 R_ARM_ABS32       .text
+
+

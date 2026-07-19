@@ -18,7 +18,9 @@ import java.util.Map;
 
 import ghidra.app.util.importer.MessageLog;
 import ghidra.program.model.address.AddressSetView;
-import ghidra.program.model.relocobj.Relocation;
+import ghidra.program.model.relocobj.RelocationEntry;
+import ghidra.program.model.relocobj.RelocationGang;
+import ghidra.program.model.relocobj.RelocationGroup;
 import ghidra.util.classfinder.ExtensionPoint;
 import net.boricj.bft.elf.ElfFile;
 import net.boricj.bft.elf.ElfSection;
@@ -27,10 +29,10 @@ import net.boricj.bft.elf.sections.ElfSymbolTable;
 import net.boricj.bft.elf.sections.ElfSymbolTable.ElfSymbol;
 
 public interface ElfRelocationTableBuilder extends ExtensionPoint {
-	public ElfSection build(ElfFile elf,
+	public ElfSection buildGroups(ElfFile elf,
 			ElfSymbolTable symtab, ElfSection section, byte[] bytes,
-			AddressSetView addressSet, List<Relocation> relocations,
-			Map<Relocation, ElfSymbol> relocationsToSymbols, MessageLog log);
+			AddressSetView addressSet, List<RelocationGroup> groups,
+			Map<RelocationGroup, ElfSymbol> groupsToSymbols, MessageLog log);
 
 	public boolean canBuild(ElfFile elf, ElfSectionType sectionType);
 
@@ -39,11 +41,12 @@ public interface ElfRelocationTableBuilder extends ExtensionPoint {
 		return String.format("%s%s%s", prefix, (name.startsWith(".") ? "" : "."), name);
 	}
 
-	public static void logUnknownRelocation(ElfSection section, Relocation relocation,
-			MessageLog log) {
-		String name = relocation.getClass().getSimpleName();
-		String msg = String.format("Unknown relocation %s width %d bitmask %d at %s", name,
-			relocation.getWidth(), relocation.getBitmask(), relocation.getAddress());
+	public static void logUnknownRelocation(ElfSection section, RelocationGroup group,
+			RelocationGang gang, RelocationEntry entry, MessageLog log) {
+		String msg = String.format(
+			"Unknown grouped relocation %s type=%s width=%d bitmask=%d at %s", 
+			group.getExpression().getKind(), gang.getRelocationType(), gang.getWidth(),
+			gang.getBitmask(), entry.address());
 		log.appendMsg(section.getName(), msg);
 	}
 }

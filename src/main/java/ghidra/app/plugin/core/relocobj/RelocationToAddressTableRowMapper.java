@@ -25,6 +25,6 @@ public class RelocationToAddressTableRowMapper
 	@Override
 	public Address map(RelocationRowObject rowObject, Program program,
 			ServiceProvider serviceProvider) {
-		return rowObject.relocation.getAddress();
+		return rowObject.address;
 	}
 }

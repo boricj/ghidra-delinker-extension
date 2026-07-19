@@ -1,0 +1,174 @@
+
+/mnt/c/Users/jblbe/Documents/Workspace/ghidra-delinker-extension/src/test/resources/programs/freelist-allocator/reference/elf/linux-gnu/m68k/allocator.o:     file format elf32-m68k
+/mnt/c/Users/jblbe/Documents/Workspace/ghidra-delinker-extension/src/test/resources/programs/freelist-allocator/reference/elf/linux-gnu/m68k/allocator.o
+architecture: m68k, flags 0x00000011:
+HAS_RELOC, HAS_SYMS
+start address 0x00000000
+private flags = 0:
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .text         000002da  00000000  00000000  00000034  2**2
+                  CONTENTS, ALLOC, LOAD, RELOC, READONLY, CODE
+  1 .data         00000000  00000000  00000000  00000310  2**2
+                  CONTENTS, ALLOC, LOAD, DATA
+  2 .bss          00000000  00000000  00000000  00000310  2**2
+                  ALLOC
+  3 .ctf          0000045a  00000000  00000000  00000310  2**0
+                  CONTENTS, READONLY
+  4 .debug_info   00000382  00000000  00000000  0000076a  2**0
+                  CONTENTS, RELOC, READONLY, DEBUGGING, OCTETS
+  5 .debug_abbrev 00000181  00000000  00000000  00000aec  2**0
+                  CONTENTS, READONLY, DEBUGGING, OCTETS
+  6 .debug_aranges 00000020  00000000  00000000  00000c6d  2**0
+                  CONTENTS, RELOC, READONLY, DEBUGGING, OCTETS
+  7 .debug_line   00000276  00000000  00000000  00000c8d  2**0
+                  CONTENTS, RELOC, READONLY, DEBUGGING, OCTETS
+  8 .debug_str    0000021d  00000000  00000000  00000f03  2**0
+                  CONTENTS, READONLY, DEBUGGING, OCTETS
+  9 .comment      00000020  00000000  00000000  00001120  2**0
+                  CONTENTS, READONLY
+ 10 .note.GNU-stack 00000000  00000000  00000000  00001140  2**0
+                  CONTENTS, READONLY
+ 11 .debug_frame  00000120  00000000  00000000  00001140  2**2
+                  CONTENTS, RELOC, READONLY, DEBUGGING, OCTETS
+SYMBOL TABLE:
+00000000 l    df *ABS*	00000000 allocator.c
+00000000 l    d  .text	00000000 .text
+00000000 l    d  .data	00000000 .data
+00000000 l    d  .bss	00000000 .bss
+00000000 l    d  .ctf	00000000 .ctf
+00000000 l     F .text	0000001e align_up
+0000001e l     F .text	00000014 chunk_length
+00000032 l     F .text	00000020 chunk_is_used
+00000052 l     F .text	0000002e chunk_set_used
+00000080 l     F .text	0000002c chunk_write
+000000ac l     F .text	00000012 chunk_to_data
+000000be l     F .text	00000012 chunk_from_data
+000000d0 l     F .text	0000006e chunk_split
+00000000 l    d  .debug_info	00000000 .debug_info
+00000000 l    d  .debug_abbrev	00000000 .debug_abbrev
+00000000 l    d  .debug_aranges	00000000 .debug_aranges
+00000000 l    d  .debug_line	00000000 .debug_line
+00000000 l    d  .debug_str	00000000 .debug_str
+00000000 l    d  .note.GNU-stack	00000000 .note.GNU-stack
+00000000 l    d  .debug_frame	00000000 .debug_frame
+00000000 l    d  .comment	00000000 .comment
+0000013e g     F .text	0000001e freelist_init
+0000015c g     F .text	00000096 freelist_alloc
+000001f2 g     F .text	000000e8 freelist_free
+00000000         *UND*	00000000 memset
+
+
+RELOCATION RECORDS FOR [.text]:
+OFFSET   TYPE              VALUE
+00000230 R_68K_32          memset
+000002ac R_68K_32          memset
+
+
+RELOCATION RECORDS FOR [.debug_info]:
+OFFSET   TYPE              VALUE
+00000006 R_68K_32          .debug_abbrev
+0000000c R_68K_32          .debug_str+0x000000aa
+00000011 R_68K_32          .debug_str+0x000001dc
+00000015 R_68K_32          .debug_str+0x00000135
+00000019 R_68K_32          .text
+00000021 R_68K_32          .debug_line
+00000026 R_68K_32          .debug_str+0x000000ea
+00000039 R_68K_32          .debug_str+0x0000000a
+00000047 R_68K_32          .debug_str+0x00000110
+0000004e R_68K_32          .debug_str+0x000001f8
+00000055 R_68K_32          .debug_str+0x00000127
+0000005c R_68K_32          .debug_str+0x0000020a
+00000061 R_68K_32          .debug_str+0x00000065
+00000072 R_68K_32          .debug_str+0x00000065
+0000007f R_68K_32          .debug_str+0x00000011
+0000008c R_68K_32          .debug_str+0x00000216
+000000a2 R_68K_32          .debug_str+0x00000084
+000000a9 R_68K_32          .debug_str+0x0000011d
+000000ae R_68K_32          .debug_str+0x000000d5
+000000d0 R_68K_32          .debug_str+0x00000035
+000000d7 R_68K_32          .text+0x000001f2
+000000e6 R_68K_32          .debug_str+0x00000122
+00000104 R_68K_32          .debug_str+0x000000fc
+00000113 R_68K_32          .text+0x00000260
+0000011c R_68K_32          .debug_str+0x000000a1
+0000012d R_68K_32          .debug_str+0x00000026
+00000138 R_68K_32          .text+0x0000015c
+00000147 R_68K_32          .debug_str+0x00000122
+00000156 R_68K_32          .debug_str+0x00000060
+00000165 R_68K_32          .debug_str+0x0000001c
+00000184 R_68K_32          .debug_str+0x000001a5
+0000018b R_68K_32          .text+0x0000013e
+0000019a R_68K_32          .debug_str+0x00000122
+000001a9 R_68K_32          .debug_str
+000001b9 R_68K_32          .debug_str+0x000001d0
+000001c0 R_68K_32          .text+0x000000d0
+000001cf R_68K_32          .debug_str+0x000000fc
+000001de R_68K_32          .debug_str+0x0000001c
+000001ed R_68K_32          .debug_str+0x00000097
+000001fc R_68K_32          .debug_str+0x000000f4
+0000020c R_68K_32          .debug_str+0x000001bb
+00000217 R_68K_32          .text+0x000000be
+00000236 R_68K_32          .debug_str+0x00000043
+00000241 R_68K_32          .text+0x000000ac
+00000250 R_68K_32          .debug_str+0x000000fc
+00000268 R_68K_32          .debug_str+0x00000102
+0000026d R_68K_32          .debug_str+0x000001ec
+00000274 R_68K_32          .text+0x00000080
+00000283 R_68K_32          .debug_str+0x000000fc
+00000292 R_68K_32          .debug_str+0x00000011
+000002a1 R_68K_32          .debug_str+0x00000216
+000002b0 R_68K_32          .debug_str+0x000001cb
+000002c0 R_68K_32          .debug_str+0x00000051
+000002c7 R_68K_32          .text+0x00000052
+000002d6 R_68K_32          .debug_str+0x000000fc
+000002e5 R_68K_32          .debug_str+0x000001cb
+000002f5 R_68K_32          .debug_str+0x000000dc
+00000300 R_68K_32          .text+0x00000032
+0000030f R_68K_32          .debug_str+0x000000fc
+00000325 R_68K_32          .debug_str+0x00000077
+00000330 R_68K_32          .text+0x0000001e
+0000033f R_68K_32          .debug_str+0x000000fc
+0000034f R_68K_32          .debug_str+0x00000201
+0000035a R_68K_32          .text
+00000365 R_68K_32          .debug_str+0x00000016
+
+
+RELOCATION RECORDS FOR [.debug_aranges]:
+OFFSET   TYPE              VALUE
+00000006 R_68K_32          .debug_info
+00000010 R_68K_32          .text
+
+
+RELOCATION RECORDS FOR [.debug_line]:
+OFFSET   TYPE              VALUE
+0000011d R_68K_32          .text
+
+
+RELOCATION RECORDS FOR [.debug_frame]:
+OFFSET   TYPE              VALUE
+00000018 R_68K_32          .debug_frame
+0000001c R_68K_32          .text
+00000030 R_68K_32          .debug_frame
+00000034 R_68K_32          .text+0x0000001e
+00000048 R_68K_32          .debug_frame
+0000004c R_68K_32          .text+0x00000032
+00000060 R_68K_32          .debug_frame
+00000064 R_68K_32          .text+0x00000052
+00000078 R_68K_32          .debug_frame
+0000007c R_68K_32          .text+0x00000080
+00000090 R_68K_32          .debug_frame
+00000094 R_68K_32          .text+0x000000ac
+000000a8 R_68K_32          .debug_frame
+000000ac R_68K_32          .text+0x000000be
+000000c0 R_68K_32          .debug_frame
+000000c4 R_68K_32          .text+0x000000d0
+000000d8 R_68K_32          .debug_frame
+000000dc R_68K_32          .text+0x0000013e
+000000f0 R_68K_32          .debug_frame
+000000f4 R_68K_32          .text+0x0000015c
+00000108 R_68K_32          .debug_frame
+0000010c R_68K_32          .text+0x000001f2
+
+

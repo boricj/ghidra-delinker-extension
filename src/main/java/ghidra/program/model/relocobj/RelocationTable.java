@@ -13,11 +13,14 @@
  */
 package ghidra.program.model.relocobj;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
+import java.util.NavigableMap;
 import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.TreeMap;
@@ -31,117 +34,206 @@ import ghidra.program.model.address.AddressSetView;
 import ghidra.program.model.listing.Program;
 
 public class RelocationTable {
+	public static record RelocationLocation(long groupId, int gangIndex, int entryIndex) {}
+
 	public Program currentProgram;
-	private TreeMap<Address, Relocation> relocations = new TreeMap<>();
+	private LinkedHashMap<Long, RelocationGroup> groupsById = new LinkedHashMap<>();
+	private NavigableMap<Address, List<RelocationLocation>> groupLocationsByAddress =
+		new TreeMap<>();
+	private Map<Address, Boolean> transparentRelativePCByAddress = new HashMap<>();
+	private long nextGroupId = 1;
 
 	public RelocationTable(Program currentProgram) {
 		this.currentProgram = currentProgram;
 	}
 
-	public Relocation getRelocationAt(Address address) {
-		synchronized (relocations) {
-			return relocations.get(address);
-		}
-	}
-
 	public void clear() {
-		synchronized (relocations) {
-			relocations.clear();
+		synchronized (groupsById) {
+			groupsById.clear();
+			groupLocationsByAddress.clear();
+			transparentRelativePCByAddress.clear();
+			nextGroupId = 1;
 		}
 	}
 
 	public void clear(AddressSetView addressSet) {
-		List<Relocation> listRelocations;
-		synchronized (relocations) {
-			Iterator<Relocation> iterator = getRelocations(addressSet);
-			listRelocations = StreamSupport.stream(
-				Spliterators.spliteratorUnknownSize(iterator, Spliterator.ORDERED), false)
+		List<Long> listGroups;
+		synchronized (groupsById) {
+			listGroups = groupsById.values()
+					.stream()
+					.filter(g -> containsGroup(addressSet, g))
+					.map(g -> g.getGroupId())
 					.collect(Collectors.toList());
 		}
 
-		for (Relocation relocation : listRelocations) {
-			relocation.delete();
+		for (long groupId : listGroups) {
+			deleteGroup(groupId);
 		}
 	}
 
-	public Iterator<Relocation> getRelocations() {
-		synchronized (relocations) {
-			// FIXME: Implement proper synchronized relocation iterator.
-			return relocations.values().iterator();
+	private static boolean containsGroup(AddressSetView addressSet, RelocationGroup group) {
+		for (RelocationGang gang : group.getGangs()) {
+			for (RelocationEntry entry : gang.getEntries()) {
+				if (addressSet.contains(entry.address())) {
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
+	public RelocationGroup addSingleEntryGroup(RelocationExpression expression,
+			Address target, long groupAddend, RelocationTypeTag relocationType, int width,
+			long bitmask,
+			Address entryAddress, long entryAddend) {
+		RelocationEntry entry = new RelocationEntry(entryAddress, entryAddend);
+		RelocationGang gang = new RelocationGang(relocationType, width, bitmask, List.of(entry));
+		RelocationGroup group =
+			new RelocationGroup(0, expression, target, groupAddend, List.of(gang));
+		return addGroup(group);
+	}
+
+	public RelocationGroup appendEntryToGroup(long groupId, RelocationTypeTag relocationType,
+			int width,
+			long bitmask, Address entryAddress, long entryAddend) {
+		RelocationGroup existing = groupsById.get(groupId);
+		if (existing == null) {
+			throw new IllegalArgumentException("Unknown relocation group id " + groupId);
+		}
+		List<RelocationGang> gangs = new ArrayList<>(existing.getGangs());
+		RelocationEntry newEntry = new RelocationEntry(entryAddress, entryAddend);
+
+		int sameTypeGangIndex = -1;
+		for (int i = 0; i < gangs.size(); i++) {
+			RelocationGang gang = gangs.get(i);
+			if (gang.getRelocationType().equals(relocationType) && gang.getWidth() == width &&
+				gang.getBitmask() == bitmask) {
+				sameTypeGangIndex = i;
+				if (gang.getEntries().contains(newEntry)) {
+					return existing;
+				}
+				break;
+			}
+		}
+
+		removeGroupLocations(groupId);
+
+		if (sameTypeGangIndex >= 0) {
+			RelocationGang gang = gangs.get(sameTypeGangIndex);
+			List<RelocationEntry> entries = new ArrayList<>(gang.getEntries());
+			entries.add(newEntry);
+			gang = new RelocationGang(relocationType, width, bitmask, entries);
+			gangs.set(sameTypeGangIndex, gang);
+		}
+		else {
+			gangs.add(new RelocationGang(relocationType, width, bitmask, List.of(newEntry)));
+		}
+
+		RelocationGroup updated = new RelocationGroup(groupId, existing.getExpression(),
+			existing.getTarget(), existing.getAddend(), gangs);
+		groupsById.put(groupId, updated);
+		indexGroupLocations(updated);
+		return updated;
+	}
+
+	private void indexGroupLocations(RelocationGroup group) {
+		for (int gangIndex = 0; gangIndex < group.getGangs().size(); gangIndex++) {
+			RelocationGang gang = group.getGangs().get(gangIndex);
+			for (int entryIndex = 0; entryIndex < gang.getEntries().size(); entryIndex++) {
+				RelocationEntry entry = gang.getEntries().get(entryIndex);
+				List<RelocationLocation> refs = groupLocationsByAddress
+						.computeIfAbsent(entry.address(), a -> new ArrayList<>());
+				refs.add(new RelocationLocation(group.getGroupId(), gangIndex, entryIndex));
+			}
 		}
 	}
 
-	public Iterator<Relocation> getRelocations(AddressSetView iteratorAddressSet) {
-		Address cursor;
-
-		synchronized (relocations) {
-			cursor = relocations.ceilingKey(iteratorAddressSet.getMinAddress());
-			while (cursor != null && !iteratorAddressSet.contains(cursor)) {
-				cursor = relocations.higherKey(cursor);
+	private void removeGroupLocations(long groupId) {
+		List<Address> empty = new ArrayList<>();
+		for (Map.Entry<Address, List<RelocationLocation>> entry : groupLocationsByAddress
+				.entrySet()) {
+			List<RelocationLocation> refs = entry.getValue();
+			refs.removeIf(ref -> ref.groupId() == groupId);
+			if (refs.isEmpty()) {
+				empty.add(entry.getKey());
 			}
 		}
 
-		final Address iteratorCursor = cursor;
+		for (Address address : empty) {
+			groupLocationsByAddress.remove(address);
+		}
+	}
 
-		return new Iterator<Relocation>() {
-			Address cursor = iteratorCursor;
-			AddressSetView addressSet = iteratorAddressSet;
-
-			@Override
-			public boolean hasNext() {
-				return cursor != null;
+	public RelocationGroup addGroup(RelocationGroup group) {
+		synchronized (groupsById) {
+			RelocationGroup normalized = group;
+			if (group.getGroupId() <= 0) {
+				normalized = new RelocationGroup(nextGroupId++, group.getExpression(),
+					group.getTarget(), group.getAddend(), group.getGangs());
 			}
 
-			@Override
-			public Relocation next() {
-				if (cursor == null) {
-					throw new NoSuchElementException();
+			RelocationGroup previous = groupsById.get(normalized.getGroupId());
+			if (previous != null) {
+				if (previous != normalized && !previous.equals(normalized)) {
+					throw new IllegalArgumentException(
+						"Non-equivalent relocation group already exists with id " +
+							normalized.getGroupId());
 				}
 
-				Relocation value = null;
-
-				synchronized (relocations) {
-					value = relocations.get(cursor);
-
-					do {
-						cursor = relocations.higherKey(cursor);
-					}
-					while (cursor != null && !addressSet.contains(cursor));
-				}
-
-				return value;
+				return previous;
 			}
-		};
+
+			groupsById.put(normalized.getGroupId(), normalized);
+			indexGroupLocations(normalized);
+			return normalized;
+		}
 	}
 
-	public Iterator<Relocation> getRelocations(AddressSetView addressSet,
-			Predicate<Relocation> predicate) {
-		final Iterator<Relocation> iteratorAddressSet = getRelocations(addressSet);
-		final Stream<Relocation> stream = StreamSupport.stream(
+	public RelocationGroup getRelocationGroup(long groupId) {
+		synchronized (groupsById) {
+			return groupsById.get(groupId);
+		}
+	}
+
+	public void deleteGroup(long groupId) {
+		synchronized (groupsById) {
+			RelocationGroup removed = groupsById.remove(groupId);
+			if (removed != null) {
+				removeGroupLocations(groupId);
+			}
+		}
+	}
+
+	public Iterator<RelocationGroup> getRelocationGroups() {
+		synchronized (groupsById) {
+			return new ArrayList<>(groupsById.values()).iterator();
+		}
+	}
+
+	public Iterator<RelocationGroup> getRelocationGroups(AddressSetView addressSet) {
+		final Iterator<RelocationGroup> iterator = getRelocationGroups();
+		final Stream<RelocationGroup> stream = StreamSupport.stream(
+			Spliterators.spliteratorUnknownSize(iterator, Spliterator.ORDERED), false);
+		return stream.filter(g -> containsGroup(addressSet, g)).iterator();
+	}
+
+	public Iterator<RelocationGroup> getRelocationGroups(AddressSetView addressSet,
+			Predicate<RelocationGroup> predicate) {
+		final Iterator<RelocationGroup> iteratorAddressSet = getRelocationGroups(addressSet);
+		final Stream<RelocationGroup> stream = StreamSupport.stream(
 			Spliterators.spliteratorUnknownSize(iteratorAddressSet, Spliterator.ORDERED), false);
 		return stream.filter(predicate).iterator();
 	}
 
-	protected Relocation add(Relocation newRelocation) {
-		Address address = newRelocation.getAddress();
-
-		synchronized (relocations) {
-			Relocation relocation = relocations.getOrDefault(address, newRelocation);
-			if (!relocation.equals(newRelocation)) {
-				String msg = String.format(
-					"Non-equivalent relocation already exists at address %s for symbol %s", address,
-					relocation.getTarget());
-				throw new IllegalArgumentException(msg);
+	public List<RelocationLocation> getRelocationLocationsAt(Address address) {
+		synchronized (groupsById) {
+			List<RelocationLocation> refs = groupLocationsByAddress.get(address);
+			if (refs == null) {
+				return List.of();
 			}
 
-			relocations.put(address, relocation);
-			return relocation;
-		}
-	}
-
-	protected void delete(Relocation relocation) {
-		synchronized (relocations) {
-			relocations.remove(relocation.getAddress());
+			return Collections.unmodifiableList(refs);
 		}
 	}
 
@@ -159,89 +251,76 @@ public class RelocationTable {
 		}
 	}
 
-	public RelocationAbsolute addAbsolute(Address address, int length, Address target,
-			long offset) {
-		RelocationAbsolute rel =
-			new RelocationAbsolute(this, address, length, target, offset);
-		return (RelocationAbsolute) add(rel);
-	}
-
-	public RelocationAbsolute addAbsolute(Address address, int width, long bitmask,
-			Address target, long addend) {
-		RelocationAbsolute rel =
-			new RelocationAbsolute(this, address, width, bitmask, target, addend);
-		return (RelocationAbsolute) add(rel);
-	}
-
-	public RelocationHighPair addHighPair(Address address, int width, long bitmask,
-			Address target) {
-		RelocationHighPair rel = new RelocationHighPair(this, address, width, bitmask, target);
-		return (RelocationHighPair) add(rel);
-	}
-
-	public RelocationLowPair addLowPair(Address address, int width, long bitmask,
-			RelocationHighPair relocationHi, long addend) {
-		RelocationLowPair rel =
-			new RelocationLowPair(this, address, width, bitmask, relocationHi, addend);
-		rel = (RelocationLowPair) add(rel);
-		relocationHi.addRelocationLo(rel);
-		return rel;
-	}
-
-	public RelocationMIPS26 addMIPS26(Address address, Address target, long addend) {
-		RelocationMIPS26 rel =
-			new RelocationMIPS26(this, address, target, addend);
-		return (RelocationMIPS26) add(rel);
-	}
-
-	public RelocationRelativePC addRelativePC(Address address, int width, Address target,
+	public void addAbsoluteGroup(Address address, int width, long bitmask, Address target,
 			long addend) {
-		RelocationRelativePC rel =
-			new RelocationRelativePC(this, address, width, target, addend);
-		return (RelocationRelativePC) add(rel);
+		addSingleEntryGroup(RelocationExpression.absolute(), target, addend,
+			RelocationTypeTag.ABSOLUTE, width, bitmask, address, 0);
 	}
 
-	public RelocationRelativePC addRelativePC(Address address, int width, Address target,
-			long addend, boolean isTransparent) {
-		RelocationRelativePC rel =
-			new RelocationRelativePC(this, address, width, target, addend, isTransparent);
-		return (RelocationRelativePC) add(rel);
+	public RelocationGroup addHighPairGroup(Address address, int width, long bitmask,
+			Address target) {
+		synchronized (groupsById) {
+			for (RelocationGroup group : groupsById.values()) {
+				if (group.getExpression().getKind() != RelocationExpressionKind.ABSOLUTE ||
+					group.getAddend() != 0 || !group.getTarget().equals(target)) {
+					continue;
+				}
+
+				for (RelocationGang gang : group.getGangs()) {
+					if (gang.getRelocationType() != RelocationTypeTag.HIGH_PAIR ||
+						gang.getWidth() != width || gang.getBitmask() != bitmask) {
+						continue;
+					}
+
+					for (RelocationEntry entry : gang.getEntries()) {
+						if (entry.address().equals(address) && entry.localAddend() == 0) {
+							return group;
+						}
+					}
+				}
+			}
+		}
+
+		return addSingleEntryGroup(RelocationExpression.absolute(), target, 0,
+			RelocationTypeTag.HIGH_PAIR, width, bitmask, address, 0);
 	}
 
-	public RelocationRelativePC addRelativePC(Address address, int width, long bitmask,
-			Address target, long addend) {
-		RelocationRelativePC rel =
-			new RelocationRelativePC(this, address, width, bitmask, target, addend);
-		return (RelocationRelativePC) add(rel);
+	public RelocationGroup addLowPairGroup(long groupId, Address address, int width,
+			long bitmask, long addend) {
+		return appendEntryToGroup(groupId, RelocationTypeTag.LOW_PAIR, width, bitmask, address,
+			addend);
 	}
 
-	public RelocationRelativePC addRelativePC(Address address, int width, long bitmask,
-			Address target, long addend, boolean isTransparent) {
-		RelocationRelativePC rel =
-			new RelocationRelativePC(this, address, width, bitmask, target, addend,
-				isTransparent);
-		return (RelocationRelativePC) add(rel);
+	public void addMIPS26Group(Address address, Address target, long addend) {
+		addSingleEntryGroup(RelocationExpression.absolute(), target, addend,
+			RelocationTypeTag.MIPS_26, 4, 0x3ffffffL, address, 0);
 	}
 
-	public RelocationRelativePC addRelativePC(Address address, int width, long bitmask,
-			Address target, long addend, int trailingBytes) {
-		RelocationRelativePC rel =
-			new RelocationRelativePC(this, address, width, bitmask, target, addend, true,
-				trailingBytes);
-		return (RelocationRelativePC) add(rel);
+	public void addRelativePCGroup(Address address, int width, long bitmask, Address target,
+			long addend, boolean isTransparent, long trailingBytes) {
+		RelocationGroup group = addSingleEntryGroup(RelocationExpression.pcRelative(), target,
+			addend, RelocationTypeTag.PC_RELATIVE, width, bitmask, address, trailingBytes);
+		transparentRelativePCByAddress.put(address, isTransparent);
+		if (group == null) {
+			throw new IllegalStateException();
+		}
 	}
 
-	public RelocationRelativeSymbol addRelativeSymbol(Address address, int width, Address target,
-			long addend, String relativetarget) {
-		RelocationRelativeSymbol rel = new RelocationRelativeSymbol(this, address, width,
-			target, addend, relativetarget);
-		return (RelocationRelativeSymbol) add(rel);
+
+	public boolean isTransparentRelativePC(Address address) {
+		synchronized (groupsById) {
+			Boolean transparent = transparentRelativePCByAddress.get(address);
+			if (transparent != null) {
+				return transparent;
+			}
+
+			return true;
+		}
 	}
 
-	public RelocationRelativeSymbol addRelativeSymbol(Address address, int width, long bitmask,
-			Address target, long addend, String relativetarget) {
-		RelocationRelativeSymbol rel = new RelocationRelativeSymbol(this, address, width, bitmask,
-			target, addend, relativetarget);
-		return (RelocationRelativeSymbol) add(rel);
+	public void addRelativeSymbolGroup(Address address, int width, long bitmask, Address target,
+			long addend, String relativeTarget) {
+		addSingleEntryGroup(RelocationExpression.relativeToSymbol(relativeTarget), target,
+			addend, RelocationTypeTag.RELATIVE_SYMBOL, width, bitmask, address, 0);
 	}
 }

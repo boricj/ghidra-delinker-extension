@@ -1,0 +1,124 @@
+
+/mnt/c/Users/jblbe/Documents/Workspace/ghidra-delinker-extension/src/test/resources/programs/integer-parsing/reference/elf/linux-gnu/m68k/main.o:     file format elf32-m68k
+/mnt/c/Users/jblbe/Documents/Workspace/ghidra-delinker-extension/src/test/resources/programs/integer-parsing/reference/elf/linux-gnu/m68k/main.o
+architecture: m68k, flags 0x00000011:
+HAS_RELOC, HAS_SYMS
+start address 0x00000000
+private flags = 0:
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .text         000000b4  00000000  00000000  00000034  2**2
+                  CONTENTS, ALLOC, LOAD, RELOC, READONLY, CODE
+  1 .data         00000000  00000000  00000000  000000e8  2**2
+                  CONTENTS, ALLOC, LOAD, DATA
+  2 .bss          00000000  00000000  00000000  000000e8  2**2
+                  ALLOC
+  3 .ctf          000002ea  00000000  00000000  000000e8  2**0
+                  CONTENTS, READONLY
+  4 .rodata       00000022  00000000  00000000  000003d2  2**1
+                  CONTENTS, ALLOC, LOAD, RELOC, READONLY, DATA
+  5 .debug_info   00000121  00000000  00000000  000003f4  2**0
+                  CONTENTS, RELOC, READONLY, DEBUGGING, OCTETS
+  6 .debug_abbrev 000000ea  00000000  00000000  00000515  2**0
+                  CONTENTS, READONLY, DEBUGGING, OCTETS
+  7 .debug_aranges 00000020  00000000  00000000  000005ff  2**0
+                  CONTENTS, RELOC, READONLY, DEBUGGING, OCTETS
+  8 .debug_line   000000af  00000000  00000000  0000061f  2**0
+                  CONTENTS, RELOC, READONLY, DEBUGGING, OCTETS
+  9 .debug_str    00000173  00000000  00000000  000006ce  2**0
+                  CONTENTS, READONLY, DEBUGGING, OCTETS
+ 10 .comment      00000020  00000000  00000000  00000841  2**0
+                  CONTENTS, READONLY
+ 11 .note.GNU-stack 00000000  00000000  00000000  00000861  2**0
+                  CONTENTS, READONLY
+ 12 .debug_frame  00000048  00000000  00000000  00000864  2**2
+                  CONTENTS, RELOC, READONLY, DEBUGGING, OCTETS
+SYMBOL TABLE:
+00000000 l    df *ABS*	00000000 main.c
+00000000 l    d  .text	00000000 .text
+00000000 l    d  .data	00000000 .data
+00000000 l    d  .bss	00000000 .bss
+00000000 l    d  .ctf	00000000 .ctf
+00000000 l    d  .rodata	00000000 .rodata
+00000000 l    d  .debug_info	00000000 .debug_info
+00000000 l    d  .debug_abbrev	00000000 .debug_abbrev
+00000000 l    d  .debug_aranges	00000000 .debug_aranges
+00000000 l    d  .debug_line	00000000 .debug_line
+00000000 l    d  .debug_str	00000000 .debug_str
+00000000 l    d  .note.GNU-stack	00000000 .note.GNU-stack
+00000000 l    d  .debug_frame	00000000 .debug_frame
+00000000 l    d  .comment	00000000 .comment
+00000000 g     O .rodata	00000004 s_ascii_digit_bias
+00000000         *UND*	00000000 s_digits
+00000000 g     F .text	00000054 parse_decimal
+00000054 g     F .text	00000060 main
+00000000         *UND*	00000000 puts
+
+
+RELOCATION RECORDS FOR [.text]:
+OFFSET   TYPE              VALUE
+0000001c R_68K_32          s_digits-0x000000c0
+0000005a R_68K_32          .rodata+0x00000004
+00000060 R_68K_32          parse_decimal
+00000070 R_68K_32          .rodata+0x00000006
+00000076 R_68K_32          parse_decimal
+00000088 R_68K_32          .rodata+0x0000000a
+0000008e R_68K_32          parse_decimal
+000000a2 R_68K_32          .rodata+0x00000010
+000000a8 R_68K_32          puts
+
+
+RELOCATION RECORDS FOR [.rodata]:
+OFFSET   TYPE              VALUE
+00000000 R_68K_32          s_digits-0x000000c0
+
+
+RELOCATION RECORDS FOR [.debug_info]:
+OFFSET   TYPE              VALUE
+00000006 R_68K_32          .debug_abbrev
+0000000c R_68K_32          .debug_str+0x0000009b
+00000011 R_68K_32          .debug_str+0x000000ef
+00000015 R_68K_32          .debug_str+0x0000000e
+00000019 R_68K_32          .text
+00000021 R_68K_32          .debug_line
+00000028 R_68K_32          .debug_str+0x0000007b
+0000002f R_68K_32          .debug_str+0x0000010d
+00000036 R_68K_32          .debug_str+0x00000136
+0000003d R_68K_32          .debug_str+0x000000c6
+00000044 R_68K_32          .debug_str+0x00000149
+0000004b R_68K_32          .debug_str+0x0000015b
+0000005e R_68K_32          .debug_str
+00000065 R_68K_32          .debug_str+0x000000d8
+0000006c R_68K_32          .debug_str+0x00000125
+00000073 R_68K_32          .debug_str+0x0000016e
+00000092 R_68K_32          .debug_str+0x00000165
+0000009e R_68K_32          .debug_str+0x000000fa
+000000ab R_68K_32          s_ascii_digit_bias
+000000bb R_68K_32          .debug_str+0x00000096
+000000d8 R_68K_32          .debug_str+0x0000011b
+000000e3 R_68K_32          .text+0x00000054
+000000ee R_68K_32          .debug_str+0x00000088
+000000f9 R_68K_32          .text
+00000111 R_68K_32          .debug_str+0x00000155
+
+
+RELOCATION RECORDS FOR [.debug_aranges]:
+OFFSET   TYPE              VALUE
+00000006 R_68K_32          .debug_info
+00000010 R_68K_32          .text
+
+
+RELOCATION RECORDS FOR [.debug_line]:
+OFFSET   TYPE              VALUE
+00000057 R_68K_32          .text
+
+
+RELOCATION RECORDS FOR [.debug_frame]:
+OFFSET   TYPE              VALUE
+00000018 R_68K_32          .debug_frame
+0000001c R_68K_32          .text
+00000034 R_68K_32          .debug_frame
+00000038 R_68K_32          .text+0x00000054
+
+

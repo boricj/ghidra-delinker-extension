@@ -1,0 +1,512 @@
+ninja_required_version = 1.7
+
+rule ensure_dir
+  command = /usr/bin/python3 -c "import os,sys; os.makedirs(sys.argv[1], exist_ok=True); open(sys.argv[2], 'a').close()" "$dir" "$out"
+
+# aarch64-linux-gnu-gnu
+aarch64-linux-gnu-gnu_outdir = /mnt/c/Users/jblbe/Documents/Workspace/ghidra-delinker-extension/src/test/resources/programs/integer-parsing/reference/elf/linux-gnu/aarch64
+aarch64-linux-gnu-gnu_cflags = -gdwarf-4 -gctf  
+aarch64-linux-gnu-gnu_ldflags = -Wl,--build-id=none  
+build ${aarch64-linux-gnu-gnu_outdir}/.dir.stamp: ensure_dir
+  dir = ${aarch64-linux-gnu-gnu_outdir}
+
+rule aarch64-linux-gnu-gnu_cc_obj
+  command = aarch64-linux-gnu-gcc ${aarch64-linux-gnu-gnu_cflags} -I/mnt/c/Users/jblbe/Documents/Workspace/ghidra-delinker-extension/src/test/resources/programs/integer-parsing/src/include -c $in -o $out
+rule aarch64-linux-gnu-gnu_cc_asm
+  command = aarch64-linux-gnu-gcc ${aarch64-linux-gnu-gnu_cflags} -I/mnt/c/Users/jblbe/Documents/Workspace/ghidra-delinker-extension/src/test/resources/programs/integer-parsing/src/include -S -c $in -o $out
+rule aarch64-linux-gnu-gnu_objdump
+  command = aarch64-linux-gnu-objdump -x $in > $out
+rule aarch64-linux-gnu-gnu_combine
+  command = aarch64-linux-gnu-gcc -r $in -o $out
+rule aarch64-linux-gnu-gnu_link
+  command = aarch64-linux-gnu-gcc $in -o $out ${aarch64-linux-gnu-gnu_ldflags}
+
+build ${aarch64-linux-gnu-gnu_outdir}/main.o: aarch64-linux-gnu-gnu_cc_obj src/main.c || ${aarch64-linux-gnu-gnu_outdir}/.dir.stamp
+build ${aarch64-linux-gnu-gnu_outdir}/main.s: aarch64-linux-gnu-gnu_cc_asm src/main.c || ${aarch64-linux-gnu-gnu_outdir}/.dir.stamp
+build ${aarch64-linux-gnu-gnu_outdir}/main.txt: aarch64-linux-gnu-gnu_objdump ${aarch64-linux-gnu-gnu_outdir}/main.o || ${aarch64-linux-gnu-gnu_outdir}/.dir.stamp
+build ${aarch64-linux-gnu-gnu_outdir}/digits.o: aarch64-linux-gnu-gnu_cc_obj src/digits.c || ${aarch64-linux-gnu-gnu_outdir}/.dir.stamp
+build ${aarch64-linux-gnu-gnu_outdir}/digits.s: aarch64-linux-gnu-gnu_cc_asm src/digits.c || ${aarch64-linux-gnu-gnu_outdir}/.dir.stamp
+build ${aarch64-linux-gnu-gnu_outdir}/digits.txt: aarch64-linux-gnu-gnu_objdump ${aarch64-linux-gnu-gnu_outdir}/digits.o || ${aarch64-linux-gnu-gnu_outdir}/.dir.stamp
+build ${aarch64-linux-gnu-gnu_outdir}/integer-parsing.o: aarch64-linux-gnu-gnu_combine ${aarch64-linux-gnu-gnu_outdir}/main.o ${aarch64-linux-gnu-gnu_outdir}/digits.o || ${aarch64-linux-gnu-gnu_outdir}/.dir.stamp
+build ${aarch64-linux-gnu-gnu_outdir}/integer-parsing.elf: aarch64-linux-gnu-gnu_link ${aarch64-linux-gnu-gnu_outdir}/integer-parsing.o || ${aarch64-linux-gnu-gnu_outdir}/.dir.stamp
+build aarch64-linux-gnu-gnu: phony ${aarch64-linux-gnu-gnu_outdir}/integer-parsing.elf ${aarch64-linux-gnu-gnu_outdir}/main.s ${aarch64-linux-gnu-gnu_outdir}/digits.s ${aarch64-linux-gnu-gnu_outdir}/main.txt ${aarch64-linux-gnu-gnu_outdir}/digits.txt
+
+# arm-linux-gnu-gnu
+arm-linux-gnu-gnu_outdir = /mnt/c/Users/jblbe/Documents/Workspace/ghidra-delinker-extension/src/test/resources/programs/integer-parsing/reference/elf/linux-gnu/arm
+arm-linux-gnu-gnu_cflags = -gdwarf-4 -gctf  
+arm-linux-gnu-gnu_ldflags = -Wl,--build-id=none  
+build ${arm-linux-gnu-gnu_outdir}/.dir.stamp: ensure_dir
+  dir = ${arm-linux-gnu-gnu_outdir}
+
+rule arm-linux-gnu-gnu_cc_obj
+  command = arm-linux-gnueabihf-gcc ${arm-linux-gnu-gnu_cflags} -I/mnt/c/Users/jblbe/Documents/Workspace/ghidra-delinker-extension/src/test/resources/programs/integer-parsing/src/include -c $in -o $out
+rule arm-linux-gnu-gnu_cc_asm
+  command = arm-linux-gnueabihf-gcc ${arm-linux-gnu-gnu_cflags} -I/mnt/c/Users/jblbe/Documents/Workspace/ghidra-delinker-extension/src/test/resources/programs/integer-parsing/src/include -S -c $in -o $out
+rule arm-linux-gnu-gnu_objdump
+  command = arm-linux-gnueabihf-objdump -x $in > $out
+rule arm-linux-gnu-gnu_combine
+  command = arm-linux-gnueabihf-gcc -r $in -o $out
+rule arm-linux-gnu-gnu_link
+  command = arm-linux-gnueabihf-gcc $in -o $out ${arm-linux-gnu-gnu_ldflags}
+
+build ${arm-linux-gnu-gnu_outdir}/main.o: arm-linux-gnu-gnu_cc_obj src/main.c || ${arm-linux-gnu-gnu_outdir}/.dir.stamp
+build ${arm-linux-gnu-gnu_outdir}/main.s: arm-linux-gnu-gnu_cc_asm src/main.c || ${arm-linux-gnu-gnu_outdir}/.dir.stamp
+build ${arm-linux-gnu-gnu_outdir}/main.txt: arm-linux-gnu-gnu_objdump ${arm-linux-gnu-gnu_outdir}/main.o || ${arm-linux-gnu-gnu_outdir}/.dir.stamp
+build ${arm-linux-gnu-gnu_outdir}/digits.o: arm-linux-gnu-gnu_cc_obj src/digits.c || ${arm-linux-gnu-gnu_outdir}/.dir.stamp
+build ${arm-linux-gnu-gnu_outdir}/digits.s: arm-linux-gnu-gnu_cc_asm src/digits.c || ${arm-linux-gnu-gnu_outdir}/.dir.stamp
+build ${arm-linux-gnu-gnu_outdir}/digits.txt: arm-linux-gnu-gnu_objdump ${arm-linux-gnu-gnu_outdir}/digits.o || ${arm-linux-gnu-gnu_outdir}/.dir.stamp
+build ${arm-linux-gnu-gnu_outdir}/integer-parsing.o: arm-linux-gnu-gnu_combine ${arm-linux-gnu-gnu_outdir}/main.o ${arm-linux-gnu-gnu_outdir}/digits.o || ${arm-linux-gnu-gnu_outdir}/.dir.stamp
+build ${arm-linux-gnu-gnu_outdir}/integer-parsing.elf: arm-linux-gnu-gnu_link ${arm-linux-gnu-gnu_outdir}/integer-parsing.o || ${arm-linux-gnu-gnu_outdir}/.dir.stamp
+build arm-linux-gnu-gnu: phony ${arm-linux-gnu-gnu_outdir}/integer-parsing.elf ${arm-linux-gnu-gnu_outdir}/main.s ${arm-linux-gnu-gnu_outdir}/digits.s ${arm-linux-gnu-gnu_outdir}/main.txt ${arm-linux-gnu-gnu_outdir}/digits.txt
+
+# i686-linux-gnu-gnu
+i686-linux-gnu-gnu_outdir = /mnt/c/Users/jblbe/Documents/Workspace/ghidra-delinker-extension/src/test/resources/programs/integer-parsing/reference/elf/linux-gnu/i686
+i686-linux-gnu-gnu_cflags = -gdwarf-4 -gctf  
+i686-linux-gnu-gnu_ldflags = -Wl,--build-id=none  
+build ${i686-linux-gnu-gnu_outdir}/.dir.stamp: ensure_dir
+  dir = ${i686-linux-gnu-gnu_outdir}
+
+rule i686-linux-gnu-gnu_cc_obj
+  command = i686-linux-gnu-gcc ${i686-linux-gnu-gnu_cflags} -I/mnt/c/Users/jblbe/Documents/Workspace/ghidra-delinker-extension/src/test/resources/programs/integer-parsing/src/include -c $in -o $out
+rule i686-linux-gnu-gnu_cc_asm
+  command = i686-linux-gnu-gcc ${i686-linux-gnu-gnu_cflags} -I/mnt/c/Users/jblbe/Documents/Workspace/ghidra-delinker-extension/src/test/resources/programs/integer-parsing/src/include -S -c $in -o $out
+rule i686-linux-gnu-gnu_objdump
+  command = i686-linux-gnu-objdump -x $in > $out
+rule i686-linux-gnu-gnu_combine
+  command = i686-linux-gnu-gcc -r $in -o $out
+rule i686-linux-gnu-gnu_link
+  command = i686-linux-gnu-gcc $in -o $out ${i686-linux-gnu-gnu_ldflags}
+
+build ${i686-linux-gnu-gnu_outdir}/main.o: i686-linux-gnu-gnu_cc_obj src/main.c || ${i686-linux-gnu-gnu_outdir}/.dir.stamp
+build ${i686-linux-gnu-gnu_outdir}/main.s: i686-linux-gnu-gnu_cc_asm src/main.c || ${i686-linux-gnu-gnu_outdir}/.dir.stamp
+build ${i686-linux-gnu-gnu_outdir}/main.txt: i686-linux-gnu-gnu_objdump ${i686-linux-gnu-gnu_outdir}/main.o || ${i686-linux-gnu-gnu_outdir}/.dir.stamp
+build ${i686-linux-gnu-gnu_outdir}/digits.o: i686-linux-gnu-gnu_cc_obj src/digits.c || ${i686-linux-gnu-gnu_outdir}/.dir.stamp
+build ${i686-linux-gnu-gnu_outdir}/digits.s: i686-linux-gnu-gnu_cc_asm src/digits.c || ${i686-linux-gnu-gnu_outdir}/.dir.stamp
+build ${i686-linux-gnu-gnu_outdir}/digits.txt: i686-linux-gnu-gnu_objdump ${i686-linux-gnu-gnu_outdir}/digits.o || ${i686-linux-gnu-gnu_outdir}/.dir.stamp
+build ${i686-linux-gnu-gnu_outdir}/integer-parsing.o: i686-linux-gnu-gnu_combine ${i686-linux-gnu-gnu_outdir}/main.o ${i686-linux-gnu-gnu_outdir}/digits.o || ${i686-linux-gnu-gnu_outdir}/.dir.stamp
+build ${i686-linux-gnu-gnu_outdir}/integer-parsing.elf: i686-linux-gnu-gnu_link ${i686-linux-gnu-gnu_outdir}/integer-parsing.o || ${i686-linux-gnu-gnu_outdir}/.dir.stamp
+build i686-linux-gnu-gnu: phony ${i686-linux-gnu-gnu_outdir}/integer-parsing.elf ${i686-linux-gnu-gnu_outdir}/main.s ${i686-linux-gnu-gnu_outdir}/digits.s ${i686-linux-gnu-gnu_outdir}/main.txt ${i686-linux-gnu-gnu_outdir}/digits.txt
+
+# x86_64-linux-gnu-gnu
+x86_64-linux-gnu-gnu_outdir = /mnt/c/Users/jblbe/Documents/Workspace/ghidra-delinker-extension/src/test/resources/programs/integer-parsing/reference/elf/linux-gnu/x86_64
+x86_64-linux-gnu-gnu_cflags = -gdwarf-4 -gctf  
+x86_64-linux-gnu-gnu_ldflags = -Wl,--build-id=none  
+build ${x86_64-linux-gnu-gnu_outdir}/.dir.stamp: ensure_dir
+  dir = ${x86_64-linux-gnu-gnu_outdir}
+
+rule x86_64-linux-gnu-gnu_cc_obj
+  command = x86_64-linux-gnu-gcc ${x86_64-linux-gnu-gnu_cflags} -I/mnt/c/Users/jblbe/Documents/Workspace/ghidra-delinker-extension/src/test/resources/programs/integer-parsing/src/include -c $in -o $out
+rule x86_64-linux-gnu-gnu_cc_asm
+  command = x86_64-linux-gnu-gcc ${x86_64-linux-gnu-gnu_cflags} -I/mnt/c/Users/jblbe/Documents/Workspace/ghidra-delinker-extension/src/test/resources/programs/integer-parsing/src/include -S -c $in -o $out
+rule x86_64-linux-gnu-gnu_objdump
+  command = x86_64-linux-gnu-objdump -x $in > $out
+rule x86_64-linux-gnu-gnu_combine
+  command = x86_64-linux-gnu-gcc -r $in -o $out
+rule x86_64-linux-gnu-gnu_link
+  command = x86_64-linux-gnu-gcc $in -o $out ${x86_64-linux-gnu-gnu_ldflags}
+
+build ${x86_64-linux-gnu-gnu_outdir}/main.o: x86_64-linux-gnu-gnu_cc_obj src/main.c || ${x86_64-linux-gnu-gnu_outdir}/.dir.stamp
+build ${x86_64-linux-gnu-gnu_outdir}/main.s: x86_64-linux-gnu-gnu_cc_asm src/main.c || ${x86_64-linux-gnu-gnu_outdir}/.dir.stamp
+build ${x86_64-linux-gnu-gnu_outdir}/main.txt: x86_64-linux-gnu-gnu_objdump ${x86_64-linux-gnu-gnu_outdir}/main.o || ${x86_64-linux-gnu-gnu_outdir}/.dir.stamp
+build ${x86_64-linux-gnu-gnu_outdir}/digits.o: x86_64-linux-gnu-gnu_cc_obj src/digits.c || ${x86_64-linux-gnu-gnu_outdir}/.dir.stamp
+build ${x86_64-linux-gnu-gnu_outdir}/digits.s: x86_64-linux-gnu-gnu_cc_asm src/digits.c || ${x86_64-linux-gnu-gnu_outdir}/.dir.stamp
+build ${x86_64-linux-gnu-gnu_outdir}/digits.txt: x86_64-linux-gnu-gnu_objdump ${x86_64-linux-gnu-gnu_outdir}/digits.o || ${x86_64-linux-gnu-gnu_outdir}/.dir.stamp
+build ${x86_64-linux-gnu-gnu_outdir}/integer-parsing.o: x86_64-linux-gnu-gnu_combine ${x86_64-linux-gnu-gnu_outdir}/main.o ${x86_64-linux-gnu-gnu_outdir}/digits.o || ${x86_64-linux-gnu-gnu_outdir}/.dir.stamp
+build ${x86_64-linux-gnu-gnu_outdir}/integer-parsing.elf: x86_64-linux-gnu-gnu_link ${x86_64-linux-gnu-gnu_outdir}/integer-parsing.o || ${x86_64-linux-gnu-gnu_outdir}/.dir.stamp
+build x86_64-linux-gnu-gnu: phony ${x86_64-linux-gnu-gnu_outdir}/integer-parsing.elf ${x86_64-linux-gnu-gnu_outdir}/main.s ${x86_64-linux-gnu-gnu_outdir}/digits.s ${x86_64-linux-gnu-gnu_outdir}/main.txt ${x86_64-linux-gnu-gnu_outdir}/digits.txt
+
+# alpha-linux-gnu-gnu
+alpha-linux-gnu-gnu_outdir = /mnt/c/Users/jblbe/Documents/Workspace/ghidra-delinker-extension/src/test/resources/programs/integer-parsing/reference/elf/linux-gnu/alpha
+alpha-linux-gnu-gnu_cflags = -gdwarf-4 -gctf  
+alpha-linux-gnu-gnu_ldflags = -Wl,--build-id=none  
+build ${alpha-linux-gnu-gnu_outdir}/.dir.stamp: ensure_dir
+  dir = ${alpha-linux-gnu-gnu_outdir}
+
+rule alpha-linux-gnu-gnu_cc_obj
+  command = alpha-linux-gnu-gcc ${alpha-linux-gnu-gnu_cflags} -I/mnt/c/Users/jblbe/Documents/Workspace/ghidra-delinker-extension/src/test/resources/programs/integer-parsing/src/include -c $in -o $out
+rule alpha-linux-gnu-gnu_cc_asm
+  command = alpha-linux-gnu-gcc ${alpha-linux-gnu-gnu_cflags} -I/mnt/c/Users/jblbe/Documents/Workspace/ghidra-delinker-extension/src/test/resources/programs/integer-parsing/src/include -S -c $in -o $out
+rule alpha-linux-gnu-gnu_objdump
+  command = alpha-linux-gnu-objdump -x $in > $out
+rule alpha-linux-gnu-gnu_combine
+  command = alpha-linux-gnu-gcc -r $in -o $out
+rule alpha-linux-gnu-gnu_link
+  command = alpha-linux-gnu-gcc $in -o $out ${alpha-linux-gnu-gnu_ldflags}
+
+build ${alpha-linux-gnu-gnu_outdir}/main.o: alpha-linux-gnu-gnu_cc_obj src/main.c || ${alpha-linux-gnu-gnu_outdir}/.dir.stamp
+build ${alpha-linux-gnu-gnu_outdir}/main.s: alpha-linux-gnu-gnu_cc_asm src/main.c || ${alpha-linux-gnu-gnu_outdir}/.dir.stamp
+build ${alpha-linux-gnu-gnu_outdir}/main.txt: alpha-linux-gnu-gnu_objdump ${alpha-linux-gnu-gnu_outdir}/main.o || ${alpha-linux-gnu-gnu_outdir}/.dir.stamp
+build ${alpha-linux-gnu-gnu_outdir}/digits.o: alpha-linux-gnu-gnu_cc_obj src/digits.c || ${alpha-linux-gnu-gnu_outdir}/.dir.stamp
+build ${alpha-linux-gnu-gnu_outdir}/digits.s: alpha-linux-gnu-gnu_cc_asm src/digits.c || ${alpha-linux-gnu-gnu_outdir}/.dir.stamp
+build ${alpha-linux-gnu-gnu_outdir}/digits.txt: alpha-linux-gnu-gnu_objdump ${alpha-linux-gnu-gnu_outdir}/digits.o || ${alpha-linux-gnu-gnu_outdir}/.dir.stamp
+build ${alpha-linux-gnu-gnu_outdir}/integer-parsing.o: alpha-linux-gnu-gnu_combine ${alpha-linux-gnu-gnu_outdir}/main.o ${alpha-linux-gnu-gnu_outdir}/digits.o || ${alpha-linux-gnu-gnu_outdir}/.dir.stamp
+build ${alpha-linux-gnu-gnu_outdir}/integer-parsing.elf: alpha-linux-gnu-gnu_link ${alpha-linux-gnu-gnu_outdir}/integer-parsing.o || ${alpha-linux-gnu-gnu_outdir}/.dir.stamp
+build alpha-linux-gnu-gnu: phony ${alpha-linux-gnu-gnu_outdir}/integer-parsing.elf ${alpha-linux-gnu-gnu_outdir}/main.s ${alpha-linux-gnu-gnu_outdir}/digits.s ${alpha-linux-gnu-gnu_outdir}/main.txt ${alpha-linux-gnu-gnu_outdir}/digits.txt
+
+# arc-linux-gnu-gnu
+arc-linux-gnu-gnu_outdir = /mnt/c/Users/jblbe/Documents/Workspace/ghidra-delinker-extension/src/test/resources/programs/integer-parsing/reference/elf/linux-gnu/arc
+arc-linux-gnu-gnu_cflags = -gdwarf-4 -gctf  
+arc-linux-gnu-gnu_ldflags = -Wl,--build-id=none  
+build ${arc-linux-gnu-gnu_outdir}/.dir.stamp: ensure_dir
+  dir = ${arc-linux-gnu-gnu_outdir}
+
+rule arc-linux-gnu-gnu_cc_obj
+  command = arc-linux-gnu-gcc ${arc-linux-gnu-gnu_cflags} -I/mnt/c/Users/jblbe/Documents/Workspace/ghidra-delinker-extension/src/test/resources/programs/integer-parsing/src/include -c $in -o $out
+rule arc-linux-gnu-gnu_cc_asm
+  command = arc-linux-gnu-gcc ${arc-linux-gnu-gnu_cflags} -I/mnt/c/Users/jblbe/Documents/Workspace/ghidra-delinker-extension/src/test/resources/programs/integer-parsing/src/include -S -c $in -o $out
+rule arc-linux-gnu-gnu_objdump
+  command = arc-linux-gnu-objdump -x $in > $out
+rule arc-linux-gnu-gnu_combine
+  command = arc-linux-gnu-gcc -r $in -o $out
+rule arc-linux-gnu-gnu_link
+  command = arc-linux-gnu-gcc $in -o $out ${arc-linux-gnu-gnu_ldflags}
+
+build ${arc-linux-gnu-gnu_outdir}/main.o: arc-linux-gnu-gnu_cc_obj src/main.c || ${arc-linux-gnu-gnu_outdir}/.dir.stamp
+build ${arc-linux-gnu-gnu_outdir}/main.s: arc-linux-gnu-gnu_cc_asm src/main.c || ${arc-linux-gnu-gnu_outdir}/.dir.stamp
+build ${arc-linux-gnu-gnu_outdir}/main.txt: arc-linux-gnu-gnu_objdump ${arc-linux-gnu-gnu_outdir}/main.o || ${arc-linux-gnu-gnu_outdir}/.dir.stamp
+build ${arc-linux-gnu-gnu_outdir}/digits.o: arc-linux-gnu-gnu_cc_obj src/digits.c || ${arc-linux-gnu-gnu_outdir}/.dir.stamp
+build ${arc-linux-gnu-gnu_outdir}/digits.s: arc-linux-gnu-gnu_cc_asm src/digits.c || ${arc-linux-gnu-gnu_outdir}/.dir.stamp
+build ${arc-linux-gnu-gnu_outdir}/digits.txt: arc-linux-gnu-gnu_objdump ${arc-linux-gnu-gnu_outdir}/digits.o || ${arc-linux-gnu-gnu_outdir}/.dir.stamp
+build ${arc-linux-gnu-gnu_outdir}/integer-parsing.o: arc-linux-gnu-gnu_combine ${arc-linux-gnu-gnu_outdir}/main.o ${arc-linux-gnu-gnu_outdir}/digits.o || ${arc-linux-gnu-gnu_outdir}/.dir.stamp
+build ${arc-linux-gnu-gnu_outdir}/integer-parsing.elf: arc-linux-gnu-gnu_link ${arc-linux-gnu-gnu_outdir}/integer-parsing.o || ${arc-linux-gnu-gnu_outdir}/.dir.stamp
+build arc-linux-gnu-gnu: phony ${arc-linux-gnu-gnu_outdir}/integer-parsing.elf ${arc-linux-gnu-gnu_outdir}/main.s ${arc-linux-gnu-gnu_outdir}/digits.s ${arc-linux-gnu-gnu_outdir}/main.txt ${arc-linux-gnu-gnu_outdir}/digits.txt
+
+# m68k-linux-gnu-gnu
+m68k-linux-gnu-gnu_outdir = /mnt/c/Users/jblbe/Documents/Workspace/ghidra-delinker-extension/src/test/resources/programs/integer-parsing/reference/elf/linux-gnu/m68k
+m68k-linux-gnu-gnu_cflags = -gdwarf-4 -gctf  
+m68k-linux-gnu-gnu_ldflags = -Wl,--build-id=none  
+build ${m68k-linux-gnu-gnu_outdir}/.dir.stamp: ensure_dir
+  dir = ${m68k-linux-gnu-gnu_outdir}
+
+rule m68k-linux-gnu-gnu_cc_obj
+  command = m68k-linux-gnu-gcc ${m68k-linux-gnu-gnu_cflags} -I/mnt/c/Users/jblbe/Documents/Workspace/ghidra-delinker-extension/src/test/resources/programs/integer-parsing/src/include -c $in -o $out
+rule m68k-linux-gnu-gnu_cc_asm
+  command = m68k-linux-gnu-gcc ${m68k-linux-gnu-gnu_cflags} -I/mnt/c/Users/jblbe/Documents/Workspace/ghidra-delinker-extension/src/test/resources/programs/integer-parsing/src/include -S -c $in -o $out
+rule m68k-linux-gnu-gnu_objdump
+  command = m68k-linux-gnu-objdump -x $in > $out
+rule m68k-linux-gnu-gnu_combine
+  command = m68k-linux-gnu-gcc -r $in -o $out
+rule m68k-linux-gnu-gnu_link
+  command = m68k-linux-gnu-gcc $in -o $out ${m68k-linux-gnu-gnu_ldflags}
+
+build ${m68k-linux-gnu-gnu_outdir}/main.o: m68k-linux-gnu-gnu_cc_obj src/main.c || ${m68k-linux-gnu-gnu_outdir}/.dir.stamp
+build ${m68k-linux-gnu-gnu_outdir}/main.s: m68k-linux-gnu-gnu_cc_asm src/main.c || ${m68k-linux-gnu-gnu_outdir}/.dir.stamp
+build ${m68k-linux-gnu-gnu_outdir}/main.txt: m68k-linux-gnu-gnu_objdump ${m68k-linux-gnu-gnu_outdir}/main.o || ${m68k-linux-gnu-gnu_outdir}/.dir.stamp
+build ${m68k-linux-gnu-gnu_outdir}/digits.o: m68k-linux-gnu-gnu_cc_obj src/digits.c || ${m68k-linux-gnu-gnu_outdir}/.dir.stamp
+build ${m68k-linux-gnu-gnu_outdir}/digits.s: m68k-linux-gnu-gnu_cc_asm src/digits.c || ${m68k-linux-gnu-gnu_outdir}/.dir.stamp
+build ${m68k-linux-gnu-gnu_outdir}/digits.txt: m68k-linux-gnu-gnu_objdump ${m68k-linux-gnu-gnu_outdir}/digits.o || ${m68k-linux-gnu-gnu_outdir}/.dir.stamp
+build ${m68k-linux-gnu-gnu_outdir}/integer-parsing.o: m68k-linux-gnu-gnu_combine ${m68k-linux-gnu-gnu_outdir}/main.o ${m68k-linux-gnu-gnu_outdir}/digits.o || ${m68k-linux-gnu-gnu_outdir}/.dir.stamp
+build ${m68k-linux-gnu-gnu_outdir}/integer-parsing.elf: m68k-linux-gnu-gnu_link ${m68k-linux-gnu-gnu_outdir}/integer-parsing.o || ${m68k-linux-gnu-gnu_outdir}/.dir.stamp
+build m68k-linux-gnu-gnu: phony ${m68k-linux-gnu-gnu_outdir}/integer-parsing.elf ${m68k-linux-gnu-gnu_outdir}/main.s ${m68k-linux-gnu-gnu_outdir}/digits.s ${m68k-linux-gnu-gnu_outdir}/main.txt ${m68k-linux-gnu-gnu_outdir}/digits.txt
+
+# mips-linux-gnu-gnu
+mips-linux-gnu-gnu_outdir = /mnt/c/Users/jblbe/Documents/Workspace/ghidra-delinker-extension/src/test/resources/programs/integer-parsing/reference/elf/linux-gnu/mips
+mips-linux-gnu-gnu_cflags = -gdwarf-4 -gctf -mno-check-zero-division  
+mips-linux-gnu-gnu_ldflags = -Wl,--build-id=none  
+build ${mips-linux-gnu-gnu_outdir}/.dir.stamp: ensure_dir
+  dir = ${mips-linux-gnu-gnu_outdir}
+
+rule mips-linux-gnu-gnu_cc_obj
+  command = mips-linux-gnu-gcc ${mips-linux-gnu-gnu_cflags} -I/mnt/c/Users/jblbe/Documents/Workspace/ghidra-delinker-extension/src/test/resources/programs/integer-parsing/src/include -c $in -o $out
+rule mips-linux-gnu-gnu_cc_asm
+  command = mips-linux-gnu-gcc ${mips-linux-gnu-gnu_cflags} -I/mnt/c/Users/jblbe/Documents/Workspace/ghidra-delinker-extension/src/test/resources/programs/integer-parsing/src/include -S -c $in -o $out
+rule mips-linux-gnu-gnu_objdump
+  command = mips-linux-gnu-objdump -x $in > $out
+rule mips-linux-gnu-gnu_combine
+  command = mips-linux-gnu-gcc -r $in -o $out
+rule mips-linux-gnu-gnu_link
+  command = mips-linux-gnu-gcc $in -o $out ${mips-linux-gnu-gnu_ldflags}
+
+build ${mips-linux-gnu-gnu_outdir}/main.o: mips-linux-gnu-gnu_cc_obj src/main.c || ${mips-linux-gnu-gnu_outdir}/.dir.stamp
+build ${mips-linux-gnu-gnu_outdir}/main.s: mips-linux-gnu-gnu_cc_asm src/main.c || ${mips-linux-gnu-gnu_outdir}/.dir.stamp
+build ${mips-linux-gnu-gnu_outdir}/main.txt: mips-linux-gnu-gnu_objdump ${mips-linux-gnu-gnu_outdir}/main.o || ${mips-linux-gnu-gnu_outdir}/.dir.stamp
+build ${mips-linux-gnu-gnu_outdir}/digits.o: mips-linux-gnu-gnu_cc_obj src/digits.c || ${mips-linux-gnu-gnu_outdir}/.dir.stamp
+build ${mips-linux-gnu-gnu_outdir}/digits.s: mips-linux-gnu-gnu_cc_asm src/digits.c || ${mips-linux-gnu-gnu_outdir}/.dir.stamp
+build ${mips-linux-gnu-gnu_outdir}/digits.txt: mips-linux-gnu-gnu_objdump ${mips-linux-gnu-gnu_outdir}/digits.o || ${mips-linux-gnu-gnu_outdir}/.dir.stamp
+build ${mips-linux-gnu-gnu_outdir}/integer-parsing.o: mips-linux-gnu-gnu_combine ${mips-linux-gnu-gnu_outdir}/main.o ${mips-linux-gnu-gnu_outdir}/digits.o || ${mips-linux-gnu-gnu_outdir}/.dir.stamp
+build ${mips-linux-gnu-gnu_outdir}/integer-parsing.elf: mips-linux-gnu-gnu_link ${mips-linux-gnu-gnu_outdir}/integer-parsing.o || ${mips-linux-gnu-gnu_outdir}/.dir.stamp
+build mips-linux-gnu-gnu: phony ${mips-linux-gnu-gnu_outdir}/integer-parsing.elf ${mips-linux-gnu-gnu_outdir}/main.s ${mips-linux-gnu-gnu_outdir}/digits.s ${mips-linux-gnu-gnu_outdir}/main.txt ${mips-linux-gnu-gnu_outdir}/digits.txt
+
+# mipsel-linux-gnu-gnu
+mipsel-linux-gnu-gnu_outdir = /mnt/c/Users/jblbe/Documents/Workspace/ghidra-delinker-extension/src/test/resources/programs/integer-parsing/reference/elf/linux-gnu/mipsel
+mipsel-linux-gnu-gnu_cflags = -gdwarf-4 -gctf -mno-check-zero-division  
+mipsel-linux-gnu-gnu_ldflags = -Wl,--build-id=none  
+build ${mipsel-linux-gnu-gnu_outdir}/.dir.stamp: ensure_dir
+  dir = ${mipsel-linux-gnu-gnu_outdir}
+
+rule mipsel-linux-gnu-gnu_cc_obj
+  command = mipsel-linux-gnu-gcc ${mipsel-linux-gnu-gnu_cflags} -I/mnt/c/Users/jblbe/Documents/Workspace/ghidra-delinker-extension/src/test/resources/programs/integer-parsing/src/include -c $in -o $out
+rule mipsel-linux-gnu-gnu_cc_asm
+  command = mipsel-linux-gnu-gcc ${mipsel-linux-gnu-gnu_cflags} -I/mnt/c/Users/jblbe/Documents/Workspace/ghidra-delinker-extension/src/test/resources/programs/integer-parsing/src/include -S -c $in -o $out
+rule mipsel-linux-gnu-gnu_objdump
+  command = mipsel-linux-gnu-objdump -x $in > $out
+rule mipsel-linux-gnu-gnu_combine
+  command = mipsel-linux-gnu-gcc -r $in -o $out
+rule mipsel-linux-gnu-gnu_link
+  command = mipsel-linux-gnu-gcc $in -o $out ${mipsel-linux-gnu-gnu_ldflags}
+
+build ${mipsel-linux-gnu-gnu_outdir}/main.o: mipsel-linux-gnu-gnu_cc_obj src/main.c || ${mipsel-linux-gnu-gnu_outdir}/.dir.stamp
+build ${mipsel-linux-gnu-gnu_outdir}/main.s: mipsel-linux-gnu-gnu_cc_asm src/main.c || ${mipsel-linux-gnu-gnu_outdir}/.dir.stamp
+build ${mipsel-linux-gnu-gnu_outdir}/main.txt: mipsel-linux-gnu-gnu_objdump ${mipsel-linux-gnu-gnu_outdir}/main.o || ${mipsel-linux-gnu-gnu_outdir}/.dir.stamp
+build ${mipsel-linux-gnu-gnu_outdir}/digits.o: mipsel-linux-gnu-gnu_cc_obj src/digits.c || ${mipsel-linux-gnu-gnu_outdir}/.dir.stamp
+build ${mipsel-linux-gnu-gnu_outdir}/digits.s: mipsel-linux-gnu-gnu_cc_asm src/digits.c || ${mipsel-linux-gnu-gnu_outdir}/.dir.stamp
+build ${mipsel-linux-gnu-gnu_outdir}/digits.txt: mipsel-linux-gnu-gnu_objdump ${mipsel-linux-gnu-gnu_outdir}/digits.o || ${mipsel-linux-gnu-gnu_outdir}/.dir.stamp
+build ${mipsel-linux-gnu-gnu_outdir}/integer-parsing.o: mipsel-linux-gnu-gnu_combine ${mipsel-linux-gnu-gnu_outdir}/main.o ${mipsel-linux-gnu-gnu_outdir}/digits.o || ${mipsel-linux-gnu-gnu_outdir}/.dir.stamp
+build ${mipsel-linux-gnu-gnu_outdir}/integer-parsing.elf: mipsel-linux-gnu-gnu_link ${mipsel-linux-gnu-gnu_outdir}/integer-parsing.o || ${mipsel-linux-gnu-gnu_outdir}/.dir.stamp
+build mipsel-linux-gnu-gnu: phony ${mipsel-linux-gnu-gnu_outdir}/integer-parsing.elf ${mipsel-linux-gnu-gnu_outdir}/main.s ${mipsel-linux-gnu-gnu_outdir}/digits.s ${mipsel-linux-gnu-gnu_outdir}/main.txt ${mipsel-linux-gnu-gnu_outdir}/digits.txt
+
+# mips64el-linux-gnu-gnu
+mips64el-linux-gnu-gnu_outdir = /mnt/c/Users/jblbe/Documents/Workspace/ghidra-delinker-extension/src/test/resources/programs/integer-parsing/reference/elf/linux-gnu/mips64el
+mips64el-linux-gnu-gnu_cflags = -gdwarf-4 -gctf -mno-check-zero-division  
+mips64el-linux-gnu-gnu_ldflags = -Wl,--build-id=none  
+build ${mips64el-linux-gnu-gnu_outdir}/.dir.stamp: ensure_dir
+  dir = ${mips64el-linux-gnu-gnu_outdir}
+
+rule mips64el-linux-gnu-gnu_cc_obj
+  command = mips64el-linux-gnuabi64-gcc ${mips64el-linux-gnu-gnu_cflags} -I/mnt/c/Users/jblbe/Documents/Workspace/ghidra-delinker-extension/src/test/resources/programs/integer-parsing/src/include -c $in -o $out
+rule mips64el-linux-gnu-gnu_cc_asm
+  command = mips64el-linux-gnuabi64-gcc ${mips64el-linux-gnu-gnu_cflags} -I/mnt/c/Users/jblbe/Documents/Workspace/ghidra-delinker-extension/src/test/resources/programs/integer-parsing/src/include -S -c $in -o $out
+rule mips64el-linux-gnu-gnu_objdump
+  command = mips64el-linux-gnuabi64-objdump -x $in > $out
+rule mips64el-linux-gnu-gnu_combine
+  command = mips64el-linux-gnuabi64-gcc -r $in -o $out
+rule mips64el-linux-gnu-gnu_link
+  command = mips64el-linux-gnuabi64-gcc $in -o $out ${mips64el-linux-gnu-gnu_ldflags}
+
+build ${mips64el-linux-gnu-gnu_outdir}/main.o: mips64el-linux-gnu-gnu_cc_obj src/main.c || ${mips64el-linux-gnu-gnu_outdir}/.dir.stamp
+build ${mips64el-linux-gnu-gnu_outdir}/main.s: mips64el-linux-gnu-gnu_cc_asm src/main.c || ${mips64el-linux-gnu-gnu_outdir}/.dir.stamp
+build ${mips64el-linux-gnu-gnu_outdir}/main.txt: mips64el-linux-gnu-gnu_objdump ${mips64el-linux-gnu-gnu_outdir}/main.o || ${mips64el-linux-gnu-gnu_outdir}/.dir.stamp
+build ${mips64el-linux-gnu-gnu_outdir}/digits.o: mips64el-linux-gnu-gnu_cc_obj src/digits.c || ${mips64el-linux-gnu-gnu_outdir}/.dir.stamp
+build ${mips64el-linux-gnu-gnu_outdir}/digits.s: mips64el-linux-gnu-gnu_cc_asm src/digits.c || ${mips64el-linux-gnu-gnu_outdir}/.dir.stamp
+build ${mips64el-linux-gnu-gnu_outdir}/digits.txt: mips64el-linux-gnu-gnu_objdump ${mips64el-linux-gnu-gnu_outdir}/digits.o || ${mips64el-linux-gnu-gnu_outdir}/.dir.stamp
+build ${mips64el-linux-gnu-gnu_outdir}/integer-parsing.o: mips64el-linux-gnu-gnu_combine ${mips64el-linux-gnu-gnu_outdir}/main.o ${mips64el-linux-gnu-gnu_outdir}/digits.o || ${mips64el-linux-gnu-gnu_outdir}/.dir.stamp
+build ${mips64el-linux-gnu-gnu_outdir}/integer-parsing.elf: mips64el-linux-gnu-gnu_link ${mips64el-linux-gnu-gnu_outdir}/integer-parsing.o || ${mips64el-linux-gnu-gnu_outdir}/.dir.stamp
+build mips64el-linux-gnu-gnu: phony ${mips64el-linux-gnu-gnu_outdir}/integer-parsing.elf ${mips64el-linux-gnu-gnu_outdir}/main.s ${mips64el-linux-gnu-gnu_outdir}/digits.s ${mips64el-linux-gnu-gnu_outdir}/main.txt ${mips64el-linux-gnu-gnu_outdir}/digits.txt
+
+# mips64-linux-gnu-gnu
+mips64-linux-gnu-gnu_outdir = /mnt/c/Users/jblbe/Documents/Workspace/ghidra-delinker-extension/src/test/resources/programs/integer-parsing/reference/elf/linux-gnu/mips64
+mips64-linux-gnu-gnu_cflags = -gdwarf-4 -gctf -mno-check-zero-division  
+mips64-linux-gnu-gnu_ldflags = -Wl,--build-id=none  
+build ${mips64-linux-gnu-gnu_outdir}/.dir.stamp: ensure_dir
+  dir = ${mips64-linux-gnu-gnu_outdir}
+
+rule mips64-linux-gnu-gnu_cc_obj
+  command = mips64-linux-gnuabi64-gcc ${mips64-linux-gnu-gnu_cflags} -I/mnt/c/Users/jblbe/Documents/Workspace/ghidra-delinker-extension/src/test/resources/programs/integer-parsing/src/include -c $in -o $out
+rule mips64-linux-gnu-gnu_cc_asm
+  command = mips64-linux-gnuabi64-gcc ${mips64-linux-gnu-gnu_cflags} -I/mnt/c/Users/jblbe/Documents/Workspace/ghidra-delinker-extension/src/test/resources/programs/integer-parsing/src/include -S -c $in -o $out
+rule mips64-linux-gnu-gnu_objdump
+  command = mips64-linux-gnuabi64-objdump -x $in > $out
+rule mips64-linux-gnu-gnu_combine
+  command = mips64-linux-gnuabi64-gcc -r $in -o $out
+rule mips64-linux-gnu-gnu_link
+  command = mips64-linux-gnuabi64-gcc $in -o $out ${mips64-linux-gnu-gnu_ldflags}
+
+build ${mips64-linux-gnu-gnu_outdir}/main.o: mips64-linux-gnu-gnu_cc_obj src/main.c || ${mips64-linux-gnu-gnu_outdir}/.dir.stamp
+build ${mips64-linux-gnu-gnu_outdir}/main.s: mips64-linux-gnu-gnu_cc_asm src/main.c || ${mips64-linux-gnu-gnu_outdir}/.dir.stamp
+build ${mips64-linux-gnu-gnu_outdir}/main.txt: mips64-linux-gnu-gnu_objdump ${mips64-linux-gnu-gnu_outdir}/main.o || ${mips64-linux-gnu-gnu_outdir}/.dir.stamp
+build ${mips64-linux-gnu-gnu_outdir}/digits.o: mips64-linux-gnu-gnu_cc_obj src/digits.c || ${mips64-linux-gnu-gnu_outdir}/.dir.stamp
+build ${mips64-linux-gnu-gnu_outdir}/digits.s: mips64-linux-gnu-gnu_cc_asm src/digits.c || ${mips64-linux-gnu-gnu_outdir}/.dir.stamp
+build ${mips64-linux-gnu-gnu_outdir}/digits.txt: mips64-linux-gnu-gnu_objdump ${mips64-linux-gnu-gnu_outdir}/digits.o || ${mips64-linux-gnu-gnu_outdir}/.dir.stamp
+build ${mips64-linux-gnu-gnu_outdir}/integer-parsing.o: mips64-linux-gnu-gnu_combine ${mips64-linux-gnu-gnu_outdir}/main.o ${mips64-linux-gnu-gnu_outdir}/digits.o || ${mips64-linux-gnu-gnu_outdir}/.dir.stamp
+build ${mips64-linux-gnu-gnu_outdir}/integer-parsing.elf: mips64-linux-gnu-gnu_link ${mips64-linux-gnu-gnu_outdir}/integer-parsing.o || ${mips64-linux-gnu-gnu_outdir}/.dir.stamp
+build mips64-linux-gnu-gnu: phony ${mips64-linux-gnu-gnu_outdir}/integer-parsing.elf ${mips64-linux-gnu-gnu_outdir}/main.s ${mips64-linux-gnu-gnu_outdir}/digits.s ${mips64-linux-gnu-gnu_outdir}/main.txt ${mips64-linux-gnu-gnu_outdir}/digits.txt
+
+# powerpc-linux-gnu-gnu
+powerpc-linux-gnu-gnu_outdir = /mnt/c/Users/jblbe/Documents/Workspace/ghidra-delinker-extension/src/test/resources/programs/integer-parsing/reference/elf/linux-gnu/powerpc
+powerpc-linux-gnu-gnu_cflags = -gdwarf-4 -gctf  
+powerpc-linux-gnu-gnu_ldflags = -Wl,--build-id=none  
+build ${powerpc-linux-gnu-gnu_outdir}/.dir.stamp: ensure_dir
+  dir = ${powerpc-linux-gnu-gnu_outdir}
+
+rule powerpc-linux-gnu-gnu_cc_obj
+  command = powerpc-linux-gnu-gcc ${powerpc-linux-gnu-gnu_cflags} -I/mnt/c/Users/jblbe/Documents/Workspace/ghidra-delinker-extension/src/test/resources/programs/integer-parsing/src/include -c $in -o $out
+rule powerpc-linux-gnu-gnu_cc_asm
+  command = powerpc-linux-gnu-gcc ${powerpc-linux-gnu-gnu_cflags} -I/mnt/c/Users/jblbe/Documents/Workspace/ghidra-delinker-extension/src/test/resources/programs/integer-parsing/src/include -S -c $in -o $out
+rule powerpc-linux-gnu-gnu_objdump
+  command = powerpc-linux-gnu-objdump -x $in > $out
+rule powerpc-linux-gnu-gnu_combine
+  command = powerpc-linux-gnu-gcc -r $in -o $out
+rule powerpc-linux-gnu-gnu_link
+  command = powerpc-linux-gnu-gcc $in -o $out ${powerpc-linux-gnu-gnu_ldflags}
+
+build ${powerpc-linux-gnu-gnu_outdir}/main.o: powerpc-linux-gnu-gnu_cc_obj src/main.c || ${powerpc-linux-gnu-gnu_outdir}/.dir.stamp
+build ${powerpc-linux-gnu-gnu_outdir}/main.s: powerpc-linux-gnu-gnu_cc_asm src/main.c || ${powerpc-linux-gnu-gnu_outdir}/.dir.stamp
+build ${powerpc-linux-gnu-gnu_outdir}/main.txt: powerpc-linux-gnu-gnu_objdump ${powerpc-linux-gnu-gnu_outdir}/main.o || ${powerpc-linux-gnu-gnu_outdir}/.dir.stamp
+build ${powerpc-linux-gnu-gnu_outdir}/digits.o: powerpc-linux-gnu-gnu_cc_obj src/digits.c || ${powerpc-linux-gnu-gnu_outdir}/.dir.stamp
+build ${powerpc-linux-gnu-gnu_outdir}/digits.s: powerpc-linux-gnu-gnu_cc_asm src/digits.c || ${powerpc-linux-gnu-gnu_outdir}/.dir.stamp
+build ${powerpc-linux-gnu-gnu_outdir}/digits.txt: powerpc-linux-gnu-gnu_objdump ${powerpc-linux-gnu-gnu_outdir}/digits.o || ${powerpc-linux-gnu-gnu_outdir}/.dir.stamp
+build ${powerpc-linux-gnu-gnu_outdir}/integer-parsing.o: powerpc-linux-gnu-gnu_combine ${powerpc-linux-gnu-gnu_outdir}/main.o ${powerpc-linux-gnu-gnu_outdir}/digits.o || ${powerpc-linux-gnu-gnu_outdir}/.dir.stamp
+build ${powerpc-linux-gnu-gnu_outdir}/integer-parsing.elf: powerpc-linux-gnu-gnu_link ${powerpc-linux-gnu-gnu_outdir}/integer-parsing.o || ${powerpc-linux-gnu-gnu_outdir}/.dir.stamp
+build powerpc-linux-gnu-gnu: phony ${powerpc-linux-gnu-gnu_outdir}/integer-parsing.elf ${powerpc-linux-gnu-gnu_outdir}/main.s ${powerpc-linux-gnu-gnu_outdir}/digits.s ${powerpc-linux-gnu-gnu_outdir}/main.txt ${powerpc-linux-gnu-gnu_outdir}/digits.txt
+
+# powerpc64-linux-gnu-gnu
+powerpc64-linux-gnu-gnu_outdir = /mnt/c/Users/jblbe/Documents/Workspace/ghidra-delinker-extension/src/test/resources/programs/integer-parsing/reference/elf/linux-gnu/powerpc64
+powerpc64-linux-gnu-gnu_cflags = -gdwarf-4 -gctf  
+powerpc64-linux-gnu-gnu_ldflags = -Wl,--build-id=none  
+build ${powerpc64-linux-gnu-gnu_outdir}/.dir.stamp: ensure_dir
+  dir = ${powerpc64-linux-gnu-gnu_outdir}
+
+rule powerpc64-linux-gnu-gnu_cc_obj
+  command = powerpc64-linux-gnu-gcc ${powerpc64-linux-gnu-gnu_cflags} -I/mnt/c/Users/jblbe/Documents/Workspace/ghidra-delinker-extension/src/test/resources/programs/integer-parsing/src/include -c $in -o $out
+rule powerpc64-linux-gnu-gnu_cc_asm
+  command = powerpc64-linux-gnu-gcc ${powerpc64-linux-gnu-gnu_cflags} -I/mnt/c/Users/jblbe/Documents/Workspace/ghidra-delinker-extension/src/test/resources/programs/integer-parsing/src/include -S -c $in -o $out
+rule powerpc64-linux-gnu-gnu_objdump
+  command = powerpc64-linux-gnu-objdump -x $in > $out
+rule powerpc64-linux-gnu-gnu_combine
+  command = powerpc64-linux-gnu-gcc -r $in -o $out
+rule powerpc64-linux-gnu-gnu_link
+  command = powerpc64-linux-gnu-gcc $in -o $out ${powerpc64-linux-gnu-gnu_ldflags}
+
+build ${powerpc64-linux-gnu-gnu_outdir}/main.o: powerpc64-linux-gnu-gnu_cc_obj src/main.c || ${powerpc64-linux-gnu-gnu_outdir}/.dir.stamp
+build ${powerpc64-linux-gnu-gnu_outdir}/main.s: powerpc64-linux-gnu-gnu_cc_asm src/main.c || ${powerpc64-linux-gnu-gnu_outdir}/.dir.stamp
+build ${powerpc64-linux-gnu-gnu_outdir}/main.txt: powerpc64-linux-gnu-gnu_objdump ${powerpc64-linux-gnu-gnu_outdir}/main.o || ${powerpc64-linux-gnu-gnu_outdir}/.dir.stamp
+build ${powerpc64-linux-gnu-gnu_outdir}/digits.o: powerpc64-linux-gnu-gnu_cc_obj src/digits.c || ${powerpc64-linux-gnu-gnu_outdir}/.dir.stamp
+build ${powerpc64-linux-gnu-gnu_outdir}/digits.s: powerpc64-linux-gnu-gnu_cc_asm src/digits.c || ${powerpc64-linux-gnu-gnu_outdir}/.dir.stamp
+build ${powerpc64-linux-gnu-gnu_outdir}/digits.txt: powerpc64-linux-gnu-gnu_objdump ${powerpc64-linux-gnu-gnu_outdir}/digits.o || ${powerpc64-linux-gnu-gnu_outdir}/.dir.stamp
+build ${powerpc64-linux-gnu-gnu_outdir}/integer-parsing.o: powerpc64-linux-gnu-gnu_combine ${powerpc64-linux-gnu-gnu_outdir}/main.o ${powerpc64-linux-gnu-gnu_outdir}/digits.o || ${powerpc64-linux-gnu-gnu_outdir}/.dir.stamp
+build ${powerpc64-linux-gnu-gnu_outdir}/integer-parsing.elf: powerpc64-linux-gnu-gnu_link ${powerpc64-linux-gnu-gnu_outdir}/integer-parsing.o || ${powerpc64-linux-gnu-gnu_outdir}/.dir.stamp
+build powerpc64-linux-gnu-gnu: phony ${powerpc64-linux-gnu-gnu_outdir}/integer-parsing.elf ${powerpc64-linux-gnu-gnu_outdir}/main.s ${powerpc64-linux-gnu-gnu_outdir}/digits.s ${powerpc64-linux-gnu-gnu_outdir}/main.txt ${powerpc64-linux-gnu-gnu_outdir}/digits.txt
+
+# powerpc64le-linux-gnu-gnu
+powerpc64le-linux-gnu-gnu_outdir = /mnt/c/Users/jblbe/Documents/Workspace/ghidra-delinker-extension/src/test/resources/programs/integer-parsing/reference/elf/linux-gnu/powerpc64le
+powerpc64le-linux-gnu-gnu_cflags = -gdwarf-4 -gctf  
+powerpc64le-linux-gnu-gnu_ldflags = -Wl,--build-id=none  
+build ${powerpc64le-linux-gnu-gnu_outdir}/.dir.stamp: ensure_dir
+  dir = ${powerpc64le-linux-gnu-gnu_outdir}
+
+rule powerpc64le-linux-gnu-gnu_cc_obj
+  command = powerpc64le-linux-gnu-gcc ${powerpc64le-linux-gnu-gnu_cflags} -I/mnt/c/Users/jblbe/Documents/Workspace/ghidra-delinker-extension/src/test/resources/programs/integer-parsing/src/include -c $in -o $out
+rule powerpc64le-linux-gnu-gnu_cc_asm
+  command = powerpc64le-linux-gnu-gcc ${powerpc64le-linux-gnu-gnu_cflags} -I/mnt/c/Users/jblbe/Documents/Workspace/ghidra-delinker-extension/src/test/resources/programs/integer-parsing/src/include -S -c $in -o $out
+rule powerpc64le-linux-gnu-gnu_objdump
+  command = powerpc64le-linux-gnu-objdump -x $in > $out
+rule powerpc64le-linux-gnu-gnu_combine
+  command = powerpc64le-linux-gnu-gcc -r $in -o $out
+rule powerpc64le-linux-gnu-gnu_link
+  command = powerpc64le-linux-gnu-gcc $in -o $out ${powerpc64le-linux-gnu-gnu_ldflags}
+
+build ${powerpc64le-linux-gnu-gnu_outdir}/main.o: powerpc64le-linux-gnu-gnu_cc_obj src/main.c || ${powerpc64le-linux-gnu-gnu_outdir}/.dir.stamp
+build ${powerpc64le-linux-gnu-gnu_outdir}/main.s: powerpc64le-linux-gnu-gnu_cc_asm src/main.c || ${powerpc64le-linux-gnu-gnu_outdir}/.dir.stamp
+build ${powerpc64le-linux-gnu-gnu_outdir}/main.txt: powerpc64le-linux-gnu-gnu_objdump ${powerpc64le-linux-gnu-gnu_outdir}/main.o || ${powerpc64le-linux-gnu-gnu_outdir}/.dir.stamp
+build ${powerpc64le-linux-gnu-gnu_outdir}/digits.o: powerpc64le-linux-gnu-gnu_cc_obj src/digits.c || ${powerpc64le-linux-gnu-gnu_outdir}/.dir.stamp
+build ${powerpc64le-linux-gnu-gnu_outdir}/digits.s: powerpc64le-linux-gnu-gnu_cc_asm src/digits.c || ${powerpc64le-linux-gnu-gnu_outdir}/.dir.stamp
+build ${powerpc64le-linux-gnu-gnu_outdir}/digits.txt: powerpc64le-linux-gnu-gnu_objdump ${powerpc64le-linux-gnu-gnu_outdir}/digits.o || ${powerpc64le-linux-gnu-gnu_outdir}/.dir.stamp
+build ${powerpc64le-linux-gnu-gnu_outdir}/integer-parsing.o: powerpc64le-linux-gnu-gnu_combine ${powerpc64le-linux-gnu-gnu_outdir}/main.o ${powerpc64le-linux-gnu-gnu_outdir}/digits.o || ${powerpc64le-linux-gnu-gnu_outdir}/.dir.stamp
+build ${powerpc64le-linux-gnu-gnu_outdir}/integer-parsing.elf: powerpc64le-linux-gnu-gnu_link ${powerpc64le-linux-gnu-gnu_outdir}/integer-parsing.o || ${powerpc64le-linux-gnu-gnu_outdir}/.dir.stamp
+build powerpc64le-linux-gnu-gnu: phony ${powerpc64le-linux-gnu-gnu_outdir}/integer-parsing.elf ${powerpc64le-linux-gnu-gnu_outdir}/main.s ${powerpc64le-linux-gnu-gnu_outdir}/digits.s ${powerpc64le-linux-gnu-gnu_outdir}/main.txt ${powerpc64le-linux-gnu-gnu_outdir}/digits.txt
+
+# riscv64-linux-gnu-gnu
+riscv64-linux-gnu-gnu_outdir = /mnt/c/Users/jblbe/Documents/Workspace/ghidra-delinker-extension/src/test/resources/programs/integer-parsing/reference/elf/linux-gnu/riscv64
+riscv64-linux-gnu-gnu_cflags = -gdwarf-4 -gctf  
+riscv64-linux-gnu-gnu_ldflags = -Wl,--build-id=none  
+build ${riscv64-linux-gnu-gnu_outdir}/.dir.stamp: ensure_dir
+  dir = ${riscv64-linux-gnu-gnu_outdir}
+
+rule riscv64-linux-gnu-gnu_cc_obj
+  command = riscv64-linux-gnu-gcc ${riscv64-linux-gnu-gnu_cflags} -I/mnt/c/Users/jblbe/Documents/Workspace/ghidra-delinker-extension/src/test/resources/programs/integer-parsing/src/include -c $in -o $out
+rule riscv64-linux-gnu-gnu_cc_asm
+  command = riscv64-linux-gnu-gcc ${riscv64-linux-gnu-gnu_cflags} -I/mnt/c/Users/jblbe/Documents/Workspace/ghidra-delinker-extension/src/test/resources/programs/integer-parsing/src/include -S -c $in -o $out
+rule riscv64-linux-gnu-gnu_objdump
+  command = riscv64-linux-gnu-objdump -x $in > $out
+rule riscv64-linux-gnu-gnu_combine
+  command = riscv64-linux-gnu-gcc -r $in -o $out
+rule riscv64-linux-gnu-gnu_link
+  command = riscv64-linux-gnu-gcc $in -o $out ${riscv64-linux-gnu-gnu_ldflags}
+
+build ${riscv64-linux-gnu-gnu_outdir}/main.o: riscv64-linux-gnu-gnu_cc_obj src/main.c || ${riscv64-linux-gnu-gnu_outdir}/.dir.stamp
+build ${riscv64-linux-gnu-gnu_outdir}/main.s: riscv64-linux-gnu-gnu_cc_asm src/main.c || ${riscv64-linux-gnu-gnu_outdir}/.dir.stamp
+build ${riscv64-linux-gnu-gnu_outdir}/main.txt: riscv64-linux-gnu-gnu_objdump ${riscv64-linux-gnu-gnu_outdir}/main.o || ${riscv64-linux-gnu-gnu_outdir}/.dir.stamp
+build ${riscv64-linux-gnu-gnu_outdir}/digits.o: riscv64-linux-gnu-gnu_cc_obj src/digits.c || ${riscv64-linux-gnu-gnu_outdir}/.dir.stamp
+build ${riscv64-linux-gnu-gnu_outdir}/digits.s: riscv64-linux-gnu-gnu_cc_asm src/digits.c || ${riscv64-linux-gnu-gnu_outdir}/.dir.stamp
+build ${riscv64-linux-gnu-gnu_outdir}/digits.txt: riscv64-linux-gnu-gnu_objdump ${riscv64-linux-gnu-gnu_outdir}/digits.o || ${riscv64-linux-gnu-gnu_outdir}/.dir.stamp
+build ${riscv64-linux-gnu-gnu_outdir}/integer-parsing.o: riscv64-linux-gnu-gnu_combine ${riscv64-linux-gnu-gnu_outdir}/main.o ${riscv64-linux-gnu-gnu_outdir}/digits.o || ${riscv64-linux-gnu-gnu_outdir}/.dir.stamp
+build ${riscv64-linux-gnu-gnu_outdir}/integer-parsing.elf: riscv64-linux-gnu-gnu_link ${riscv64-linux-gnu-gnu_outdir}/integer-parsing.o || ${riscv64-linux-gnu-gnu_outdir}/.dir.stamp
+build riscv64-linux-gnu-gnu: phony ${riscv64-linux-gnu-gnu_outdir}/integer-parsing.elf ${riscv64-linux-gnu-gnu_outdir}/main.s ${riscv64-linux-gnu-gnu_outdir}/digits.s ${riscv64-linux-gnu-gnu_outdir}/main.txt ${riscv64-linux-gnu-gnu_outdir}/digits.txt
+
+# s390x-linux-gnu-gnu
+s390x-linux-gnu-gnu_outdir = /mnt/c/Users/jblbe/Documents/Workspace/ghidra-delinker-extension/src/test/resources/programs/integer-parsing/reference/elf/linux-gnu/s390x
+s390x-linux-gnu-gnu_cflags = -gdwarf-4 -gctf  
+s390x-linux-gnu-gnu_ldflags = -Wl,--build-id=none  
+build ${s390x-linux-gnu-gnu_outdir}/.dir.stamp: ensure_dir
+  dir = ${s390x-linux-gnu-gnu_outdir}
+
+rule s390x-linux-gnu-gnu_cc_obj
+  command = s390x-linux-gnu-gcc ${s390x-linux-gnu-gnu_cflags} -I/mnt/c/Users/jblbe/Documents/Workspace/ghidra-delinker-extension/src/test/resources/programs/integer-parsing/src/include -c $in -o $out
+rule s390x-linux-gnu-gnu_cc_asm
+  command = s390x-linux-gnu-gcc ${s390x-linux-gnu-gnu_cflags} -I/mnt/c/Users/jblbe/Documents/Workspace/ghidra-delinker-extension/src/test/resources/programs/integer-parsing/src/include -S -c $in -o $out
+rule s390x-linux-gnu-gnu_objdump
+  command = s390x-linux-gnu-objdump -x $in > $out
+rule s390x-linux-gnu-gnu_combine
+  command = s390x-linux-gnu-gcc -r $in -o $out
+rule s390x-linux-gnu-gnu_link
+  command = s390x-linux-gnu-gcc $in -o $out ${s390x-linux-gnu-gnu_ldflags}
+
+build ${s390x-linux-gnu-gnu_outdir}/main.o: s390x-linux-gnu-gnu_cc_obj src/main.c || ${s390x-linux-gnu-gnu_outdir}/.dir.stamp
+build ${s390x-linux-gnu-gnu_outdir}/main.s: s390x-linux-gnu-gnu_cc_asm src/main.c || ${s390x-linux-gnu-gnu_outdir}/.dir.stamp
+build ${s390x-linux-gnu-gnu_outdir}/main.txt: s390x-linux-gnu-gnu_objdump ${s390x-linux-gnu-gnu_outdir}/main.o || ${s390x-linux-gnu-gnu_outdir}/.dir.stamp
+build ${s390x-linux-gnu-gnu_outdir}/digits.o: s390x-linux-gnu-gnu_cc_obj src/digits.c || ${s390x-linux-gnu-gnu_outdir}/.dir.stamp
+build ${s390x-linux-gnu-gnu_outdir}/digits.s: s390x-linux-gnu-gnu_cc_asm src/digits.c || ${s390x-linux-gnu-gnu_outdir}/.dir.stamp
+build ${s390x-linux-gnu-gnu_outdir}/digits.txt: s390x-linux-gnu-gnu_objdump ${s390x-linux-gnu-gnu_outdir}/digits.o || ${s390x-linux-gnu-gnu_outdir}/.dir.stamp
+build ${s390x-linux-gnu-gnu_outdir}/integer-parsing.o: s390x-linux-gnu-gnu_combine ${s390x-linux-gnu-gnu_outdir}/main.o ${s390x-linux-gnu-gnu_outdir}/digits.o || ${s390x-linux-gnu-gnu_outdir}/.dir.stamp
+build ${s390x-linux-gnu-gnu_outdir}/integer-parsing.elf: s390x-linux-gnu-gnu_link ${s390x-linux-gnu-gnu_outdir}/integer-parsing.o || ${s390x-linux-gnu-gnu_outdir}/.dir.stamp
+build s390x-linux-gnu-gnu: phony ${s390x-linux-gnu-gnu_outdir}/integer-parsing.elf ${s390x-linux-gnu-gnu_outdir}/main.s ${s390x-linux-gnu-gnu_outdir}/digits.s ${s390x-linux-gnu-gnu_outdir}/main.txt ${s390x-linux-gnu-gnu_outdir}/digits.txt
+
+# sh4-linux-gnu-gnu
+sh4-linux-gnu-gnu_outdir = /mnt/c/Users/jblbe/Documents/Workspace/ghidra-delinker-extension/src/test/resources/programs/integer-parsing/reference/elf/linux-gnu/sh4
+sh4-linux-gnu-gnu_cflags = -gdwarf-4 -gctf  
+sh4-linux-gnu-gnu_ldflags = -Wl,--build-id=none  
+build ${sh4-linux-gnu-gnu_outdir}/.dir.stamp: ensure_dir
+  dir = ${sh4-linux-gnu-gnu_outdir}
+
+rule sh4-linux-gnu-gnu_cc_obj
+  command = sh4-linux-gnu-gcc ${sh4-linux-gnu-gnu_cflags} -I/mnt/c/Users/jblbe/Documents/Workspace/ghidra-delinker-extension/src/test/resources/programs/integer-parsing/src/include -c $in -o $out
+rule sh4-linux-gnu-gnu_cc_asm
+  command = sh4-linux-gnu-gcc ${sh4-linux-gnu-gnu_cflags} -I/mnt/c/Users/jblbe/Documents/Workspace/ghidra-delinker-extension/src/test/resources/programs/integer-parsing/src/include -S -c $in -o $out
+rule sh4-linux-gnu-gnu_objdump
+  command = sh4-linux-gnu-objdump -x $in > $out
+rule sh4-linux-gnu-gnu_combine
+  command = sh4-linux-gnu-gcc -r $in -o $out
+rule sh4-linux-gnu-gnu_link
+  command = sh4-linux-gnu-gcc $in -o $out ${sh4-linux-gnu-gnu_ldflags}
+
+build ${sh4-linux-gnu-gnu_outdir}/main.o: sh4-linux-gnu-gnu_cc_obj src/main.c || ${sh4-linux-gnu-gnu_outdir}/.dir.stamp
+build ${sh4-linux-gnu-gnu_outdir}/main.s: sh4-linux-gnu-gnu_cc_asm src/main.c || ${sh4-linux-gnu-gnu_outdir}/.dir.stamp
+build ${sh4-linux-gnu-gnu_outdir}/main.txt: sh4-linux-gnu-gnu_objdump ${sh4-linux-gnu-gnu_outdir}/main.o || ${sh4-linux-gnu-gnu_outdir}/.dir.stamp
+build ${sh4-linux-gnu-gnu_outdir}/digits.o: sh4-linux-gnu-gnu_cc_obj src/digits.c || ${sh4-linux-gnu-gnu_outdir}/.dir.stamp
+build ${sh4-linux-gnu-gnu_outdir}/digits.s: sh4-linux-gnu-gnu_cc_asm src/digits.c || ${sh4-linux-gnu-gnu_outdir}/.dir.stamp
+build ${sh4-linux-gnu-gnu_outdir}/digits.txt: sh4-linux-gnu-gnu_objdump ${sh4-linux-gnu-gnu_outdir}/digits.o || ${sh4-linux-gnu-gnu_outdir}/.dir.stamp
+build ${sh4-linux-gnu-gnu_outdir}/integer-parsing.o: sh4-linux-gnu-gnu_combine ${sh4-linux-gnu-gnu_outdir}/main.o ${sh4-linux-gnu-gnu_outdir}/digits.o || ${sh4-linux-gnu-gnu_outdir}/.dir.stamp
+build ${sh4-linux-gnu-gnu_outdir}/integer-parsing.elf: sh4-linux-gnu-gnu_link ${sh4-linux-gnu-gnu_outdir}/integer-parsing.o || ${sh4-linux-gnu-gnu_outdir}/.dir.stamp
+build sh4-linux-gnu-gnu: phony ${sh4-linux-gnu-gnu_outdir}/integer-parsing.elf ${sh4-linux-gnu-gnu_outdir}/main.s ${sh4-linux-gnu-gnu_outdir}/digits.s ${sh4-linux-gnu-gnu_outdir}/main.txt ${sh4-linux-gnu-gnu_outdir}/digits.txt
+
+# sparc64-linux-gnu-gnu
+sparc64-linux-gnu-gnu_outdir = /mnt/c/Users/jblbe/Documents/Workspace/ghidra-delinker-extension/src/test/resources/programs/integer-parsing/reference/elf/linux-gnu/sparc64
+sparc64-linux-gnu-gnu_cflags = -gdwarf-4 -gctf  
+sparc64-linux-gnu-gnu_ldflags = -Wl,--build-id=none  
+build ${sparc64-linux-gnu-gnu_outdir}/.dir.stamp: ensure_dir
+  dir = ${sparc64-linux-gnu-gnu_outdir}
+
+rule sparc64-linux-gnu-gnu_cc_obj
+  command = sparc64-linux-gnu-gcc ${sparc64-linux-gnu-gnu_cflags} -I/mnt/c/Users/jblbe/Documents/Workspace/ghidra-delinker-extension/src/test/resources/programs/integer-parsing/src/include -c $in -o $out
+rule sparc64-linux-gnu-gnu_cc_asm
+  command = sparc64-linux-gnu-gcc ${sparc64-linux-gnu-gnu_cflags} -I/mnt/c/Users/jblbe/Documents/Workspace/ghidra-delinker-extension/src/test/resources/programs/integer-parsing/src/include -S -c $in -o $out
+rule sparc64-linux-gnu-gnu_objdump
+  command = sparc64-linux-gnu-objdump -x $in > $out
+rule sparc64-linux-gnu-gnu_combine
+  command = sparc64-linux-gnu-gcc -r $in -o $out
+rule sparc64-linux-gnu-gnu_link
+  command = sparc64-linux-gnu-gcc $in -o $out ${sparc64-linux-gnu-gnu_ldflags}
+
+build ${sparc64-linux-gnu-gnu_outdir}/main.o: sparc64-linux-gnu-gnu_cc_obj src/main.c || ${sparc64-linux-gnu-gnu_outdir}/.dir.stamp
+build ${sparc64-linux-gnu-gnu_outdir}/main.s: sparc64-linux-gnu-gnu_cc_asm src/main.c || ${sparc64-linux-gnu-gnu_outdir}/.dir.stamp
+build ${sparc64-linux-gnu-gnu_outdir}/main.txt: sparc64-linux-gnu-gnu_objdump ${sparc64-linux-gnu-gnu_outdir}/main.o || ${sparc64-linux-gnu-gnu_outdir}/.dir.stamp
+build ${sparc64-linux-gnu-gnu_outdir}/digits.o: sparc64-linux-gnu-gnu_cc_obj src/digits.c || ${sparc64-linux-gnu-gnu_outdir}/.dir.stamp
+build ${sparc64-linux-gnu-gnu_outdir}/digits.s: sparc64-linux-gnu-gnu_cc_asm src/digits.c || ${sparc64-linux-gnu-gnu_outdir}/.dir.stamp
+build ${sparc64-linux-gnu-gnu_outdir}/digits.txt: sparc64-linux-gnu-gnu_objdump ${sparc64-linux-gnu-gnu_outdir}/digits.o || ${sparc64-linux-gnu-gnu_outdir}/.dir.stamp
+build ${sparc64-linux-gnu-gnu_outdir}/integer-parsing.o: sparc64-linux-gnu-gnu_combine ${sparc64-linux-gnu-gnu_outdir}/main.o ${sparc64-linux-gnu-gnu_outdir}/digits.o || ${sparc64-linux-gnu-gnu_outdir}/.dir.stamp
+build ${sparc64-linux-gnu-gnu_outdir}/integer-parsing.elf: sparc64-linux-gnu-gnu_link ${sparc64-linux-gnu-gnu_outdir}/integer-parsing.o || ${sparc64-linux-gnu-gnu_outdir}/.dir.stamp
+build sparc64-linux-gnu-gnu: phony ${sparc64-linux-gnu-gnu_outdir}/integer-parsing.elf ${sparc64-linux-gnu-gnu_outdir}/main.s ${sparc64-linux-gnu-gnu_outdir}/digits.s ${sparc64-linux-gnu-gnu_outdir}/main.txt ${sparc64-linux-gnu-gnu_outdir}/digits.txt
+
+build elf-all: phony ${aarch64-linux-gnu-gnu_outdir}/integer-parsing.elf ${arm-linux-gnu-gnu_outdir}/integer-parsing.elf ${i686-linux-gnu-gnu_outdir}/integer-parsing.elf ${x86_64-linux-gnu-gnu_outdir}/integer-parsing.elf ${alpha-linux-gnu-gnu_outdir}/integer-parsing.elf ${arc-linux-gnu-gnu_outdir}/integer-parsing.elf ${m68k-linux-gnu-gnu_outdir}/integer-parsing.elf ${mips-linux-gnu-gnu_outdir}/integer-parsing.elf ${mipsel-linux-gnu-gnu_outdir}/integer-parsing.elf ${mips64el-linux-gnu-gnu_outdir}/integer-parsing.elf ${mips64-linux-gnu-gnu_outdir}/integer-parsing.elf ${powerpc-linux-gnu-gnu_outdir}/integer-parsing.elf ${powerpc64-linux-gnu-gnu_outdir}/integer-parsing.elf ${powerpc64le-linux-gnu-gnu_outdir}/integer-parsing.elf ${riscv64-linux-gnu-gnu_outdir}/integer-parsing.elf ${s390x-linux-gnu-gnu_outdir}/integer-parsing.elf ${sh4-linux-gnu-gnu_outdir}/integer-parsing.elf ${sparc64-linux-gnu-gnu_outdir}/integer-parsing.elf
+build all: phony ${aarch64-linux-gnu-gnu_outdir}/integer-parsing.elf ${aarch64-linux-gnu-gnu_outdir}/main.s ${aarch64-linux-gnu-gnu_outdir}/digits.s ${aarch64-linux-gnu-gnu_outdir}/main.txt ${aarch64-linux-gnu-gnu_outdir}/digits.txt ${arm-linux-gnu-gnu_outdir}/integer-parsing.elf ${arm-linux-gnu-gnu_outdir}/main.s ${arm-linux-gnu-gnu_outdir}/digits.s ${arm-linux-gnu-gnu_outdir}/main.txt ${arm-linux-gnu-gnu_outdir}/digits.txt ${i686-linux-gnu-gnu_outdir}/integer-parsing.elf ${i686-linux-gnu-gnu_outdir}/main.s ${i686-linux-gnu-gnu_outdir}/digits.s ${i686-linux-gnu-gnu_outdir}/main.txt ${i686-linux-gnu-gnu_outdir}/digits.txt ${x86_64-linux-gnu-gnu_outdir}/integer-parsing.elf ${x86_64-linux-gnu-gnu_outdir}/main.s ${x86_64-linux-gnu-gnu_outdir}/digits.s ${x86_64-linux-gnu-gnu_outdir}/main.txt ${x86_64-linux-gnu-gnu_outdir}/digits.txt ${alpha-linux-gnu-gnu_outdir}/integer-parsing.elf ${alpha-linux-gnu-gnu_outdir}/main.s ${alpha-linux-gnu-gnu_outdir}/digits.s ${alpha-linux-gnu-gnu_outdir}/main.txt ${alpha-linux-gnu-gnu_outdir}/digits.txt ${arc-linux-gnu-gnu_outdir}/integer-parsing.elf ${arc-linux-gnu-gnu_outdir}/main.s ${arc-linux-gnu-gnu_outdir}/digits.s ${arc-linux-gnu-gnu_outdir}/main.txt ${arc-linux-gnu-gnu_outdir}/digits.txt ${m68k-linux-gnu-gnu_outdir}/integer-parsing.elf ${m68k-linux-gnu-gnu_outdir}/main.s ${m68k-linux-gnu-gnu_outdir}/digits.s ${m68k-linux-gnu-gnu_outdir}/main.txt ${m68k-linux-gnu-gnu_outdir}/digits.txt ${mips-linux-gnu-gnu_outdir}/integer-parsing.elf ${mips-linux-gnu-gnu_outdir}/main.s ${mips-linux-gnu-gnu_outdir}/digits.s ${mips-linux-gnu-gnu_outdir}/main.txt ${mips-linux-gnu-gnu_outdir}/digits.txt ${mipsel-linux-gnu-gnu_outdir}/integer-parsing.elf ${mipsel-linux-gnu-gnu_outdir}/main.s ${mipsel-linux-gnu-gnu_outdir}/digits.s ${mipsel-linux-gnu-gnu_outdir}/main.txt ${mipsel-linux-gnu-gnu_outdir}/digits.txt ${mips64el-linux-gnu-gnu_outdir}/integer-parsing.elf ${mips64el-linux-gnu-gnu_outdir}/main.s ${mips64el-linux-gnu-gnu_outdir}/digits.s ${mips64el-linux-gnu-gnu_outdir}/main.txt ${mips64el-linux-gnu-gnu_outdir}/digits.txt ${mips64-linux-gnu-gnu_outdir}/integer-parsing.elf ${mips64-linux-gnu-gnu_outdir}/main.s ${mips64-linux-gnu-gnu_outdir}/digits.s ${mips64-linux-gnu-gnu_outdir}/main.txt ${mips64-linux-gnu-gnu_outdir}/digits.txt ${powerpc-linux-gnu-gnu_outdir}/integer-parsing.elf ${powerpc-linux-gnu-gnu_outdir}/main.s ${powerpc-linux-gnu-gnu_outdir}/digits.s ${powerpc-linux-gnu-gnu_outdir}/main.txt ${powerpc-linux-gnu-gnu_outdir}/digits.txt ${powerpc64-linux-gnu-gnu_outdir}/integer-parsing.elf ${powerpc64-linux-gnu-gnu_outdir}/main.s ${powerpc64-linux-gnu-gnu_outdir}/digits.s ${powerpc64-linux-gnu-gnu_outdir}/main.txt ${powerpc64-linux-gnu-gnu_outdir}/digits.txt ${powerpc64le-linux-gnu-gnu_outdir}/integer-parsing.elf ${powerpc64le-linux-gnu-gnu_outdir}/main.s ${powerpc64le-linux-gnu-gnu_outdir}/digits.s ${powerpc64le-linux-gnu-gnu_outdir}/main.txt ${powerpc64le-linux-gnu-gnu_outdir}/digits.txt ${riscv64-linux-gnu-gnu_outdir}/integer-parsing.elf ${riscv64-linux-gnu-gnu_outdir}/main.s ${riscv64-linux-gnu-gnu_outdir}/digits.s ${riscv64-linux-gnu-gnu_outdir}/main.txt ${riscv64-linux-gnu-gnu_outdir}/digits.txt ${s390x-linux-gnu-gnu_outdir}/integer-parsing.elf ${s390x-linux-gnu-gnu_outdir}/main.s ${s390x-linux-gnu-gnu_outdir}/digits.s ${s390x-linux-gnu-gnu_outdir}/main.txt ${s390x-linux-gnu-gnu_outdir}/digits.txt ${sh4-linux-gnu-gnu_outdir}/integer-parsing.elf ${sh4-linux-gnu-gnu_outdir}/main.s ${sh4-linux-gnu-gnu_outdir}/digits.s ${sh4-linux-gnu-gnu_outdir}/main.txt ${sh4-linux-gnu-gnu_outdir}/digits.txt ${sparc64-linux-gnu-gnu_outdir}/integer-parsing.elf ${sparc64-linux-gnu-gnu_outdir}/main.s ${sparc64-linux-gnu-gnu_outdir}/digits.s ${sparc64-linux-gnu-gnu_outdir}/main.txt ${sparc64-linux-gnu-gnu_outdir}/digits.txt
+default all

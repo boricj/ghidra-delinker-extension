@@ -1,0 +1,154 @@
+ninja_required_version = 1.7
+
+rule ensure_dir
+  command = C:\Users\jblbe\AppData\Local\Programs\Python\Python312\python.exe -c "import os,sys; os.makedirs(sys.argv[1], exist_ok=True); open(sys.argv[2], 'a').close()" "$dir" "$out"
+
+# i686-windows-msvc-coff
+i686-windows-msvc-coff_outdir = C:\Users\jblbe\Documents\Workspace\ghidra-delinker-extension\src\test\resources\programs\integer-parsing\reference\coff\windows-msvc\x86
+i686-windows-msvc-coff_cflags = /TC /Zi /Od /nologo  
+i686-windows-msvc-coff_ldflags = /nologo  
+build ${i686-windows-msvc-coff_outdir}\.dir.stamp: ensure_dir
+  dir = ${i686-windows-msvc-coff_outdir}
+
+rule i686-windows-msvc-coff_cc
+  command = "C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\bin\Hostx64\x86\cl.exe" ${i686-windows-msvc-coff_cflags} /IC:/Users/jblbe/Documents/Workspace/ghidra-delinker-extension/src/test/resources/programs/integer-parsing/src/include /FS /Fd${outdir}\${obj_name}.pdb /c $in /Fo${outdir}\${obj_name}.obj /Fa${outdir}\${obj_name}.asm
+rule i686-windows-msvc-coff_dumpbin
+  command = cmd /c ""C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\bin\Hostx64\x64\dumpbin.exe" /nologo /all $in > $out"
+rule i686-windows-msvc-coff_link
+  command = "C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\bin\Hostx64\x64\link.exe" /nologo /MACHINE:X86 /OUT:${exe} /DEBUG /PDB:${pdb} /LIBPATH:"C:\Program Files (x86)\Windows Kits\10\Lib\10.0.26100.0\um\x86" /LIBPATH:"C:\Program Files (x86)\Windows Kits\10\Lib\10.0.26100.0\ucrt\x86" ${i686-windows-msvc-coff_ldflags} $in
+
+build ${i686-windows-msvc-coff_outdir}\main.obj ${i686-windows-msvc-coff_outdir}\main.asm: i686-windows-msvc-coff_cc src/main.c || ${i686-windows-msvc-coff_outdir}\.dir.stamp
+  obj_name = main
+  outdir = ${i686-windows-msvc-coff_outdir}
+build ${i686-windows-msvc-coff_outdir}\main.txt: i686-windows-msvc-coff_dumpbin ${i686-windows-msvc-coff_outdir}\main.obj || ${i686-windows-msvc-coff_outdir}\.dir.stamp
+build ${i686-windows-msvc-coff_outdir}\digits.obj ${i686-windows-msvc-coff_outdir}\digits.asm: i686-windows-msvc-coff_cc src/digits.c || ${i686-windows-msvc-coff_outdir}\.dir.stamp
+  obj_name = digits
+  outdir = ${i686-windows-msvc-coff_outdir}
+build ${i686-windows-msvc-coff_outdir}\digits.txt: i686-windows-msvc-coff_dumpbin ${i686-windows-msvc-coff_outdir}\digits.obj || ${i686-windows-msvc-coff_outdir}\.dir.stamp
+build ${i686-windows-msvc-coff_outdir}\integer-parsing.exe ${i686-windows-msvc-coff_outdir}\integer-parsing.pdb: i686-windows-msvc-coff_link ${i686-windows-msvc-coff_outdir}\main.obj ${i686-windows-msvc-coff_outdir}\digits.obj || ${i686-windows-msvc-coff_outdir}\.dir.stamp
+  exe = ${i686-windows-msvc-coff_outdir}\integer-parsing.exe
+  pdb = ${i686-windows-msvc-coff_outdir}\integer-parsing.pdb
+build ${i686-windows-msvc-coff_outdir}\integer-parsing.exe.txt: i686-windows-msvc-coff_dumpbin ${i686-windows-msvc-coff_outdir}\integer-parsing.exe || ${i686-windows-msvc-coff_outdir}\.dir.stamp
+build i686-windows-msvc-coff: phony ${i686-windows-msvc-coff_outdir}\integer-parsing.exe ${i686-windows-msvc-coff_outdir}\integer-parsing.pdb ${i686-windows-msvc-coff_outdir}\integer-parsing.exe.txt ${i686-windows-msvc-coff_outdir}\main.asm ${i686-windows-msvc-coff_outdir}\digits.asm ${i686-windows-msvc-coff_outdir}\main.txt ${i686-windows-msvc-coff_outdir}\digits.txt
+
+# x86_64-windows-msvc-coff
+x86_64-windows-msvc-coff_outdir = C:\Users\jblbe\Documents\Workspace\ghidra-delinker-extension\src\test\resources\programs\integer-parsing\reference\coff\windows-msvc\x64
+x86_64-windows-msvc-coff_cflags = /TC /Zi /Od /nologo  
+x86_64-windows-msvc-coff_ldflags = /nologo  
+build ${x86_64-windows-msvc-coff_outdir}\.dir.stamp: ensure_dir
+  dir = ${x86_64-windows-msvc-coff_outdir}
+
+rule x86_64-windows-msvc-coff_cc
+  command = "C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\bin\Hostx64\x64\cl.exe" ${x86_64-windows-msvc-coff_cflags} /IC:/Users/jblbe/Documents/Workspace/ghidra-delinker-extension/src/test/resources/programs/integer-parsing/src/include /FS /Fd${outdir}\${obj_name}.pdb /c $in /Fo${outdir}\${obj_name}.obj /Fa${outdir}\${obj_name}.asm
+rule x86_64-windows-msvc-coff_dumpbin
+  command = cmd /c ""C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\bin\Hostx64\x64\dumpbin.exe" /nologo /all $in > $out"
+rule x86_64-windows-msvc-coff_link
+  command = "C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\bin\Hostx64\x64\link.exe" /nologo /MACHINE:X64 /OUT:${exe} /DEBUG /PDB:${pdb} /LIBPATH:"C:\Program Files (x86)\Windows Kits\10\Lib\10.0.26100.0\um\x64" /LIBPATH:"C:\Program Files (x86)\Windows Kits\10\Lib\10.0.26100.0\ucrt\x64" ${x86_64-windows-msvc-coff_ldflags} $in
+
+build ${x86_64-windows-msvc-coff_outdir}\main.obj ${x86_64-windows-msvc-coff_outdir}\main.asm: x86_64-windows-msvc-coff_cc src/main.c || ${x86_64-windows-msvc-coff_outdir}\.dir.stamp
+  obj_name = main
+  outdir = ${x86_64-windows-msvc-coff_outdir}
+build ${x86_64-windows-msvc-coff_outdir}\main.txt: x86_64-windows-msvc-coff_dumpbin ${x86_64-windows-msvc-coff_outdir}\main.obj || ${x86_64-windows-msvc-coff_outdir}\.dir.stamp
+build ${x86_64-windows-msvc-coff_outdir}\digits.obj ${x86_64-windows-msvc-coff_outdir}\digits.asm: x86_64-windows-msvc-coff_cc src/digits.c || ${x86_64-windows-msvc-coff_outdir}\.dir.stamp
+  obj_name = digits
+  outdir = ${x86_64-windows-msvc-coff_outdir}
+build ${x86_64-windows-msvc-coff_outdir}\digits.txt: x86_64-windows-msvc-coff_dumpbin ${x86_64-windows-msvc-coff_outdir}\digits.obj || ${x86_64-windows-msvc-coff_outdir}\.dir.stamp
+build ${x86_64-windows-msvc-coff_outdir}\integer-parsing.exe ${x86_64-windows-msvc-coff_outdir}\integer-parsing.pdb: x86_64-windows-msvc-coff_link ${x86_64-windows-msvc-coff_outdir}\main.obj ${x86_64-windows-msvc-coff_outdir}\digits.obj || ${x86_64-windows-msvc-coff_outdir}\.dir.stamp
+  exe = ${x86_64-windows-msvc-coff_outdir}\integer-parsing.exe
+  pdb = ${x86_64-windows-msvc-coff_outdir}\integer-parsing.pdb
+build ${x86_64-windows-msvc-coff_outdir}\integer-parsing.exe.txt: x86_64-windows-msvc-coff_dumpbin ${x86_64-windows-msvc-coff_outdir}\integer-parsing.exe || ${x86_64-windows-msvc-coff_outdir}\.dir.stamp
+build x86_64-windows-msvc-coff: phony ${x86_64-windows-msvc-coff_outdir}\integer-parsing.exe ${x86_64-windows-msvc-coff_outdir}\integer-parsing.pdb ${x86_64-windows-msvc-coff_outdir}\integer-parsing.exe.txt ${x86_64-windows-msvc-coff_outdir}\main.asm ${x86_64-windows-msvc-coff_outdir}\digits.asm ${x86_64-windows-msvc-coff_outdir}\main.txt ${x86_64-windows-msvc-coff_outdir}\digits.txt
+
+# arm-windows-msvc-coff
+arm-windows-msvc-coff_outdir = C:\Users\jblbe\Documents\Workspace\ghidra-delinker-extension\src\test\resources\programs\integer-parsing\reference\coff\windows-msvc\arm
+arm-windows-msvc-coff_cflags = /TC /Zi /Od /nologo  
+arm-windows-msvc-coff_ldflags = /nologo  
+build ${arm-windows-msvc-coff_outdir}\.dir.stamp: ensure_dir
+  dir = ${arm-windows-msvc-coff_outdir}
+
+rule arm-windows-msvc-coff_cc
+  command = "C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\bin\Hostx64\arm\cl.exe" ${arm-windows-msvc-coff_cflags} /IC:/Users/jblbe/Documents/Workspace/ghidra-delinker-extension/src/test/resources/programs/integer-parsing/src/include /FS /Fd${outdir}\${obj_name}.pdb /c $in /Fo${outdir}\${obj_name}.obj /Fa${outdir}\${obj_name}.asm
+rule arm-windows-msvc-coff_dumpbin
+  command = cmd /c ""C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\bin\Hostx64\x64\dumpbin.exe" /nologo /all $in > $out"
+rule arm-windows-msvc-coff_link
+  command = "C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\bin\Hostx64\x64\link.exe" /nologo /MACHINE:ARM /OUT:${exe} /DEBUG /PDB:${pdb} /LIBPATH:"C:\Program Files (x86)\Windows Kits\10\Lib\10.0.22621.0\um\arm" /LIBPATH:"C:\Program Files (x86)\Windows Kits\10\Lib\10.0.22621.0\ucrt\arm" ${arm-windows-msvc-coff_ldflags} $in
+
+build ${arm-windows-msvc-coff_outdir}\main.obj ${arm-windows-msvc-coff_outdir}\main.asm: arm-windows-msvc-coff_cc src/main.c || ${arm-windows-msvc-coff_outdir}\.dir.stamp
+  obj_name = main
+  outdir = ${arm-windows-msvc-coff_outdir}
+build ${arm-windows-msvc-coff_outdir}\main.txt: arm-windows-msvc-coff_dumpbin ${arm-windows-msvc-coff_outdir}\main.obj || ${arm-windows-msvc-coff_outdir}\.dir.stamp
+build ${arm-windows-msvc-coff_outdir}\digits.obj ${arm-windows-msvc-coff_outdir}\digits.asm: arm-windows-msvc-coff_cc src/digits.c || ${arm-windows-msvc-coff_outdir}\.dir.stamp
+  obj_name = digits
+  outdir = ${arm-windows-msvc-coff_outdir}
+build ${arm-windows-msvc-coff_outdir}\digits.txt: arm-windows-msvc-coff_dumpbin ${arm-windows-msvc-coff_outdir}\digits.obj || ${arm-windows-msvc-coff_outdir}\.dir.stamp
+build ${arm-windows-msvc-coff_outdir}\integer-parsing.exe ${arm-windows-msvc-coff_outdir}\integer-parsing.pdb: arm-windows-msvc-coff_link ${arm-windows-msvc-coff_outdir}\main.obj ${arm-windows-msvc-coff_outdir}\digits.obj || ${arm-windows-msvc-coff_outdir}\.dir.stamp
+  exe = ${arm-windows-msvc-coff_outdir}\integer-parsing.exe
+  pdb = ${arm-windows-msvc-coff_outdir}\integer-parsing.pdb
+build ${arm-windows-msvc-coff_outdir}\integer-parsing.exe.txt: arm-windows-msvc-coff_dumpbin ${arm-windows-msvc-coff_outdir}\integer-parsing.exe || ${arm-windows-msvc-coff_outdir}\.dir.stamp
+build arm-windows-msvc-coff: phony ${arm-windows-msvc-coff_outdir}\integer-parsing.exe ${arm-windows-msvc-coff_outdir}\integer-parsing.pdb ${arm-windows-msvc-coff_outdir}\integer-parsing.exe.txt ${arm-windows-msvc-coff_outdir}\main.asm ${arm-windows-msvc-coff_outdir}\digits.asm ${arm-windows-msvc-coff_outdir}\main.txt ${arm-windows-msvc-coff_outdir}\digits.txt
+
+# arm64-windows-msvc-coff
+arm64-windows-msvc-coff_outdir = C:\Users\jblbe\Documents\Workspace\ghidra-delinker-extension\src\test\resources\programs\integer-parsing\reference\coff\windows-msvc\arm64
+arm64-windows-msvc-coff_cflags = /TC /Zi /Od /nologo  
+arm64-windows-msvc-coff_ldflags = /nologo  
+build ${arm64-windows-msvc-coff_outdir}\.dir.stamp: ensure_dir
+  dir = ${arm64-windows-msvc-coff_outdir}
+
+rule arm64-windows-msvc-coff_cc
+  command = "C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\bin\Hostx64\arm64\cl.exe" ${arm64-windows-msvc-coff_cflags} /IC:/Users/jblbe/Documents/Workspace/ghidra-delinker-extension/src/test/resources/programs/integer-parsing/src/include /FS /Fd${outdir}\${obj_name}.pdb /c $in /Fo${outdir}\${obj_name}.obj /Fa${outdir}\${obj_name}.asm
+rule arm64-windows-msvc-coff_dumpbin
+  command = cmd /c ""C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\bin\Hostx64\x64\dumpbin.exe" /nologo /all $in > $out"
+rule arm64-windows-msvc-coff_link
+  command = "C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\bin\Hostx64\x64\link.exe" /nologo /MACHINE:ARM64 /OUT:${exe} /DEBUG /PDB:${pdb} /LIBPATH:"C:\Program Files (x86)\Windows Kits\10\Lib\10.0.26100.0\um\arm64" /LIBPATH:"C:\Program Files (x86)\Windows Kits\10\Lib\10.0.26100.0\ucrt\arm64" ${arm64-windows-msvc-coff_ldflags} $in
+
+build ${arm64-windows-msvc-coff_outdir}\main.obj ${arm64-windows-msvc-coff_outdir}\main.asm: arm64-windows-msvc-coff_cc src/main.c || ${arm64-windows-msvc-coff_outdir}\.dir.stamp
+  obj_name = main
+  outdir = ${arm64-windows-msvc-coff_outdir}
+build ${arm64-windows-msvc-coff_outdir}\main.txt: arm64-windows-msvc-coff_dumpbin ${arm64-windows-msvc-coff_outdir}\main.obj || ${arm64-windows-msvc-coff_outdir}\.dir.stamp
+build ${arm64-windows-msvc-coff_outdir}\digits.obj ${arm64-windows-msvc-coff_outdir}\digits.asm: arm64-windows-msvc-coff_cc src/digits.c || ${arm64-windows-msvc-coff_outdir}\.dir.stamp
+  obj_name = digits
+  outdir = ${arm64-windows-msvc-coff_outdir}
+build ${arm64-windows-msvc-coff_outdir}\digits.txt: arm64-windows-msvc-coff_dumpbin ${arm64-windows-msvc-coff_outdir}\digits.obj || ${arm64-windows-msvc-coff_outdir}\.dir.stamp
+build ${arm64-windows-msvc-coff_outdir}\integer-parsing.exe ${arm64-windows-msvc-coff_outdir}\integer-parsing.pdb: arm64-windows-msvc-coff_link ${arm64-windows-msvc-coff_outdir}\main.obj ${arm64-windows-msvc-coff_outdir}\digits.obj || ${arm64-windows-msvc-coff_outdir}\.dir.stamp
+  exe = ${arm64-windows-msvc-coff_outdir}\integer-parsing.exe
+  pdb = ${arm64-windows-msvc-coff_outdir}\integer-parsing.pdb
+build ${arm64-windows-msvc-coff_outdir}\integer-parsing.exe.txt: arm64-windows-msvc-coff_dumpbin ${arm64-windows-msvc-coff_outdir}\integer-parsing.exe || ${arm64-windows-msvc-coff_outdir}\.dir.stamp
+build arm64-windows-msvc-coff: phony ${arm64-windows-msvc-coff_outdir}\integer-parsing.exe ${arm64-windows-msvc-coff_outdir}\integer-parsing.pdb ${arm64-windows-msvc-coff_outdir}\integer-parsing.exe.txt ${arm64-windows-msvc-coff_outdir}\main.asm ${arm64-windows-msvc-coff_outdir}\digits.asm ${arm64-windows-msvc-coff_outdir}\main.txt ${arm64-windows-msvc-coff_outdir}\digits.txt
+
+# i686-windows-borland-omf
+i686-windows-borland-omf_outdir = C:\Users\jblbe\Documents\Workspace\ghidra-delinker-extension\src\test\resources\programs\integer-parsing\reference\omf\windows-borland\x86
+i686-windows-borland-omf_cflags = -v -Od -M  
+i686-windows-borland-omf_ldflags =   
+build ${i686-windows-borland-omf_outdir}\.dir.stamp: ensure_dir
+  dir = ${i686-windows-borland-omf_outdir}
+
+rule i686-windows-borland-omf_cc
+  command = cmd /c "bcc32 -c ${i686-windows-borland-omf_cflags} -IC:/Users/jblbe/Documents/Workspace/ghidra-delinker-extension/src/test/resources/programs/integer-parsing/src/include $in && move /Y ${source_stem}.obj ${outobj}"
+rule i686-windows-borland-omf_cc_asm
+  command = cmd /c "bcc32 -S -c ${i686-windows-borland-omf_cflags} -IC:/Users/jblbe/Documents/Workspace/ghidra-delinker-extension/src/test/resources/programs/integer-parsing/src/include $in && move /Y ${source_stem}.asm ${outasm}"
+rule i686-windows-borland-omf_link
+  command = bcc32 ${i686-windows-borland-omf_cflags} -e$out $in
+rule i686-windows-borland-omf_tdump
+  command = tdump $in > $out
+
+build ${i686-windows-borland-omf_outdir}\main.obj: i686-windows-borland-omf_cc src/main.c || ${i686-windows-borland-omf_outdir}\.dir.stamp
+  source_stem = main
+  outobj = ${i686-windows-borland-omf_outdir}\main.obj
+build ${i686-windows-borland-omf_outdir}\main.asm: i686-windows-borland-omf_cc_asm src/main.c || ${i686-windows-borland-omf_outdir}\.dir.stamp
+  source_stem = main
+  outasm = ${i686-windows-borland-omf_outdir}\main.asm
+build ${i686-windows-borland-omf_outdir}\main.txt: i686-windows-borland-omf_tdump ${i686-windows-borland-omf_outdir}\main.obj || ${i686-windows-borland-omf_outdir}\.dir.stamp
+build ${i686-windows-borland-omf_outdir}\digits.obj: i686-windows-borland-omf_cc src/digits.c || ${i686-windows-borland-omf_outdir}\.dir.stamp
+  source_stem = digits
+  outobj = ${i686-windows-borland-omf_outdir}\digits.obj
+build ${i686-windows-borland-omf_outdir}\digits.asm: i686-windows-borland-omf_cc_asm src/digits.c || ${i686-windows-borland-omf_outdir}\.dir.stamp
+  source_stem = digits
+  outasm = ${i686-windows-borland-omf_outdir}\digits.asm
+build ${i686-windows-borland-omf_outdir}\digits.txt: i686-windows-borland-omf_tdump ${i686-windows-borland-omf_outdir}\digits.obj || ${i686-windows-borland-omf_outdir}\.dir.stamp
+build ${i686-windows-borland-omf_outdir}\integer-parsing.exe: i686-windows-borland-omf_link ${i686-windows-borland-omf_outdir}\main.obj ${i686-windows-borland-omf_outdir}\digits.obj || ${i686-windows-borland-omf_outdir}\.dir.stamp
+build i686-windows-borland-omf: phony ${i686-windows-borland-omf_outdir}\integer-parsing.exe ${i686-windows-borland-omf_outdir}\main.asm ${i686-windows-borland-omf_outdir}\digits.asm ${i686-windows-borland-omf_outdir}\main.txt ${i686-windows-borland-omf_outdir}\digits.txt
+
+build coff-all: phony ${i686-windows-msvc-coff_outdir}\integer-parsing.exe ${x86_64-windows-msvc-coff_outdir}\integer-parsing.exe ${arm-windows-msvc-coff_outdir}\integer-parsing.exe ${arm64-windows-msvc-coff_outdir}\integer-parsing.exe
+build omf-all: phony ${i686-windows-borland-omf_outdir}\integer-parsing.exe
+build all: phony ${i686-windows-msvc-coff_outdir}\integer-parsing.exe ${i686-windows-msvc-coff_outdir}\integer-parsing.pdb ${i686-windows-msvc-coff_outdir}\integer-parsing.exe.txt ${i686-windows-msvc-coff_outdir}\main.asm ${i686-windows-msvc-coff_outdir}\digits.asm ${i686-windows-msvc-coff_outdir}\main.txt ${i686-windows-msvc-coff_outdir}\digits.txt ${x86_64-windows-msvc-coff_outdir}\integer-parsing.exe ${x86_64-windows-msvc-coff_outdir}\integer-parsing.pdb ${x86_64-windows-msvc-coff_outdir}\integer-parsing.exe.txt ${x86_64-windows-msvc-coff_outdir}\main.asm ${x86_64-windows-msvc-coff_outdir}\digits.asm ${x86_64-windows-msvc-coff_outdir}\main.txt ${x86_64-windows-msvc-coff_outdir}\digits.txt ${arm-windows-msvc-coff_outdir}\integer-parsing.exe ${arm-windows-msvc-coff_outdir}\integer-parsing.pdb ${arm-windows-msvc-coff_outdir}\integer-parsing.exe.txt ${arm-windows-msvc-coff_outdir}\main.asm ${arm-windows-msvc-coff_outdir}\digits.asm ${arm-windows-msvc-coff_outdir}\main.txt ${arm-windows-msvc-coff_outdir}\digits.txt ${arm64-windows-msvc-coff_outdir}\integer-parsing.exe ${arm64-windows-msvc-coff_outdir}\integer-parsing.pdb ${arm64-windows-msvc-coff_outdir}\integer-parsing.exe.txt ${arm64-windows-msvc-coff_outdir}\main.asm ${arm64-windows-msvc-coff_outdir}\digits.asm ${arm64-windows-msvc-coff_outdir}\main.txt ${arm64-windows-msvc-coff_outdir}\digits.txt ${i686-windows-borland-omf_outdir}\integer-parsing.exe ${i686-windows-borland-omf_outdir}\main.asm ${i686-windows-borland-omf_outdir}\digits.asm ${i686-windows-borland-omf_outdir}\main.txt ${i686-windows-borland-omf_outdir}\digits.txt
+default all

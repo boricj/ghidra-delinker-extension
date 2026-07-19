@@ -12,11 +12,11 @@ import ghidra.program.model.listing.Function;
 import ghidra.program.model.listing.FunctionManager;
 import ghidra.program.model.listing.Instruction;
 import ghidra.program.model.listing.Listing;
-import ghidra.program.model.relocobj.Relocation;
-import ghidra.program.model.relocobj.RelocationHighPair;
-import ghidra.program.model.relocobj.RelocationMIPS26;
-import ghidra.program.model.relocobj.RelocationRelativePC;
+import ghidra.program.model.relocobj.RelocationGang;
+import ghidra.program.model.relocobj.RelocationGroup;
+import ghidra.program.model.relocobj.RelocationTable.RelocationLocation;
 import ghidra.program.model.relocobj.RelocationTable;
+import ghidra.program.model.relocobj.RelocationTypeTag;
 import ghidra.program.model.scalar.Scalar;
 
 public class MipsDetectMissingHI16Relocations extends GhidraScript {
@@ -75,18 +75,54 @@ public class MipsDetectMissingHI16Relocations extends GhidraScript {
 	}
 
 	private boolean isCoveredHI16(Instruction instruction) {
-		Relocation rel = relocationTable.getRelocationAt(instruction.getAddress());
-		if (rel == null) {
-			rel = relocationTable.getRelocationAt(instruction.getAddress().subtract(4));
+		if (containsRelocationTypeAt(instruction.getAddress(), RelocationTypeTag.HIGH_PAIR)) {
+			return true;
+		}
 
-			if (rel instanceof RelocationRelativePC) {
-				return ((RelocationRelativePC) rel).getAddend() == -2;
+		Address previous = instruction.getAddress().subtract(4);
+		if (containsAddendAt(previous, RelocationTypeTag.PC_RELATIVE, -2) ||
+			containsAddendAt(previous, RelocationTypeTag.MIPS_26, -1)) {
+			return true;
+		}
+
+		return false;
+	}
+
+	private boolean containsRelocationTypeAt(Address address, RelocationTypeTag type) {
+		for (RelocationLocation location : relocationTable.getRelocationLocationsAt(address)) {
+			RelocationGroup group = relocationTable.getRelocationGroup(location.groupId());
+			if (group == null) {
+				continue;
 			}
-			else if (rel instanceof RelocationMIPS26) {
-				return ((RelocationMIPS26) rel).getAddend() == -1;
+
+			RelocationGang gang = group.getGangs().get(location.gangIndex());
+			if (gang.getRelocationType() == type) {
+				return true;
 			}
 		}
 
-		return rel instanceof RelocationHighPair;
+		return false;
+	}
+
+	private boolean containsAddendAt(Address address, RelocationTypeTag type, long expectedAddend) {
+		for (RelocationLocation location : relocationTable.getRelocationLocationsAt(address)) {
+			RelocationGroup group = relocationTable.getRelocationGroup(location.groupId());
+			if (group == null) {
+				continue;
+			}
+
+			RelocationGang gang = group.getGangs().get(location.gangIndex());
+			if (gang.getRelocationType() != type) {
+				continue;
+			}
+
+			long addend =
+				group.getAddend() + gang.getEntries().get(location.entryIndex()).localAddend();
+			if (addend == expectedAddend) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 }

@@ -1,0 +1,156 @@
+
+/mnt/c/Users/jblbe/Documents/Workspace/ghidra-delinker-extension/src/test/resources/programs/ascii-table/reference/elf/linux-gnu/arc/openbsd_ctype.o:     file format elf32-littlearc
+/mnt/c/Users/jblbe/Documents/Workspace/ghidra-delinker-extension/src/test/resources/programs/ascii-table/reference/elf/linux-gnu/arc/openbsd_ctype.o
+architecture: ARCv2, flags 0x00000011:
+HAS_RELOC, HAS_SYMS
+start address 0x00000000
+private flags = 0x406: -mcpu=ARCv2HS (ABI:v4)
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .text         0000025c  00000000  00000000  00000034  2**2
+                  CONTENTS, ALLOC, LOAD, RELOC, READONLY, CODE
+  1 .data         00000000  00000000  00000000  00000290  2**0
+                  CONTENTS, ALLOC, LOAD, DATA
+  2 .bss          00000000  00000000  00000000  00000290  2**0
+                  ALLOC
+  3 .ctf          0000032d  00000000  00000000  00000290  2**0
+                  CONTENTS, READONLY
+  4 .rodata       00000104  00000000  00000000  000005c0  2**2
+                  CONTENTS, ALLOC, LOAD, READONLY, DATA
+  5 .debug_info   00000227  00000000  00000000  000006c4  2**0
+                  CONTENTS, RELOC, READONLY, DEBUGGING, OCTETS
+  6 .debug_abbrev 000000a1  00000000  00000000  000008eb  2**0
+                  CONTENTS, READONLY, DEBUGGING, OCTETS
+  7 .debug_aranges 00000020  00000000  00000000  0000098c  2**0
+                  CONTENTS, RELOC, READONLY, DEBUGGING, OCTETS
+  8 .debug_line   000001f2  00000000  00000000  000009ac  2**0
+                  CONTENTS, RELOC, READONLY, DEBUGGING, OCTETS
+  9 .debug_str    0000017c  00000000  00000000  00000b9e  2**0
+                  CONTENTS, READONLY, DEBUGGING, OCTETS
+ 10 .comment      00000020  00000000  00000000  00000d1a  2**0
+                  CONTENTS, READONLY
+ 11 .note.GNU-stack 00000000  00000000  00000000  00000d3a  2**0
+                  CONTENTS, READONLY
+ 12 .debug_frame  00000170  00000000  00000000  00000d3c  2**2
+                  CONTENTS, RELOC, READONLY, DEBUGGING, OCTETS
+ 13 .ARC.attributes 00000025  00000000  00000000  00000eac  2**0
+                  CONTENTS, READONLY
+SYMBOL TABLE:
+00000000 l    df *ABS*	00000000 openbsd_ctype.c
+00000000 l    d  .text	00000000 .text
+00000000 l    d  .data	00000000 .data
+00000000 l    d  .bss	00000000 .bss
+00000000 l    d  .ctf	00000000 .ctf
+00000000 l    d  .rodata	00000000 .rodata
+00000000 l    d  .debug_info	00000000 .debug_info
+00000000 l    d  .debug_abbrev	00000000 .debug_abbrev
+00000000 l    d  .debug_aranges	00000000 .debug_aranges
+00000000 l    d  .debug_line	00000000 .debug_line
+00000000 l    d  .debug_str	00000000 .debug_str
+00000000 l    d  .note.GNU-stack	00000000 .note.GNU-stack
+00000000 l    d  .debug_frame	00000000 .debug_frame
+00000000 l    d  .comment	00000000 .comment
+00000000 l    d  .ARC.attributes	00000000 .ARC.attributes
+00000000 g     O .rodata	00000101 _openbsd_ctype_
+00000000 g     F .text	00000034 openbsd_isalnum
+00000034 g     F .text	00000034 openbsd_isalpha
+00000068 g     F .text	00000038 openbsd_iscntrl
+000000a0 g     F .text	00000038 openbsd_isdigit
+000000d8 g     F .text	00000038 openbsd_isgraph
+00000110 g     F .text	00000038 openbsd_islower
+00000148 g     F .text	00000038 openbsd_isprint
+00000180 g     F .text	00000038 openbsd_ispunct
+000001b8 g     F .text	00000038 openbsd_isspace
+000001f0 g     F .text	00000034 openbsd_isupper
+00000224 g     F .text	00000038 openbsd_isxdigit
+
+
+RELOCATION RECORDS FOR [.text]:
+OFFSET   TYPE              VALUE
+0000001e R_ARC_32_ME       _openbsd_ctype_
+00000052 R_ARC_32_ME       _openbsd_ctype_
+00000086 R_ARC_32_ME       _openbsd_ctype_
+000000be R_ARC_32_ME       _openbsd_ctype_
+000000f6 R_ARC_32_ME       _openbsd_ctype_
+0000012e R_ARC_32_ME       _openbsd_ctype_
+00000166 R_ARC_32_ME       _openbsd_ctype_
+0000019e R_ARC_32_ME       _openbsd_ctype_
+000001d6 R_ARC_32_ME       _openbsd_ctype_
+0000020e R_ARC_32_ME       _openbsd_ctype_
+00000242 R_ARC_32_ME       _openbsd_ctype_
+
+
+RELOCATION RECORDS FOR [.debug_info]:
+OFFSET   TYPE              VALUE
+00000006 R_ARC_32          .debug_abbrev
+0000000c R_ARC_32          .debug_str+0x000000ae
+00000011 R_ARC_32          .debug_str+0x00000158
+00000015 R_ARC_32          .debug_str+0x0000001d
+00000019 R_ARC_32          .text
+00000021 R_ARC_32          .debug_line
+0000003e R_ARC_32          .debug_str
+00000045 R_ARC_32          .debug_str+0x00000153
+0000004f R_ARC_32          .debug_str+0x0000016c
+0000005c R_ARC_32          _openbsd_ctype_
+00000061 R_ARC_32          .debug_str+0x00000122
+0000006c R_ARC_32          .text+0x00000224
+00000091 R_ARC_32          .debug_str+0x00000112
+0000009c R_ARC_32          .text+0x000001f0
+000000ba R_ARC_32          .debug_str+0x000000f2
+000000c5 R_ARC_32          .text+0x000001b8
+000000e3 R_ARC_32          .debug_str+0x00000102
+000000ee R_ARC_32          .text+0x00000180
+0000010c R_ARC_32          .debug_str+0x00000133
+00000117 R_ARC_32          .text+0x00000148
+00000135 R_ARC_32          .debug_str+0x00000143
+00000140 R_ARC_32          .text+0x00000110
+0000015e R_ARC_32          .debug_str+0x0000008e
+00000169 R_ARC_32          .text+0x000000d8
+00000187 R_ARC_32          .debug_str+0x000000cd
+00000192 R_ARC_32          .text+0x000000a0
+000001b0 R_ARC_32          .debug_str+0x0000009e
+000001bb R_ARC_32          .text+0x00000068
+000001d9 R_ARC_32          .debug_str+0x000000e2
+000001e4 R_ARC_32          .text+0x00000034
+00000202 R_ARC_32          .debug_str+0x0000000d
+0000020d R_ARC_32          .text
+
+
+RELOCATION RECORDS FOR [.debug_aranges]:
+OFFSET   TYPE              VALUE
+00000006 R_ARC_32          .debug_info
+00000010 R_ARC_32          .text
+
+
+RELOCATION RECORDS FOR [.debug_line]:
+OFFSET   TYPE              VALUE
+00000039 R_ARC_32          .text
+
+
+RELOCATION RECORDS FOR [.debug_frame]:
+OFFSET   TYPE              VALUE
+00000014 R_ARC_32          .debug_frame
+00000018 R_ARC_32          .text
+00000034 R_ARC_32          .debug_frame
+00000038 R_ARC_32          .text+0x00000034
+00000054 R_ARC_32          .debug_frame
+00000058 R_ARC_32          .text+0x00000068
+00000074 R_ARC_32          .debug_frame
+00000078 R_ARC_32          .text+0x000000a0
+00000094 R_ARC_32          .debug_frame
+00000098 R_ARC_32          .text+0x000000d8
+000000b4 R_ARC_32          .debug_frame
+000000b8 R_ARC_32          .text+0x00000110
+000000d4 R_ARC_32          .debug_frame
+000000d8 R_ARC_32          .text+0x00000148
+000000f4 R_ARC_32          .debug_frame
+000000f8 R_ARC_32          .text+0x00000180
+00000114 R_ARC_32          .debug_frame
+00000118 R_ARC_32          .text+0x000001b8
+00000134 R_ARC_32          .debug_frame
+00000138 R_ARC_32          .text+0x000001f0
+00000154 R_ARC_32          .debug_frame
+00000158 R_ARC_32          .text+0x00000224
+
+

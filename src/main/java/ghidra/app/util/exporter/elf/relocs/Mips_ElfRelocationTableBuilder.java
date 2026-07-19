@@ -24,13 +24,11 @@ import java.util.Map;
 
 import ghidra.app.util.importer.MessageLog;
 import ghidra.program.model.address.AddressSetView;
-import ghidra.program.model.relocobj.Relocation;
-import ghidra.program.model.relocobj.RelocationAbsolute;
-import ghidra.program.model.relocobj.RelocationHighPair;
-import ghidra.program.model.relocobj.RelocationLowPair;
-import ghidra.program.model.relocobj.RelocationMIPS26;
-import ghidra.program.model.relocobj.RelocationRelativePC;
-import ghidra.program.model.relocobj.RelocationRelativeSymbol;
+import ghidra.program.model.relocobj.RelocationEntry;
+import ghidra.program.model.relocobj.RelocationExpressionKind;
+import ghidra.program.model.relocobj.RelocationGang;
+import ghidra.program.model.relocobj.RelocationGroup;
+import ghidra.program.model.relocobj.RelocationTypeTag;
 import ghidra.util.DataConverter;
 import net.boricj.bft.elf.ElfFile;
 import net.boricj.bft.elf.ElfHeader;
@@ -46,46 +44,23 @@ import net.boricj.bft.elf.sections.ElfSymbolTable;
 import net.boricj.bft.elf.sections.ElfSymbolTable.ElfSymbol;
 
 public class Mips_ElfRelocationTableBuilder implements ElfRelocationTableBuilder {
+	public boolean supportsGroupedRelocations() {
+		return true;
+	}
+
 	@Override
-	public ElfSection build(ElfFile elf, ElfSymbolTable symtab, ElfSection section, byte[] bytes,
-			AddressSetView addressSetView, List<Relocation> relocations,
-			Map<Relocation, ElfSymbol> relocationsToSymbols, MessageLog log) {
+	public ElfSection buildGroups(ElfFile elf, ElfSymbolTable symtab, ElfSection section,
+			byte[] bytes, AddressSetView addressSetView, List<RelocationGroup> groups,
+			Map<RelocationGroup, ElfSymbol> groupsToSymbols, MessageLog log) {
 		String relName = generateSectionName(section, ElfSectionNames._REL);
 		ElfRelTable relTable = new ElfRelTable(elf, relName, symtab, section);
 
-		for (Relocation relocation : relocations) {
-			ElfSymbol symbol = relocationsToSymbols.get(relocation);
-
-			if (relocation instanceof RelocationAbsolute) {
-				process(relTable, bytes, addressSetView, (RelocationAbsolute) relocation, symbol,
-					log);
-			}
-			else if (relocation instanceof RelocationHighPair) {
-				RelocationHighPair highPair = (RelocationHighPair) relocation;
-				process(relTable, bytes, addressSetView, highPair, symbol, log);
-
-				for (RelocationLowPair lowPair : highPair.getLowPairs()) {
-					process(relTable, bytes, addressSetView, lowPair, symbol, log);
+		for (RelocationGroup group : groups) {
+			ElfSymbol symbol = groupsToSymbols.get(group);
+			for (RelocationGang gang : group.getGangs()) {
+				for (RelocationEntry entry : gang.getEntries()) {
+					process(relTable, bytes, addressSetView, group, gang, entry, symbol, log);
 				}
-			}
-			else if (relocation instanceof RelocationLowPair) {
-				// Low pairs are processed by their high pair.
-				continue;
-			}
-			else if (relocation instanceof RelocationRelativePC) {
-				process(relTable, bytes, addressSetView, (RelocationRelativePC) relocation, symbol,
-					log);
-			}
-			else if (relocation instanceof RelocationRelativeSymbol) {
-				process(relTable, bytes, addressSetView, (RelocationRelativeSymbol) relocation,
-					symbol, log);
-			}
-			else if (relocation instanceof RelocationMIPS26) {
-				process(relTable, bytes, addressSetView, (RelocationMIPS26) relocation, symbol,
-					log);
-			}
-			else {
-				logUnknownRelocation(section, relocation, log);
 			}
 		}
 
@@ -93,139 +68,68 @@ public class Mips_ElfRelocationTableBuilder implements ElfRelocationTableBuilder
 	}
 
 	private void process(ElfRelTable relTable, byte[] bytes, AddressSetView addressSetView,
-			RelocationAbsolute relocation, ElfSymbol symbol, MessageLog log) {
+			RelocationGroup group, RelocationGang gang, RelocationEntry entry, ElfSymbol symbol,
+			MessageLog log) {
 		DataConverter dc = DataConverter.getInstance(
 			relTable.getElfFile().getHeader().getIdentData() == ElfData.ELFDATA2MSB);
-		int width = relocation.getWidth();
-		long bitmask = relocation.getBitmask();
-		long value = relocation.getAddend();
+		int width = gang.getWidth();
+		long bitmask = gang.getBitmask();
+		long value = group.getAddend() + entry.localAddend();
 
-		ElfRelocationType type;
-		if (width == 4 && bitmask == 0xffffffffL) {
-			type = ElfRelocationType_Mips.R_MIPS_32;
+		RelocationTypeTag relocationType = gang.getRelocationType();
+		RelocationExpressionKind kind = group.getExpression().getKind();
+		ElfRelocationType type = null;
+
+		if (relocationType == RelocationTypeTag.HIGH_PAIR) {
+			if (width == 4 && bitmask == 0xffff) {
+				type = ElfRelocationType_Mips.R_MIPS_HI16;
+			}
 		}
-		else if (width == 8 && bitmask == 0xffffffffffffffffL) {
-			type = ElfRelocationType_Mips.R_MIPS_64;
+		else if (relocationType == RelocationTypeTag.LOW_PAIR) {
+			if (width == 4 && bitmask == 0xffff) {
+				type = ElfRelocationType_Mips.R_MIPS_LO16;
+			}
 		}
-		else {
-			logUnknownRelocation(relTable, relocation, log);
+		else if (relocationType == RelocationTypeTag.MIPS_26) {
+			if (width == 4 && bitmask == 0x3ffffff) {
+				type = ElfRelocationType_Mips.R_MIPS_26;
+				value >>= 2;
+			}
+		}
+		else if (kind == RelocationExpressionKind.RELATIVE_TO_SYMBOL &&
+				group.getExpression().getSymbolName() != null &&
+				GP_SYMBOLS_PATTERN.matcher(group.getExpression().getSymbolName()).matches()) {
+			if (width == 4 && bitmask == 0xffff) {
+				type = ElfRelocationType_Mips.R_MIPS_GPREL16;
+			}
+		}
+		else if (kind == RelocationExpressionKind.PC_RELATIVE) {
+			if (width == 4 && bitmask == 0xffff) {
+				type = ElfRelocationType_Mips.R_MIPS_PC16;
+				value >>= 2;
+			}
+		}
+		else if (kind == RelocationExpressionKind.ABSOLUTE) {
+			if (width == 4 && bitmask == 0xffffffffL) {
+				type = ElfRelocationType_Mips.R_MIPS_32;
+			}
+			else if (width == 8 && bitmask == 0xffffffffffffffffL) {
+				type = ElfRelocationType_Mips.R_MIPS_64;
+			}
+		}
+
+		if (type == null) {
+			logUnknownRelocation(relTable, group, gang, entry, log);
 			return;
 		}
 
-		patchBytes(bytes, addressSetView, dc, relocation, value);
-		emit(relTable, addressSetView, relocation, type, symbol);
+		patchBytes(bytes, addressSetView, entry.address(), dc, width, bitmask, value);
+		emit(relTable, addressSetView, entry.address(), type, symbol);
 	}
 
-	private void process(ElfRelTable relTable, byte[] bytes,
-			AddressSetView addressSetView, RelocationHighPair relocation,
-			ElfSymbol symbol, MessageLog log) {
-		DataConverter dc = DataConverter.getInstance(
-			relTable.getElfFile().getHeader().getIdentData() == ElfData.ELFDATA2MSB);
-		int width = relocation.getWidth();
-		long bitmask = relocation.getBitmask();
-		long value = relocation.getAddend();
-
-		ElfRelocationType type;
-		if (width == 4 && bitmask == 0xffff) {
-			type = ElfRelocationType_Mips.R_MIPS_HI16;
-		}
-		else {
-			logUnknownRelocation(relTable, relocation, log);
-			return;
-		}
-
-		patchBytes(bytes, addressSetView, dc, relocation, value);
-		emit(relTable, addressSetView, relocation, type, symbol);
-	}
-
-	private void process(ElfRelTable relTable, byte[] bytes, AddressSetView addressSetView,
-			RelocationLowPair relocation, ElfSymbol symbol, MessageLog log) {
-		DataConverter dc = DataConverter.getInstance(
-			relTable.getElfFile().getHeader().getIdentData() == ElfData.ELFDATA2MSB);
-		int width = relocation.getWidth();
-		long bitmask = relocation.getBitmask();
-		long value = relocation.getAddend();
-
-		ElfRelocationType type;
-		if (width == 4 && bitmask == 0xffff) {
-			type = ElfRelocationType_Mips.R_MIPS_LO16;
-		}
-		else {
-			logUnknownRelocation(relTable, relocation, log);
-			return;
-		}
-
-		patchBytes(bytes, addressSetView, dc, relocation, value);
-		emit(relTable, addressSetView, relocation, type, symbol);
-	}
-
-	private void process(ElfRelTable relTable, byte[] bytes, AddressSetView addressSetView,
-			RelocationRelativeSymbol relocation, ElfSymbol symbol, MessageLog log) {
-		DataConverter dc = DataConverter.getInstance(
-			relTable.getElfFile().getHeader().getIdentData() == ElfData.ELFDATA2MSB);
-		int width = relocation.getWidth();
-		long bitmask = relocation.getBitmask();
-		long value = relocation.getAddend();
-		String symbolName = relocation.getRelativeSymbolName();
-
-		ElfRelocationType type;
-		if (width == 4 && bitmask == 0xffff && GP_SYMBOLS_PATTERN.matcher(symbolName).matches()) {
-			type = ElfRelocationType_Mips.R_MIPS_GPREL16;
-		}
-		else {
-			logUnknownRelocation(relTable, relocation, log);
-			return;
-		}
-
-		patchBytes(bytes, addressSetView, dc, relocation, value);
-		emit(relTable, addressSetView, relocation, type, symbol);
-	}
-
-	private void process(ElfRelTable relTable, byte[] bytes, AddressSetView addressSetView,
-			RelocationRelativePC relocation, ElfSymbol symbol, MessageLog log) {
-		DataConverter dc = DataConverter.getInstance(
-			relTable.getElfFile().getHeader().getIdentData() == ElfData.ELFDATA2MSB);
-		int width = relocation.getWidth();
-		long bitmask = relocation.getBitmask();
-		long value = relocation.getAddend() >> 2;
-
-		ElfRelocationType type;
-		if (width == 4 && bitmask == 0xffff) {
-			type = ElfRelocationType_Mips.R_MIPS_PC16;
-		}
-		else {
-			logUnknownRelocation(relTable, relocation, log);
-			return;
-		}
-
-		patchBytes(bytes, addressSetView, dc, relocation, value);
-		emit(relTable, addressSetView, relocation, type, symbol);
-	}
-
-	private void process(ElfRelTable relTable, byte[] bytes, AddressSetView addressSetView,
-			RelocationMIPS26 relocation, ElfSymbol symbol, MessageLog log) {
-		DataConverter dc = DataConverter.getInstance(
-			relTable.getElfFile().getHeader().getIdentData() == ElfData.ELFDATA2MSB);
-		int width = relocation.getWidth();
-		long bitmask = relocation.getBitmask();
-		long value = relocation.getAddend() >> 2;
-
-		ElfRelocationType type;
-		if (width == 4 && bitmask == 0x3ffffff) {
-			type = ElfRelocationType_Mips.R_MIPS_26;
-		}
-		else {
-			logUnknownRelocation(relTable, relocation, log);
-			return;
-		}
-
-		patchBytes(bytes, addressSetView, dc, relocation, value);
-		emit(relTable, addressSetView, relocation, type, symbol);
-	}
-
-	private void emit(ElfRelTable relTable, AddressSetView addressSetView, Relocation relocation,
-			ElfRelocationType type, ElfSymbol symbol) {
-		long offset = getOffsetWithinAddressSet(addressSetView, relocation.getAddress());
+	private void emit(ElfRelTable relTable, AddressSetView addressSetView,
+			ghidra.program.model.address.Address address, ElfRelocationType type, ElfSymbol symbol) {
+		long offset = getOffsetWithinAddressSet(addressSetView, address);
 		relTable.add(offset, symbol, type);
 	}
 

@@ -57,7 +57,7 @@ public abstract class RelativeCurrentInstructionRelocationEmitter
 		long addend = address.getUnsignedOffset() - target.getAddress().getUnsignedOffset() +
 			match.getValue();
 
-		relocationTable.addRelativePC(address, match.getSize(), match.getBitmask(),
-			target.getDestination(), addend);
+		relocationTable.addRelativePCGroup(address, match.getSize(), match.getBitmask(),
+			target.getDestination(), addend, false, 0);
 	}
 }

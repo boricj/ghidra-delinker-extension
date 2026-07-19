@@ -22,9 +22,10 @@ import java.util.Map;
 
 import ghidra.app.util.importer.MessageLog;
 import ghidra.program.model.address.AddressSetView;
-import ghidra.program.model.relocobj.Relocation;
-import ghidra.program.model.relocobj.RelocationAbsolute;
-import ghidra.program.model.relocobj.RelocationRelativePC;
+import ghidra.program.model.relocobj.RelocationEntry;
+import ghidra.program.model.relocobj.RelocationExpressionKind;
+import ghidra.program.model.relocobj.RelocationGang;
+import ghidra.program.model.relocobj.RelocationGroup;
 import ghidra.util.DataConverter;
 import ghidra.util.LittleEndianDataConverter;
 import net.boricj.bft.coff.CoffRelocationTable;
@@ -36,73 +37,61 @@ import net.boricj.bft.coff.constants.CoffRelocationType;
 import net.boricj.bft.coff.machines.i386.CoffRelocationType_i386;
 
 public class X86_32_CoffRelocationTableBuilder implements CoffRelocationTableBuilder {
+	public boolean supportsGroupedRelocations() {
+		return true;
+	}
+
 	@Override
-	public void build(CoffSymbolTable symtab, CoffSection section, byte[] bytes,
-			AddressSetView addressSet, List<Relocation> relocations,
-			Map<Relocation, CoffSymbol> relocationsToSymbols, MessageLog log) {
+	public void buildGroups(CoffSymbolTable symtab, CoffSection section, byte[] bytes,
+			AddressSetView addressSet, List<RelocationGroup> groups,
+			Map<RelocationGroup, CoffSymbol> groupsToSymbols, MessageLog log) {
 		CoffRelocationTable relTable = section.getRelocations();
 
-		for (Relocation relocation : relocations) {
-			CoffSymbol symbol = relocationsToSymbols.get(relocation);
-
-			if (relocation instanceof RelocationAbsolute) {
-				process(relTable, bytes, addressSet, (RelocationAbsolute) relocation, symbol, log);
-			}
-			else if (relocation instanceof RelocationRelativePC) {
-				process(relTable, bytes, addressSet, (RelocationRelativePC) relocation, symbol,
-					log);
-			}
-			else {
-				logUnknownRelocation(relTable.getSection(), relocation, log);
+		for (RelocationGroup group : groups) {
+			CoffSymbol symbol = groupsToSymbols.get(group);
+			for (RelocationGang gang : group.getGangs()) {
+				for (RelocationEntry entry : gang.getEntries()) {
+					process(relTable, bytes, addressSet, group, gang, entry, symbol, log);
+				}
 			}
 		}
 	}
 
-	private void process(CoffRelocationTable relTable, byte[] bytes,
-			AddressSetView addressSet, RelocationAbsolute relocation,
-			CoffSymbol symbol, MessageLog log) {
+	private void process(CoffRelocationTable relTable, byte[] bytes, AddressSetView addressSet,
+			RelocationGroup group, RelocationGang gang, RelocationEntry entry, CoffSymbol symbol,
+			MessageLog log) {
 		DataConverter dc = LittleEndianDataConverter.INSTANCE;
-		int width = relocation.getWidth();
-		long bitmask = relocation.getBitmask();
-		long value = relocation.getAddend();
+		int width = gang.getWidth();
+		long bitmask = gang.getBitmask();
+		long value = group.getAddend() + entry.localAddend();
 
-		CoffRelocationType type;
-		if (width == 4 && bitmask == 0xffffffffL) {
-			type = CoffRelocationType_i386.IMAGE_REL_I386_DIR32;
+		RelocationExpressionKind kind = group.getExpression().getKind();
+		CoffRelocationType type = null;
+		if (kind == RelocationExpressionKind.ABSOLUTE) {
+			if (width == 4 && bitmask == 0xffffffffL) {
+				type = CoffRelocationType_i386.IMAGE_REL_I386_DIR32;
+			}
 		}
-		else {
-			logUnknownRelocation(relTable.getSection(), relocation, log);
+		else if (kind == RelocationExpressionKind.PC_RELATIVE) {
+			if (width == 4 && bitmask == 0xffffffffL) {
+				type = CoffRelocationType_i386.IMAGE_REL_I386_REL32;
+				value += width;
+			}
+		}
+
+		if (type == null) {
+			logUnknownRelocation(relTable.getSection(), group, gang, entry, log);
 			return;
 		}
 
-		patchBytes(bytes, addressSet, dc, relocation, value);
-		emit(relTable, addressSet, relocation, type, symbol);
-	}
-
-	private void process(CoffRelocationTable relTable, byte[] bytes,
-			AddressSetView addressSet, RelocationRelativePC relocation,
-			CoffSymbol symbol, MessageLog log) {
-		DataConverter dc = LittleEndianDataConverter.INSTANCE;
-		int width = relocation.getWidth();
-		long bitmask = relocation.getBitmask();
-		long value = relocation.getAddend() + width;
-
-		CoffRelocationType type;
-		if (width == 4 && bitmask == 0xffffffffL) {
-			type = CoffRelocationType_i386.IMAGE_REL_I386_REL32;
-		}
-		else {
-			logUnknownRelocation(relTable.getSection(), relocation, log);
-			return;
-		}
-
-		patchBytes(bytes, addressSet, dc, relocation, value);
-		emit(relTable, addressSet, relocation, type, symbol);
+		patchBytes(bytes, addressSet, entry.address(), dc, width, bitmask, value);
+		emit(relTable, addressSet, entry.address(), type, symbol);
 	}
 
 	private void emit(CoffRelocationTable relTable, AddressSetView addressSetView,
-			Relocation relocation, CoffRelocationType type, CoffSymbol symbol) {
-		int offset = (int) getOffsetWithinAddressSet(addressSetView, relocation.getAddress());
+			ghidra.program.model.address.Address address, CoffRelocationType type,
+			CoffSymbol symbol) {
+		int offset = (int) getOffsetWithinAddressSet(addressSetView, address);
 
 		relTable.add(offset, symbol, type);
 	}

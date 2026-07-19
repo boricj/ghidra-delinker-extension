@@ -58,7 +58,9 @@ import ghidra.program.model.listing.Program;
 import ghidra.program.model.mem.Memory;
 import ghidra.program.model.mem.MemoryAccessException;
 import ghidra.program.model.mem.MemoryBlock;
-import ghidra.program.model.relocobj.Relocation;
+import ghidra.program.model.relocobj.RelocationEntry;
+import ghidra.program.model.relocobj.RelocationGang;
+import ghidra.program.model.relocobj.RelocationGroup;
 import ghidra.program.model.relocobj.RelocationTable;
 import ghidra.program.model.symbol.Symbol;
 import ghidra.util.classfinder.ClassSearcher;
@@ -94,7 +96,7 @@ public class CoffRelocatableObjectExporter extends Exporter {
 	private boolean trimSuperfluousRelativePC;
 
 	private RelocationTable relocationTable;
-	private Predicate<Relocation> predicateRelocation;
+	private Predicate<RelocationGroup> predicateRelocation;
 	private Predicate<Symbol> predicateVisibility;
 	private Map<Address, CoffSymbol> symbolsByAddress;
 	private List<Section> sections;
@@ -126,7 +128,8 @@ public class CoffRelocatableObjectExporter extends Exporter {
 	private static final Map<CoffMachine, String> COFF_MACHINES = new TreeMap<>(Map.ofEntries(
 		Map.entry(CoffMachine.IMAGE_FILE_MACHINE_UNKNOWN, "(none)"),
 		Map.entry(CoffMachine.IMAGE_FILE_MACHINE_I386, "i386"),
-		Map.entry(CoffMachine.IMAGE_FILE_MACHINE_AMD64, "amd64")));
+		Map.entry(CoffMachine.IMAGE_FILE_MACHINE_AMD64, "amd64"),
+		Map.entry(CoffMachine.IMAGE_FILE_MACHINE_POWERPCBE, "powerpcbe")));
 
 	private static final class ProcessorInfo {
 		String processor;
@@ -154,7 +157,8 @@ public class CoffRelocatableObjectExporter extends Exporter {
 
 	private static final Map<ProcessorInfo, CoffMachine> GHIDRA_TO_COFF_MACHINES = Map.ofEntries(
 		Map.entry(new ProcessorInfo("x86", 4), CoffMachine.IMAGE_FILE_MACHINE_I386),
-		Map.entry(new ProcessorInfo("x86", 8), CoffMachine.IMAGE_FILE_MACHINE_AMD64));
+		Map.entry(new ProcessorInfo("x86", 8), CoffMachine.IMAGE_FILE_MACHINE_AMD64),
+		Map.entry(new ProcessorInfo("PowerPC", 4), CoffMachine.IMAGE_FILE_MACHINE_POWERPCBE));
 
 	private static CoffMachine autodetectCoffMachine(Program program) {
 		String processor = program.getLanguage().getProcessor().toString();
@@ -225,6 +229,7 @@ public class CoffRelocatableObjectExporter extends Exporter {
 		private final AddressSetView sectionSet;
 		private byte[] bytes;
 		private CoffSection section;
+		private CoffSymbol sectionSymbol;
 
 		public Section(MemoryBlock memoryBlock, AddressSetView sectionSet) {
 			this.memoryBlock = memoryBlock;
@@ -237,7 +242,7 @@ public class CoffRelocatableObjectExporter extends Exporter {
 		}
 
 		public void addSymbols() {
-			symtab.addSection(section);
+			sectionSymbol = symtab.addSection(section);
 
 			ProgramUtil
 					.getSectionSymbols(program, sectionSet, symbolNamePreference)
@@ -264,10 +269,25 @@ public class CoffRelocatableObjectExporter extends Exporter {
 					});
 		}
 
+				private CoffSymbol addFallbackSymbol(Symbol symbol, Address address) {
+					String name = symbol.getName();
+					long offset = ProgramUtil.getOffsetWithinAddressSet(sectionSet, address);
+					var obj = symbol.getObject();
+					byte type = 0x00;
+					if (obj instanceof Function) {
+						type |= 0x20;
+					}
+					CoffStorageClass storageClass = CoffStorageClass.IMAGE_SYM_CLASS_EXTERNAL;
+					if (predicateVisibility.test(symbol)) {
+						storageClass = CoffStorageClass.IMAGE_SYM_CLASS_STATIC;
+					}
+					return symtab.addSymbol(name, (int) offset, section, type, storageClass);
+				}
+
 		public void buildRelocationTable(CoffMachine machine) {
-			List<Relocation> relocations = new ArrayList<>();
-			relocationTable.getRelocations(sectionSet, predicateRelocation)
-					.forEachRemaining(relocations::add);
+			List<RelocationGroup> groups = new ArrayList<>();
+			relocationTable.getRelocationGroups(sectionSet, predicateRelocation)
+					.forEachRemaining(groups::add);
 
 			List<CoffRelocationTableBuilder> builders =
 				ClassSearcher.getInstances(CoffRelocationTableBuilder.class)
@@ -286,11 +306,45 @@ public class CoffRelocatableObjectExporter extends Exporter {
 					builder.getClass().getName());
 			}
 
-			Map<Relocation, CoffSymbol> relocationsToSymbols = relocations.stream()
-					.collect(Collectors.toMap(r -> r, r -> symbolsByAddress.get(r.getTarget())));
+			Map<RelocationGroup, CoffSymbol> groupsToSymbols = new HashMap<>();
+			for (RelocationGroup group : groups) {
+				groupsToSymbols.put(group, resolveRelocationSymbol(group.getTarget()));
+			}
 
-			builder.build(symtab, section, bytes, sectionSet, relocations, relocationsToSymbols,
-				log);
+			builder.buildGroups(symtab, section, bytes, sectionSet, groups, groupsToSymbols, log);
+		}
+
+		private CoffSymbol resolveRelocationSymbol(Address target) {
+			CoffSymbol symbol = symbolsByAddress.get(target);
+			if (symbol != null) {
+				return symbol;
+			}
+
+			Symbol primarySymbol = program.getSymbolTable().getPrimarySymbol(target);
+			if (primarySymbol != null) {
+				for (Section section : sections) {
+					if (section.sectionSet.contains(target)) {
+						symbol = section.addFallbackSymbol(primarySymbol, target);
+						symbolsByAddress.put(target, symbol);
+						return symbol;
+					}
+				}
+
+				symbol = symtab.addUndefined(primarySymbol.getName());
+				symbolsByAddress.put(target, symbol);
+				return symbol;
+			}
+
+			for (Section section : sections) {
+				if (section.sectionSet.contains(target)) {
+					return section.sectionSymbol;
+				}
+			}
+
+			String name = target.toString();
+			symbol = symtab.addUndefined(name);
+			symbolsByAddress.put(target, symbol);
+			return symbol;
 		}
 
 		public void createSection() throws MemoryAccessException {
@@ -426,7 +480,7 @@ public class CoffRelocatableObjectExporter extends Exporter {
 		predicateRelocation = r -> true;
 
 		if (trimSuperfluousRelativePC) {
-			Predicate<Relocation> predicate = new TrimSuperfluousRelativePC(program, fileSet);
+			Predicate<RelocationGroup> predicate = new TrimSuperfluousRelativePC(program, fileSet);
 			predicateRelocation = predicateRelocation.and(predicate);
 		}
 	}

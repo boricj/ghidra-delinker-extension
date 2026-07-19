@@ -1,0 +1,187 @@
+
+/mnt/c/Users/jblbe/Documents/Workspace/ghidra-delinker-extension/src/test/resources/programs/ascii-table/reference/elf/linux-gnu/sh4/main.o:     file format elf32-sh-linux
+/mnt/c/Users/jblbe/Documents/Workspace/ghidra-delinker-extension/src/test/resources/programs/ascii-table/reference/elf/linux-gnu/sh4/main.o
+architecture: sh2a-nofpu-or-sh3-nommu, flags 0x00000011:
+HAS_RELOC, HAS_SYMS
+start address 0x00000000
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .text         000002b8  00000000  00000000  00000034  2**2
+                  CONTENTS, ALLOC, LOAD, RELOC, READONLY, CODE
+  1 .data         00000004  00000000  00000000  000002ec  2**2
+                  CONTENTS, ALLOC, LOAD, DATA
+  2 .bss          00000000  00000000  00000000  000002f0  2**0
+                  ALLOC
+  3 .ctf          00000563  00000000  00000000  000002f0  2**0
+                  CONTENTS, READONLY
+  4 .rodata       00000054  00000000  00000000  00000854  2**2
+                  CONTENTS, ALLOC, LOAD, RELOC, READONLY, DATA
+  5 .debug_info   00000392  00000000  00000000  000008a8  2**0
+                  CONTENTS, RELOC, READONLY, DEBUGGING, OCTETS
+  6 .debug_abbrev 00000196  00000000  00000000  00000c3a  2**0
+                  CONTENTS, READONLY, DEBUGGING, OCTETS
+  7 .debug_aranges 00000020  00000000  00000000  00000dd0  2**0
+                  CONTENTS, RELOC, READONLY, DEBUGGING, OCTETS
+  8 .debug_line   000001b1  00000000  00000000  00000df0  2**0
+                  CONTENTS, RELOC, READONLY, DEBUGGING, OCTETS
+  9 .debug_str    0000028c  00000000  00000000  00000fa1  2**0
+                  CONTENTS, READONLY, DEBUGGING, OCTETS
+ 10 .comment      00000020  00000000  00000000  0000122d  2**0
+                  CONTENTS, READONLY
+ 11 .note.GNU-stack 00000000  00000000  00000000  0000124d  2**0
+                  CONTENTS, READONLY
+ 12 .debug_frame  000000a0  00000000  00000000  00001250  2**2
+                  CONTENTS, RELOC, READONLY, DEBUGGING, OCTETS
+SYMBOL TABLE:
+00000000 l    df *ABS*	00000000 main.c
+00000000 l    d  .text	00000000 .text
+00000000 l    d  .data	00000000 .data
+00000000 l    d  .bss	00000000 .bss
+00000000 l    d  .ctf	00000000 .ctf
+00000000 l    d  .rodata	00000000 .rodata
+00000000 l    d  .debug_info	00000000 .debug_info
+00000000 l    d  .debug_abbrev	00000000 .debug_abbrev
+00000000 l    d  .debug_aranges	00000000 .debug_aranges
+00000000 l    d  .debug_line	00000000 .debug_line
+00000000 l    d  .debug_str	00000000 .debug_str
+00000000 l    d  .note.GNU-stack	00000000 .note.GNU-stack
+00000000 l    d  .debug_frame	00000000 .debug_frame
+00000000 l    d  .comment	00000000 .comment
+00000000 g     O .rodata	00000004 NUM_ASCII_PROPERTIES
+00000004 g     O .rodata	00000050 s_ascii_properties
+00000000         *UND*	00000000 openbsd_isgraph
+00000000         *UND*	00000000 openbsd_isprint
+00000000         *UND*	00000000 openbsd_iscntrl
+00000000         *UND*	00000000 openbsd_isspace
+00000000         *UND*	00000000 openbsd_ispunct
+00000000         *UND*	00000000 openbsd_isalnum
+00000000         *UND*	00000000 openbsd_isalpha
+00000000         *UND*	00000000 openbsd_isdigit
+00000000         *UND*	00000000 openbsd_isupper
+00000000         *UND*	00000000 openbsd_islower
+00000000 g     O .data	00000004 COLUMNS
+00000000 g     F .text	000000a4 print_number
+00000000         *UND*	00000000 putchar
+000000a4 g     F .text	00000108 print_ascii_entry
+000001ac g     F .text	0000010c main
+00000000         *UND*	00000000 __sdivsi3_i4i
+
+
+RELOCATION RECORDS FOR [.text]:
+OFFSET   TYPE              VALUE
+000000a0 R_SH_DIR32        putchar
+000001a0 R_SH_DIR32        print_number
+000001a4 R_SH_DIR32        putchar
+000001a8 R_SH_DIR32        openbsd_isgraph
+000002a4 R_SH_DIR32        COLUMNS
+000002a8 R_SH_DIR32        __sdivsi3_i4i
+000002ac R_SH_DIR32        s_ascii_properties
+000002b0 R_SH_DIR32        print_ascii_entry
+000002b4 R_SH_DIR32        putchar
+
+
+RELOCATION RECORDS FOR [.rodata]:
+OFFSET   TYPE              VALUE
+00000004 R_SH_DIR32        openbsd_isgraph
+0000000c R_SH_DIR32        openbsd_isprint
+00000014 R_SH_DIR32        openbsd_iscntrl
+0000001c R_SH_DIR32        openbsd_isspace
+00000024 R_SH_DIR32        openbsd_ispunct
+0000002c R_SH_DIR32        openbsd_isalnum
+00000034 R_SH_DIR32        openbsd_isalpha
+0000003c R_SH_DIR32        openbsd_isdigit
+00000044 R_SH_DIR32        openbsd_isupper
+0000004c R_SH_DIR32        openbsd_islower
+
+
+RELOCATION RECORDS FOR [.debug_info]:
+OFFSET   TYPE              VALUE
+00000006 R_SH_DIR32        .debug_abbrev
+0000000c R_SH_DIR32        .debug_str
+00000011 R_SH_DIR32        .debug_str
+00000015 R_SH_DIR32        .debug_str
+00000019 R_SH_DIR32        .text
+00000021 R_SH_DIR32        .debug_line
+00000028 R_SH_DIR32        .debug_str
+0000002f R_SH_DIR32        .debug_str
+00000036 R_SH_DIR32        .debug_str
+0000003d R_SH_DIR32        .debug_str
+00000044 R_SH_DIR32        .debug_str
+0000004b R_SH_DIR32        .debug_str
+0000005e R_SH_DIR32        .debug_str
+00000065 R_SH_DIR32        .debug_str
+0000006c R_SH_DIR32        .debug_str
+00000073 R_SH_DIR32        .debug_str
+00000081 R_SH_DIR32        .debug_str
+0000008e R_SH_DIR32        .debug_str
+000000b1 R_SH_DIR32        .debug_str
+000000c2 R_SH_DIR32        .debug_str
+000000cf R_SH_DIR32        NUM_ASCII_PROPERTIES
+000000e9 R_SH_DIR32        .debug_str
+000000f6 R_SH_DIR32        s_ascii_properties
+000000fb R_SH_DIR32        .debug_str
+00000108 R_SH_DIR32        COLUMNS
+0000010d R_SH_DIR32        .debug_str
+00000124 R_SH_DIR32        .debug_str
+0000013a R_SH_DIR32        .debug_str
+00000150 R_SH_DIR32        .debug_str
+00000166 R_SH_DIR32        .debug_str
+0000017c R_SH_DIR32        .debug_str
+00000192 R_SH_DIR32        .debug_str
+000001a8 R_SH_DIR32        .debug_str
+000001be R_SH_DIR32        .debug_str
+000001d4 R_SH_DIR32        .debug_str
+000001ea R_SH_DIR32        .debug_str
+00000200 R_SH_DIR32        .debug_str
+0000020b R_SH_DIR32        .text
+00000227 R_SH_DIR32        .text
+0000024a R_SH_DIR32        .debug_str
+00000259 R_SH_DIR32        .text
+00000262 R_SH_DIR32        .text
+0000026d R_SH_DIR32        .debug_str
+00000274 R_SH_DIR32        .text
+00000283 R_SH_DIR32        .debug_str
+00000292 R_SH_DIR32        .debug_str
+000002a1 R_SH_DIR32        .debug_str
+000002bd R_SH_DIR32        .text
+000002ca R_SH_DIR32        .debug_str
+000002d9 R_SH_DIR32        .text
+000002e2 R_SH_DIR32        .text
+000002ec R_SH_DIR32        .text
+000002f5 R_SH_DIR32        .text
+000002fe R_SH_DIR32        .text
+00000307 R_SH_DIR32        .text
+00000310 R_SH_DIR32        .text
+00000319 R_SH_DIR32        .text
+00000329 R_SH_DIR32        .debug_str
+00000330 R_SH_DIR32        .text
+0000035b R_SH_DIR32        .text
+00000364 R_SH_DIR32        .debug_str
+00000373 R_SH_DIR32        .text
+0000037c R_SH_DIR32        .text
+00000387 R_SH_DIR32        .debug_str
+0000038b R_SH_DIR32        .debug_str
+
+
+RELOCATION RECORDS FOR [.debug_aranges]:
+OFFSET   TYPE              VALUE
+00000006 R_SH_DIR32        .debug_info
+00000010 R_SH_DIR32        .text
+
+
+RELOCATION RECORDS FOR [.debug_line]:
+OFFSET   TYPE              VALUE
+000000e8 R_SH_DIR32        .text
+
+
+RELOCATION RECORDS FOR [.debug_frame]:
+OFFSET   TYPE              VALUE
+00000014 R_SH_DIR32        .debug_frame
+00000018 R_SH_DIR32        .text
+00000044 R_SH_DIR32        .debug_frame
+00000048 R_SH_DIR32        .text
+00000074 R_SH_DIR32        .debug_frame
+00000078 R_SH_DIR32        .text
+
+

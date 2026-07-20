@@ -14,13 +14,13 @@
 package ghidra.program.model.relocobj;
 
 /**
- * Group-level relocation encoding tag used by grouped relocation exporters.
+ * Base or method family for symbol-relative relocations.
  */
-public enum RelocationTypeTag {
-	ABSOLUTE,
-	PC_RELATIVE,
-	HIGH_PAIR,
-	LOW_PAIR,
-	MIPS_26,
-	RELATIVE_SYMBOL
+public enum RelocationExpressionBase {
+	DIRECT,
+	GP,
+	GOT,
+	PLT,
+	TLS,
+	PAGE
 }

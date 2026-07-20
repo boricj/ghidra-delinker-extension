@@ -22,6 +22,7 @@ import ghidra.program.model.address.Address;
 import ghidra.program.model.listing.Function;
 import ghidra.program.model.listing.Instruction;
 import ghidra.program.model.mem.MemoryAccessException;
+import ghidra.program.model.relocobj.RelocationExpressionBase;
 import ghidra.program.model.relocobj.RelocationTable;
 import ghidra.program.model.symbol.Reference;
 import ghidra.program.model.symbol.Symbol;
@@ -30,13 +31,16 @@ import ghidra.util.task.TaskMonitor;
 public abstract class SymbolRelativeInstructionRelocationEmitter
 		extends InstructionRelocationEmitter {
 	protected final Symbol fromSymbol;
+	protected final RelocationExpressionBase base;
 
 	public SymbolRelativeInstructionRelocationEmitter(RelocationTableSynthesizerAnalyzer analyzer,
-			Function function, Symbol fromSymbol, EvaluationReporter evaluationReporter,
+			Function function, Symbol fromSymbol, RelocationExpressionBase base,
+			EvaluationReporter evaluationReporter,
 			TaskMonitor monitor, MessageLog log) {
 		super(analyzer, function, evaluationReporter, monitor, log);
 
 		this.fromSymbol = fromSymbol;
+		this.base = base;
 	}
 
 	@Override
@@ -61,7 +65,13 @@ public abstract class SymbolRelativeInstructionRelocationEmitter
 		long addend =
 			reference.getToAddress().getUnsignedOffset() - target.getAddress().getUnsignedOffset();
 
-		relocationTable.addRelativeSymbolGroup(address, match.getSize(), match.getBitmask(),
-			target.getDestination(), addend, fromSymbol.getName());
+		if (base == RelocationExpressionBase.DIRECT) {
+			relocationTable.addRelativeSymbolGroup(address, match.getSize(), match.getBitmask(),
+				target.getDestination(), addend, fromSymbol.getName());
+		}
+		else {
+			relocationTable.addQualifiedSymbolGroup(address, match.getSize(), match.getBitmask(),
+				target.getDestination(), addend, base, fromSymbol.getName());
+		}
 	}
 }

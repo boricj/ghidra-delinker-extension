@@ -32,7 +32,7 @@ import ghidra.program.model.listing.Program;
 import ghidra.program.model.relocobj.RelocationExpressionKind;
 import ghidra.program.model.relocobj.RelocationGroupAssertions.ExpectedGroup;
 import ghidra.program.model.relocobj.RelocationTable;
-import ghidra.program.model.relocobj.RelocationTypeTag;
+import ghidra.program.model.relocobj.RelocationGangRoleDescriptor;
 import ghidra.util.task.TaskMonitor;
 
 public class Mipsel_hi16_lo16_intertwined_code_flow_Test extends DelinkerIntegrationTest {
@@ -46,15 +46,15 @@ public class Mipsel_hi16_lo16_intertwined_code_flow_Test extends DelinkerIntegra
 
 	private static final List<ExpectedGroup> EXPECTED_GROUPS = List.of(
 		group(RelocationExpressionKind.PC_RELATIVE, TARGET_SYMBOLS.get("LAB_00010014"), -4,
-			gang(RelocationTypeTag.PC_RELATIVE, 4, 0xffff, entry(0x00010000, 0))),
+			gang(RelocationGangRoleDescriptor.PC_RELATIVE, 4, 0xffff, entry(0x00010000, 0))),
 		group(RelocationExpressionKind.ABSOLUTE, TARGET_SYMBOLS.get("HELLO_WORLD"), 0,
-			gang(RelocationTypeTag.HIGH_PAIR, 4, 0xffff, entry(0x00010004, 0)),
-			gang(RelocationTypeTag.LOW_PAIR, 4, 0xffff, entry(0x00010014, 0))),
+			gang(RelocationGangRoleDescriptor.HIGH_PAIR, 4, 0xffff, entry(0x00010004, 0)),
+			gang(RelocationGangRoleDescriptor.LOW_PAIR, 4, 0xffff, entry(0x00010014, 0))),
 		group(RelocationExpressionKind.ABSOLUTE, TARGET_SYMBOLS.get("GOODBYE_WORLD"), 0,
-			gang(RelocationTypeTag.HIGH_PAIR, 4, 0xffff, entry(0x00010008, 0)),
-			gang(RelocationTypeTag.LOW_PAIR, 4, 0xffff, entry(0x00010010, 0))),
+			gang(RelocationGangRoleDescriptor.HIGH_PAIR, 4, 0xffff, entry(0x00010008, 0)),
+			gang(RelocationGangRoleDescriptor.LOW_PAIR, 4, 0xffff, entry(0x00010010, 0))),
 		group(RelocationExpressionKind.PC_RELATIVE, TARGET_SYMBOLS.get("LAB_00010018"), -4,
-			gang(RelocationTypeTag.PC_RELATIVE, 4, 0xffff, entry(0x0001000c, 0))));
+			gang(RelocationGangRoleDescriptor.PC_RELATIVE, 4, 0xffff, entry(0x0001000c, 0))));
 
 	@Override
 	protected String getProgramName() {

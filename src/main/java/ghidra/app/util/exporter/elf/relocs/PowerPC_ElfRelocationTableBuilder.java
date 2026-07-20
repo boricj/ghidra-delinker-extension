@@ -24,10 +24,8 @@ import java.util.Map;
 import ghidra.app.util.importer.MessageLog;
 import ghidra.program.model.address.AddressSetView;
 import ghidra.program.model.relocobj.RelocationEntry;
-import ghidra.program.model.relocobj.RelocationExpressionKind;
 import ghidra.program.model.relocobj.RelocationGang;
 import ghidra.program.model.relocobj.RelocationGroup;
-import ghidra.program.model.relocobj.RelocationTypeTag;
 import ghidra.util.DataConverter;
 import net.boricj.bft.elf.ElfFile;
 import net.boricj.bft.elf.ElfHeader;
@@ -57,9 +55,11 @@ public class PowerPC_ElfRelocationTableBuilder implements ElfRelocationTableBuil
 
 		for (RelocationGroup group : groups) {
 			ElfSymbol symbol = groupsToSymbols.get(group);
-			for (RelocationGang gang : group.getGangs()) {
+			for (int gangIndex = 0; gangIndex < group.getGangs().size(); gangIndex++) {
+				RelocationGang gang = group.getGangs().get(gangIndex);
 				for (RelocationEntry entry : gang.getEntries()) {
-					process(relTable, bytes, addressSetView, group, gang, entry, symbol, log);
+					process(relTable, bytes, addressSetView, group, gang, gangIndex, entry,
+						symbol, log);
 				}
 			}
 		}
@@ -76,60 +76,15 @@ public class PowerPC_ElfRelocationTableBuilder implements ElfRelocationTableBuil
 	}
 
 	private void process(ElfRelaTable relTable, byte[] bytes, AddressSetView addressSetView,
-			RelocationGroup group, RelocationGang gang, RelocationEntry entry, ElfSymbol symbol,
-			MessageLog log) {
+			RelocationGroup group, RelocationGang gang, int gangIndex, RelocationEntry entry,
+			ElfSymbol symbol, MessageLog log) {
 		DataConverter dc = DataConverter.getInstance(
 			relTable.getElfFile().getHeader().getIdentData() == ElfData.ELFDATA2MSB);
 		int width = gang.getWidth();
 		long bitmask = gang.getBitmask();
 		long addend = group.getAddend() + entry.localAddend();
 
-		RelocationTypeTag relocationType = gang.getRelocationType();
-		RelocationExpressionKind kind = group.getExpression().getKind();
-		ElfRelocationType type = null;
-
-		if (relocationType == RelocationTypeTag.HIGH_PAIR) {
-			if (isPpc32(relTable) && width == 4 && bitmask == 0xffffL) {
-				type = ElfRelocationType_ppc.R_PPC_ADDR16_HA;
-			}
-			else if (isPpc64(relTable) && width == 4 && bitmask == 0xffffL) {
-				type = ElfRelocationType_ppc64.R_PPC64_ADDR16_HA;
-			}
-		}
-		else if (relocationType == RelocationTypeTag.LOW_PAIR) {
-			if (isPpc32(relTable) && width == 4 && bitmask == 0xffffL) {
-				type = ElfRelocationType_ppc.R_PPC_ADDR16_LO;
-			}
-			else if (isPpc64(relTable) && width == 4 && bitmask == 0xffffL) {
-				type = ElfRelocationType_ppc64.R_PPC64_ADDR16_LO;
-			}
-		}
-		else if (kind == RelocationExpressionKind.PC_RELATIVE) {
-			if (isPpc32(relTable) && width == 4 && bitmask == 0x03fffffcL) {
-				type = ElfRelocationType_ppc.R_PPC_REL24;
-			}
-			else if (isPpc32(relTable) && width == 4 && bitmask == 0x0000fffcL) {
-				type = ElfRelocationType_ppc.R_PPC_REL14;
-			}
-			else if (isPpc64(relTable) && width == 4 && bitmask == 0x03fffffcL) {
-				type = ElfRelocationType_ppc64.R_PPC64_REL24;
-			}
-			else if (isPpc64(relTable) && width == 4 && bitmask == 0x0000fffcL) {
-				type = ElfRelocationType_ppc64.R_PPC64_REL14;
-			}
-		}
-		else if (kind == RelocationExpressionKind.ABSOLUTE) {
-			if (isPpc32(relTable) && width == 4 && bitmask == 0xffffffffL) {
-				type = ElfRelocationType_ppc.R_PPC_ADDR32;
-			}
-			else if (isPpc64(relTable) && width == 4 && bitmask == 0xffffffffL) {
-				type = ElfRelocationType_ppc64.R_PPC64_ADDR32;
-			}
-			else if (isPpc64(relTable) && width == 8 && bitmask == 0xffffffffffffffffL) {
-				type = ElfRelocationType_ppc64.R_PPC64_ADDR64;
-			}
-		}
-
+		ElfRelocationType type = PowerPCLowering.tryLower(relTable, group, gang, gangIndex);
 		if (type == null) {
 			logUnknownRelocation(relTable, group, gang, entry, log);
 			return;

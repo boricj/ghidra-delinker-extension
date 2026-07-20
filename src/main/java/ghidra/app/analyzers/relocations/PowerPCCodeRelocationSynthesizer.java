@@ -230,14 +230,14 @@ public class PowerPCCodeRelocationSynthesizer
 					continue;
 				}
 
-				Long hiGroupId =
-					addOrGetHi16GroupId(hiInstruction.getAddress(),
+				RelocationGroup hiGroup =
+					addOrGetHi16Group(hiInstruction.getAddress(),
 						finalTarget.getDestination());
-				if (hiGroupId == null) {
+				if (hiGroup == null) {
 					continue;
 				}
 
-				relocationTable.addLowPairGroup(hiGroupId, instruction.getAddress(), 4,
+				relocationTable.addLowPairGroup(hiGroup, instruction.getAddress(), 4,
 					LO16_BITMASK, finalTarget.getOffset());
 				foundRelocation = true;
 			}
@@ -245,9 +245,9 @@ public class PowerPCCodeRelocationSynthesizer
 			return foundRelocation;
 		}
 
-		private Long addOrGetHi16GroupId(Address address, Address target) {
+		private RelocationGroup addOrGetHi16Group(Address address, Address target) {
 			for (RelocationLocation location : relocationTable.getRelocationLocationsAt(address)) {
-				RelocationGroup group = relocationTable.getRelocationGroup(location.groupId());
+				RelocationGroup group = relocationTable.getRelocationGroup(location);
 				if (group == null || group.getExpression().getKind() != RelocationExpressionKind.ABSOLUTE ||
 					!target.equals(group.getTarget())) {
 					continue;
@@ -263,13 +263,11 @@ public class PowerPCCodeRelocationSynthesizer
 				}
 
 				if (address.equals(gang.getEntries().get(location.entryIndex()).address())) {
-					return group.getGroupId();
+					return group;
 				}
 			}
 
-			RelocationGroup hiGroup =
-				relocationTable.addHighPairGroup(address, 4, HI16_BITMASK, target);
-			return hiGroup.getGroupId();
+			return relocationTable.addHighPairGroup(address, 4, HI16_BITMASK, target);
 		}
 
 		private Instruction findDefiningLis(Instruction instruction, Register register) {

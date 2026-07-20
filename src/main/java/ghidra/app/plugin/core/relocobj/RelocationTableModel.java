@@ -26,10 +26,10 @@ import ghidra.program.model.listing.Program;
 import ghidra.program.model.mem.MemoryBlock;
 import ghidra.program.model.relocobj.RelocationEntry;
 import ghidra.program.model.relocobj.RelocationGang;
+import ghidra.program.model.relocobj.RelocationGangRoleDescriptor;
 import ghidra.program.model.relocobj.RelocationGroup;
 import ghidra.program.model.relocobj.RelocationTable.RelocationLocation;
 import ghidra.program.model.relocobj.RelocationTable;
-import ghidra.program.model.relocobj.RelocationTypeTag;
 import ghidra.program.model.symbol.Symbol;
 import ghidra.util.datastruct.Accumulator;
 import ghidra.util.exception.CancelledException;
@@ -109,25 +109,20 @@ class RelocationTableModel extends AddressBasedTableModel<RelocationRowObject> {
 
 		int relocationIndex = 0;
 		RelocationTable relocationTable = RelocationTable.get(getProgram());
-			Iterator<RelocationGroup> groupIterator = relocationTable.getRelocationGroups();
-			while (groupIterator.hasNext()) {
-				RelocationGroup group = groupIterator.next();
-				for (int gangIndex = 0; gangIndex < group.getGangs().size(); gangIndex++) {
-					RelocationGang gang = group.getGangs().get(gangIndex);
-				String typeName = relocationTypeName(gang.getRelocationType());
+		Iterator<RelocationGroup> groupIterator = relocationTable.getRelocationGroups();
+		while (groupIterator.hasNext()) {
+			RelocationGroup group = groupIterator.next();
+			for (int gangIndex = 0; gangIndex < group.getGangs().size(); gangIndex++) {
+				RelocationGang gang = group.getGangs().get(gangIndex);
+				String typeName = RelocationGangRoleDescriptor.derive(group, gangIndex).toString();
 				for (int entryIndex = 0; entryIndex < gang.getEntries().size(); entryIndex++) {
 					RelocationEntry entry = gang.getEntries().get(entryIndex);
 					long addend = group.getAddend() + entry.localAddend();
 					accumulator.add(new RelocationRowObject(++relocationIndex, entry.address(),
-						group.getTarget(), typeName, addend,
-						new RelocationLocation(group.getGroupId(), gangIndex, entryIndex)));
+						group, gangIndex, entryIndex, typeName, addend));
 				}
 			}
 		}
-	}
-
-	private static String relocationTypeName(RelocationTypeTag relocationType) {
-		return relocationType.toString();
 	}
 
 	@Override
@@ -143,19 +138,23 @@ class RelocationTableModel extends AddressBasedTableModel<RelocationRowObject> {
 	static class RelocationRowObject {
 		final int relocationIndex;
 		final Address address;
+		final RelocationGroup group;
+		final int gangIndex;
+		final int entryIndex;
 		final Address target;
 		final String relocationTypeName;
 		final long addend;
-		final RelocationLocation location;
 
-		public RelocationRowObject(int relocationIndex, Address address, Address target,
-				String relocationTypeName, long addend, RelocationLocation location) {
+		public RelocationRowObject(int relocationIndex, Address address, RelocationGroup group,
+				int gangIndex, int entryIndex, String relocationTypeName, long addend) {
 			this.relocationIndex = relocationIndex;
 			this.address = address;
-			this.target = target;
+			this.group = group;
+			this.gangIndex = gangIndex;
+			this.entryIndex = entryIndex;
+			this.target = group.getTarget();
 			this.relocationTypeName = relocationTypeName;
 			this.addend = addend;
-			this.location = location;
 		}
 	}
 

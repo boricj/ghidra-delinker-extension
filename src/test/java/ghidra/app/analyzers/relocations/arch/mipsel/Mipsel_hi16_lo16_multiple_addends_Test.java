@@ -32,7 +32,7 @@ import ghidra.program.model.listing.Program;
 import ghidra.program.model.relocobj.RelocationExpressionKind;
 import ghidra.program.model.relocobj.RelocationGroupAssertions.ExpectedGroup;
 import ghidra.program.model.relocobj.RelocationTable;
-import ghidra.program.model.relocobj.RelocationTypeTag;
+import ghidra.program.model.relocobj.RelocationGangRoleDescriptor;
 import ghidra.util.task.TaskMonitor;
 
 public class Mipsel_hi16_lo16_multiple_addends_Test extends DelinkerIntegrationTest {
@@ -43,8 +43,8 @@ public class Mipsel_hi16_lo16_multiple_addends_Test extends DelinkerIntegrationT
 
 	private static final List<ExpectedGroup> EXPECTED_GROUPS = List.of(
 		group(RelocationExpressionKind.ABSOLUTE, TARGET_SYMBOLS.get("HELLO_WORLD"), 0,
-			gang(RelocationTypeTag.HIGH_PAIR, 4, 0xffff, entry(0x00010000, 0)),
-			gang(RelocationTypeTag.LOW_PAIR, 4, 0xffff, entry(0x00010004, 0))));
+			gang(RelocationGangRoleDescriptor.HIGH_PAIR, 4, 0xffff, entry(0x00010000, 0)),
+			gang(RelocationGangRoleDescriptor.LOW_PAIR, 4, 0xffff, entry(0x00010004, 0))));
 
 	@Override
 	protected String getProgramName() {

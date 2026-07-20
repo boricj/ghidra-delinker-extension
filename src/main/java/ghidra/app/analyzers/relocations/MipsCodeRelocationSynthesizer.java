@@ -51,6 +51,7 @@ import ghidra.program.model.listing.Instruction;
 import ghidra.program.model.listing.Listing;
 import ghidra.program.model.listing.Program;
 import ghidra.program.model.mem.MemoryAccessException;
+import ghidra.program.model.relocobj.RelocationExpressionBase;
 import ghidra.program.model.relocobj.RelocationGroup;
 import ghidra.program.model.relocobj.RelocationTable;
 import ghidra.program.model.symbol.FlowType;
@@ -282,7 +283,7 @@ public class MipsCodeRelocationSynthesizer
 			RelocationGroup hiGroup =
 				relocationTable.addHighPairGroup(hi16.getAddress(), 4, 0xFFFF,
 					target.getDestination());
-			relocationTable.addLowPairGroup(hiGroup.getGroupId(), lo16.getAddress(), 4, 0xFFFF,
+			relocationTable.addLowPairGroup(hiGroup, lo16.getAddress(), 4, 0xFFFF,
 				lo16addend);
 			return true;
 		}
@@ -480,7 +481,8 @@ public class MipsCodeRelocationSynthesizer
 		public MIPS_GPREL16_InstructionRelocationEmitter(
 				RelocationTableSynthesizerAnalyzer analyzer, Function function, Symbol fromSymbol,
 				EvaluationReporter evaluationReporter, TaskMonitor monitor, MessageLog log) {
-			super(analyzer, function, fromSymbol, evaluationReporter, monitor, log);
+			super(analyzer, function, fromSymbol, RelocationExpressionBase.GP,
+				evaluationReporter, monitor, log);
 
 			Program program = analyzer.getProgram();
 			gp = program.getRegister("gp");

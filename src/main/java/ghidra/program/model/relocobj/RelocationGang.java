@@ -14,27 +14,19 @@
 package ghidra.program.model.relocobj;
 
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Homogeneous set of relocation entries sharing one relocation type and encoding shape.
  */
 public class RelocationGang {
-	private final RelocationTypeTag relocationType;
 	private final int width;
 	private final long bitmask;
 	private final List<RelocationEntry> entries;
 
-	public RelocationGang(RelocationTypeTag relocationType, int width, long bitmask,
-			List<RelocationEntry> entries) {
-		this.relocationType = Objects.requireNonNull(relocationType);
+	public RelocationGang(int width, long bitmask, List<RelocationEntry> entries) {
 		this.width = width;
 		this.bitmask = bitmask;
 		this.entries = List.copyOf(entries);
-	}
-
-	public RelocationTypeTag getRelocationType() {
-		return relocationType;
 	}
 
 	public int getWidth() {

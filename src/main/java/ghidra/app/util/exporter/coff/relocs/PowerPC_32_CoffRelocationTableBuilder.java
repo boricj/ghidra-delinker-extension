@@ -23,10 +23,8 @@ import java.util.Map;
 import ghidra.app.util.importer.MessageLog;
 import ghidra.program.model.address.AddressSetView;
 import ghidra.program.model.relocobj.RelocationEntry;
-import ghidra.program.model.relocobj.RelocationExpressionKind;
 import ghidra.program.model.relocobj.RelocationGang;
 import ghidra.program.model.relocobj.RelocationGroup;
-import ghidra.program.model.relocobj.RelocationTypeTag;
 import ghidra.util.DataConverter;
 import net.boricj.bft.coff.CoffRelocationTable;
 import net.boricj.bft.coff.CoffSection;
@@ -49,9 +47,11 @@ public class PowerPC_32_CoffRelocationTableBuilder implements CoffRelocationTabl
 
 		for (RelocationGroup group : groups) {
 			CoffSymbol symbol = groupsToSymbols.get(group);
-			for (RelocationGang gang : group.getGangs()) {
+			for (int gangIndex = 0; gangIndex < group.getGangs().size(); gangIndex++) {
+				RelocationGang gang = group.getGangs().get(gangIndex);
 				for (RelocationEntry entry : gang.getEntries()) {
-					process(relTable, bytes, addressSet, group, gang, entry, symbol, log);
+					process(relTable, bytes, addressSet, group, gang, gangIndex, entry,
+						symbol, log);
 				}
 			}
 		}
@@ -59,57 +59,23 @@ public class PowerPC_32_CoffRelocationTableBuilder implements CoffRelocationTabl
 
 	private void process(CoffRelocationTable relTable, byte[] bytes,
 			AddressSetView addressSet, RelocationGroup group, RelocationGang gang,
-			RelocationEntry entry, CoffSymbol symbol, MessageLog log) {
+			int gangIndex, RelocationEntry entry, CoffSymbol symbol, MessageLog log) {
 		DataConverter dc = DataConverter.getInstance(true);
 		int width = gang.getWidth();
 		long bitmask = gang.getBitmask();
 		long addend = group.getAddend() + entry.localAddend();
 		long offset = getOffsetWithinAddressSet(addressSet, entry.address());
 
-		RelocationTypeTag relocationType = gang.getRelocationType();
-		RelocationExpressionKind kind = group.getExpression().getKind();
-		CoffRelocationType type = null;
-		long value;
-		boolean emitPair = false;
-
-		if (relocationType == RelocationTypeTag.HIGH_PAIR) {
-			if (width == 4 && bitmask == 0xffffL) {
-				type = CoffRelocationType_ppc.IMAGE_REL_PPC_REFHI;
-				emitPair = true;
-			}
-			value = addend;
-		}
-		else if (relocationType == RelocationTypeTag.LOW_PAIR) {
-			if (width == 4 && bitmask == 0xffffL) {
-				type = CoffRelocationType_ppc.IMAGE_REL_PPC_REFLO;
-				emitPair = true;
-			}
-			value = addend;
-		}
-		else if (kind == RelocationExpressionKind.PC_RELATIVE) {
-			if (width == 4 && bitmask == 0x03fffffcL) {
-				type = CoffRelocationType_ppc.IMAGE_REL_PPC_REL24;
-			}
-			else if (width == 4 && bitmask == 0x0000fffcL) {
-				type = CoffRelocationType_ppc.IMAGE_REL_PPC_REL14;
-			}
-			value = (addend - offset) >> 2;
-		}
-		else {
-			if (width == 4 && bitmask == 0xffffffffL) {
-				type = CoffRelocationType_ppc.IMAGE_REL_PPC_ADDR32;
-			}
-			value = addend;
-		}
-
-		if (type == null) {
+		PowerPCRelocationTableLowering.Result lowering =
+			PowerPCRelocationTableLowering.tryLower(group, gang, gangIndex, addend, offset);
+		if (lowering == null) {
 			logUnknownRelocation(relTable.getSection(), group, gang, entry, log);
 			return;
 		}
 
-		patchBytes(bytes, addressSet, entry.address(), dc, width, bitmask, value);
-		emit(relTable, addressSet, entry.address(), type, symbol);
-		if (emitPair) {
+		patchBytes(bytes, addressSet, entry.address(), dc, width, bitmask, lowering.value());
+		emit(relTable, addressSet, entry.address(), lowering.type(), symbol);
+		if (lowering.emitPair()) {
 			emitPair(relTable, addressSet, entry.address());
 		}
 	}

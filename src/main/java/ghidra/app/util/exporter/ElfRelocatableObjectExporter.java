@@ -499,9 +499,7 @@ public class ElfRelocatableObjectExporter extends Exporter {
 						.filter(entry -> shouldKeepEntry(kind, entry.address()))
 						.toList();
 				if (!entries.isEmpty()) {
-					gangs.add(
-						new RelocationGang(gang.getRelocationType(), gang.getWidth(), gang.getBitmask(),
-							entries));
+					gangs.add(new RelocationGang(gang.getWidth(), gang.getBitmask(), entries));
 				}
 			}
 

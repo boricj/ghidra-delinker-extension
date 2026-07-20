@@ -25,7 +25,7 @@ public final class RelocationGroupAssertions {
 	public static record ExpectedEntry(long address, long localAddend) {
 	}
 
-	public static record ExpectedGang(RelocationTypeTag type, int width, long bitmask,
+	public static record ExpectedGang(RelocationGangRoleDescriptor type, int width, long bitmask,
 			List<ExpectedEntry> entries) {
 	}
 
@@ -40,7 +40,7 @@ public final class RelocationGroupAssertions {
 		return new ExpectedEntry(address, localAddend);
 	}
 
-	public static ExpectedGang gang(RelocationTypeTag type, int width, long bitmask,
+	public static ExpectedGang gang(RelocationGangRoleDescriptor type, int width, long bitmask,
 			ExpectedEntry... entries) {
 		return new ExpectedGang(type, width, bitmask, List.of(entries));
 	}
@@ -89,7 +89,7 @@ public final class RelocationGroupAssertions {
 				String gangContext = context + " gang[" + gangIndex + "]";
 
 				assertEquals(gangContext + " type", expectedGang.type(),
-					actualGang.getRelocationType());
+					RelocationGangRoleDescriptor.derive(actualGroup, gangIndex));
 				assertEquals(gangContext + " width", expectedGang.width(), actualGang.getWidth());
 				assertEquals(gangContext + " bitmask", expectedGang.bitmask(),
 					actualGang.getBitmask());

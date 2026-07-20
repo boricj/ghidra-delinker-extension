@@ -16,7 +16,6 @@ package ghidra.program.model.relocobj;
 public enum RelocationExpressionKind {
 	ABSOLUTE,
 	PC_RELATIVE,
-	RELATIVE_TO_SYMBOL,
-	QUALIFIED_SYMBOL,
+	SYMBOL_RELATIVE,
 	REGION_RELATIVE
 }

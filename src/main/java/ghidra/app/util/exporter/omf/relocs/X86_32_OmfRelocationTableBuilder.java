@@ -28,7 +28,6 @@ import ghidra.program.model.relocobj.RelocationEntry;
 import ghidra.program.model.relocobj.RelocationExpressionKind;
 import ghidra.program.model.relocobj.RelocationGang;
 import ghidra.program.model.relocobj.RelocationGroup;
-import ghidra.program.model.relocobj.RelocationTypeTag;
 import ghidra.util.DataConverter;
 import ghidra.util.LittleEndianDataConverter;
 import net.boricj.bft.omf.records.OmfRecordFixupp.DisplacementType;
@@ -49,16 +48,14 @@ public class X86_32_OmfRelocationTableBuilder implements OmfRelocationTableBuild
 		List<FixupAtOffset> fixups = new ArrayList<>();
 
 		for (RelocationGroup group : relocations) {
+				RelocationExpressionKind kind = group.getExpression().getKind();
 			for (RelocationGang gang : group.getGangs()) {
 				for (RelocationEntry entry : gang.getEntries()) {
-					RelocationTypeTag relocationType = gang.getRelocationType();
-					if (relocationType == RelocationTypeTag.ABSOLUTE ||
-							group.getExpression().getKind() == RelocationExpressionKind.ABSOLUTE) {
+						if (kind == RelocationExpressionKind.ABSOLUTE) {
 						process(fixups, segment, addressToExtdefIndex, segmentMappings, bytes,
 							addressSet, group, gang, entry, false, log);
 					}
-					else if (relocationType == RelocationTypeTag.PC_RELATIVE ||
-							group.getExpression().getKind() == RelocationExpressionKind.PC_RELATIVE) {
+						else if (kind == RelocationExpressionKind.PC_RELATIVE) {
 						process(fixups, segment, addressToExtdefIndex, segmentMappings, bytes,
 							addressSet, group, gang, entry, true, log);
 					}

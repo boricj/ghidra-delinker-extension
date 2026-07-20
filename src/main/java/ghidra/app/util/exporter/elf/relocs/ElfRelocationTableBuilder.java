@@ -20,6 +20,7 @@ import ghidra.app.util.importer.MessageLog;
 import ghidra.program.model.address.AddressSetView;
 import ghidra.program.model.relocobj.RelocationEntry;
 import ghidra.program.model.relocobj.RelocationGang;
+import ghidra.program.model.relocobj.RelocationGangRoleDescriptor;
 import ghidra.program.model.relocobj.RelocationGroup;
 import ghidra.util.classfinder.ExtensionPoint;
 import net.boricj.bft.elf.ElfFile;
@@ -43,9 +44,13 @@ public interface ElfRelocationTableBuilder extends ExtensionPoint {
 
 	public static void logUnknownRelocation(ElfSection section, RelocationGroup group,
 			RelocationGang gang, RelocationEntry entry, MessageLog log) {
+		int gangIndex = group.getGangs().indexOf(gang);
+		RelocationGangRoleDescriptor descriptor =
+			gangIndex >= 0 ? RelocationGangRoleDescriptor.derive(group, gangIndex)
+					: RelocationGangRoleDescriptor.UNKNOWN;
 		String msg = String.format(
 			"Unknown grouped relocation %s type=%s width=%d bitmask=%d at %s", 
-			group.getExpression().getKind(), gang.getRelocationType(), gang.getWidth(),
+			group.getExpression().getKind(), descriptor, gang.getWidth(),
 			gang.getBitmask(), entry.address());
 		log.appendMsg(section.getName(), msg);
 	}

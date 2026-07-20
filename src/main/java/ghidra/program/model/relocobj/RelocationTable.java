@@ -36,11 +36,11 @@ import ghidra.program.model.listing.Program;
 public class RelocationTable {
 	public static record RelocationLocation(long groupId, int gangIndex, int entryIndex) {}
 
-	public Program currentProgram;
-	private LinkedHashMap<Long, RelocationGroup> groupsById = new LinkedHashMap<>();
-	private NavigableMap<Address, List<RelocationLocation>> groupLocationsByAddress =
+	public final Program currentProgram;
+	private final LinkedHashMap<Long, RelocationGroup> groupsById = new LinkedHashMap<>();
+	private final NavigableMap<Address, List<RelocationLocation>> groupLocationsByAddress =
 		new TreeMap<>();
-	private Map<Address, Boolean> transparentRelativePCByAddress = new HashMap<>();
+	private final Map<Address, Boolean> transparentRelativePCByAddress = new HashMap<>();
 	private long nextGroupId = 1;
 
 	public RelocationTable(Program currentProgram) {
@@ -84,57 +84,82 @@ public class RelocationTable {
 	}
 
 	public RelocationGroup addSingleEntryGroup(RelocationExpression expression,
-			Address target, long groupAddend, RelocationTypeTag relocationType, int width,
+			Address target, long groupAddend, int width,
 			long bitmask,
 			Address entryAddress, long entryAddend) {
 		RelocationEntry entry = new RelocationEntry(entryAddress, entryAddend);
-		RelocationGang gang = new RelocationGang(relocationType, width, bitmask, List.of(entry));
+		RelocationGang gang = new RelocationGang(width, bitmask, List.of(entry));
 		RelocationGroup group =
 			new RelocationGroup(0, expression, target, groupAddend, List.of(gang));
 		return addGroup(group);
 	}
 
-	public RelocationGroup appendEntryToGroup(long groupId, RelocationTypeTag relocationType,
+	public RelocationGroup appendEntryToGroup(RelocationGroup group,
 			int width,
 			long bitmask, Address entryAddress, long entryAddend) {
-		RelocationGroup existing = groupsById.get(groupId);
-		if (existing == null) {
-			throw new IllegalArgumentException("Unknown relocation group id " + groupId);
-		}
-		List<RelocationGang> gangs = new ArrayList<>(existing.getGangs());
-		RelocationEntry newEntry = new RelocationEntry(entryAddress, entryAddend);
+		return appendEntryToGroup(group, width, bitmask, entryAddress, entryAddend, -1);
+	}
 
-		int sameTypeGangIndex = -1;
-		for (int i = 0; i < gangs.size(); i++) {
-			RelocationGang gang = gangs.get(i);
-			if (gang.getRelocationType().equals(relocationType) && gang.getWidth() == width &&
-				gang.getBitmask() == bitmask) {
-				sameTypeGangIndex = i;
-				if (gang.getEntries().contains(newEntry)) {
-					return existing;
-				}
-				break;
+	private RelocationGroup appendEntryToGroup(RelocationGroup group, int width, long bitmask,
+			Address entryAddress, long entryAddend, int preferredGangIndex) {
+		synchronized (groupsById) {
+			RelocationGroup existing = groupsById.get(group.getGroupId());
+			if (existing == null) {
+				throw new IllegalArgumentException("Unknown relocation group " + group);
 			}
-		}
+			List<RelocationGang> gangs = new ArrayList<>(existing.getGangs());
+			RelocationEntry newEntry = new RelocationEntry(entryAddress, entryAddend);
 
-		removeGroupLocations(groupId);
+			int sameTypeGangIndex = -1;
+			if (preferredGangIndex >= 0) {
+				if (preferredGangIndex < gangs.size()) {
+					RelocationGang preferredGang = gangs.get(preferredGangIndex);
+					if (preferredGang.getWidth() == width && preferredGang.getBitmask() == bitmask) {
+						sameTypeGangIndex = preferredGangIndex;
+						if (preferredGang.getEntries().contains(newEntry)) {
+							return existing;
+						}
+					}
+				}
+			}
+			else {
+				for (int i = 0; i < gangs.size(); i++) {
+					RelocationGang gang = gangs.get(i);
+					if (gang.getWidth() == width && gang.getBitmask() == bitmask) {
+						sameTypeGangIndex = i;
+						if (gang.getEntries().contains(newEntry)) {
+							return existing;
+						}
+						break;
+					}
+				}
+			}
 
-		if (sameTypeGangIndex >= 0) {
-			RelocationGang gang = gangs.get(sameTypeGangIndex);
-			List<RelocationEntry> entries = new ArrayList<>(gang.getEntries());
-			entries.add(newEntry);
-			gang = new RelocationGang(relocationType, width, bitmask, entries);
-			gangs.set(sameTypeGangIndex, gang);
-		}
-		else {
-			gangs.add(new RelocationGang(relocationType, width, bitmask, List.of(newEntry)));
-		}
+			removeGroupLocations(existing.getGroupId());
 
-		RelocationGroup updated = new RelocationGroup(groupId, existing.getExpression(),
-			existing.getTarget(), existing.getAddend(), gangs);
-		groupsById.put(groupId, updated);
-		indexGroupLocations(updated);
-		return updated;
+			if (sameTypeGangIndex >= 0) {
+				RelocationGang gang = gangs.get(sameTypeGangIndex);
+				List<RelocationEntry> entries = new ArrayList<>(gang.getEntries());
+				entries.add(newEntry);
+				gang = new RelocationGang(width, bitmask, entries);
+				gangs.set(sameTypeGangIndex, gang);
+			}
+			else {
+				RelocationGang newGang = new RelocationGang(width, bitmask, List.of(newEntry));
+				if (preferredGangIndex >= 0 && preferredGangIndex <= gangs.size()) {
+					gangs.add(preferredGangIndex, newGang);
+				}
+				else {
+					gangs.add(newGang);
+				}
+			}
+
+			RelocationGroup updated = new RelocationGroup(existing.getGroupId(),
+				existing.getExpression(), existing.getTarget(), existing.getAddend(), gangs);
+			groupsById.put(existing.getGroupId(), updated);
+			indexGroupLocations(updated);
+			return updated;
+		}
 	}
 
 	private void indexGroupLocations(RelocationGroup group) {
@@ -196,6 +221,10 @@ public class RelocationTable {
 		}
 	}
 
+	public RelocationGroup getRelocationGroup(RelocationLocation location) {
+		return getRelocationGroup(location.groupId());
+	}
+
 	public void deleteGroup(long groupId) {
 		synchronized (groupsById) {
 			RelocationGroup removed = groupsById.remove(groupId);
@@ -233,7 +262,7 @@ public class RelocationTable {
 				return List.of();
 			}
 
-			return Collections.unmodifiableList(refs);
+			return List.copyOf(refs);
 		}
 	}
 
@@ -254,7 +283,7 @@ public class RelocationTable {
 	public void addAbsoluteGroup(Address address, int width, long bitmask, Address target,
 			long addend) {
 		addSingleEntryGroup(RelocationExpression.absolute(), target, addend,
-			RelocationTypeTag.ABSOLUTE, width, bitmask, address, 0);
+			width, bitmask, address, 0);
 	}
 
 	public RelocationGroup addHighPairGroup(Address address, int width, long bitmask,
@@ -266,40 +295,42 @@ public class RelocationTable {
 					continue;
 				}
 
-				for (RelocationGang gang : group.getGangs()) {
-					if (gang.getRelocationType() != RelocationTypeTag.HIGH_PAIR ||
-						gang.getWidth() != width || gang.getBitmask() != bitmask) {
-						continue;
-					}
+				if (group.getGangs().isEmpty()) {
+					continue;
+				}
 
-					for (RelocationEntry entry : gang.getEntries()) {
-						if (entry.address().equals(address) && entry.localAddend() == 0) {
-							return group;
-						}
+				RelocationGang firstGang = group.getGangs().get(0);
+				if (firstGang.getWidth() != width || firstGang.getBitmask() != bitmask) {
+					continue;
+				}
+
+				for (RelocationEntry entry : firstGang.getEntries()) {
+					if (entry.address().equals(address) && entry.localAddend() == 0) {
+						return group;
 					}
 				}
 			}
 		}
 
 		return addSingleEntryGroup(RelocationExpression.absolute(), target, 0,
-			RelocationTypeTag.HIGH_PAIR, width, bitmask, address, 0);
+			width, bitmask, address, 0);
 	}
 
-	public RelocationGroup addLowPairGroup(long groupId, Address address, int width,
+	public RelocationGroup addLowPairGroup(RelocationGroup highPairGroup, Address address,
+			int width,
 			long bitmask, long addend) {
-		return appendEntryToGroup(groupId, RelocationTypeTag.LOW_PAIR, width, bitmask, address,
-			addend);
+		return appendEntryToGroup(highPairGroup, width, bitmask, address, addend, 1);
 	}
 
 	public void addMIPS26Group(Address address, Address target, long addend) {
 		addSingleEntryGroup(RelocationExpression.absolute(), target, addend,
-			RelocationTypeTag.MIPS_26, 4, 0x3ffffffL, address, 0);
+			4, 0x3ffffffL, address, 0);
 	}
 
 	public void addRelativePCGroup(Address address, int width, long bitmask, Address target,
 			long addend, boolean isTransparent, long trailingBytes) {
 		RelocationGroup group = addSingleEntryGroup(RelocationExpression.pcRelative(), target,
-			addend, RelocationTypeTag.PC_RELATIVE, width, bitmask, address, trailingBytes);
+			addend, width, bitmask, address, trailingBytes);
 		transparentRelativePCByAddress.put(address, isTransparent);
 		if (group == null) {
 			throw new IllegalStateException();
@@ -321,6 +352,12 @@ public class RelocationTable {
 	public void addRelativeSymbolGroup(Address address, int width, long bitmask, Address target,
 			long addend, String relativeTarget) {
 		addSingleEntryGroup(RelocationExpression.relativeToSymbol(relativeTarget), target,
-			addend, RelocationTypeTag.RELATIVE_SYMBOL, width, bitmask, address, 0);
+			addend, width, bitmask, address, 0);
+	}
+
+	public void addQualifiedSymbolGroup(Address address, int width, long bitmask, Address target,
+			long addend, RelocationExpressionBase base, String relativeTarget) {
+		addSingleEntryGroup(RelocationExpression.qualifiedSymbol(base, relativeTarget), target,
+			addend, width, bitmask, address, 0);
 	}
 }

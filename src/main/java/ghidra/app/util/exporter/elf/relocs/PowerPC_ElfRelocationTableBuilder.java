@@ -23,6 +23,7 @@ import java.util.Map;
 
 import ghidra.app.util.importer.MessageLog;
 import ghidra.program.model.address.AddressSetView;
+import ghidra.program.model.relocobj.RelocationExpressionKind;
 import ghidra.program.model.relocobj.RelocationEntry;
 import ghidra.program.model.relocobj.RelocationGang;
 import ghidra.program.model.relocobj.RelocationGroup;
@@ -42,6 +43,14 @@ import net.boricj.bft.elf.sections.ElfSymbolTable;
 import net.boricj.bft.elf.sections.ElfSymbolTable.ElfSymbol;
 
 public class PowerPC_ElfRelocationTableBuilder implements ElfRelocationTableBuilder {
+	private static final class LoweringResult {
+		private final ElfRelocationType type;
+
+		private LoweringResult(ElfRelocationType type) {
+			this.type = type;
+		}
+	}
+
 	public boolean supportsGroupedRelocations() {
 		return true;
 	}
@@ -84,14 +93,78 @@ public class PowerPC_ElfRelocationTableBuilder implements ElfRelocationTableBuil
 		long bitmask = gang.getBitmask();
 		long addend = group.getAddend() + entry.localAddend();
 
-		ElfRelocationType type = PowerPCLowering.tryLower(relTable, group, gang, gangIndex);
-		if (type == null) {
+		LoweringResult lowering = tryLower(relTable, group, gang, gangIndex);
+		if (lowering.type == null) {
 			logUnknownRelocation(relTable, group, gang, entry, log);
 			return;
 		}
 
 		patchBytes(bytes, addressSetView, entry.address(), dc, width, bitmask, 0);
-		emit(relTable, addressSetView, entry.address(), type, symbol, addend);
+		emit(relTable, addressSetView, entry.address(), lowering.type, symbol, addend);
+	}
+
+	private static LoweringResult tryLower(ElfRelaTable relTable, RelocationGroup group,
+			RelocationGang gang, int gangIndex) {
+		ElfHeader header = relTable.getElfFile().getHeader();
+		int width = gang.getWidth();
+		long bitmask = gang.getBitmask();
+		RelocationExpressionKind kind = group.getExpression().getKind();
+
+		if (kind == RelocationExpressionKind.ABSOLUTE && isPairShape(group, gang)) {
+			if (header.getMachine() == ElfMachine.EM_PPC && gangIndex == 0 && width == 4 &&
+				bitmask == 0xffffL) {
+				return new LoweringResult(ElfRelocationType_ppc.R_PPC_ADDR16_HA);
+			}
+			if (header.getMachine() == ElfMachine.EM_PPC && gangIndex == 1 && width == 4 &&
+				bitmask == 0xffffL) {
+				return new LoweringResult(ElfRelocationType_ppc.R_PPC_ADDR16_LO);
+			}
+			if (header.getMachine() == ElfMachine.EM_PPC64 && gangIndex == 0 && width == 4 &&
+				bitmask == 0xffffL) {
+				return new LoweringResult(ElfRelocationType_ppc64.R_PPC64_ADDR16_HA);
+			}
+			if (header.getMachine() == ElfMachine.EM_PPC64 && gangIndex == 1 && width == 4 &&
+				bitmask == 0xffffL) {
+				return new LoweringResult(ElfRelocationType_ppc64.R_PPC64_ADDR16_LO);
+			}
+		}
+
+		if (kind == RelocationExpressionKind.PC_RELATIVE) {
+			if (header.getMachine() == ElfMachine.EM_PPC && width == 4 && bitmask == 0x03fffffcL) {
+				return new LoweringResult(ElfRelocationType_ppc.R_PPC_REL24);
+			}
+			if (header.getMachine() == ElfMachine.EM_PPC && width == 4 && bitmask == 0x0000fffcL) {
+				return new LoweringResult(ElfRelocationType_ppc.R_PPC_REL14);
+			}
+			if (header.getMachine() == ElfMachine.EM_PPC64 && width == 4 &&
+				bitmask == 0x03fffffcL) {
+				return new LoweringResult(ElfRelocationType_ppc64.R_PPC64_REL24);
+			}
+			if (header.getMachine() == ElfMachine.EM_PPC64 && width == 4 &&
+				bitmask == 0x0000fffcL) {
+				return new LoweringResult(ElfRelocationType_ppc64.R_PPC64_REL14);
+			}
+		}
+		else if (kind == RelocationExpressionKind.ABSOLUTE) {
+			if (header.getMachine() == ElfMachine.EM_PPC && width == 4 &&
+				bitmask == 0xffffffffL) {
+				return new LoweringResult(ElfRelocationType_ppc.R_PPC_ADDR32);
+			}
+			if (header.getMachine() == ElfMachine.EM_PPC64 && width == 4 &&
+				bitmask == 0xffffffffL) {
+				return new LoweringResult(ElfRelocationType_ppc64.R_PPC64_ADDR32);
+			}
+			if (header.getMachine() == ElfMachine.EM_PPC64 && width == 8 &&
+				bitmask == 0xffffffffffffffffL) {
+				return new LoweringResult(ElfRelocationType_ppc64.R_PPC64_ADDR64);
+			}
+		}
+
+		return new LoweringResult(null);
+	}
+
+	private static boolean isPairShape(RelocationGroup group, RelocationGang gang) {
+		return group.getGangs().size() == 2 && gang.getWidth() == 4 && gang.getBitmask() == 0xffffL;
 	}
 
 	private void emit(ElfRelaTable relTable, AddressSetView addressSetView,

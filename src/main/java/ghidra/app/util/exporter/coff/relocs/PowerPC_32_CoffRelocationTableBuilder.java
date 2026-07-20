@@ -22,6 +22,7 @@ import java.util.Map;
 
 import ghidra.app.util.importer.MessageLog;
 import ghidra.program.model.address.AddressSetView;
+import ghidra.program.model.relocobj.RelocationExpressionKind;
 import ghidra.program.model.relocobj.RelocationEntry;
 import ghidra.program.model.relocobj.RelocationGang;
 import ghidra.program.model.relocobj.RelocationGroup;
@@ -35,6 +36,18 @@ import net.boricj.bft.coff.constants.CoffRelocationType;
 import net.boricj.bft.coff.machines.ppc.CoffRelocationType_ppc;
 
 public class PowerPC_32_CoffRelocationTableBuilder implements CoffRelocationTableBuilder {
+	private static final class LoweringResult {
+		private final CoffRelocationType type;
+		private final long value;
+		private final boolean emitPair;
+
+		private LoweringResult(CoffRelocationType type, long value, boolean emitPair) {
+			this.type = type;
+			this.value = value;
+			this.emitPair = emitPair;
+		}
+	}
+
 	public boolean supportsGroupedRelocations() {
 		return true;
 	}
@@ -66,18 +79,56 @@ public class PowerPC_32_CoffRelocationTableBuilder implements CoffRelocationTabl
 		long addend = group.getAddend() + entry.localAddend();
 		long offset = getOffsetWithinAddressSet(addressSet, entry.address());
 
-		PowerPCRelocationTableLowering.Result lowering =
-			PowerPCRelocationTableLowering.tryLower(group, gang, gangIndex, addend, offset);
-		if (lowering == null) {
+		LoweringResult lowering = tryLower(group, gang, gangIndex, addend, offset);
+		if (lowering.type == null) {
 			logUnknownRelocation(relTable.getSection(), group, gang, entry, log);
 			return;
 		}
 
-		patchBytes(bytes, addressSet, entry.address(), dc, width, bitmask, lowering.value());
-		emit(relTable, addressSet, entry.address(), lowering.type(), symbol);
-		if (lowering.emitPair()) {
+		patchBytes(bytes, addressSet, entry.address(), dc, width, bitmask, lowering.value);
+		emit(relTable, addressSet, entry.address(), lowering.type, symbol);
+		if (lowering.emitPair) {
 			emitPair(relTable, addressSet, entry.address());
 		}
+	}
+
+	private static LoweringResult tryLower(RelocationGroup group, RelocationGang gang,
+			int gangIndex, long addend, long offset) {
+		int width = gang.getWidth();
+		long bitmask = gang.getBitmask();
+		RelocationExpressionKind kind = group.getExpression().getKind();
+
+		if (kind == RelocationExpressionKind.ABSOLUTE && isPairShape(group, gang)) {
+			if (gangIndex == 0) {
+				return new LoweringResult(CoffRelocationType_ppc.IMAGE_REL_PPC_REFHI, addend, true);
+			}
+			if (gangIndex == 1) {
+				return new LoweringResult(CoffRelocationType_ppc.IMAGE_REL_PPC_REFLO, addend, true);
+			}
+		}
+
+		if (kind == RelocationExpressionKind.PC_RELATIVE) {
+			if (width == 4 && bitmask == 0x03fffffcL) {
+				return new LoweringResult(CoffRelocationType_ppc.IMAGE_REL_PPC_REL24,
+					(addend - offset) >> 2, false);
+			}
+			if (width == 4 && bitmask == 0x0000fffcL) {
+				return new LoweringResult(CoffRelocationType_ppc.IMAGE_REL_PPC_REL14,
+					(addend - offset) >> 2, false);
+			}
+		}
+		else if (kind == RelocationExpressionKind.ABSOLUTE) {
+			if (width == 4 && bitmask == 0xffffffffL) {
+				return new LoweringResult(CoffRelocationType_ppc.IMAGE_REL_PPC_ADDR32, addend,
+					false);
+			}
+		}
+
+		return new LoweringResult(null, 0, false);
+	}
+
+	private static boolean isPairShape(RelocationGroup group, RelocationGang gang) {
+		return group.getGangs().size() == 2 && gang.getWidth() == 4 && gang.getBitmask() == 0xffffL;
 	}
 
 	private void emit(CoffRelocationTable relTable, AddressSetView addressSetView,

@@ -14,9 +14,9 @@ import ghidra.program.model.listing.Instruction;
 import ghidra.program.model.listing.Listing;
 import ghidra.program.model.relocobj.RelocationGang;
 import ghidra.program.model.relocobj.RelocationGroup;
+import ghidra.program.model.relocobj.RelocationGangRoleDescriptor;
 import ghidra.program.model.relocobj.RelocationTable.RelocationLocation;
 import ghidra.program.model.relocobj.RelocationTable;
-import ghidra.program.model.relocobj.RelocationTypeTag;
 import ghidra.program.model.scalar.Scalar;
 
 public class MipsDetectMissingHI16Relocations extends GhidraScript {
@@ -75,28 +75,25 @@ public class MipsDetectMissingHI16Relocations extends GhidraScript {
 	}
 
 	private boolean isCoveredHI16(Instruction instruction) {
-		if (containsRelocationTypeAt(instruction.getAddress(), RelocationTypeTag.HIGH_PAIR)) {
+		if (containsRelocationRoleAt(instruction.getAddress(), RelocationGangRoleDescriptor.HIGH_PAIR)) {
 			return true;
 		}
 
 		Address previous = instruction.getAddress().subtract(4);
-		if (containsAddendAt(previous, RelocationTypeTag.PC_RELATIVE, -2) ||
-			containsAddendAt(previous, RelocationTypeTag.MIPS_26, -1)) {
+		if (containsAddendAt(previous, RelocationGangRoleDescriptor.PC_RELATIVE, -2) ||
+			containsAddendAt(previous, RelocationGangRoleDescriptor.REGION_RELATIVE, -1)) {
 			return true;
 		}
 
 		return false;
 	}
 
-	private boolean containsRelocationTypeAt(Address address, RelocationTypeTag type) {
+	private boolean containsRelocationRoleAt(Address address, RelocationGangRoleDescriptor role) {
 		for (RelocationLocation location : relocationTable.getRelocationLocationsAt(address)) {
-			RelocationGroup group = relocationTable.getRelocationGroup(location.groupId());
-			if (group == null) {
-				continue;
-			}
+			RelocationGroup group = relocationTable.getRelocationGroup(location);
 
 			RelocationGang gang = group.getGangs().get(location.gangIndex());
-			if (gang.getRelocationType() == type) {
+			if (RelocationGangRoleDescriptor.derive(group, location.gangIndex()) == role) {
 				return true;
 			}
 		}
@@ -104,15 +101,13 @@ public class MipsDetectMissingHI16Relocations extends GhidraScript {
 		return false;
 	}
 
-	private boolean containsAddendAt(Address address, RelocationTypeTag type, long expectedAddend) {
+	private boolean containsAddendAt(Address address, RelocationGangRoleDescriptor role,
+			long expectedAddend) {
 		for (RelocationLocation location : relocationTable.getRelocationLocationsAt(address)) {
-			RelocationGroup group = relocationTable.getRelocationGroup(location.groupId());
-			if (group == null) {
-				continue;
-			}
+			RelocationGroup group = relocationTable.getRelocationGroup(location);
 
 			RelocationGang gang = group.getGangs().get(location.gangIndex());
-			if (gang.getRelocationType() != type) {
+			if (RelocationGangRoleDescriptor.derive(group, location.gangIndex()) != role) {
 				continue;
 			}
 

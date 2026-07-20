@@ -23,6 +23,8 @@ import java.util.Map;
 
 import ghidra.app.util.importer.MessageLog;
 import ghidra.program.model.address.AddressSetView;
+import ghidra.program.model.relocobj.RelocationExpressionBase;
+import ghidra.program.model.relocobj.RelocationExpressionKind;
 import ghidra.program.model.relocobj.RelocationEntry;
 import ghidra.program.model.relocobj.RelocationGang;
 import ghidra.program.model.relocobj.RelocationGroup;
@@ -81,31 +83,82 @@ public class Mips_ElfRelocationTableBuilder implements ElfRelocationTableBuilder
 	}
 
 	private void processGroup(BuildState state, RelocationGroup group, ElfSymbol symbol) {
-		for (int gangIndex = 0; gangIndex < group.getGangs().size(); gangIndex++) {
-			RelocationGang gang = group.getGangs().get(gangIndex);
-			processGang(state, group, gang, gangIndex, symbol);
+		RelocationExpressionKind kind = group.getExpression().getKind();
+		RelocationExpressionBase base = group.getExpression().getBase();
+
+		if (kind == RelocationExpressionKind.SYMBOL_RELATIVE &&
+			base == RelocationExpressionBase.GP) {
+			for (int gangIndex = 0; gangIndex < group.getGangs().size(); gangIndex++) {
+				RelocationGang gang = group.getGangs().get(gangIndex);
+				for (RelocationEntry entry : gang.getEntries()) {
+					processEntryGpRelative(state, group, gang, gangIndex, entry, symbol);
+				}
+			}
+			return;
+		}
+		if (kind == RelocationExpressionKind.REGION_RELATIVE) {
+			for (int gangIndex = 0; gangIndex < group.getGangs().size(); gangIndex++) {
+				RelocationGang gang = group.getGangs().get(gangIndex);
+				for (RelocationEntry entry : gang.getEntries()) {
+					processEntryRegionRelative(state, group, gang, gangIndex, entry, symbol);
+				}
+			}
+			return;
+		}
+		if (kind == RelocationExpressionKind.PC_RELATIVE) {
+			for (int gangIndex = 0; gangIndex < group.getGangs().size(); gangIndex++) {
+				RelocationGang gang = group.getGangs().get(gangIndex);
+				for (RelocationEntry entry : gang.getEntries()) {
+					processEntryPcRelative(state, group, gang, gangIndex, entry, symbol);
+				}
+			}
+			return;
+		}
+		if (kind == RelocationExpressionKind.ABSOLUTE) {
+			for (int gangIndex = 0; gangIndex < group.getGangs().size(); gangIndex++) {
+				RelocationGang gang = group.getGangs().get(gangIndex);
+				processGangAbsolute(state, group, gang, gangIndex, symbol);
+			}
+			return;
+		}
+
+		processGroupUnknown(state, group, symbol);
+	}
+
+	private void processGroupUnknown(BuildState state, RelocationGroup group, ElfSymbol symbol) {
+		for (RelocationGang gang : group.getGangs()) {
+			for (RelocationEntry entry : gang.getEntries()) {
+				logUnknownRelocation(state.relTable, group, gang, entry, state.log);
+			}
 		}
 	}
 
-	private void processGang(BuildState state, RelocationGroup group, RelocationGang gang,
+	private void processGangAbsolute(BuildState state, RelocationGroup group, RelocationGang gang,
 			int gangIndex, ElfSymbol symbol) {
+		if (isPairShape(group, gang)) {
+			for (RelocationEntry entry : gang.getEntries()) {
+				processEntryAbsolutePair(state, group, gang, gangIndex, entry, symbol);
+			}
+			return;
+		}
+
 		for (RelocationEntry entry : gang.getEntries()) {
-			processEntry(state, group, gang, gangIndex, entry, symbol);
+			processEntryAbsoluteScalar(state, group, gang, gangIndex, entry, symbol);
 		}
 	}
 
-	private void processEntry(BuildState state, RelocationGroup group, RelocationGang gang,
-			int gangIndex, RelocationEntry entry, ElfSymbol symbol) {
+	private void processEntryAbsolutePair(BuildState state, RelocationGroup group,
+			RelocationGang gang, int gangIndex, RelocationEntry entry, ElfSymbol symbol) {
 		int width = gang.getWidth();
 		long bitmask = gang.getBitmask();
 		long value = group.getAddend() + entry.localAddend();
 
-		ElfRelocationType type = MipsLowering.tryLower(group, gang, gangIndex);
-		if (type != null && type == ElfRelocationType_Mips.R_MIPS_26) {
-			value >>= 2;
+		ElfRelocationType type = null;
+		if (gangIndex == 0) {
+			type = ElfRelocationType_Mips.R_MIPS_HI16;
 		}
-		else if (type != null && type == ElfRelocationType_Mips.R_MIPS_PC16) {
-			value >>= 2;
+		else if (gangIndex == 1) {
+			type = ElfRelocationType_Mips.R_MIPS_LO16;
 		}
 
 		if (type == null) {
@@ -116,6 +169,87 @@ public class Mips_ElfRelocationTableBuilder implements ElfRelocationTableBuilder
 		patchBytes(state.bytes, state.addressSetView, entry.address(), state.dataConverter,
 			width, bitmask, value);
 		emit(state.relTable, state.addressSetView, entry.address(), type, symbol);
+	}
+
+	private void processEntryAbsoluteScalar(BuildState state, RelocationGroup group,
+			RelocationGang gang, int gangIndex, RelocationEntry entry, ElfSymbol symbol) {
+		int width = gang.getWidth();
+		long bitmask = gang.getBitmask();
+		long value = group.getAddend() + entry.localAddend();
+		ElfRelocationType type = null;
+
+		if (width == 4 && bitmask == 0xffffffffL) {
+			type = ElfRelocationType_Mips.R_MIPS_32;
+		}
+		else if (width == 8 && bitmask == 0xffffffffffffffffL) {
+			type = ElfRelocationType_Mips.R_MIPS_64;
+		}
+
+		if (type == null) {
+			logUnknownRelocation(state.relTable, group, gang, entry, state.log);
+			return;
+		}
+
+		patchBytes(state.bytes, state.addressSetView, entry.address(), state.dataConverter,
+			width, bitmask, value);
+		emit(state.relTable, state.addressSetView, entry.address(), type, symbol);
+	}
+
+	private void processEntryRegionRelative(BuildState state, RelocationGroup group,
+			RelocationGang gang, int gangIndex, RelocationEntry entry, ElfSymbol symbol) {
+		int width = gang.getWidth();
+		long bitmask = gang.getBitmask();
+		long value = group.getAddend() + entry.localAddend();
+
+		if (width == 4 && bitmask == 0x3ffffff) {
+			value >>= 2;
+			patchBytes(state.bytes, state.addressSetView, entry.address(), state.dataConverter,
+				width, bitmask, value);
+			emit(state.relTable, state.addressSetView, entry.address(),
+				ElfRelocationType_Mips.R_MIPS_26, symbol);
+			return;
+		}
+
+		logUnknownRelocation(state.relTable, group, gang, entry, state.log);
+	}
+
+	private void processEntryPcRelative(BuildState state, RelocationGroup group,
+			RelocationGang gang, int gangIndex, RelocationEntry entry, ElfSymbol symbol) {
+		int width = gang.getWidth();
+		long bitmask = gang.getBitmask();
+		long value = group.getAddend() + entry.localAddend();
+
+		if (width == 4 && bitmask == 0xffff) {
+			value >>= 2;
+			patchBytes(state.bytes, state.addressSetView, entry.address(), state.dataConverter,
+				width, bitmask, value);
+			emit(state.relTable, state.addressSetView, entry.address(),
+				ElfRelocationType_Mips.R_MIPS_PC16, symbol);
+			return;
+		}
+
+		logUnknownRelocation(state.relTable, group, gang, entry, state.log);
+	}
+
+	private void processEntryGpRelative(BuildState state, RelocationGroup group,
+			RelocationGang gang, int gangIndex, RelocationEntry entry, ElfSymbol symbol) {
+		int width = gang.getWidth();
+		long bitmask = gang.getBitmask();
+		long value = group.getAddend() + entry.localAddend();
+
+		if (width == 4 && bitmask == 0xffff) {
+			patchBytes(state.bytes, state.addressSetView, entry.address(), state.dataConverter,
+				width, bitmask, value);
+			emit(state.relTable, state.addressSetView, entry.address(),
+				ElfRelocationType_Mips.R_MIPS_GPREL16, symbol);
+			return;
+		}
+
+		logUnknownRelocation(state.relTable, group, gang, entry, state.log);
+	}
+
+	private static boolean isPairShape(RelocationGroup group, RelocationGang gang) {
+		return group.getGangs().size() == 2 && gang.getWidth() == 4 && gang.getBitmask() == 0xffffL;
 	}
 
 	private void emit(ElfRelTable relTable, AddressSetView addressSetView,

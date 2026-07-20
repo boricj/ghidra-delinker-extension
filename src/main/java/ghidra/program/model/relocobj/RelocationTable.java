@@ -323,7 +323,7 @@ public class RelocationTable {
 	}
 
 	public void addMIPS26Group(Address address, Address target, long addend) {
-		addSingleEntryGroup(RelocationExpression.absolute(), target, addend,
+		addSingleEntryGroup(RelocationExpression.regionRelative(), target, addend,
 			4, 0x3ffffffL, address, 0);
 	}
 

@@ -26,7 +26,6 @@ import ghidra.program.model.listing.Program;
 import ghidra.program.model.mem.MemoryBlock;
 import ghidra.program.model.relocobj.RelocationEntry;
 import ghidra.program.model.relocobj.RelocationGang;
-import ghidra.program.model.relocobj.RelocationGangRoleDescriptor;
 import ghidra.program.model.relocobj.RelocationGroup;
 import ghidra.program.model.relocobj.RelocationTable.RelocationLocation;
 import ghidra.program.model.relocobj.RelocationTable;
@@ -112,9 +111,10 @@ class RelocationTableModel extends AddressBasedTableModel<RelocationRowObject> {
 		Iterator<RelocationGroup> groupIterator = relocationTable.getRelocationGroups();
 		while (groupIterator.hasNext()) {
 			RelocationGroup group = groupIterator.next();
+			String typeName = group.getExpression().getKind() + "/" +
+				group.getExpression().getBase();
 			for (int gangIndex = 0; gangIndex < group.getGangs().size(); gangIndex++) {
 				RelocationGang gang = group.getGangs().get(gangIndex);
-				String typeName = RelocationGangRoleDescriptor.derive(group, gangIndex).toString();
 				for (int entryIndex = 0; entryIndex < gang.getEntries().size(); entryIndex++) {
 					RelocationEntry entry = gang.getEntries().get(entryIndex);
 					long addend = group.getAddend() + entry.localAddend();

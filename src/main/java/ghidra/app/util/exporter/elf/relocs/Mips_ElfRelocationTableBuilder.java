@@ -43,21 +43,8 @@ import net.boricj.bft.elf.sections.ElfSymbolTable;
 import net.boricj.bft.elf.sections.ElfSymbolTable.ElfSymbol;
 
 public class Mips_ElfRelocationTableBuilder implements ElfRelocationTableBuilder {
-	private static final class BuildState {
-		private final ElfRelTable relTable;
-		private final byte[] bytes;
-		private final AddressSetView addressSetView;
-		private final DataConverter dataConverter;
-		private final MessageLog log;
-
-		private BuildState(ElfRelTable relTable, byte[] bytes,
-				AddressSetView addressSetView, DataConverter dataConverter, MessageLog log) {
-			this.relTable = relTable;
-			this.bytes = bytes;
-			this.addressSetView = addressSetView;
-			this.dataConverter = dataConverter;
-			this.log = log;
-		}
+	private static record BuildState(ElfRelTable relTable, byte[] bytes,
+			AddressSetView addressSetView, DataConverter dataConverter, MessageLog log) {
 	}
 
 	public boolean supportsGroupedRelocations() {
@@ -128,7 +115,7 @@ public class Mips_ElfRelocationTableBuilder implements ElfRelocationTableBuilder
 	private void processGroupUnknown(BuildState state, RelocationGroup group, ElfSymbol symbol) {
 		for (RelocationGang gang : group.getGangs()) {
 			for (RelocationEntry entry : gang.getEntries()) {
-				logUnknownRelocation(state.relTable, group, gang, entry, state.log);
+				logUnknownRelocation(state.relTable(), group, gang, entry, state.log());
 			}
 		}
 	}
@@ -162,13 +149,13 @@ public class Mips_ElfRelocationTableBuilder implements ElfRelocationTableBuilder
 		}
 
 		if (type == null) {
-			logUnknownRelocation(state.relTable, group, gang, entry, state.log);
+			logUnknownRelocation(state.relTable(), group, gang, entry, state.log());
 			return;
 		}
 
-		patchBytes(state.bytes, state.addressSetView, entry.address(), state.dataConverter,
+		patchBytes(state.bytes(), state.addressSetView(), entry.address(), state.dataConverter(),
 			width, bitmask, value);
-		emit(state.relTable, state.addressSetView, entry.address(), type, symbol);
+		emit(state.relTable(), state.addressSetView(), entry.address(), type, symbol);
 	}
 
 	private void processEntryAbsoluteScalar(BuildState state, RelocationGroup group,
@@ -186,13 +173,13 @@ public class Mips_ElfRelocationTableBuilder implements ElfRelocationTableBuilder
 		}
 
 		if (type == null) {
-			logUnknownRelocation(state.relTable, group, gang, entry, state.log);
+			logUnknownRelocation(state.relTable(), group, gang, entry, state.log());
 			return;
 		}
 
-		patchBytes(state.bytes, state.addressSetView, entry.address(), state.dataConverter,
+		patchBytes(state.bytes(), state.addressSetView(), entry.address(), state.dataConverter(),
 			width, bitmask, value);
-		emit(state.relTable, state.addressSetView, entry.address(), type, symbol);
+		emit(state.relTable(), state.addressSetView(), entry.address(), type, symbol);
 	}
 
 	private void processEntryRegionRelative(BuildState state, RelocationGroup group,
@@ -203,14 +190,14 @@ public class Mips_ElfRelocationTableBuilder implements ElfRelocationTableBuilder
 
 		if (width == 4 && bitmask == 0x3ffffff) {
 			value >>= 2;
-			patchBytes(state.bytes, state.addressSetView, entry.address(), state.dataConverter,
+			patchBytes(state.bytes(), state.addressSetView(), entry.address(), state.dataConverter(),
 				width, bitmask, value);
-			emit(state.relTable, state.addressSetView, entry.address(),
+			emit(state.relTable(), state.addressSetView(), entry.address(),
 				ElfRelocationType_Mips.R_MIPS_26, symbol);
 			return;
 		}
 
-		logUnknownRelocation(state.relTable, group, gang, entry, state.log);
+		logUnknownRelocation(state.relTable(), group, gang, entry, state.log());
 	}
 
 	private void processEntryPcRelative(BuildState state, RelocationGroup group,
@@ -221,14 +208,14 @@ public class Mips_ElfRelocationTableBuilder implements ElfRelocationTableBuilder
 
 		if (width == 4 && bitmask == 0xffff) {
 			value >>= 2;
-			patchBytes(state.bytes, state.addressSetView, entry.address(), state.dataConverter,
+			patchBytes(state.bytes(), state.addressSetView(), entry.address(), state.dataConverter(),
 				width, bitmask, value);
-			emit(state.relTable, state.addressSetView, entry.address(),
+			emit(state.relTable(), state.addressSetView(), entry.address(),
 				ElfRelocationType_Mips.R_MIPS_PC16, symbol);
 			return;
 		}
 
-		logUnknownRelocation(state.relTable, group, gang, entry, state.log);
+		logUnknownRelocation(state.relTable(), group, gang, entry, state.log());
 	}
 
 	private void processEntryGpRelative(BuildState state, RelocationGroup group,
@@ -238,14 +225,14 @@ public class Mips_ElfRelocationTableBuilder implements ElfRelocationTableBuilder
 		long value = group.getAddend() + entry.localAddend();
 
 		if (width == 4 && bitmask == 0xffff) {
-			patchBytes(state.bytes, state.addressSetView, entry.address(), state.dataConverter,
+			patchBytes(state.bytes(), state.addressSetView(), entry.address(), state.dataConverter(),
 				width, bitmask, value);
-			emit(state.relTable, state.addressSetView, entry.address(),
+			emit(state.relTable(), state.addressSetView(), entry.address(),
 				ElfRelocationType_Mips.R_MIPS_GPREL16, symbol);
 			return;
 		}
 
-		logUnknownRelocation(state.relTable, group, gang, entry, state.log);
+		logUnknownRelocation(state.relTable(), group, gang, entry, state.log());
 	}
 
 	private static boolean isPairShape(RelocationGroup group, RelocationGang gang) {

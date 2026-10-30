@@ -42,8 +42,11 @@ public class DropDownOption<T> extends Option {
 		this.comp.setSelectedItem(values.get(defaultValue));
 	}
 
-	@Override
 	public Component getCustomEditorComponent() {
+		return comp;
+	}
+
+	public Component getCustomEditorComponent(AddressFactoryService addressFactoryService) {
 		return comp;
 	}
 
